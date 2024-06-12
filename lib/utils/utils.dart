@@ -225,16 +225,19 @@ int calculateAge(String birthDateString) {
   if (birthDateString.isNotEmpty) {
     // Parse the birth date string into a DateTime object
     List<String> dateParts = birthDateString.split('/');
-    int month = int.parse(dateParts[0]);
-    int day = int.parse(dateParts[1]);
+    int day = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
     int year = int.parse(dateParts[2]);
     DateTime birthDate = DateTime(year, month, day);
+    DateTime today = DateTime.now();
 
-    // Calculate the difference between the birth date and the current date
-    Duration difference = DateTime.now().difference(birthDate);
+    int age = today.year - birthDate.year;
 
-    // Calculate the age of the person in years
-    int age = difference.inDays ~/ 365;
+    // Adjust age if the birth date hasn't occurred yet this year
+    if (today.month < birthDate.month ||
+        (today.month == birthDate.month && today.day < birthDate.day)) {
+      age--;
+    }
 
     return age;
   }

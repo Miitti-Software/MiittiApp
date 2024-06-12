@@ -453,11 +453,11 @@ class AuthProvider extends ChangeNotifier {
           .then((value) {
         showSnackBar(context, 'Miittisi on luotu onnistuneesti!', Colors.green);
 
-        pushReplacement(context, const IndexPage());
+        pushNRemoveUntil(context, const IndexPage());
       });
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message.toString(), ConstantStyles.red);
-      pushReplacement(context, const IndexPage());
+      pushNRemoveUntil(context, const IndexPage());
     }
   }
 
@@ -545,12 +545,8 @@ class AuthProvider extends ChangeNotifier {
         personActivities.add(PersonActivity.fromDoc(doc));
       }
 
-      DocumentSnapshot documentSnapshot = await _getUserDoc(uid);
-
-      MiittiUser myOwnUser = MiittiUser.fromDoc(documentSnapshot);
-
-      if (myOwnUser.invitedActivities.isNotEmpty) {
-        for (String activityId in myOwnUser.invitedActivities) {
+      if (miittiUser.invitedActivities.isNotEmpty) {
+        for (String activityId in miittiUser.invitedActivities) {
           DocumentSnapshot activitySnapshot = await _getActivityDoc(activityId);
 
           if (activitySnapshot.exists) {
@@ -564,8 +560,8 @@ class AuthProvider extends ChangeNotifier {
       List<MiittiActivity> list = List<MiittiActivity>.from(personActivities);
       list.addAll(List<MiittiActivity>.from(commercialActivities));
       return list;
-    } catch (e) {
-      debugPrint('Error fetching user activities: $e');
+    } catch (e, s) {
+      debugPrint('Error fetching user activities: $e, $s');
       return [];
     }
   }

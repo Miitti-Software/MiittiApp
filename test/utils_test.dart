@@ -35,8 +35,8 @@ void main() {
 
   test('calculateAge should return the correct age', () {
     // Arrange
-    const birthDateString = '01/01/1990';
-    const expectedAge = 34;
+    const birthDateString = '23/07/2000';
+    const expectedAge = 23;
 
     // Act
     final age = calculateAge(birthDateString);
