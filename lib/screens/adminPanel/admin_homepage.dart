@@ -1,7 +1,7 @@
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 import 'package:miitti_app/screens/adminPanel/admin_notifications.dart';
 import 'package:miitti_app/screens/adminPanel/admin_search_miitti.dart';
@@ -29,10 +29,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
   Widget _buildBottomNavBar() {
     return CustomNavigationBar(
       iconSize: 35.sp,
-      selectedColor: ConstantStyles.pink,
+      selectedColor: AppStyle.pink,
       unSelectedColor: Colors.white,
-      strokeColor: ConstantStyles.black.withOpacity(0.9),
-      backgroundColor: ConstantStyles.black.withOpacity(0.9),
+      strokeColor: AppStyle.black.withOpacity(0.9),
+      backgroundColor: AppStyle.black.withOpacity(0.9),
       items: [
         CustomNavigationBarItem(
           icon: const Icon(Icons.search),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class AdminSettings extends StatefulWidget {
   const AdminSettings({super.key});
@@ -19,7 +19,7 @@ class _AdminSettingsState extends State<AdminSettings> {
           child: Text(
             'COMING SOON...',
             style: TextStyle(
-              color: AppColors.wineColor,
+              color: AppStyle.wineColor,
               fontSize: 40.sp,
             ),
           ),

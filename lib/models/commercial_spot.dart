@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class CommercialSpot {
   double long;
@@ -38,9 +38,9 @@ class CommercialSpot {
       child: Container(
         height: highlight ? 90.h : 80.h,
         decoration: BoxDecoration(
-          color: ConstantStyles.black,
+          color: AppStyle.black,
           border: Border.all(
-            color: ConstantStyles.pink,
+            color: AppStyle.pink,
             width: highlight ? 2.0 : 1.0,
           ),
           borderRadius: const BorderRadius.all(Radius.circular(12)),
@@ -72,20 +72,20 @@ class CommercialSpot {
                 children: [
                   Text(
                     name,
-                    style: ConstantStyles.activityName,
+                    style: AppStyle.activityName,
                   ),
-                  ConstantStyles().gapH10,
+                  AppStyle.gapH10,
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const Icon(
                         Icons.map_outlined,
-                        color: ConstantStyles.pink,
+                        color: AppStyle.pink,
                       ),
-                      ConstantStyles().gapW10,
+                      AppStyle.gapW10,
                       Text(
                         address,
-                        style: ConstantStyles.activitySubName.copyWith(
+                        style: AppStyle.activitySubName.copyWith(
                             fontWeight: FontWeight.w500,
                             decoration: TextDecoration.underline,
                             decorationColor: Colors.white),
@@ -103,7 +103,7 @@ class CommercialSpot {
                 width: 100.h,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
-                  color: ConstantStyles.pink,
+                  color: AppStyle.pink,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(12),
                     bottomRight: Radius.circular(12),

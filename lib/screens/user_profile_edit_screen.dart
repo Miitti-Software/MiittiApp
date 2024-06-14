@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
 
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/my_elevated_button.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +67,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   AppBar buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.wineColor,
+      backgroundColor: AppStyle.wineColor,
       automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -164,8 +165,8 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
-                      AppColors.lightRedColor,
-                      AppColors.orangeColor,
+                      AppStyle.lightRedColor,
+                      AppStyle.orangeColor,
                     ],
                   ),
                   borderRadius: BorderRadius.circular(50),
@@ -212,7 +213,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
             question,
             textAlign: TextAlign.start,
             style: TextStyle(
-              color: AppColors.purpleColor,
+              color: AppStyle.purpleColor,
               fontSize: 18.sp,
               fontFamily: 'Rubik',
             ),
@@ -272,7 +273,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     return ListTile(
       leading: Icon(
         icon,
-        color: AppColors.lightPurpleColor,
+        color: AppStyle.lightPurpleColor,
         size: 30.sp,
       ),
       title: Text(
@@ -372,7 +373,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
                     )
                   : Text(
                       'Kutsu miittiin',
-                      style: Styles.bodyTextStyle,
+                      style: AppStyle.body,
                     ),
             ),
           );
@@ -526,7 +527,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     final ap = Provider.of<AuthProvider>(context, listen: false);
 
     return AlertDialog(
-      backgroundColor: AppColors.wineColor,
+      backgroundColor: AppStyle.wineColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -544,7 +545,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
             Text(
               'Valitse kutsuttava aktiviteetti',
               textAlign: TextAlign.center,
-              style: Styles.sectionTitleStyle,
+              style: AppStyle.body,
             ),
             Expanded(
               child: ListView.builder(
@@ -560,7 +561,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
                       style: const TextStyle(
                         fontFamily: 'Rubik',
                         overflow: TextOverflow.ellipsis,
-                        color: AppColors.whiteColor,
+                        color: AppStyle.white,
                       ),
                     ),
                     title: Text(
@@ -569,7 +570,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
                         fontFamily: 'Rubik',
                         fontSize: 19.sp,
                         overflow: TextOverflow.ellipsis,
-                        color: AppColors.whiteColor,
+                        color: AppStyle.white,
                       ),
                     ),
                     onTap: () {
@@ -608,7 +609,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   Widget createInviteActivityDialog() {
     return AlertDialog(
-      backgroundColor: AppColors.wineColor,
+      backgroundColor: AppStyle.wineColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -626,12 +627,12 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
             Text(
               'Kutsu miittisi on lähetetty',
               textAlign: TextAlign.center,
-              style: Styles.sectionTitleStyle,
+              style: AppStyle.body,
             ),
             Text(
               'Kun ${widget.user.userName} on hyväksynyt kutsun liittyvä miittisi, saat siitä push ilmoituksen',
               textAlign: TextAlign.center,
-              style: Styles.sectionSubtitleStyle,
+              style: AppStyle.body,
             ),
             MyElevatedButton(
               height: 45.h,
@@ -641,7 +642,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
               },
               child: Text(
                 'Kutsu muita',
-                style: Styles.activityNameTextStyle,
+                style: AppStyle.title,
               ),
             ),
           ],
@@ -658,9 +659,9 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
       ),
       padding: EdgeInsets.all(15.0.w),
       decoration: BoxDecoration(
-        color: AppColors.wineColor,
+        color: AppStyle.wineColor,
         border: Border.all(
-          color: AppColors.darkPurpleColor,
+          color: AppStyle.darkPurpleColor,
           width: 2.0,
         ),
         borderRadius: BorderRadius.circular(20),

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:miitti_app/data/miitti_activity.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/functions/utils.dart';
 
 class CommercialActivity extends MiittiActivity {
   Timestamp startTime;

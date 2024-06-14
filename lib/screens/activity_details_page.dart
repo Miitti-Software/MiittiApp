@@ -6,23 +6,24 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 
 import 'package:miitti_app/widgets/my_elevated_button.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/miitti_user.dart';
+import '../models/miitti_user.dart';
 
 //TODO: New UI
 
@@ -112,7 +113,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                         return FlutterMap(
                             options: MapOptions(
                                 keepAlive: true,
-                                backgroundColor: AppColors.backgroundColor,
+                                backgroundColor: AppStyle.black,
                                 initialCenter: myCameraPosition,
                                 initialZoom: 13.0,
                                 interactionOptions: const InteractionOptions(
@@ -148,8 +149,8 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                           borderRadius: BorderRadius.circular(50),
                           gradient: const LinearGradient(
                             colors: [
-                              AppColors.lightRedColor,
-                              AppColors.orangeColor,
+                              AppStyle.lightRedColor,
+                              AppStyle.orangeColor,
                             ],
                           ),
                         ),
@@ -183,7 +184,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                         Flexible(
                           child: Text(
                             widget.myActivity.activityTitle,
-                            style: Styles.sectionTitleStyle,
+                            style: AppStyle.title,
                           ),
                         ),
                       ],
@@ -225,7 +226,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                                     child: CircleAvatar(
                                       backgroundImage:
                                           NetworkImage(user.profilePicture),
-                                      backgroundColor: AppColors.purpleColor,
+                                      backgroundColor: AppStyle.purpleColor,
                                       radius: 25.r,
                                     ),
                                   ),
@@ -235,7 +236,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                           );
                         } else {
                           return const CircularProgressIndicator(
-                            color: AppColors.purpleColor,
+                            color: AppStyle.purpleColor,
                           );
                         }
                       },
@@ -260,22 +261,22 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                       children: [
                         const Icon(
                           Icons.people,
-                          color: AppColors.lightPurpleColor,
+                          color: AppStyle.lightPurpleColor,
                         ),
                         Text(
                           '  $participantCount/${widget.myActivity.personLimit} osallistujaa',
-                          style: Styles.sectionSubtitleStyle,
+                          style: AppStyle.body,
                         ),
                         SizedBox(
                           width: 20.w,
                         ),
                         const Icon(
                           Icons.location_on_outlined,
-                          color: AppColors.lightPurpleColor,
+                          color: AppStyle.lightPurpleColor,
                         ),
                         Text(
                           widget.myActivity.activityAdress,
-                          style: Styles.sectionSubtitleStyle,
+                          style: AppStyle.body,
                         ),
                       ],
                     ),
@@ -284,24 +285,24 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                       children: [
                         const Icon(
                           Icons.airplane_ticket_outlined,
-                          color: AppColors.lightPurpleColor,
+                          color: AppStyle.lightPurpleColor,
                         ),
                         Text(
                           widget.myActivity.isMoneyRequired
                               ? 'Pääsymaksu'
                               : 'Maksuton',
-                          style: Styles.sectionSubtitleStyle,
+                          style: AppStyle.body,
                         ),
                         SizedBox(
                           width: 20.w,
                         ),
                         const Icon(
                           Icons.calendar_month,
-                          color: AppColors.lightPurpleColor,
+                          color: AppStyle.lightPurpleColor,
                         ),
                         Text(
                           widget.myActivity.timeString,
-                          style: Styles.sectionSubtitleStyle,
+                          style: AppStyle.body,
                         ),
                       ],
                     ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class AdminButton extends StatelessWidget {
   final Function()? onTap;
@@ -24,7 +24,7 @@ class AdminButton extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 17.sp,
-              color: AppColors.whiteColor,
+              color: AppStyle.white,
             ),
           ),
         ),

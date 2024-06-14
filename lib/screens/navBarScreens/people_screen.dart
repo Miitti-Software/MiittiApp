@@ -4,13 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
+import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/my_elevated_button.dart';
 import 'package:provider/provider.dart';
@@ -153,8 +153,8 @@ class _PeopleScreenState extends State<PeopleScreen> {
       height: 225.w,
       width: 160.w,
       decoration: BoxDecoration(
-        color: AppColors.wineColor,
-        border: Border.all(color: AppColors.purpleColor, width: 2.0),
+        color: AppStyle.wineColor,
+        border: Border.all(color: AppStyle.purpleColor, width: 2.0),
         borderRadius: const BorderRadius.all(
           Radius.circular(10),
         ),
@@ -194,7 +194,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 13.sp,
-        color: AppColors.lightPurpleColor,
+        color: AppStyle.lightPurpleColor,
         fontFamily: 'Rubik',
       ),
     );

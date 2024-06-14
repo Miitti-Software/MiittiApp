@@ -13,17 +13,17 @@ import 'package:location/location.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 //import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
-import 'package:miitti_app/data/ad_banner.dart';
-import 'package:miitti_app/data/commercial_activity.dart';
+import 'package:miitti_app/models/ad_banner.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_activity.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/activity.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
+import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class MapsScreen extends StatefulWidget {
   const MapsScreen({super.key});
@@ -303,10 +303,10 @@ class _MapsScreenState extends State<MapsScreen> {
               width: 260.w,
               padding: EdgeInsets.all(3.w),
               decoration: BoxDecoration(
-                color: ConstantStyles.black.withOpacity(0.8),
+                color: AppStyle.black.withOpacity(0.8),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              child: OtherWidgets().createToggleSwitch(
+              child: OtherWidgets.createToggleSwitch(
                 initialLabelIndex: showOnMap,
                 onToggle: (index) {
                   setState(() {
@@ -336,7 +336,7 @@ class _MapsScreenState extends State<MapsScreen> {
           return FlutterMap(
               options: MapOptions(
                   keepAlive: true,
-                  backgroundColor: AppColors.backgroundColor,
+                  backgroundColor: AppStyle.black,
                   initialCenter: myPosition,
                   initialZoom: 13.0,
                   interactionOptions: const InteractionOptions(
@@ -435,7 +435,7 @@ class _MapsScreenState extends State<MapsScreen> {
                     child: Container(
                       height: 125.h,
                       decoration: BoxDecoration(
-                        color: ConstantStyles.black.withOpacity(0.8),
+                        color: AppStyle.black.withOpacity(0.8),
                         borderRadius:
                             const BorderRadius.all(Radius.circular(20)),
                       ),
@@ -451,32 +451,32 @@ class _MapsScreenState extends State<MapsScreen> {
                                   child: Text(
                                     activity.activityTitle,
                                     overflow: TextOverflow.ellipsis,
-                                    style: ConstantStyles.activityName,
+                                    style: AppStyle.activityName,
                                   ),
                                 ),
                                 Row(
                                   children: [
                                     const Icon(
                                       Icons.calendar_month,
-                                      color: ConstantStyles.pink,
+                                      color: AppStyle.pink,
                                     ),
-                                    ConstantStyles().gapW5,
+                                    AppStyle.gapW5,
                                     Text(
                                       activity.timeString,
-                                      style: ConstantStyles.activitySubName,
+                                      style: AppStyle.activitySubName,
                                     ),
-                                    ConstantStyles().gapW10,
+                                    AppStyle.gapW10,
                                     const Icon(
                                       Icons.map_outlined,
-                                      color: ConstantStyles.pink,
+                                      color: AppStyle.pink,
                                     ),
-                                    ConstantStyles().gapW5,
+                                    AppStyle.gapW5,
                                     Flexible(
                                       child: Text(
                                         cityName,
                                         overflow: TextOverflow.ellipsis,
-                                        style: ConstantStyles.activitySubName
-                                            .copyWith(
+                                        style:
+                                            AppStyle.activitySubName.copyWith(
                                           decoration: TextDecoration.underline,
                                           decorationColor: Colors.white,
                                         ),
@@ -488,25 +488,25 @@ class _MapsScreenState extends State<MapsScreen> {
                                   children: [
                                     const Icon(
                                       Icons.account_balance_wallet_outlined,
-                                      color: ConstantStyles.pink,
+                                      color: AppStyle.pink,
                                     ),
-                                    ConstantStyles().gapW5,
+                                    AppStyle.gapW5,
                                     Text(
                                       activity.isMoneyRequired
                                           ? 'Pääsymaksu'
                                           : 'Maksuton',
                                       textAlign: TextAlign.center,
-                                      style: ConstantStyles.activitySubName,
+                                      style: AppStyle.activitySubName,
                                     ),
-                                    ConstantStyles().gapW10,
+                                    AppStyle.gapW10,
                                     const Icon(
                                       Icons.people_outline,
-                                      color: ConstantStyles.pink,
+                                      color: AppStyle.pink,
                                     ),
-                                    ConstantStyles().gapW5,
+                                    AppStyle.gapW5,
                                     Text(
                                       '$participants/${activity.personLimit} osallistujaa',
-                                      style: ConstantStyles.activitySubName,
+                                      style: AppStyle.activitySubName,
                                     ),
                                   ],
                                 ),

@@ -3,13 +3,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/screens/login/login_intro.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -32,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: TextStyle(
           fontSize: 17.sp,
           fontFamily: 'Rubik',
-          color: AppColors.lightPurpleColor,
+          color: AppStyle.lightPurpleColor,
         ),
       ),
     );
@@ -55,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       style: TextStyle(
         fontSize: fontSize.sp,
         fontFamily: 'Rubik',
-        color: AppColors.lightPurpleColor,
+        color: AppStyle.lightPurpleColor,
       ),
     );
   }
@@ -90,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   backgroundColor:
-                      WidgetStateProperty.all<Color>(ConstantStyles.pink),
+                      WidgetStateProperty.all<Color>(AppStyle.pink),
                   minimumSize: WidgetStateProperty.all<Size>(const Size(
                       double.infinity, 120)), // Makes the button 100% wide
                 ),
@@ -133,7 +132,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     TextSpan(
                       text: 'Discord-kanavallamme.',
                       style: const TextStyle(
-                        color: AppColors.lightPurpleColor,
+                        color: AppStyle.lightPurpleColor,
                         fontFamily: 'Rubik',
                       ),
                       recognizer: TapGestureRecognizer()

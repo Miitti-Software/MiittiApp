@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/activity.dart';
 
-import 'package:miitti_app/utils/auth_provider.dart';
+import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/widgets/question_answer.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 
 import 'package:provider/provider.dart';
 
@@ -131,7 +132,7 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(70.w),
         child: AppBar(
-          backgroundColor: AppColors.wineColor,
+          backgroundColor: AppStyle.wineColor,
           automaticallyImplyLeading: false,
           title: Align(
             alignment: Alignment.bottomLeft,
@@ -281,7 +282,7 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                           width: 50.w,
                           decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.purpleColor
+                                  ? AppStyle.purpleColor
                                   : Colors.transparent,
                               borderRadius: const BorderRadius.all(
                                   Radius.circular(10.0))),
@@ -335,7 +336,7 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  color: AppColors.purpleColor,
+                                  color: AppStyle.purpleColor,
                                   fontSize: 22.0.sp,
                                   fontFamily: 'Sora',
                                 ),
@@ -448,11 +449,11 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                 },
                 child: isLoading == true
                     ? const CircularProgressIndicator(
-                        color: AppColors.lightPurpleColor,
+                        color: AppStyle.lightPurpleColor,
                       )
                     : Text(
                         'Tallenna muutokset',
-                        style: Styles.bodyTextStyle,
+                        style: AppStyle.body,
                       ),
               ),
             ],
@@ -501,11 +502,11 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
       children: [
         Text(
           textTitle,
-          style: Styles.sectionTitleStyle,
+          style: AppStyle.title,
         ),
         Text(
           textSubtitle,
-          style: Styles.sectionSubtitleStyle,
+          style: AppStyle.body,
         ),
         SizedBox(
           height: 10.h,
@@ -539,8 +540,8 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
         height: 65.w,
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.lightPurpleColor
-              : AppColors.lightPurpleColor.withOpacity(0.7),
+              ? AppStyle.lightPurpleColor
+              : AppStyle.lightPurpleColor.withOpacity(0.7),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
@@ -566,11 +567,11 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
       children: [
         Text(
           textTitle,
-          style: Styles.sectionTitleStyle,
+          style: AppStyle.body,
         ),
         Text(
           textSubtitle,
-          style: Styles.sectionSubtitleStyle,
+          style: AppStyle.body,
         ),
         SizedBox(
           height: 10.h,

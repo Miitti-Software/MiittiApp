@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
 import 'package:miitti_app/widgets/custom_button.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/functions/utils.dart';
 
 class ConfirmNotificationsDialog extends StatelessWidget {
   const ConfirmNotificationsDialog({super.key, required this.nextPage});
@@ -21,7 +21,7 @@ class ConfirmNotificationsDialog extends StatelessWidget {
             Container(
               alignment: Alignment.bottomCenter,
               decoration: const BoxDecoration(
-                color: ConstantStyles.black,
+                color: AppStyle.black,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -39,13 +39,13 @@ class ConfirmNotificationsDialog extends StatelessWidget {
                     ),
                     Text(
                       'Hei!',
-                      style: ConstantStyles.title,
+                      style: AppStyle.title,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.w),
                       child: Text(
                         'Oletko aivan varma valinnastasi. Sovellusilmoitukset ovat sinua varten. Missaat paljon ilman niitä.',
-                        style: ConstantStyles.body,
+                        style: AppStyle.body,
                       ),
                     ),
                     getSomeSpace(10),
@@ -64,12 +64,12 @@ class ConfirmNotificationsDialog extends StatelessWidget {
                             showSnackBar(
                                 context,
                                 "Sinun täytyy sallia ilmoitukset myös laitteeltasi jatkaaksesi",
-                                ConstantStyles.red);
+                                AppStyle.red);
                           }
                         }
                       },
                     ), //Removed extra padding in ConstantsCustomButton
-                    ConstantStyles().gapH10,
+                    AppStyle.gapH10,
                     CustomButton(
                       buttonText: 'Ei vielä',
                       isWhiteButton: true,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/widgets/my_elevated_button.dart';
 
@@ -95,7 +96,7 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
         gradient: const LinearGradient(
-          colors: [AppColors.lightRedColor, AppColors.orangeColor],
+          colors: [AppStyle.lightRedColor, AppStyle.orangeColor],
         ),
       ),
       child: TextButton(
@@ -118,7 +119,7 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
       children: [
         Text(
           currentAnswers > 0 ? 'Hyvältä näyttää!' : 'Kerro enemmän',
-          style: Styles.sectionTitleStyle,
+          style: AppStyle.title,
           overflow: TextOverflow.ellipsis,
         ),
         Text(
@@ -199,7 +200,7 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
     return Container(
       margin: EdgeInsets.all(8.w),
       decoration: BoxDecoration(
-        color: AppColors.lightPurpleColor,
+        color: AppStyle.lightPurpleColor,
         borderRadius: BorderRadius.circular(50.0),
       ),
       padding: EdgeInsets.all(15.w),
@@ -232,7 +233,7 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
       child: Column(
         children: [
           TextFormField(
-            style: Styles.bodyTextStyle,
+            style: AppStyle.body,
             focusNode: _questionFields[index].focusNode, // Update this
 
             maxLines: 5,
@@ -247,20 +248,20 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(
-                  color: AppColors.purpleColor,
+                  color: AppStyle.purpleColor,
                   width: 2.0,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
                 borderSide: const BorderSide(
-                  color: AppColors.purpleColor,
+                  color: AppStyle.purpleColor,
                   width: 2.0,
                 ),
               ),
               border: const OutlineInputBorder(),
               counterStyle: const TextStyle(
-                color: AppColors.whiteColor,
+                color: AppStyle.white,
               ),
             ),
           ),

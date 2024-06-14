@@ -16,24 +16,24 @@ import 'package:intl/intl.dart';
 import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
-import 'package:miitti_app/data/ad_banner.dart';
-import 'package:miitti_app/data/commercial_activity.dart';
-import 'package:miitti_app/data/commercial_spot.dart';
-import 'package:miitti_app/data/commercial_user.dart';
+import 'package:miitti_app/models/ad_banner.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
+import 'package:miitti_app/models/commercial_spot.dart';
+import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/data/miitti_activity.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/data/report.dart';
+import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/report.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
-import 'package:miitti_app/utils/filter_settings.dart';
+import 'package:miitti_app/functions/filter_settings.dart';
 import 'package:miitti_app/screens/index_page.dart';
 
 import 'package:miitti_app/screens/login/login_decide_screen.dart';
 import 'package:miitti_app/screens/login/phone/phone_sms.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // #endregion
 
@@ -127,7 +127,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
-      OtherWidgets().showLoadingDialog(context);
+      OtherWidgets.showLoadingDialog(context);
       await _firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
@@ -177,7 +177,7 @@ class AuthProvider extends ChangeNotifier {
     required String userOtp,
     required Function onSuccess,
   }) async {
-    OtherWidgets().showLoadingDialog(context);
+    OtherWidgets.showLoadingDialog(context);
     try {
       if (!(_firebaseAuth.currentUser != null &&
           _firebaseAuth.currentUser!.uid == _uid)) {
@@ -218,7 +218,7 @@ class AuthProvider extends ChangeNotifier {
       );
 
       //finally, lets sign in
-      OtherWidgets().showLoadingDialog(context);
+      OtherWidgets.showLoadingDialog(context);
       User? user =
           (await FirebaseAuth.instance.signInWithCredential(credential)).user;
 
@@ -227,15 +227,14 @@ class AuthProvider extends ChangeNotifier {
 
       afterSigning(context);
     } catch (error) {
-      showSnackBar(
-          context, "Kirjautuminen epäonnistui: $error!", ConstantStyles.red);
+      showSnackBar(context, "Kirjautuminen epäonnistui: $error!", AppStyle.red);
       debugPrint('Got error signing with Google $error');
     }
   }
 
   Future<void> signInWithApple(BuildContext context) async {
     try {
-      OtherWidgets().showLoadingDialog(context);
+      OtherWidgets.showLoadingDialog(context);
 
       final appleProvider = AppleAuthProvider();
       User? user =
@@ -245,8 +244,7 @@ class AuthProvider extends ChangeNotifier {
 
       afterSigning(context);
     } catch (error) {
-      showSnackBar(
-          context, "Kirjautuminen epäonnistui: $error!", ConstantStyles.red);
+      showSnackBar(context, "Kirjautuminen epäonnistui: $error!", AppStyle.red);
       debugPrint('Got error signing with Apple $error');
       Navigator.of(context).pop();
     }
@@ -279,7 +277,7 @@ class AuthProvider extends ChangeNotifier {
       });
     } catch (error) {
       showSnackBar(context, "Kirjautumisen käsittelyssä sattui virhe: $error!",
-          ConstantStyles.red);
+          AppStyle.red);
       debugPrint('Got error after signing $error');
     }
   }
@@ -438,7 +436,7 @@ class AuthProvider extends ChangeNotifier {
     required BuildContext context,
     required PersonActivity activityModel,
   }) async {
-    OtherWidgets().showLoadingDialog(context);
+    OtherWidgets.showLoadingDialog(context);
     try {
       activityModel.admin = _miittiUser!.uid;
       activityModel.adminAge = calculateAge(_miittiUser!.userBirthday);
@@ -456,7 +454,7 @@ class AuthProvider extends ChangeNotifier {
         pushNRemoveUntil(context, const IndexPage());
       });
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString(), ConstantStyles.red);
+      showSnackBar(context, e.message.toString(), AppStyle.red);
       pushNRemoveUntil(context, const IndexPage());
     }
   }
@@ -965,7 +963,7 @@ class AuthProvider extends ChangeNotifier {
     required Function onSuccess,
   }) async {
     try {
-      OtherWidgets().showLoadingDialog(context);
+      OtherWidgets.showLoadingDialog(context);
       await uploadUserImage(_firebaseAuth.currentUser!.uid, image)
           .then((value) {
         userModel.profilePicture = value;
@@ -987,10 +985,8 @@ class AuthProvider extends ChangeNotifier {
         },
       );
     } on FirebaseAuthException catch (e) {
-      showSnackBar(
-          context,
-          "Datan tallennus epäonnistui: ${e.message.toString()}",
-          ConstantStyles.red);
+      showSnackBar(context,
+          "Datan tallennus epäonnistui: ${e.message.toString()}", AppStyle.red);
       debugPrint("Userdata to firebase error: $e");
     } catch (e) {
       debugPrint("Userdata to firebase error: $e");
@@ -1143,7 +1139,7 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     try {
       if (context != null && context.mounted) {
-        OtherWidgets().showLoadingDialog(context);
+        OtherWidgets.showLoadingDialog(context);
       }
       if (imageFile != null) {
         await uploadUserImage(_firebaseAuth.currentUser!.uid, imageFile)

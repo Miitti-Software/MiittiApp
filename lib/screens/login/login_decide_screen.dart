@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:miitti_app/widgets/custom_button.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 
 class LoginDecideScreen extends StatelessWidget {
@@ -31,14 +31,14 @@ class LoginDecideScreen extends StatelessWidget {
                   Text(
                     'Tervetuloa Miittiin! 🎊',
                     textAlign: TextAlign.center,
-                    style: ConstantStyles.title,
+                    style: AppStyle.title,
                   ),
 
                   //body
                   Text(
                     'Haluaisitko seuraavaksi suorittaa profiilin luonnin loppuun, vai tutustua\n sovellukseen?',
                     textAlign: TextAlign.center,
-                    style: ConstantStyles.body,
+                    style: AppStyle.body,
                   ),
 
                   const Spacer(),
@@ -60,7 +60,7 @@ class LoginDecideScreen extends StatelessWidget {
                     ),
                     child: Text(
                       'Tutustu sovellukseen',
-                      style: ConstantStyles.body,
+                      style: AppStyle.body,
                     ),
                   ),
 
@@ -68,8 +68,7 @@ class LoginDecideScreen extends StatelessWidget {
                   Text(
                     'Huom! Kaikki sovelluksen ominaisuudet eivät ole käytettävissä,\n ennen kuin profiilisi on viimeistelty. ',
                     textAlign: TextAlign.center,
-                    style: ConstantStyles.warning
-                        .copyWith(color: ConstantStyles.red),
+                    style: AppStyle.warning.copyWith(color: AppStyle.red),
                   )
                 ],
               ),

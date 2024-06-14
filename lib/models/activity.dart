@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/data/commercial_activity.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_activity.dart';
+import 'package:miitti_app/models/miitti_activity.dart';
 
 class Activity {
   final String name;
@@ -49,7 +50,7 @@ class Activity {
             child: Stack(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppColors.purpleColor,
+                  backgroundColor: AppStyle.purpleColor,
                   radius: 37.r,
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(activity.activityPhoto),
@@ -66,12 +67,12 @@ class Activity {
                     children: [
                       Icon(
                         Icons.circle,
-                        color: AppColors.purpleColor,
+                        color: AppStyle.purpleColor,
                         size: 25,
                       ),
                       Icon(
                         Icons.verified,
-                        color: AppColors.lightPurpleColor,
+                        color: AppStyle.lightPurpleColor,
                         size: 20,
                       ),
                     ],

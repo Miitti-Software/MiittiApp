@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class AdminSearchBar extends StatelessWidget {
   final Function(String)? onChanged;
@@ -16,7 +16,7 @@ class AdminSearchBar extends StatelessWidget {
           hintText: 'Etsi käyttäjiä:',
           prefixIcon: const Icon(
             Icons.search,
-            color: AppColors.purpleColor,
+            color: AppStyle.purpleColor,
           ),
           enabledBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(50)),

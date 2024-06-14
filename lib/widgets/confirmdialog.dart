@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ConfirmDialog extends StatelessWidget {
@@ -19,7 +19,7 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: AppColors.darkPurpleColor,
+      backgroundColor: AppStyle.darkPurpleColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),

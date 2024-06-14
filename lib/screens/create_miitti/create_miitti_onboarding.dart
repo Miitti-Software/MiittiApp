@@ -9,13 +9,13 @@ import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
-import 'package:miitti_app/data/commercial_spot.dart';
-import 'package:miitti_app/data/onboarding_part.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/activity.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/commercial_spot.dart';
+import 'package:miitti_app/models/onboarding_part.dart';
+import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/custom_button.dart';
 import 'package:location/location.dart' as location;
 import 'package:miitti_app/widgets/other_widgets.dart';
@@ -173,24 +173,23 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                     horizontal: 5.h,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        isSelected ? ConstantStyles.pink : Colors.transparent,
+                    color: isSelected ? AppStyle.pink : Colors.transparent,
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10.0),
                     ),
-                    border: Border.all(color: ConstantStyles.pink),
+                    border: Border.all(color: AppStyle.pink),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
                         Activity.getActivity(activity).emojiData,
-                        style: ConstantStyles.title,
+                        style: AppStyle.title,
                       ),
                       Text(
                         Activity.getActivity(activity).name,
                         overflow: TextOverflow.ellipsis,
-                        style: ConstantStyles.warning.copyWith(
+                        style: AppStyle.warning.copyWith(
                           color: Colors.white,
                         ),
                       ),
@@ -226,7 +225,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                             //mapController: mapController,
                             options: MapOptions(
                               keepAlive: true,
-                              backgroundColor: AppColors.backgroundColor,
+                              backgroundColor: AppStyle.black,
                               initialCenter: myCameraPosition,
                               initialZoom: 13.0,
                               interactionOptions: const InteractionOptions(
@@ -321,14 +320,14 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                       ),*/
                 ),
               ),
-              ConstantStyles().gapH20,
+              AppStyle.gapH20,
               spots.isNotEmpty
                   ? Text(
                       "Valitse Miitti-Spotti:",
-                      style: ConstantStyles.activityName,
+                      style: AppStyle.activityName,
                     )
                   : Container(),
-              ConstantStyles().gapH5,
+              AppStyle.gapH5,
               spots.isNotEmpty
                   ? Expanded(
                       child: ValueListenableBuilder<int>(
@@ -366,18 +365,18 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                 maxLength: 30,
                 maxLines: 1,
               ),
-              ConstantStyles().gapH20,
+              AppStyle.gapH20,
               OtherWidgets().getCustomTextFormField(
                 controller: subTitleController,
                 hintText: 'Mitä muuta haluaisit kertoa miitistä?',
                 maxLength: 150,
                 maxLines: 4,
               ),
-              ConstantStyles().gapH20,
+              AppStyle.gapH20,
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CupertinoSwitch(
-                  activeColor: ConstantStyles.pink,
+                  activeColor: AppStyle.pink,
                   value: isActivityFree,
                   onChanged: (bool value) {
                     setState(() {
@@ -389,18 +388,18 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   isActivityFree
                       ? 'Maksuton, ei vaadi pääsylippua'
                       : "Maksullinen, vaatii pääsylipun",
-                  style: ConstantStyles.activityName.copyWith(
+                  style: AppStyle.activityName.copyWith(
                     fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
-              ConstantStyles().gapH10,
+              AppStyle.gapH10,
               SliderTheme(
                 data: SliderThemeData(
                   overlayShape: SliderComponentShape.noOverlay,
                 ),
                 child: Slider(
-                  activeColor: ConstantStyles.pink,
+                  activeColor: AppStyle.pink,
                   value: activityParticipantsCount,
                   min: 2,
                   max: 10,
@@ -412,21 +411,21 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   },
                 ),
               ),
-              ConstantStyles().gapH10,
+              AppStyle.gapH10,
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   "${activityParticipantsCount.round()} osallistujaa",
-                  style: ConstantStyles.activityName.copyWith(
+                  style: AppStyle.activityName.copyWith(
                     fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
-              ConstantStyles().gapH10,
+              AppStyle.gapH10,
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CupertinoSwitch(
-                  activeColor: ConstantStyles.pink,
+                  activeColor: AppStyle.pink,
                   value: isActivityTimeUndefined,
                   onChanged: (bool value) {
                     setState(() {
@@ -448,7 +447,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   isActivityTimeUndefined
                       ? 'Sovitaan tarkempi aika myöhemmin'
                       : timestampToString(activityTime),
-                  style: ConstantStyles.activityName.copyWith(
+                  style: AppStyle.activityName.copyWith(
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -482,7 +481,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                             return FlutterMap(
                                 options: MapOptions(
                                     keepAlive: true,
-                                    backgroundColor: AppColors.backgroundColor,
+                                    backgroundColor: AppStyle.black,
                                     initialCenter: myCameraPosition,
                                     initialZoom: 13.0,
                                     interactionOptions:
@@ -515,36 +514,36 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   ],
                 ),
               ),
-              ConstantStyles().gapH20,
+              AppStyle.gapH20,
               Text(
                 titleController.text.trim(),
-                style: ConstantStyles.body.copyWith(fontSize: 24.sp),
+                style: AppStyle.body.copyWith(fontSize: 24.sp),
               ),
-              ConstantStyles().gapH10,
+              AppStyle.gapH10,
               Row(
                 children: [
                   const Icon(
                     Icons.calendar_month,
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                   ),
-                  ConstantStyles().gapW10,
+                  AppStyle.gapW10,
                   Text(
                     isActivityTimeUndefined
                         ? 'Sovitaan myöhemmin'
                         : timestampToString(activityTime),
-                    style: ConstantStyles.activitySubName,
+                    style: AppStyle.activitySubName,
                   ),
-                  ConstantStyles().gapW20,
+                  AppStyle.gapW20,
                   const Icon(
                     Icons.map_outlined,
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                   ),
-                  ConstantStyles().gapW10,
+                  AppStyle.gapW10,
                   Flexible(
                     child: Text(
                       activityCity,
                       overflow: TextOverflow.ellipsis,
-                      style: ConstantStyles.activitySubName.copyWith(
+                      style: AppStyle.activitySubName.copyWith(
                         decoration: TextDecoration.underline,
                         decorationColor: Colors.white,
                       ),
@@ -552,35 +551,35 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   ),
                 ],
               ),
-              ConstantStyles().gapH5,
+              AppStyle.gapH5,
               Row(
                 children: [
                   const Icon(
                     Icons.account_balance_wallet_outlined,
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                   ),
-                  ConstantStyles().gapW10,
+                  AppStyle.gapW10,
                   Text(
                     isActivityFree ? 'Maksuton' : 'Pääsymaksu',
                     textAlign: TextAlign.center,
-                    style: ConstantStyles.activitySubName,
+                    style: AppStyle.activitySubName,
                   ),
-                  ConstantStyles().gapW20,
+                  AppStyle.gapW20,
                   const Icon(
                     Icons.people_outline,
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                   ),
-                  ConstantStyles().gapW10,
+                  AppStyle.gapW10,
                   Text(
                     'max. ${activityParticipantsCount.round()} osallistujaa',
-                    style: ConstantStyles.activitySubName,
+                    style: AppStyle.activitySubName,
                   ),
                 ],
               ),
-              ConstantStyles().gapH10,
+              AppStyle.gapH10,
               Text(
                 subTitleController.text.trim(),
-                style: ConstantStyles.question,
+                style: AppStyle.question,
               ),
             ],
           ),
@@ -590,7 +589,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
           return const Expanded(
             child: Center(
               child: CircularProgressIndicator(
-                backgroundColor: ConstantStyles.pink,
+                backgroundColor: AppStyle.pink,
               ),
             ),
           );
@@ -639,7 +638,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
           showSnackBar(
             context,
             'Valitse 1 sopivaa kategoria miittillesi!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -656,7 +655,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
           showSnackBar(
             context,
             'Varmista, että olet täyttänyt kaikki kohdat!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -719,22 +718,22 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ConstantStyles().gapH10,
+                        AppStyle.gapH10,
                         Text(
                           screen.title,
-                          style: ConstantStyles.activityName
-                              .copyWith(fontSize: 20.sp),
+                          style:
+                              AppStyle.activityName.copyWith(fontSize: 20.sp),
                         ),
-                        ConstantStyles().gapH20,
+                        AppStyle.gapH20,
                         mainWidgetsForScreens(index),
-                        ConstantStyles().gapH10,
+                        AppStyle.gapH10,
                         CustomButton(
                           buttonText: screen.isFullView == true
                               ? 'Julkaise'
                               : 'Seuraava',
                           onPressed: () => errorHandlingScreens(index),
                         ),
-                        ConstantStyles().gapH10,
+                        AppStyle.gapH10,
                         CustomButton(
                           buttonText: 'Takaisin',
                           isWhiteButton: true,

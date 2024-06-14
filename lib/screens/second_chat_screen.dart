@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/functions/utils.dart';
 
 class SecondChatPage extends StatefulWidget {
   const SecondChatPage({super.key});
@@ -54,8 +54,8 @@ class _SecondChatPageState extends State<SecondChatPage> {
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [
-                        AppColors.lightRedColor,
-                        AppColors.orangeColor,
+                        AppStyle.lightRedColor,
+                        AppStyle.orangeColor,
                       ],
                     ),
                     borderRadius: BorderRadius.circular(30),

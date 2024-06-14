@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/widgets/custom_button.dart';
 
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class CompleteProfileAnswerPage extends StatefulWidget {
   final String question;
@@ -52,14 +52,14 @@ class _CompleteProfileAnswerPageState extends State<CompleteProfileAnswerPage> {
               children: [
                 Text(
                   widget.question,
-                  style: ConstantStyles.question,
+                  style: AppStyle.question,
                 ),
-                ConstantStyles().gapH10,
+                AppStyle.gapH10,
                 TextFormField(
                   maxLines: 5,
                   maxLength: 150,
                   controller: answerController,
-                  style: ConstantStyles.hintText.copyWith(color: Colors.white),
+                  style: AppStyle.hintText.copyWith(color: Colors.white),
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(
@@ -69,26 +69,26 @@ class _CompleteProfileAnswerPageState extends State<CompleteProfileAnswerPage> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                       borderSide: const BorderSide(
-                        color: ConstantStyles.pink,
+                        color: AppStyle.pink,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                       borderSide: const BorderSide(
-                        color: ConstantStyles.pink,
+                        color: AppStyle.pink,
                         width: 2.0,
                       ),
                     ),
                   ),
                 ),
-                ConstantStyles().gapH20,
+                AppStyle.gapH20,
                 CustomButton(
                   buttonText: 'Tallenna',
                   onPressed: () {
                     Navigator.pop(context, answerController.text.trim());
                   },
                 ),
-                ConstantStyles().gapH10,
+                AppStyle.gapH10,
                 CustomButton(
                   buttonText: 'Takaisin',
                   isWhiteButton: true,

@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 import 'package:toggle_switch/toggle_switch.dart';
 
-import '../constants/constants.dart';
 import 'dart:math';
 
 enum Gender { male, female, nonBinary }
@@ -80,12 +80,12 @@ Widget getOurTextField({
   int maxLines = 1,
   int minLines = 1,
   double? borderRadius = 50,
-  Color? borderColor = AppColors.purpleColor,
+  Color? borderColor = AppStyle.purpleColor,
 }) {
   return Padding(
     padding: myPadding,
     child: TextField(
-      style: Styles.bodyTextStyle,
+      style: AppStyle.body,
       focusNode: myFocusNode,
       maxLines: maxLines,
       controller: myController,
@@ -112,7 +112,7 @@ Widget getOurTextField({
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: const BorderSide(
-            color: AppColors.purpleColor,
+            color: AppStyle.purpleColor,
             width: 1.5,
           ),
         ),
@@ -132,9 +132,9 @@ Widget getChatBubble(String text) {
   return Container(
     margin: EdgeInsets.only(top: 10.h, bottom: 10.h, right: 10.w),
     decoration: BoxDecoration(
-      color: AppColors.lightPurpleColor,
+      color: AppStyle.lightPurpleColor,
       border: Border.all(
-        color: AppColors.lightPurpleColor,
+        color: AppStyle.lightPurpleColor,
       ),
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(10.0),
@@ -146,7 +146,7 @@ Widget getChatBubble(String text) {
       padding: EdgeInsets.all(10.w),
       child: Text(
         text,
-        style: Styles.bodyTextStyle,
+        style: AppStyle.body,
       ),
     ),
   );
@@ -164,14 +164,14 @@ Widget getSections({
       children: [
         Text(
           title,
-          style: Styles.sectionTitleStyle,
+          style: AppStyle.body,
         ),
         SizedBox(
           height: 5.h,
         ),
         Text(
           subtitle,
-          style: Styles.sectionSubtitleStyle,
+          style: AppStyle.body,
         ),
         SizedBox(
           height: 15.h,
@@ -216,6 +216,13 @@ void pushNRemoveUntil(BuildContext context, Widget page) {
 
 void pushReplacement(BuildContext context, Widget page) {
   Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => page),
+  );
+}
+
+void pushPage(BuildContext context, Widget page) {
+  Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => page),
   );
@@ -288,7 +295,7 @@ Widget createListTile(String title) {
       leading: Icon(
         Icons.verified_user,
         size: 30.sp,
-        color: AppColors.lightRedColor,
+        color: AppStyle.lightRedColor,
       ),
     ),
   );
@@ -417,20 +424,22 @@ void pickDate({
             lastDate: maxActivityDate)
         .then((selectedDate) {
       if (selectedDate != null) {
-        showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.fromDateTime(initialDateTime),
-        ).then((selectedTime) {
-          if (selectedTime != null) {
-            final DateTime combinedDateTime = DateTime(
-              selectedDate.year,
-              selectedDate.month,
-              selectedDate.day,
-              selectedTime.hour,
-              selectedTime.minute,
-            );
-            onDateTimeChanged(combinedDateTime);
-          }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.fromDateTime(initialDateTime),
+          ).then((selectedTime) {
+            if (selectedTime != null) {
+              final DateTime combinedDateTime = DateTime(
+                selectedDate.year,
+                selectedDate.month,
+                selectedDate.day,
+                selectedTime.hour,
+                selectedTime.minute,
+              );
+              onDateTimeChanged(combinedDateTime);
+            }
+          });
         });
       }
     });
@@ -450,8 +459,8 @@ Widget getMyFloatingButton({required void Function()? onPressed}) {
         borderRadius: BorderRadius.all(Radius.circular(50)),
         gradient: LinearGradient(
           colors: [
-            AppColors.lightRedColor,
-            AppColors.orangeColor,
+            AppStyle.lightRedColor,
+            AppStyle.orangeColor,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -486,8 +495,8 @@ Widget createExitButton(BuildContext context) {
           borderRadius: BorderRadius.circular(50),
           gradient: const LinearGradient(
             colors: [
-              AppColors.lightRedColor,
-              AppColors.orangeColor,
+              AppStyle.lightRedColor,
+              AppStyle.orangeColor,
             ],
           ),
         ),
@@ -545,7 +554,7 @@ Widget createMainToggleSwitch({
     initialLabelIndex: initialLabelIndex,
     cornerRadius: 50.sp,
     activeFgColor: Colors.white,
-    inactiveBgColor: AppColors.wineColor,
+    inactiveBgColor: AppStyle.wineColor,
     inactiveFgColor: Colors.white,
     totalSwitches: 2,
     curve: Curves.linear,
@@ -558,12 +567,12 @@ Widget createMainToggleSwitch({
     labels: [text1, text2],
     activeBgColors: const [
       [
-        AppColors.lightRedColor,
-        AppColors.orangeColor,
+        AppStyle.lightRedColor,
+        AppStyle.orangeColor,
       ],
       [
-        AppColors.orangeColor,
-        AppColors.lightRedColor,
+        AppStyle.orangeColor,
+        AppStyle.lightRedColor,
       ],
     ],
     onToggle: onToggle,
@@ -592,4 +601,13 @@ String getMonthName(int monthNumber) {
   ];
 
   return monthNames[monthNumber];
+}
+
+emailValidator(String email) {
+  final RegExp emailRegExp = RegExp(
+      r"[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*");
+  if (emailRegExp.hasMatch(email)) {
+    return true;
+  }
+  return false;
 }

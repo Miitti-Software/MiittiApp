@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class CustomButton extends StatelessWidget {
   final String buttonText;
@@ -32,7 +32,7 @@ class CustomButton extends StatelessWidget {
           border: Border.all(
             color: isWhiteButton
                 ? const Color(0xFFFAFAFD).withOpacity(0.6)
-                : ConstantStyles.pink,
+                : AppStyle.pink,
           ),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -43,15 +43,15 @@ class CustomButton extends StatelessWidget {
                     const Color(0xFFFAFAFD).withOpacity(0.1),
                   ]
                 : [
-                    ConstantStyles.pink.withOpacity(0.1),
-                    ConstantStyles.orange.withOpacity(0.1)
+                    AppStyle.pink.withOpacity(0.1),
+                    AppStyle.orange.withOpacity(0.1)
                   ],
           ),
         ),
         child: Center(
           child: Text(
             buttonText,
-            style: ConstantStyles.body,
+            style: AppStyle.body,
           ),
         ),
       ),

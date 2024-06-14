@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/miitti_user.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/widgets/message_tile.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 
 import 'package:intl/intl.dart'; // Add this line for the DateFormat class
@@ -80,8 +80,8 @@ class _ChatPageState extends State<ChatPage> {
                       borderRadius: BorderRadius.circular(30),
                       gradient: const LinearGradient(
                         colors: [
-                          AppColors.lightRedColor,
-                          AppColors.orangeColor,
+                          AppStyle.lightRedColor,
+                          AppStyle.orangeColor,
                         ],
                       ),
                     ),
@@ -140,8 +140,8 @@ class _ChatPageState extends State<ChatPage> {
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [
-                        AppColors.lightRedColor,
-                        AppColors.orangeColor,
+                        AppStyle.lightRedColor,
+                        AppStyle.orangeColor,
                       ],
                     ),
                     borderRadius: BorderRadius.circular(30),

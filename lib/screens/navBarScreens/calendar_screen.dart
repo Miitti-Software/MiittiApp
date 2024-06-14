@@ -6,19 +6,19 @@ import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
-import 'package:miitti_app/data/commercial_activity.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
-import 'package:miitti_app/data/miitti_activity.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/my_elevated_button.dart';
 import 'package:provider/provider.dart';
 
@@ -78,11 +78,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Color getColorForContainer(bool isAdmin, bool isInvited) {
     if (isAdmin) {
-      return AppColors.pinkColor;
+      return AppStyle.pinkColor;
     } else if (isInvited) {
-      return AppColors.yellowColor;
+      return AppStyle.yellowColor;
     } else {
-      return AppColors.purpleColor;
+      return AppStyle.purpleColor;
     }
   }
 
@@ -105,7 +105,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       height: 150.h,
       margin: EdgeInsets.all(10.0.w),
       decoration: BoxDecoration(
-        color: AppColors.wineColor,
+        color: AppStyle.wineColor,
         border: Border.all(
           color: getColorForContainer(isAdmin, isInvited),
           width: 2.0,
@@ -146,7 +146,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         child: Text(
                           activity.activityTitle,
                           overflow: TextOverflow.ellipsis,
-                          style: Styles.activityNameTextStyle,
+                          style: AppStyle.title,
                         ),
                       ),
                       //If the activity is created by the admin, we show deleteforever icon instead of close icon for user friendliness.
@@ -236,27 +236,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           children: [
                             const Icon(
                               Icons.calendar_month,
-                              color: AppColors.lightPurpleColor,
+                              color: AppStyle.lightPurpleColor,
                             ),
                             SizedBox(width: 4.w),
                             Flexible(
                               child: Text(
                                 activity.timeString,
                                 overflow: TextOverflow.ellipsis,
-                                style: Styles.sectionSubtitleStyle,
+                                style: AppStyle.body,
                               ),
                             ),
                             SizedBox(width: 16.w),
                             const Icon(
                               Icons.location_on_outlined,
-                              color: AppColors.lightPurpleColor,
+                              color: AppStyle.lightPurpleColor,
                             ),
                             SizedBox(width: 4.w),
                             Flexible(
                               child: Text(
                                 cityName,
                                 overflow: TextOverflow.ellipsis,
-                                style: Styles.sectionSubtitleStyle,
+                                style: AppStyle.body,
                               ),
                             ),
                           ],
@@ -371,8 +371,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       height: 150.h,
       margin: EdgeInsets.all(10.0.w),
       decoration: BoxDecoration(
-        color: AppColors.wineColor,
-        border: Border.all(color: AppColors.purpleColor, width: 2.0),
+        color: AppStyle.wineColor,
+        border: Border.all(color: AppStyle.purpleColor, width: 2.0),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -437,7 +437,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           style: TextStyle(
                             fontFamily: 'Rubik',
                             fontSize: 13.sp,
-                            color: AppColors.whiteColor,
+                            color: AppStyle.white,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -547,7 +547,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               style: TextStyle(
                 fontSize: 22.sp,
                 fontFamily: 'Sora',
-                color: AppColors.whiteColor,
+                color: AppStyle.white,
               ),
             ),
           );
@@ -591,7 +591,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               style: TextStyle(
                 fontSize: 22.sp,
                 fontFamily: 'Sora',
-                color: AppColors.whiteColor,
+                color: AppStyle.white,
               ),
             ),
           );
@@ -609,7 +609,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                          color: AppColors.lavenderColor,
+                          color: AppStyle.lavenderColor,
                         ),
                       )
                     : Container(

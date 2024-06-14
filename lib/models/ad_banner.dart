@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -100,8 +100,8 @@ class AdBanner {
           child: Container(
             width: 400.w,
             decoration: BoxDecoration(
-              color: AppColors.wineColor,
-              border: Border.all(color: AppColors.purpleColor, width: 2.0),
+              color: AppStyle.wineColor,
+              border: Border.all(color: AppStyle.purpleColor, width: 2.0),
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             child: Stack(
@@ -121,7 +121,7 @@ class AdBanner {
                     width: 100,
                     alignment: Alignment.center,
                     decoration: const BoxDecoration(
-                      color: AppColors.transparentPurple,
+                      color: AppStyle.transparentPurple,
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomRight: Radius.circular(10)),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class OtherWidgets {
   //LOGIN INTRO PAGE WIDGETS
-  Widget getLanguagesButtons() {
+  static Widget getLanguagesButtons() {
     Set<String> appLanguages = {
       'Suomi',
       'English',
@@ -23,15 +23,13 @@ class OtherWidgets {
               color: const Color(0xFF2A1026),
               borderRadius: BorderRadius.circular(10.0),
               border: Border.all(
-                color: language == 'Suomi'
-                    ? ConstantStyles.pink
-                    : Colors.transparent,
+                color: language == 'Suomi' ? AppStyle.pink : Colors.transparent,
                 width: 1.0,
               ),
             ),
             child: Text(
               language,
-              style: ConstantStyles.warning,
+              style: AppStyle.warning,
             ),
           ),
       ],
@@ -39,13 +37,11 @@ class OtherWidgets {
   }
 
   //LOGIN PAGE WIDGETS
-  Widget getMiittiLogo() {
-    return SvgPicture.asset(
-      'images/miittiLogo.svg',
-    );
-  }
+  static Widget getMiittiLogo = SvgPicture.asset(
+    'images/miittiLogo.svg',
+  );
 
-  Widget createAuthButton(
+  static Widget createAuthButton(
       {required bool isApple, required Function() onPressed}) {
     return InkWell(
       onTap: onPressed,
@@ -71,7 +67,7 @@ class OtherWidgets {
                   ? 'Kirjaudu käyttäen Apple ID:tä'
                   : 'Kirjaudu käyttäen Googlea',
               textAlign: TextAlign.center,
-              style: ConstantStyles.body
+              style: AppStyle.body
                   .copyWith(fontWeight: FontWeight.w700)
                   .copyWith(color: Colors.black, fontWeight: FontWeight.w700),
             ),
@@ -81,12 +77,12 @@ class OtherWidgets {
     );
   }
 
-  Widget createPinkDivider(String text) {
+  static Widget createPinkDivider(String text) {
     return Row(
       children: [
         const Expanded(
           child: Divider(
-            color: ConstantStyles.pink,
+            color: AppStyle.pink,
             thickness: 2.0,
           ),
         ),
@@ -94,14 +90,14 @@ class OtherWidgets {
           padding: EdgeInsets.symmetric(horizontal: 10.w),
           child: Text(
             text,
-            style: ConstantStyles.body.copyWith(
-              color: ConstantStyles.pink,
+            style: AppStyle.body.copyWith(
+              color: AppStyle.pink,
             ),
           ),
         ),
         const Expanded(
           child: Divider(
-            color: ConstantStyles.pink,
+            color: AppStyle.pink,
             thickness: 2.0,
           ),
         ),
@@ -109,22 +105,13 @@ class OtherWidgets {
     );
   }
 
-  bool emailValidator(String email) {
-    final RegExp emailRegExp = RegExp(
-        r"[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*");
-    if (emailRegExp.hasMatch(email)) {
-      return true;
-    }
-    return false;
-  }
-
-  Future showLoadingDialog(BuildContext context) {
+  static Future showLoadingDialog(BuildContext context) {
     return showDialog(
       context: context,
       builder: ((context) {
         return const Center(
           child: CircularProgressIndicator(
-            color: ConstantStyles.white,
+            color: AppStyle.white,
           ),
         );
       }),
@@ -132,7 +119,7 @@ class OtherWidgets {
   }
 
   //MAPS PAGE
-  Widget createToggleSwitch({
+  static Widget createToggleSwitch({
     required initialLabelIndex,
     required void Function(int?)? onToggle,
   }) {
@@ -143,7 +130,7 @@ class OtherWidgets {
       totalSwitches: 2,
       curve: Curves.linear,
       customTextStyles: [
-        ConstantStyles.body.copyWith(fontSize: 16.sp),
+        AppStyle.body.copyWith(fontSize: 16.sp),
       ],
       labels: const ['Näytä kartalla', 'Näytä listana'],
       activeBgColors: const [
@@ -168,15 +155,15 @@ class OtherWidgets {
           borderRadius: BorderRadius.all(Radius.circular(10)),
           gradient: LinearGradient(
             colors: [
-              ConstantStyles.pink,
-              ConstantStyles.red,
+              AppStyle.pink,
+              AppStyle.red,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Icon(Icons.add,
-            size: 60.r, color: ConstantStyles.black.withOpacity(0.9)),
+        child:
+            Icon(Icons.add, size: 60.r, color: AppStyle.black.withOpacity(0.9)),
       ),
     );
   }
@@ -191,12 +178,12 @@ class OtherWidgets {
       maxLength: maxLength,
       maxLines: maxLines,
       controller: controller,
-      style: ConstantStyles.hintText.copyWith(color: Colors.white),
+      style: AppStyle.hintText.copyWith(color: Colors.white),
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
         hintText: hintText,
-        counterStyle: ConstantStyles.warning,
-        hintStyle: ConstantStyles.hintText,
+        counterStyle: AppStyle.warning,
+        hintStyle: AppStyle.hintText,
         contentPadding: const EdgeInsets.symmetric(
           vertical: 10.0,
           horizontal: 10,
@@ -204,13 +191,13 @@ class OtherWidgets {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: const BorderSide(
-            color: ConstantStyles.pink,
+            color: AppStyle.pink,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: const BorderSide(
-            color: ConstantStyles.pink,
+            color: AppStyle.pink,
             width: 2.0,
           ),
         ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/widgets/custom_button.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 
 class AnonymousDialog extends StatelessWidget {
   const AnonymousDialog({super.key});
@@ -19,7 +19,7 @@ class AnonymousDialog extends StatelessWidget {
             Container(
               alignment: Alignment.bottomCenter,
               decoration: const BoxDecoration(
-                color: ConstantStyles.black,
+                color: AppStyle.black,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
@@ -37,13 +37,13 @@ class AnonymousDialog extends StatelessWidget {
                     ),
                     Text(
                       'Hups!',
-                      style: ConstantStyles.title,
+                      style: AppStyle.title,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.w),
                       child: Text(
                         'Näyttää siltä, ettet ole vielä viimeistellyt profiiliasi, joten et voi käyttää vielä\n sovelluksen kaikkia ominaisuuksia.\n\n Korjataanko asia?',
-                        style: ConstantStyles.body,
+                        style: AppStyle.body,
                       ),
                     ),
                     getSomeSpace(10),
@@ -57,7 +57,7 @@ class AnonymousDialog extends StatelessWidget {
                                     const CompleteProfileOnboard()));
                       },
                     ), //Removed extra padding in ConstantsCustomButton
-                    ConstantStyles().gapH10,
+                    AppStyle.gapH10,
                     CustomButton(
                       buttonText: 'Ei vielä',
                       isWhiteButton: true,
@@ -68,7 +68,7 @@ class AnonymousDialog extends StatelessWidget {
                     getSomeSpace(10.h),
                     Text(
                       'Voit myös viimeistellä profiilisi myöhemmin asetussivulla!',
-                      style: ConstantStyles.warning,
+                      style: AppStyle.warning,
                     ),
                     getSomeSpace(10.h),
                   ],

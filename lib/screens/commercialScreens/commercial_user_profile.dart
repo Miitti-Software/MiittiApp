@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/data/commercial_user.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/models/commercial_user.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CommercialProfileScreen extends StatefulWidget {
@@ -30,7 +30,7 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(70.h),
         child: AppBar(
-          backgroundColor: AppColors.wineColor,
+          backgroundColor: AppStyle.wineColor,
           automaticallyImplyLeading: false,
           title: Align(
             alignment: Alignment.bottomLeft,
@@ -90,8 +90,8 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
                         color: miittiColor,
                         gradient: const LinearGradient(
                           colors: [
-                            AppColors.lightRedColor,
-                            AppColors.orangeColor,
+                            AppStyle.lightRedColor,
+                            AppStyle.orangeColor,
                           ],
                         ),
                         borderRadius: BorderRadius.circular(50),
@@ -122,7 +122,7 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
                       style: TextStyle(
                         fontFamily: 'Rubik',
                         fontSize: 17.0.sp,
-                        color: AppColors.lightPurpleColor,
+                        color: AppStyle.lightPurpleColor,
                       ),
                     ),
                     SizedBox(
@@ -150,7 +150,7 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
               style: TextStyle(
                 fontFamily: 'Rubik',
                 fontSize: 17.0.sp,
-                color: AppColors.whiteColor,
+                color: AppStyle.white,
               ),
             ),
           ),

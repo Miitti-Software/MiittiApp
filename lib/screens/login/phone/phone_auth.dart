@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/widgets/custom_button.dart';
 import 'package:miitti_app/widgets/custom_textfield.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 
 class PhoneAuth extends StatefulWidget {
@@ -53,26 +53,26 @@ class _PhoneAuthState extends State<PhoneAuth> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ConstantStyles().gapH50,
-              Center(child: OtherWidgets().getMiittiLogo()),
+              AppStyle.gapH50,
+              Center(child: OtherWidgets.getMiittiLogo),
 
               const Spacer(),
 
               Text(
                 'Mikä on puhelinnumerosi?',
-                style: ConstantStyles.title.copyWith(
+                style: AppStyle.title.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
 
-              ConstantStyles().gapH20,
+              AppStyle.gapH20,
 
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Container(
                   width: 60.w,
                   decoration: const BoxDecoration(
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   padding: EdgeInsets.symmetric(
@@ -81,7 +81,7 @@ class _PhoneAuthState extends State<PhoneAuth> {
                   child: Text(
                     '+358',
                     textAlign: TextAlign.center,
-                    style: ConstantStyles.hintText.copyWith(
+                    style: AppStyle.hintText.copyWith(
                       color: Colors.white,
                     ),
                   ),
@@ -94,11 +94,11 @@ class _PhoneAuthState extends State<PhoneAuth> {
                 ),
               ),
 
-              ConstantStyles().gapH8,
+              AppStyle.gapH8,
 
               Text(
                 'Lähetämme hetken kuluttua vahvistuskoodin sisältävän tekstiviestin.',
-                style: ConstantStyles.warning,
+                style: AppStyle.warning,
               ),
 
               const Spacer(),
@@ -112,11 +112,11 @@ class _PhoneAuthState extends State<PhoneAuth> {
                     showSnackBar(
                         context,
                         'Huom! Sinun täytyy antaa puhelinnumerosi kirjautuaksesi sisään.',
-                        ConstantStyles.red);
+                        AppStyle.red);
                   }
                 },
               ), //Removed extra padding in ConstantsCustomButton
-              ConstantStyles().gapH10,
+              AppStyle.gapH10,
 
               CustomButton(
                 buttonText: 'Takaisin',
@@ -126,7 +126,7 @@ class _PhoneAuthState extends State<PhoneAuth> {
                 },
               ),
 
-              if (myFocusNode.hasFocus) ConstantStyles().gapH20
+              if (myFocusNode.hasFocus) AppStyle.gapH20
             ],
           ),
         ),

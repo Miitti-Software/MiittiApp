@@ -6,14 +6,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
 import 'package:miitti_app/screens/commercialScreens/commercial_user_profile.dart';
-import 'package:miitti_app/data/commercial_activity.dart';
-import 'package:miitti_app/data/commercial_user.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
+import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/activity.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
+import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 
 import 'package:miitti_app/widgets/my_elevated_button.dart';
@@ -21,7 +22,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../data/miitti_user.dart';
+import '../../models/miitti_user.dart';
 
 class ComActDetailsPage extends StatefulWidget {
   final bool? comingFromAdmin;
@@ -102,7 +103,7 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                         return FlutterMap(
                             options: MapOptions(
                                 keepAlive: true,
-                                backgroundColor: AppColors.backgroundColor,
+                                backgroundColor: AppStyle.black,
                                 initialCenter: myCameraPosition,
                                 initialZoom: 13.0,
                                 interactionOptions: const InteractionOptions(
@@ -138,8 +139,8 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                           borderRadius: BorderRadius.circular(50),
                           gradient: const LinearGradient(
                             colors: [
-                              AppColors.lightRedColor,
-                              AppColors.orangeColor,
+                              AppStyle.lightRedColor,
+                              AppStyle.orangeColor,
                             ],
                           ),
                         ),
@@ -169,7 +170,7 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                         Padding(
                           padding: EdgeInsets.all(13.0.h),
                           child: CircleAvatar(
-                            backgroundColor: AppColors.purpleColor,
+                            backgroundColor: AppStyle.purpleColor,
                             radius: 37.r,
                             child: CircleAvatar(
                               backgroundImage:
@@ -184,7 +185,7 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                         Flexible(
                           child: Text(
                             widget.myActivity.activityTitle,
-                            style: Styles.sectionTitleStyle,
+                            style: AppStyle.title,
                           ),
                         ),
                       ],
@@ -207,7 +208,7 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                             child: CircleAvatar(
                               backgroundImage:
                                   NetworkImage(company!.profilePicture),
-                              backgroundColor: AppColors.purpleColor,
+                              backgroundColor: AppStyle.purpleColor,
                               radius: 25.r,
                               child: const Align(
                                 alignment: Alignment.topRight,
@@ -216,12 +217,12 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                                   children: [
                                     Icon(
                                       Icons.circle,
-                                      color: AppColors.purpleColor,
+                                      color: AppStyle.purpleColor,
                                       size: 21,
                                     ),
                                     Icon(
                                       Icons.verified,
-                                      color: AppColors.lightPurpleColor,
+                                      color: AppStyle.lightPurpleColor,
                                       size: 17,
                                     ),
                                   ],
@@ -256,7 +257,7 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                                     child: CircleAvatar(
                                       backgroundImage:
                                           NetworkImage(user.profilePicture),
-                                      backgroundColor: AppColors.purpleColor,
+                                      backgroundColor: AppStyle.purpleColor,
                                       radius: 25.r,
                                     ),
                                   ),
@@ -298,7 +299,7 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                                 style: TextStyle(
                                   fontFamily: 'Rubik',
                                   fontSize: 17.0.sp,
-                                  color: AppColors.lightPurpleColor,
+                                  color: AppStyle.lightPurpleColor,
                                 ),
                               ),
                               SizedBox(
@@ -324,22 +325,22 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                       children: [
                         const Icon(
                           Icons.people,
-                          color: AppColors.lightPurpleColor,
+                          color: AppStyle.lightPurpleColor,
                         ),
                         Text(
                           '  $participantCount/${widget.myActivity.personLimit} osallistujaa',
-                          style: Styles.sectionSubtitleStyle,
+                          style: AppStyle.body,
                         ),
                         SizedBox(
                           width: 20.w,
                         ),
                         const Icon(
                           Icons.location_on_outlined,
-                          color: AppColors.lightPurpleColor,
+                          color: AppStyle.lightPurpleColor,
                         ),
                         Text(
                           widget.myActivity.activityAdress,
-                          style: Styles.sectionSubtitleStyle,
+                          style: AppStyle.body,
                         ),
                       ],
                     ),
@@ -348,24 +349,24 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
                       children: [
                         const Icon(
                           Icons.airplane_ticket_outlined,
-                          color: AppColors.lightPurpleColor,
+                          color: AppStyle.lightPurpleColor,
                         ),
                         Text(
                           widget.myActivity.isMoneyRequired
                               ? 'Pääsymaksu'
                               : 'Maksuton',
-                          style: Styles.sectionSubtitleStyle,
+                          style: AppStyle.body,
                         ),
                         SizedBox(
                           width: 20.w,
                         ),
                         const Icon(
                           Icons.calendar_month,
-                          color: AppColors.lightPurpleColor,
+                          color: AppStyle.lightPurpleColor,
                         ),
                         Text(
                           widget.myActivity.timeString,
-                          style: Styles.sectionSubtitleStyle,
+                          style: AppStyle.body,
                         ),
                       ],
                     ),

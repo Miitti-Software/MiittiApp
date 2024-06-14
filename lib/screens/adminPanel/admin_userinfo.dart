@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_user.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 
 class AdminUserInfo extends StatefulWidget {
   final MiittiUser user;
@@ -34,7 +34,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: AppColors.purpleColor,
+        color: AppStyle.purpleColor,
       ),
       child: ListTile(
         title: Text(
@@ -108,8 +108,8 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                     borderRadius: BorderRadius.circular(50),
                     gradient: const LinearGradient(
                       colors: [
-                        AppColors.lightRedColor,
-                        AppColors.orangeColor,
+                        AppStyle.lightRedColor,
+                        AppStyle.orangeColor,
                       ],
                     ),
                   ),

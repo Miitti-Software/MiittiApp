@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class AnonymousUserScreen extends StatelessWidget {
   const AnonymousUserScreen({super.key});
@@ -10,7 +10,7 @@ class AnonymousUserScreen extends StatelessWidget {
       body: Center(
         child: Text(
           'Et ole vielä viimeistellyt profiiliasi, joten\n et voi käyttää vielä sovelluksen kaikkia ominaisuuksia.',
-          style: ConstantStyles.body,
+          style: AppStyle.body,
           textAlign: TextAlign.center,
         ),
       ),

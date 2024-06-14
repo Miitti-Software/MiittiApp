@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class ConstantsCustomTextField extends StatelessWidget {
   final String hintText;
@@ -26,22 +26,22 @@ class ConstantsCustomTextField extends StatelessWidget {
           focusNode!.unfocus();
         }
       },
-      style: ConstantStyles.hintText.copyWith(color: Colors.white),
+      style: AppStyle.hintText.copyWith(color: Colors.white),
       keyboardType: keyboardType,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: const BorderSide(
-            color: ConstantStyles.pink,
+            color: AppStyle.pink,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
-          borderSide: const BorderSide(color: ConstantStyles.pink, width: 2.0),
+          borderSide: const BorderSide(color: AppStyle.pink, width: 2.0),
         ),
         hintText: hintText,
-        hintStyle: ConstantStyles.hintText,
+        hintStyle: AppStyle.hintText,
       ),
     );
   }

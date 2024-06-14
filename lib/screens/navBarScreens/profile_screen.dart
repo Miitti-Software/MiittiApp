@@ -2,16 +2,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/my_profile_edit_form.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 
-import '../../utils/auth_provider.dart';
+import '../../services/auth_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -82,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   AppBar buildAppBar(AuthProvider ap) {
     return AppBar(
-      backgroundColor: AppColors.wineColor,
+      backgroundColor: AppStyle.wineColor,
       automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -186,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             question,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.purpleColor,
+              color: AppStyle.purpleColor,
               fontSize: 18.sp,
               fontFamily: 'Rubik',
             ),
@@ -248,7 +249,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ListTile(
       leading: Icon(
         icon,
-        color: AppColors.lightPurpleColor,
+        color: AppStyle.lightPurpleColor,
         size: 30.sp,
       ),
       title: Text(

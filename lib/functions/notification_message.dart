@@ -4,18 +4,18 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
-import 'package:miitti_app/data/commercial_activity.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
-import 'package:miitti_app/data/miitti_activity.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/miitti_user.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 
-import 'package:miitti_app/utils/auth_provider.dart';
+import 'package:miitti_app/services/auth_provider.dart';
 
 class NotificationMessage extends StatefulWidget {
   const NotificationMessage({super.key});
@@ -47,7 +47,7 @@ class _NotificationMessageState extends State<NotificationMessage> {
     });
 
     return const Scaffold(
-        backgroundColor: ConstantStyles.black,
+        backgroundColor: AppStyle.black,
         body: Center(
           child: CircularProgressIndicator(),
         ));
@@ -74,8 +74,7 @@ Future<Widget> getPage(
             return UserProfileEditScreen(user: user);
           } else {
             if (context.mounted) {
-              showSnackBar(
-                  context, "Käyttäjää ei löytynyt", ConstantStyles.red);
+              showSnackBar(context, "Käyttäjää ei löytynyt", AppStyle.red);
             }
             return const IndexPage();
           }

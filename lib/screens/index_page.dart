@@ -2,11 +2,11 @@ import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
 
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
+import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:provider/provider.dart';
@@ -126,10 +126,10 @@ class IndexPageState extends State<IndexPage> with WidgetsBindingObserver {
   Widget _buildBottomNavigationBar(AuthProvider ap) {
     return CustomNavigationBar(
       iconSize: 35.sp,
-      selectedColor: ConstantStyles.pink,
+      selectedColor: AppStyle.pink,
       unSelectedColor: Colors.white,
-      strokeColor: ConstantStyles.black.withOpacity(0.9),
-      backgroundColor: ConstantStyles.black.withOpacity(0.9),
+      strokeColor: AppStyle.black.withOpacity(0.9),
+      backgroundColor: AppStyle.black.withOpacity(0.9),
       items: [
         CustomNavigationBarItem(
           icon: const Icon(Icons.chat_bubble_outline),

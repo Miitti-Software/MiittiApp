@@ -3,11 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/screens/adminPanel/admin_userinfo.dart';
 import 'package:miitti_app/widgets/admin_searchbar.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 
 class AdminSearchUser extends StatefulWidget {
@@ -166,7 +166,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     getListTileButton(
-                                      AppColors.lightPurpleColor,
+                                      AppStyle.lightPurpleColor,
                                       'Katso profiili',
                                       () => Navigator.push(
                                         context,
@@ -183,7 +183,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                                       width: 10.w,
                                     ),
                                     getListTileButton(
-                                      AppColors.purpleColor,
+                                      AppStyle.purpleColor,
                                       'Käyttäjätiedot',
                                       () => Navigator.push(
                                         context,

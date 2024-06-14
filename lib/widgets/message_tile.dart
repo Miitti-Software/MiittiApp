@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:bubble/bubble.dart';
 
 class MessageTile extends StatelessWidget {
@@ -27,7 +27,7 @@ class MessageTile extends StatelessWidget {
       nipWidth: 8,
       nipHeight: 24,
       nip: sentByMe ? BubbleNip.rightBottom : BubbleNip.leftBottom,
-      color: sentByMe ? AppColors.lightPurpleColor : AppColors.purpleColor,
+      color: sentByMe ? AppStyle.lightPurpleColor : AppStyle.purpleColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

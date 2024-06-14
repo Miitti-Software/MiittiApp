@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
-import '../utils/filter_settings.dart';
+import '../functions/filter_settings.dart';
 
 //TODO: New UI
 class MapFilter extends StatefulWidget {
@@ -75,8 +75,8 @@ class _MapFilterState extends State<MapFilter> {
             onChanged: (comingValue) {
               toggleSwitch(target);
             },
-            activeColor: AppColors.purpleColor,
-            activeTrackColor: AppColors.lightPurpleColor,
+            activeColor: AppStyle.purpleColor,
+            activeTrackColor: AppStyle.lightPurpleColor,
           ),
         ],
       ),
@@ -105,8 +105,8 @@ class _MapFilterState extends State<MapFilter> {
                         borderRadius: BorderRadius.circular(50),
                         gradient: const LinearGradient(
                           colors: [
-                            AppColors.lightRedColor,
-                            AppColors.orangeColor,
+                            AppStyle.lightRedColor,
+                            AppStyle.orangeColor,
                           ],
                         ),
                       ),
@@ -180,8 +180,8 @@ class _MapFilterState extends State<MapFilter> {
               values: _values,
               min: 18,
               max: 80,
-              activeColor: AppColors.purpleColor,
-              inactiveColor: AppColors.lightPurpleColor,
+              activeColor: AppStyle.purpleColor,
+              inactiveColor: AppStyle.lightPurpleColor,
               onChanged: (RangeValues newValues) {
                 setState(() {
                   _values = newValues;

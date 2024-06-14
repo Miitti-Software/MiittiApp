@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/screens/login/phone/phone_auth.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
+import 'package:miitti_app/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class LoginAuth extends StatefulWidget {
@@ -29,30 +29,30 @@ class _LoginAuthState extends State<LoginAuth> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ConstantStyles().gapH50,
+                AppStyle.gapH50,
 
                 //miitti-logo
-                Center(child: OtherWidgets().getMiittiLogo()),
+                Center(child: OtherWidgets.getMiittiLogo),
 
-                ConstantStyles().gapH50,
+                AppStyle.gapH50,
 
                 //title
                 Text(
                   'Heippa,',
-                  style: ConstantStyles.title,
+                  style: AppStyle.title,
                 ),
 
                 //subtitle
                 Text(
                   'Hauska tutustua, aika upgreidata sosiaalinen elämäsi?',
-                  style: ConstantStyles.question,
+                  style: AppStyle.question,
                 ),
 
-                ConstantStyles().gapH20,
+                AppStyle.gapH20,
 
                 //apple sign in
                 Platform.isIOS
-                    ? OtherWidgets().createAuthButton(
+                    ? OtherWidgets.createAuthButton(
                         isApple: true,
                         onPressed: () {
                           //handle apple sign-in
@@ -61,10 +61,10 @@ class _LoginAuthState extends State<LoginAuth> {
                       )
                     : Container(),
 
-                ConstantStyles().gapH10,
+                AppStyle.gapH10,
 
                 //google sign in
-                OtherWidgets().createAuthButton(
+                OtherWidgets.createAuthButton(
                   isApple: false,
                   onPressed: () {
                     //handle google sign-in
@@ -72,10 +72,10 @@ class _LoginAuthState extends State<LoginAuth> {
                   },
                 ),
 
-                ConstantStyles().gapH15,
+                AppStyle.gapH15,
 
                 //pink divider
-                OtherWidgets().createPinkDivider('Tai'),
+                OtherWidgets.createPinkDivider('Tai'),
 
                 //sign with phone
                 //TODO: Refactor button to own component
@@ -98,13 +98,13 @@ class _LoginAuthState extends State<LoginAuth> {
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(10)),
                       border: Border.all(
-                        color: ConstantStyles.pink,
+                        color: AppStyle.pink,
                       ),
                     ),
                     child: Text(
                       'Kirjaudu puhelinnumerolla',
                       textAlign: TextAlign.center,
-                      style: ConstantStyles.body.copyWith(
+                      style: AppStyle.body.copyWith(
                         fontWeight: FontWeight.w300,
                         color: const Color.fromRGBO(255, 255, 255, 0.60),
                       ),

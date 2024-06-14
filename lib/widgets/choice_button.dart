@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/constants/app_style.dart';
 
 class ChoiceButton extends StatelessWidget {
   const ChoiceButton(
@@ -26,13 +26,13 @@ class ChoiceButton extends StatelessWidget {
           color: const Color(0xFF2A1026),
           borderRadius: BorderRadius.circular(10.0),
           border: Border.all(
-            color: isSelected ? ConstantStyles.pink : Colors.transparent,
+            color: isSelected ? AppStyle.pink : Colors.transparent,
             width: 1.0,
           ),
         ),
         child: Text(
           text,
-          style: ConstantStyles.warning,
+          style: AppStyle.warning,
         ),
       ),
     );

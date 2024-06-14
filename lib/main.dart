@@ -1,13 +1,13 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/login/login_intro.dart';
-import 'package:miitti_app/utils/notification_message.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
-import 'package:provider/provider.dart';
+import 'package:miitti_app/functions/notification_message.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
@@ -52,50 +52,38 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => AuthProvider(context),
-        child: Builder(
-          builder: (context) {
-            final ap = Provider.of<AuthProvider>(context, listen: false);
-            return ScreenUtilInit(
-              designSize: const Size(390, 844),
-              builder: (context, child) => MaterialApp(
-                navigatorKey: navigatorKey,
-                theme: ThemeData(
-                  scaffoldBackgroundColor: AppColors.backgroundColor,
-                  fontFamily: 'RedHatDisplay',
-                ),
-                debugShowCheckedModeBanner: false,
-                home: _buildAuthScreen(ap, context),
-                routes: {
-                  '/notificationmessage': (context) =>
-                      const NotificationMessage()
-                },
-              ),
-            );
-          },
-        ));
+    //ProviderScope is used for the Riverpod state management
+    return ProviderScope(child: Builder(
+      builder: (context) {
+        //ScreenUtilInit is used to make the app responsive
+        return ScreenUtilInit(
+          designSize: const Size(390, 844),
+          builder: (context, child) => MaterialApp(
+            navigatorKey: navigatorKey,
+            theme: ThemeData(
+              scaffoldBackgroundColor: AppStyle.black,
+              fontFamily: 'RedHatDisplay',
+            ),
+            debugShowCheckedModeBanner: false,
+            home: _buildAuthScreen(context),
+            routes: {
+              '/notificationmessage': (context) => const NotificationMessage()
+            },
+          ),
+        );
+      },
+    ));
   }
 
-  Widget _buildAuthScreen(AuthProvider ap, BuildContext context) {
+  Widget _buildAuthScreen(BuildContext context) {
     //Just checking if the user is signed up, before opening our app.
-    return FutureBuilder<bool>(
-      future: ap.checkSign(context),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        //If the user is signed in to our app  before, we redirect them into our main screen, otherwise they go to home screen to register or sign up
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else if (snapshot.connectionState == ConnectionState.done &&
-            ap.isSignedIn) {
-          return const IndexPage();
-        } else {
-          return const LoginIntro();
-        }
-      },
-    );
+    return Consumer(builder: (context, ref, kid) {
+      final auth = ref.read(authService);
+      if (auth.isSignedIn) {
+        return const IndexPage();
+      } else {
+        return const LoginIntro();
+      }
+    });
   }
 }

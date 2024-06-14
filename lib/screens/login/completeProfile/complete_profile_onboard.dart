@@ -8,22 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
+import 'package:miitti_app/functions/push_notifications.dart';
 import 'package:miitti_app/widgets/choice_button.dart';
 import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
 
 import 'package:miitti_app/widgets/custom_button.dart';
 import 'package:miitti_app/widgets/custom_textfield.dart';
-import 'package:miitti_app/data/onboarding_part.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
+import 'package:miitti_app/models/onboarding_part.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_answerpage.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
+import 'package:miitti_app/services/auth_provider.dart';
 
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
@@ -260,7 +260,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
   }
 
   Future<void> selectImage({required bool isCamera}) async {
-    OtherWidgets().showLoadingDialog(context);
+    OtherWidgets.showLoadingDialog(context);
 
     image = isCamera
         ? await pickImageFromCamera(context)
@@ -305,8 +305,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           defaultPinTheme: PinTheme(
             height: 45.h,
             width: 40.w,
-            textStyle:
-                ConstantStyles.body.copyWith(fontWeight: FontWeight.w800),
+            textStyle: AppStyle.body.copyWith(fontWeight: FontWeight.w800),
             decoration: const BoxDecoration(
               color: Color.fromRGBO(152, 28, 228, 0.10),
               border: Border(
@@ -326,7 +325,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
               showSnackBar(
                 context,
                 'Syntymäpäivä ei kelpaa!',
-                ConstantStyles.red,
+                AppStyle.red,
               );
             }
           },
@@ -412,7 +411,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       showSnackBar(
                         context,
                         'Voit valita enintään neljä kieltä!',
-                        ConstantStyles.red,
+                        AppStyle.red,
                       );
                     }
                   } else {
@@ -448,14 +447,14 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                     color: const Color.fromRGBO(224, 84, 148, 0.05),
                     border: Border.all(
                       color: selectedCities.contains(city)
-                          ? ConstantStyles.pink
+                          ? AppStyle.pink
                           : Colors.transparent,
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     city,
-                    style: ConstantStyles.body,
+                    style: AppStyle.body,
                   ),
                 ),
               );
@@ -489,14 +488,14 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                           color: const Color.fromRGBO(224, 84, 148, 0.05),
                           border: Border.all(
                             color: selectedLifeOption == option
-                                ? ConstantStyles.pink
+                                ? AppStyle.pink
                                 : Colors.transparent,
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           option,
-                          style: ConstantStyles.body,
+                          style: AppStyle.body,
                         ),
                       ),
                     ),
@@ -507,7 +506,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: CupertinoSwitch(
-                activeColor: ConstantStyles.pink,
+                activeColor: AppStyle.pink,
                 value: noLifeSituation,
                 onChanged: (bool value) {
                   setState(() {
@@ -518,7 +517,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
               ),
               title: Text(
                 'Jätän tämän tyhjäksi',
-                style: ConstantStyles.hintText.copyWith(
+                style: AppStyle.hintText.copyWith(
                     fontWeight: FontWeight.w500,
                     color: noLifeSituation
                         ? Colors.white
@@ -547,14 +546,14 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(
                         color: selectedList == questionsAboutMe
-                            ? ConstantStyles.pink
+                            ? AppStyle.pink
                             : Colors.transparent,
                         width: 1.0,
                       ),
                     ),
                     child: Text(
                       'Enemmän minusta',
-                      style: ConstantStyles.warning,
+                      style: AppStyle.warning,
                     ),
                   ),
                 ),
@@ -573,14 +572,14 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(
                         color: selectedList == questionsAboutHobbies
-                            ? ConstantStyles.pink
+                            ? AppStyle.pink
                             : Colors.transparent,
                         width: 1.0,
                       ),
                     ),
                     child: Text(
                       'Harrastukset',
-                      style: ConstantStyles.warning,
+                      style: AppStyle.warning,
                     ),
                   ),
                 ),
@@ -599,14 +598,14 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(
                         color: selectedList == questionsAboutDeep
-                            ? ConstantStyles.pink
+                            ? AppStyle.pink
                             : Colors.transparent,
                         width: 1.0,
                       ),
                     ),
                     child: Text(
                       'Syvälliset',
-                      style: ConstantStyles.warning,
+                      style: AppStyle.warning,
                     ),
                   ),
                 ),
@@ -655,7 +654,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       ),
                       child: Text(
                         question,
-                        style: ConstantStyles.question.copyWith(
+                        style: AppStyle.question.copyWith(
                           color: Colors.white.withOpacity(
                             userChoices.containsKey(question) ? 0.5 : 1.0,
                           ),
@@ -694,11 +693,11 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       child: Center(
                         child: Text(
                           'Ei lisättyjä kuvia',
-                          style: ConstantStyles.body.copyWith(fontSize: 24.sp),
+                          style: AppStyle.body.copyWith(fontSize: 24.sp),
                         ),
                       ),
                     ),
-              ConstantStyles().gapH10,
+              AppStyle.gapH10,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -718,11 +717,10 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                             Icons.image_search_rounded,
                             color: Colors.white,
                           ),
-                          ConstantStyles().gapW5,
+                          AppStyle.gapW5,
                           Text(
                             'Lisää uusi kuva',
-                            style:
-                                ConstantStyles.body.copyWith(fontSize: 16.sp),
+                            style: AppStyle.body.copyWith(fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -744,11 +742,10 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                             Icons.photo_camera_rounded,
                             color: Colors.white,
                           ),
-                          ConstantStyles().gapW5,
+                          AppStyle.gapW5,
                           Text(
                             'Ota uusi kuva',
-                            style:
-                                ConstantStyles.body.copyWith(fontSize: 16.sp),
+                            style: AppStyle.body.copyWith(fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -790,24 +787,23 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                     horizontal: 5.h,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        isSelected ? ConstantStyles.pink : Colors.transparent,
+                    color: isSelected ? AppStyle.pink : Colors.transparent,
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10.0),
                     ),
-                    border: Border.all(color: ConstantStyles.pink),
+                    border: Border.all(color: AppStyle.pink),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
                         Activity.getActivity(activity).emojiData,
-                        style: ConstantStyles.title,
+                        style: AppStyle.title,
                       ),
                       Text(
                         Activity.getActivity(activity).name,
                         overflow: TextOverflow.ellipsis,
-                        style: ConstantStyles.warning.copyWith(
+                        style: AppStyle.warning.copyWith(
                           color: Colors.white,
                         ),
                       ),
@@ -883,14 +879,14 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(
                         color: userAcceptedRules.contains(rule)
-                            ? ConstantStyles.pink
+                            ? AppStyle.pink
                             : Colors.transparent,
                         width: 1.0,
                       ),
                     ),
                     child: Text(
                       rule,
-                      style: ConstantStyles.warning,
+                      style: AppStyle.warning,
                     ),
                   ),
                 ),
@@ -898,8 +894,8 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
               warningSignVisible
                   ? Text(
                       'Sinun täytyy klikata kaikki kohdat hyväksytyksi jatkaaksesi!',
-                      style: ConstantStyles.warning.copyWith(
-                        color: ConstantStyles.red,
+                      style: AppStyle.warning.copyWith(
+                        color: AppStyle.red,
                       ),
                     )
                   : Container()
@@ -911,7 +907,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
     return Center(
       child: Text(
         'Error',
-        style: ConstantStyles.warning,
+        style: AppStyle.warning,
       ),
     );
   }
@@ -968,7 +964,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Kysymys "${onboardingScreens[0].title}" ei voi olla tyhjä!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -978,7 +974,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Sähköposti on tyhjä tai se on väärä sähköposti!!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -988,7 +984,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Syntymäpäivä ei kelpaa!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -998,7 +994,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Kysymys "${onboardingScreens[3].title}" ei voi olla tyhjä!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -1007,7 +1003,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Valitse vähintään 1 ja enintään 4 kieltä!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -1016,7 +1012,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Valitse vähintään 1 ja enintään 2 paikkakuntaa!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -1025,7 +1021,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Valitse  1 elämäntilanteesi tai jätä sen tyhjäksi!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -1035,7 +1031,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Valitse 1-10 Q&A -avausta, johon haluat vastata',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -1044,7 +1040,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Profiilikuva ei voi olla tyhjä!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -1053,7 +1049,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           showSnackBar(
             context,
             'Valitse lempiaktiviteettia, joista pidät!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -1088,7 +1084,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                   showSnackBar(
                     context,
                     'Hyväksy push-ilmoitukset myös laitteeltasi jatkaaksesi!',
-                    ConstantStyles.red,
+                    AppStyle.red,
                   );
                 }
               });
@@ -1185,21 +1181,21 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         screen.isFullView == true
-                            ? ConstantStyles().gapH10
+                            ? AppStyle.gapH10
                             : const Spacer(),
                         Text(
                           screen.title,
-                          style: ConstantStyles.title,
+                          style: AppStyle.title,
                         ),
                         Text(
                           screen.warningText!,
-                          style: ConstantStyles.warning,
+                          style: AppStyle.warning,
                         ),
-                        ConstantStyles().gapH20,
+                        AppStyle.gapH20,
                         mainWidgetsForScreens(index),
 
                         screen.isFullView == true
-                            ? ConstantStyles().gapH10
+                            ? AppStyle.gapH10
                             : const Spacer(),
                         CustomButton(
                           buttonText: screen.title == 'Vielä lopuksi!'
@@ -1207,7 +1203,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                               : 'Seuraava',
                           onPressed: () => errorHandlingScreens(index),
                         ), //Removed extra padding in ConstantsCustomButton
-                        ConstantStyles().gapH10,
+                        AppStyle.gapH10,
                         CustomButton(
                           buttonText: 'Takaisin',
                           isWhiteButton: true,

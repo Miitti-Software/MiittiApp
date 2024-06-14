@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
 import 'package:miitti_app/widgets/admin_button.dart';
 import 'package:miitti_app/widgets/admin_textfield.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 
 class AdminSignIn extends StatefulWidget {
   const AdminSignIn({super.key});
