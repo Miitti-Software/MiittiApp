@@ -4,6 +4,7 @@ import 'package:miitti_app/functions/push_notifications.dart';
 import 'package:miitti_app/widgets/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/widgets/other_widgets.dart';
 
 class ConfirmNotificationsDialog extends StatelessWidget {
   const ConfirmNotificationsDialog({super.key, required this.nextPage});
@@ -69,7 +70,7 @@ class ConfirmNotificationsDialog extends StatelessWidget {
                         }
                       },
                     ), //Removed extra padding in ConstantsCustomButton
-                    AppStyle.gapH10,
+                    gapH10,
                     CustomButton(
                       buttonText: 'Ei vielä',
                       isWhiteButton: true,

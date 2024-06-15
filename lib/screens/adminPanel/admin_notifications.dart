@@ -19,7 +19,7 @@ class _AdminNotificationsState extends State<AdminNotifications> {
           child: Text(
             'COMING SOON...',
             style: TextStyle(
-              color: AppStyle.wineColor,
+              color: AppStyle.black,
               fontSize: 40.sp,
             ),
           ),

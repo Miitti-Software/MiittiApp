@@ -16,7 +16,7 @@ class AdminSearchBar extends StatelessWidget {
           hintText: 'Etsi käyttäjiä:',
           prefixIcon: const Icon(
             Icons.search,
-            color: AppStyle.purpleColor,
+            color: AppStyle.violet,
           ),
           enabledBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(50)),

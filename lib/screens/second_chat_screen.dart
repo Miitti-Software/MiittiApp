@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/widgets/safe_scaffold.dart';
 
 class SecondChatPage extends StatefulWidget {
   const SecondChatPage({super.key});
@@ -31,50 +32,47 @@ class _SecondChatPageState extends State<SecondChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        bottom: true,
-        child: Column(
-          children: [
-            getOurTextField(
-              myController: messageController,
-              myPadding: EdgeInsets.all(8.0.w),
-              myFocusNode: messageChatFocus,
-              myOnTap: () {
-                if (messageChatFocus.hasFocus) {
-                  messageChatFocus.unfocus();
-                }
-              },
-              mySuffixIcon: GestureDetector(
-                onTap: () {},
-                child: Container(
-                  height: 50.w,
-                  width: 50.w,
-                  margin: EdgeInsets.all(10.0.w),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        AppStyle.lightRedColor,
-                        AppStyle.orangeColor,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(30),
+    return SafeScaffold(
+      Column(
+        children: [
+          getOurTextField(
+            myController: messageController,
+            myPadding: EdgeInsets.all(8.0.w),
+            myFocusNode: messageChatFocus,
+            myOnTap: () {
+              if (messageChatFocus.hasFocus) {
+                messageChatFocus.unfocus();
+              }
+            },
+            mySuffixIcon: GestureDetector(
+              onTap: () {},
+              child: Container(
+                height: 50.w,
+                width: 50.w,
+                margin: EdgeInsets.all(10.0.w),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      AppStyle.red,
+                      AppStyle.pink,
+                    ],
                   ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.send,
-                      color: Colors.white,
-                    ),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.send,
+                    color: Colors.white,
                   ),
                 ),
               ),
-              myKeyboardType: TextInputType.multiline,
-              maxLines: 8,
-              minLines: 1,
-              maxLenght: 200,
             ),
-          ],
-        ),
+            myKeyboardType: TextInputType.multiline,
+            maxLines: 8,
+            minLines: 1,
+            maxLenght: 200,
+          ),
+        ],
       ),
     );
   }

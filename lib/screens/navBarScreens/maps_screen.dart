@@ -306,7 +306,7 @@ class _MapsScreenState extends State<MapsScreen> {
                 color: AppStyle.black.withOpacity(0.8),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              child: OtherWidgets.createToggleSwitch(
+              child: mapToggleSwitch(
                 initialLabelIndex: showOnMap,
                 onToggle: (index) {
                   setState(() {
@@ -460,17 +460,17 @@ class _MapsScreenState extends State<MapsScreen> {
                                       Icons.calendar_month,
                                       color: AppStyle.pink,
                                     ),
-                                    AppStyle.gapW5,
+                                    gapW5,
                                     Text(
                                       activity.timeString,
                                       style: AppStyle.activitySubName,
                                     ),
-                                    AppStyle.gapW10,
+                                    gapW10,
                                     const Icon(
                                       Icons.map_outlined,
                                       color: AppStyle.pink,
                                     ),
-                                    AppStyle.gapW5,
+                                    gapW5,
                                     Flexible(
                                       child: Text(
                                         cityName,
@@ -490,7 +490,7 @@ class _MapsScreenState extends State<MapsScreen> {
                                       Icons.account_balance_wallet_outlined,
                                       color: AppStyle.pink,
                                     ),
-                                    AppStyle.gapW5,
+                                    gapW5,
                                     Text(
                                       activity.isMoneyRequired
                                           ? 'Pääsymaksu'
@@ -498,12 +498,12 @@ class _MapsScreenState extends State<MapsScreen> {
                                       textAlign: TextAlign.center,
                                       style: AppStyle.activitySubName,
                                     ),
-                                    AppStyle.gapW10,
+                                    gapW10,
                                     const Icon(
                                       Icons.people_outline,
                                       color: AppStyle.pink,
                                     ),
-                                    AppStyle.gapW5,
+                                    gapW5,
                                     Text(
                                       '$participants/${activity.personLimit} osallistujaa',
                                       style: AppStyle.activitySubName,

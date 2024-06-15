@@ -320,14 +320,14 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                       ),*/
                 ),
               ),
-              AppStyle.gapH20,
+              gapH20,
               spots.isNotEmpty
                   ? Text(
                       "Valitse Miitti-Spotti:",
                       style: AppStyle.activityName,
                     )
                   : Container(),
-              AppStyle.gapH5,
+              gapH5,
               spots.isNotEmpty
                   ? Expanded(
                       child: ValueListenableBuilder<int>(
@@ -359,20 +359,20 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              OtherWidgets().getCustomTextFormField(
+              getCustomTextFormField(
                 controller: titleController,
                 hintText: 'Miittisi ytimekäs otsikko',
                 maxLength: 30,
                 maxLines: 1,
               ),
-              AppStyle.gapH20,
-              OtherWidgets().getCustomTextFormField(
+              gapH20,
+              getCustomTextFormField(
                 controller: subTitleController,
                 hintText: 'Mitä muuta haluaisit kertoa miitistä?',
                 maxLength: 150,
                 maxLines: 4,
               ),
-              AppStyle.gapH20,
+              gapH20,
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CupertinoSwitch(
@@ -393,7 +393,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   ),
                 ),
               ),
-              AppStyle.gapH10,
+              gapH10,
               SliderTheme(
                 data: SliderThemeData(
                   overlayShape: SliderComponentShape.noOverlay,
@@ -411,7 +411,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   },
                 ),
               ),
-              AppStyle.gapH10,
+              gapH10,
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
@@ -421,7 +421,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   ),
                 ),
               ),
-              AppStyle.gapH10,
+              gapH10,
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CupertinoSwitch(
@@ -514,31 +514,31 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   ],
                 ),
               ),
-              AppStyle.gapH20,
+              gapH20,
               Text(
                 titleController.text.trim(),
                 style: AppStyle.body.copyWith(fontSize: 24.sp),
               ),
-              AppStyle.gapH10,
+              gapH10,
               Row(
                 children: [
                   const Icon(
                     Icons.calendar_month,
                     color: AppStyle.pink,
                   ),
-                  AppStyle.gapW10,
+                  gapW10,
                   Text(
                     isActivityTimeUndefined
                         ? 'Sovitaan myöhemmin'
                         : timestampToString(activityTime),
                     style: AppStyle.activitySubName,
                   ),
-                  AppStyle.gapW20,
+                  gapW20,
                   const Icon(
                     Icons.map_outlined,
                     color: AppStyle.pink,
                   ),
-                  AppStyle.gapW10,
+                  gapW10,
                   Flexible(
                     child: Text(
                       activityCity,
@@ -551,32 +551,32 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   ),
                 ],
               ),
-              AppStyle.gapH5,
+              gapH5,
               Row(
                 children: [
                   const Icon(
                     Icons.account_balance_wallet_outlined,
                     color: AppStyle.pink,
                   ),
-                  AppStyle.gapW10,
+                  gapW10,
                   Text(
                     isActivityFree ? 'Maksuton' : 'Pääsymaksu',
                     textAlign: TextAlign.center,
                     style: AppStyle.activitySubName,
                   ),
-                  AppStyle.gapW20,
+                  gapW20,
                   const Icon(
                     Icons.people_outline,
                     color: AppStyle.pink,
                   ),
-                  AppStyle.gapW10,
+                  gapW10,
                   Text(
                     'max. ${activityParticipantsCount.round()} osallistujaa',
                     style: AppStyle.activitySubName,
                   ),
                 ],
               ),
-              AppStyle.gapH10,
+              gapH10,
               Text(
                 subTitleController.text.trim(),
                 style: AppStyle.question,
@@ -718,22 +718,22 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AppStyle.gapH10,
+                        gapH10,
                         Text(
                           screen.title,
                           style:
                               AppStyle.activityName.copyWith(fontSize: 20.sp),
                         ),
-                        AppStyle.gapH20,
+                        gapH20,
                         mainWidgetsForScreens(index),
-                        AppStyle.gapH10,
+                        gapH10,
                         CustomButton(
                           buttonText: screen.isFullView == true
                               ? 'Julkaise'
                               : 'Seuraava',
                           onPressed: () => errorHandlingScreens(index),
                         ),
-                        AppStyle.gapH10,
+                        gapH10,
                         CustomButton(
                           buttonText: 'Takaisin',
                           isWhiteButton: true,

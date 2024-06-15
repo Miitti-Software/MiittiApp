@@ -20,6 +20,7 @@ import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
 
 import 'package:miitti_app/widgets/my_elevated_button.dart';
+import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -89,234 +90,220 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
     AuthProvider ap = Provider.of<AuthProvider>(context, listen: true);
     final isLoading = ap.isLoading;
 
-    return Scaffold(
-      body: SafeArea(
-        top: false,
-        right: false,
-        left: false,
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  FutureBuilder(
-                      future: getPath(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child: Text('Error: ${snapshot.error}'));
-                        }
-                        return FlutterMap(
-                            options: MapOptions(
-                                keepAlive: true,
-                                backgroundColor: AppStyle.black,
-                                initialCenter: myCameraPosition,
-                                initialZoom: 13.0,
-                                interactionOptions: const InteractionOptions(
-                                    flags: InteractiveFlag.pinchZoom),
-                                minZoom: 5.0,
-                                maxZoom: 18.0,
-                                onMapReady: () {}),
-                            children: [
-                              TileLayer(
-                                urlTemplate:
-                                    "https://api.mapbox.com/styles/v1/miittiapp/clt1ytv8s00jz01qzfiwve3qm/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}",
-                                additionalOptions: const {
-                                  'accessToken': mapboxAccess,
-                                },
-                                tileProvider: CachedTileProvider(
-                                    store: HiveCacheStore(
-                                  snapshot.data.toString(),
-                                )),
-                              ),
-                            ]);
-                      }),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(left: 10.w, top: 40.h),
-                        height: 60.h,
-                        width: 60.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          gradient: const LinearGradient(
-                            colors: [
-                              AppStyle.lightRedColor,
-                              AppStyle.orangeColor,
-                            ],
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 30.r,
-                        ),
+    return SafeScaffold(
+      Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                FutureBuilder(
+                    future: getPath(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+                      return FlutterMap(
+                          options: MapOptions(
+                              keepAlive: true,
+                              backgroundColor: AppStyle.black,
+                              initialCenter: myCameraPosition,
+                              initialZoom: 13.0,
+                              interactionOptions: const InteractionOptions(
+                                  flags: InteractiveFlag.pinchZoom),
+                              minZoom: 5.0,
+                              maxZoom: 18.0,
+                              onMapReady: () {}),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  "https://api.mapbox.com/styles/v1/miittiapp/clt1ytv8s00jz01qzfiwve3qm/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}",
+                              additionalOptions: const {
+                                'accessToken': mapboxAccess,
+                              },
+                              tileProvider: CachedTileProvider(
+                                  store: HiveCacheStore(
+                                snapshot.data.toString(),
+                              )),
+                            ),
+                          ]);
+                    }),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(left: 10.w, top: 40.h),
+                      height: 60.h,
+                      width: 60.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        gradient: AppStyle.pinkGradient,
+                      ),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                        size: 30.r,
                       ),
                     ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Image.asset(
+                        'images/${Activity.solveActivityId(widget.myActivity.activityCategory)}.png',
+                        height: 90.h,
+                      ),
+                      Flexible(
+                        child: Text(
+                          widget.myActivity.activityTitle,
+                          style: AppStyle.title,
+                        ),
+                      ),
+                    ],
+                  ),
+                  FutureBuilder(
+                    future: filteredUsers,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<MiittiUser>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        participantCount = snapshot.data!.length;
+                        return SizedBox(
+                          height: 75.0.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              MiittiUser user = snapshot.data![index];
+                              return Padding(
+                                padding: EdgeInsets.only(left: 16.0.w),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (isAnonymous) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              const AnonymousDialog());
+                                    } else {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ap.miittiUser.uid == user.uid
+                                                      ? const ProfileScreen()
+                                                      : UserProfileEditScreen(
+                                                          user: user)));
+                                    }
+                                  },
+                                  child: CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(user.profilePicture),
+                                    backgroundColor: AppStyle.violet,
+                                    radius: 25.r,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      } else {
+                        return const CircularProgressIndicator(
+                          color: AppStyle.violet,
+                        );
+                      }
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0.w),
+                    child: Text(
+                      widget.myActivity.activityDescription,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Rubik',
+                        fontSize: 17.0.sp,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const Expanded(
+                    child: SizedBox(),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.people,
+                        color: AppStyle.lightPurple,
+                      ),
+                      Text(
+                        '  $participantCount/${widget.myActivity.personLimit} osallistujaa',
+                        style: AppStyle.body,
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                      ),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        color: AppStyle.lightPurple,
+                      ),
+                      Text(
+                        widget.myActivity.activityAdress,
+                        style: AppStyle.body,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.airplane_ticket_outlined,
+                        color: AppStyle.lightPurple,
+                      ),
+                      Text(
+                        widget.myActivity.isMoneyRequired
+                            ? 'Pääsymaksu'
+                            : 'Maksuton',
+                        style: AppStyle.body,
+                      ),
+                      SizedBox(
+                        width: 20.w,
+                      ),
+                      const Icon(
+                        Icons.calendar_month,
+                        color: AppStyle.lightPurple,
+                      ),
+                      Text(
+                        widget.myActivity.timeString,
+                        style: AppStyle.body,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.h,
                   ),
                 ],
               ),
             ),
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          'images/${Activity.solveActivityId(widget.myActivity.activityCategory)}.png',
-                          height: 90.h,
-                        ),
-                        Flexible(
-                          child: Text(
-                            widget.myActivity.activityTitle,
-                            style: AppStyle.title,
-                          ),
-                        ),
-                      ],
-                    ),
-                    FutureBuilder(
-                      future: filteredUsers,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<List<MiittiUser>> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          participantCount = snapshot.data!.length;
-                          return SizedBox(
-                            height: 75.0.h,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                MiittiUser user = snapshot.data![index];
-                                return Padding(
-                                  padding: EdgeInsets.only(left: 16.0.w),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      if (isAnonymous) {
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                const AnonymousDialog());
-                                      } else {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ap.miittiUser.uid ==
-                                                            user.uid
-                                                        ? const ProfileScreen()
-                                                        : UserProfileEditScreen(
-                                                            user: user)));
-                                      }
-                                    },
-                                    child: CircleAvatar(
-                                      backgroundImage:
-                                          NetworkImage(user.profilePicture),
-                                      backgroundColor: AppStyle.purpleColor,
-                                      radius: 25.r,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        } else {
-                          return const CircularProgressIndicator(
-                            color: AppStyle.purpleColor,
-                          );
-                        }
-                      },
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0.w),
-                      child: Text(
-                        widget.myActivity.activityDescription,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Rubik',
-                          fontSize: 17.0.sp,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const Expanded(
-                      child: SizedBox(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.people,
-                          color: AppStyle.lightPurpleColor,
-                        ),
-                        Text(
-                          '  $participantCount/${widget.myActivity.personLimit} osallistujaa',
-                          style: AppStyle.body,
-                        ),
-                        SizedBox(
-                          width: 20.w,
-                        ),
-                        const Icon(
-                          Icons.location_on_outlined,
-                          color: AppStyle.lightPurpleColor,
-                        ),
-                        Text(
-                          widget.myActivity.activityAdress,
-                          style: AppStyle.body,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.airplane_ticket_outlined,
-                          color: AppStyle.lightPurpleColor,
-                        ),
-                        Text(
-                          widget.myActivity.isMoneyRequired
-                              ? 'Pääsymaksu'
-                              : 'Maksuton',
-                          style: AppStyle.body,
-                        ),
-                        SizedBox(
-                          width: 20.w,
-                        ),
-                        const Icon(
-                          Icons.calendar_month,
-                          color: AppStyle.lightPurpleColor,
-                        ),
-                        Text(
-                          widget.myActivity.timeString,
-                          style: AppStyle.body,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            getMyButton(isLoading),
-            reportActivity(ap)
-          ],
-        ),
+          ),
+          getMyButton(isLoading),
+          reportActivity(ap)
+        ],
       ),
     );
   }

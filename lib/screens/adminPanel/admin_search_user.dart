@@ -166,7 +166,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     getListTileButton(
-                                      AppStyle.lightPurpleColor,
+                                      AppStyle.lightPurple,
                                       'Katso profiili',
                                       () => Navigator.push(
                                         context,
@@ -183,7 +183,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                                       width: 10.w,
                                     ),
                                     getListTileButton(
-                                      AppStyle.purpleColor,
+                                      AppStyle.violet,
                                       'Käyttäjätiedot',
                                       () => Navigator.push(
                                         context,

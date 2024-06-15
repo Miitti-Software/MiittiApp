@@ -54,17 +54,7 @@ Future<File?> pickImageFromCamera(BuildContext context) async {
   return image;
 }
 
-Widget getMiittiLogo() {
-  return Container(
-    margin: EdgeInsets.only(top: 40.h),
-    child: Image.asset(
-      'images/logo.png',
-      height: 50.h,
-      fit: BoxFit.cover,
-    ),
-  );
-}
-
+//TODO: Make this a stateful widget to own file
 Widget getOurTextField({
   required EdgeInsets myPadding,
   FocusNode? myFocusNode,
@@ -80,7 +70,7 @@ Widget getOurTextField({
   int maxLines = 1,
   int minLines = 1,
   double? borderRadius = 50,
-  Color? borderColor = AppStyle.purpleColor,
+  Color? borderColor = AppStyle.violet,
 }) {
   return Padding(
     padding: myPadding,
@@ -112,7 +102,7 @@ Widget getOurTextField({
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: const BorderSide(
-            color: AppStyle.purpleColor,
+            color: AppStyle.violet,
             width: 1.5,
           ),
         ),
@@ -132,9 +122,9 @@ Widget getChatBubble(String text) {
   return Container(
     margin: EdgeInsets.only(top: 10.h, bottom: 10.h, right: 10.w),
     decoration: BoxDecoration(
-      color: AppStyle.lightPurpleColor,
+      color: AppStyle.lightPurple,
       border: Border.all(
-        color: AppStyle.lightPurpleColor,
+        color: AppStyle.lightPurple,
       ),
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(10.0),
@@ -295,7 +285,7 @@ Widget createListTile(String title) {
       leading: Icon(
         Icons.verified_user,
         size: 30.sp,
-        color: AppStyle.lightRedColor,
+        color: AppStyle.red,
       ),
     ),
   );
@@ -459,8 +449,8 @@ Widget getMyFloatingButton({required void Function()? onPressed}) {
         borderRadius: BorderRadius.all(Radius.circular(50)),
         gradient: LinearGradient(
           colors: [
-            AppStyle.lightRedColor,
-            AppStyle.orangeColor,
+            AppStyle.red,
+            AppStyle.pink,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -495,8 +485,8 @@ Widget createExitButton(BuildContext context) {
           borderRadius: BorderRadius.circular(50),
           gradient: const LinearGradient(
             colors: [
-              AppStyle.lightRedColor,
-              AppStyle.orangeColor,
+              AppStyle.red,
+              AppStyle.pink,
             ],
           ),
         ),
@@ -510,22 +500,10 @@ Widget createExitButton(BuildContext context) {
   );
 }
 
+//Use gp
 Widget getSomeSpace(double height) {
   return SizedBox(
     height: height.h,
-  );
-}
-
-Widget getMiittiActivityText(String title) {
-  return Text(
-    title,
-    textAlign: TextAlign.center,
-    style: TextStyle(
-      fontSize: 26.sp,
-      fontFamily: 'Sora',
-      color: Colors.white,
-      fontWeight: FontWeight.bold,
-    ),
   );
 }
 
@@ -542,6 +520,7 @@ String twoDigits(int n) {
   return "0$n";
 }
 
+//TODO: Refactor to own file as a stateful widget
 Widget createMainToggleSwitch({
   required String text1,
   required String text2,
@@ -554,7 +533,7 @@ Widget createMainToggleSwitch({
     initialLabelIndex: initialLabelIndex,
     cornerRadius: 50.sp,
     activeFgColor: Colors.white,
-    inactiveBgColor: AppStyle.wineColor,
+    inactiveBgColor: AppStyle.black,
     inactiveFgColor: Colors.white,
     totalSwitches: 2,
     curve: Curves.linear,
@@ -567,18 +546,19 @@ Widget createMainToggleSwitch({
     labels: [text1, text2],
     activeBgColors: const [
       [
-        AppStyle.lightRedColor,
-        AppStyle.orangeColor,
+        AppStyle.red,
+        AppStyle.pink,
       ],
       [
-        AppStyle.orangeColor,
-        AppStyle.lightRedColor,
+        AppStyle.red,
+        AppStyle.pink,
       ],
     ],
     onToggle: onToggle,
   );
 }
 
+//TODO: monthName ids to constants and month names to app texts
 String getMonthName(int monthNumber) {
   if (monthNumber < 1 || monthNumber > 12) {
     throw ArgumentError('Invalid month number: $monthNumber');

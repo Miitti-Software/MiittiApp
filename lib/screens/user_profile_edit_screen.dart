@@ -67,7 +67,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   AppBar buildAppBar() {
     return AppBar(
-      backgroundColor: AppStyle.wineColor,
+      backgroundColor: AppStyle.black,
       automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -163,12 +163,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
               child: Container(
                 padding: EdgeInsets.all(15.w),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      AppStyle.lightRedColor,
-                      AppStyle.orangeColor,
-                    ],
-                  ),
+                  gradient: AppStyle.pinkGradient,
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Icon(
@@ -213,7 +208,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
             question,
             textAlign: TextAlign.start,
             style: TextStyle(
-              color: AppStyle.purpleColor,
+              color: AppStyle.violet,
               fontSize: 18.sp,
               fontFamily: 'Rubik',
             ),
@@ -273,7 +268,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     return ListTile(
       leading: Icon(
         icon,
-        color: AppStyle.lightPurpleColor,
+        color: AppStyle.lightPurple,
         size: 30.sp,
       ),
       title: Text(
@@ -527,7 +522,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     final ap = Provider.of<AuthProvider>(context, listen: false);
 
     return AlertDialog(
-      backgroundColor: AppStyle.wineColor,
+      backgroundColor: AppStyle.black,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -609,7 +604,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   Widget createInviteActivityDialog() {
     return AlertDialog(
-      backgroundColor: AppStyle.wineColor,
+      backgroundColor: AppStyle.black,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -659,9 +654,9 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
       ),
       padding: EdgeInsets.all(15.0.w),
       decoration: BoxDecoration(
-        color: AppStyle.wineColor,
+        color: AppStyle.black,
         border: Border.all(
-          color: AppStyle.darkPurpleColor,
+          color: AppStyle.darkPurple,
           width: 2.0,
         ),
         borderRadius: BorderRadius.circular(20),

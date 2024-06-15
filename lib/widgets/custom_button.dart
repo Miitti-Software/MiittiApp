@@ -44,7 +44,7 @@ class CustomButton extends StatelessWidget {
                   ]
                 : [
                     AppStyle.pink.withOpacity(0.1),
-                    AppStyle.orange.withOpacity(0.1)
+                    AppStyle.red.withOpacity(0.1)
                   ],
           ),
         ),

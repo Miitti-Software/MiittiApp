@@ -78,11 +78,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Color getColorForContainer(bool isAdmin, bool isInvited) {
     if (isAdmin) {
-      return AppStyle.pinkColor;
+      return AppStyle.pink;
     } else if (isInvited) {
-      return AppStyle.yellowColor;
+      return AppStyle.red;
     } else {
-      return AppStyle.purpleColor;
+      return AppStyle.violet;
     }
   }
 
@@ -105,7 +105,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       height: 150.h,
       margin: EdgeInsets.all(10.0.w),
       decoration: BoxDecoration(
-        color: AppStyle.wineColor,
+        color: AppStyle.black,
         border: Border.all(
           color: getColorForContainer(isAdmin, isInvited),
           width: 2.0,
@@ -236,7 +236,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           children: [
                             const Icon(
                               Icons.calendar_month,
-                              color: AppStyle.lightPurpleColor,
+                              color: AppStyle.lightPurple,
                             ),
                             SizedBox(width: 4.w),
                             Flexible(
@@ -249,7 +249,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             SizedBox(width: 16.w),
                             const Icon(
                               Icons.location_on_outlined,
-                              color: AppStyle.lightPurpleColor,
+                              color: AppStyle.lightPurple,
                             ),
                             SizedBox(width: 4.w),
                             Flexible(
@@ -371,8 +371,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       height: 150.h,
       margin: EdgeInsets.all(10.0.w),
       decoration: BoxDecoration(
-        color: AppStyle.wineColor,
-        border: Border.all(color: AppStyle.purpleColor, width: 2.0),
+        color: AppStyle.black,
+        border: Border.all(color: AppStyle.violet, width: 2.0),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -609,7 +609,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                          color: AppStyle.lavenderColor,
+                          color: AppStyle.violet,
                         ),
                       )
                     : Container(

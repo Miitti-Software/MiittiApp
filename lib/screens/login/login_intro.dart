@@ -25,8 +25,8 @@ class LoginIntro extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(),
-              OtherWidgets.getMiittiLogo,
-              AppStyle.gapH15,
+              getMiittiLogo,
+              gapH15,
               Text(
                 t('upgrade-social-life'),
                 textAlign: TextAlign.center,
@@ -37,10 +37,10 @@ class LoginIntro extends StatelessWidget {
                 buttonText: t('lets-start'),
                 onPressed: () => pushPage(context, const LoginAuth()),
               ),
-              AppStyle.gapH8,
+              gapH8,
               _richText(),
               const Spacer(),
-              OtherWidgets.getLanguagesButtons(),
+              getLanguagesButtons(),
             ],
           ),
         ],

@@ -83,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   AppBar buildAppBar(AuthProvider ap) {
     return AppBar(
-      backgroundColor: AppStyle.wineColor,
+      backgroundColor: AppStyle.black,
       automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -187,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             question,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppStyle.purpleColor,
+              color: AppStyle.violet,
               fontSize: 18.sp,
               fontFamily: 'Rubik',
             ),
@@ -249,7 +249,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ListTile(
       leading: Icon(
         icon,
-        color: AppStyle.lightPurpleColor,
+        color: AppStyle.lightPurple,
         size: 30.sp,
       ),
       title: Text(

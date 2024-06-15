@@ -127,7 +127,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
-      OtherWidgets.showLoadingDialog(context);
+      showLoadingDialog(context);
       await _firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
@@ -177,7 +177,7 @@ class AuthProvider extends ChangeNotifier {
     required String userOtp,
     required Function onSuccess,
   }) async {
-    OtherWidgets.showLoadingDialog(context);
+    showLoadingDialog(context);
     try {
       if (!(_firebaseAuth.currentUser != null &&
           _firebaseAuth.currentUser!.uid == _uid)) {
@@ -218,7 +218,7 @@ class AuthProvider extends ChangeNotifier {
       );
 
       //finally, lets sign in
-      OtherWidgets.showLoadingDialog(context);
+      showLoadingDialog(context);
       User? user =
           (await FirebaseAuth.instance.signInWithCredential(credential)).user;
 
@@ -234,7 +234,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signInWithApple(BuildContext context) async {
     try {
-      OtherWidgets.showLoadingDialog(context);
+      showLoadingDialog(context);
 
       final appleProvider = AppleAuthProvider();
       User? user =
@@ -436,7 +436,7 @@ class AuthProvider extends ChangeNotifier {
     required BuildContext context,
     required PersonActivity activityModel,
   }) async {
-    OtherWidgets.showLoadingDialog(context);
+    showLoadingDialog(context);
     try {
       activityModel.admin = _miittiUser!.uid;
       activityModel.adminAge = calculateAge(_miittiUser!.userBirthday);
@@ -963,7 +963,7 @@ class AuthProvider extends ChangeNotifier {
     required Function onSuccess,
   }) async {
     try {
-      OtherWidgets.showLoadingDialog(context);
+      showLoadingDialog(context);
       await uploadUserImage(_firebaseAuth.currentUser!.uid, image)
           .then((value) {
         userModel.profilePicture = value;
@@ -1139,7 +1139,7 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     try {
       if (context != null && context.mounted) {
-        OtherWidgets.showLoadingDialog(context);
+        showLoadingDialog(context);
       }
       if (imageFile != null) {
         await uploadUserImage(_firebaseAuth.currentUser!.uid, imageFile)

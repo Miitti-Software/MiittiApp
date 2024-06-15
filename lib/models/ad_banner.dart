@@ -99,10 +99,9 @@ class AdBanner {
           margin: EdgeInsets.all(10.0.w),
           child: Container(
             width: 400.w,
-            decoration: BoxDecoration(
-              color: AppStyle.wineColor,
-              border: Border.all(color: AppStyle.purpleColor, width: 2.0),
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            decoration: const BoxDecoration(
+              color: AppStyle.black,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             child: Stack(
               children: [
@@ -120,9 +119,9 @@ class AdBanner {
                     height: 28,
                     width: 100,
                     alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                      color: AppStyle.transparentPurple,
-                      borderRadius: BorderRadius.only(
+                    decoration: BoxDecoration(
+                      color: AppStyle.pink.withOpacity(0.8),
+                      borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomRight: Radius.circular(10)),
                     ),

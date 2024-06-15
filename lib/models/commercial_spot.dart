@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/widgets/other_widgets.dart';
 
 class CommercialSpot {
   double long;
@@ -74,7 +75,7 @@ class CommercialSpot {
                     name,
                     style: AppStyle.activityName,
                   ),
-                  AppStyle.gapH10,
+                  gapH10,
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -82,7 +83,7 @@ class CommercialSpot {
                         Icons.map_outlined,
                         color: AppStyle.pink,
                       ),
-                      AppStyle.gapW10,
+                      gapW10,
                       Text(
                         address,
                         style: AppStyle.activitySubName.copyWith(

@@ -153,8 +153,8 @@ class _PeopleScreenState extends State<PeopleScreen> {
       height: 225.w,
       width: 160.w,
       decoration: BoxDecoration(
-        color: AppStyle.wineColor,
-        border: Border.all(color: AppStyle.purpleColor, width: 2.0),
+        color: AppStyle.black,
+        border: Border.all(color: AppStyle.violet, width: 2.0),
         borderRadius: const BorderRadius.all(
           Radius.circular(10),
         ),
@@ -194,7 +194,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 13.sp,
-        color: AppStyle.lightPurpleColor,
+        color: AppStyle.lightPurple,
         fontFamily: 'Rubik',
       ),
     );

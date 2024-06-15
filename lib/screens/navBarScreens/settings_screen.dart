@@ -31,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: TextStyle(
           fontSize: 17.sp,
           fontFamily: 'Rubik',
-          color: AppStyle.lightPurpleColor,
+          color: AppStyle.lightPurple,
         ),
       ),
     );
@@ -54,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       style: TextStyle(
         fontSize: fontSize.sp,
         fontFamily: 'Rubik',
-        color: AppStyle.lightPurpleColor,
+        color: AppStyle.lightPurple,
       ),
     );
   }
@@ -64,169 +64,164 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final ap = Provider.of<AuthProvider>(context, listen: false);
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(8.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Asetukset',
-                style: TextStyle(
-                  fontSize: 35.sp,
-                  color: Colors.white,
-                  fontFamily: 'Sora',
-                ),
+      body: Padding(
+        padding: EdgeInsets.all(8.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Asetukset',
+              style: TextStyle(
+                fontSize: 35.sp,
+                color: Colors.white,
+                fontFamily: 'Sora',
               ),
-              SizedBox(height: 20.h),
-              ElevatedButton(
-                onPressed: () =>
-                    launchUrl(Uri.parse('https://miittiapp.canny.io/')),
-                style: ButtonStyle(
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
+            ),
+            SizedBox(height: 20.h),
+            ElevatedButton(
+              onPressed: () =>
+                  launchUrl(Uri.parse('https://miittiapp.canny.io/')),
+              style: ButtonStyle(
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
-                  backgroundColor:
-                      WidgetStateProperty.all<Color>(AppStyle.pink),
-                  minimumSize: WidgetStateProperty.all<Size>(const Size(
-                      double.infinity, 120)), // Makes the button 100% wide
                 ),
-                child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // Center the text vertically
-                  children: [
-                    Text(
-                      'Anna palautetta',
-                      style: TextStyle(
-                        fontSize: 22.sp,
-                        color: Colors.white,
-                      ), // Large text
-                    ),
-                    SizedBox(height: 10.h),
-                    Text(
-                      'Ehdota uusia ominaisuuksia, ilmoita ongelmista tai liity keskusteluun parannusehdotuksista!',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+                backgroundColor: WidgetStateProperty.all<Color>(AppStyle.pink),
+                minimumSize: WidgetStateProperty.all<Size>(const Size(
+                    double.infinity, 120)), // Makes the button 100% wide
               ),
-              SizedBox(height: 10.h),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontFamily: 'Rubik',
-                    color: Colors.white,
+              child: Column(
+                mainAxisAlignment:
+                    MainAxisAlignment.center, // Center the text vertically
+                children: [
+                  Text(
+                    'Anna palautetta',
+                    style: TextStyle(
+                      fontSize: 22.sp,
+                      color: Colors.white,
+                    ), // Large text
                   ),
-                  children: <TextSpan>[
-                    const TextSpan(
-                      text: 'Voit myös liittyä keskusteluun ',
+                  SizedBox(height: 10.h),
+                  Text(
+                    'Ehdota uusia ominaisuuksia, ilmoita ongelmista tai liity keskusteluun parannusehdotuksista!',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.white,
                     ),
-                    TextSpan(
-                      text: 'Discord-kanavallamme.',
-                      style: const TextStyle(
-                        color: AppStyle.lightPurpleColor,
-                        fontFamily: 'Rubik',
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launchUrl(Uri.parse('https://discord.gg/aagEzSetdC'));
-                        },
-                    ),
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              SizedBox(height: 30.h),
-              createSectionTitle('Yhteystiedot:'),
-              getSomeSpace(10),
-              createHyperLink(
-                "Seuraa meitä Instagramissa",
-                'https://www.instagram.com/miittiapp/',
-              ),
-              getSomeSpace(10),
-              createHyperLink(
-                "info@miitti.app",
-                'mailto:info@miitti.app',
-              ),
-              SizedBox(height: 30.h),
-              createSectionTitle(
-                'Dokumentit ja ehdot:',
-              ),
-              getSomeSpace(10),
-              createHyperLink(
-                "Käyttöehdot",
-                'https://www.miitti.app/kayttoehdot',
-              ),
-              getSomeSpace(10),
-              createHyperLink(
-                "Tietosuojaseloste",
-                'https://www.miitti.app/tietosuojaseloste',
-              ),
-              SizedBox(height: 20.h),
-              createSectionTitle('Tili:'),
-              getSomeSpace(10),
-              GestureDetector(
-                  onTap: () => ap.userSignOut().then(
-                        (value) =>
-                            pushNRemoveUntil(context, const LoginIntro()),
-                      ),
-                  child: createText('Kirjaudu ulos')),
-              getSomeSpace(10),
-              ap.isAnonymous
-                  ? GestureDetector(
-                      onTap: () {
-                        pushNRemoveUntil(
-                            context, const CompleteProfileOnboard());
-                      },
-                      child: createText('Viimeistele profiili'),
-                    )
-                  : GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return const ConfirmDialog(
-                              title: 'Varmistus',
-                              mainText:
-                                  'Oletko varma, että haluat poistaa tilisi? Tämä toimenpide on peruuttamaton, ja kaikki tietosi poistetaan pysyvästi.',
-                            );
-                          },
-                        ).then((confirmed) {
-                          if (confirmed != null && confirmed) {
-                            ap.removeUser(ap.miittiUser.uid).then((value) {
-                              showSnackBar(context, value.$2,
-                                  value.$1 ? Colors.green : Colors.red);
-                              if (value.$1) {
-                                ap.userSignOut().then(
-                                      (value) => pushNRemoveUntil(
-                                          context, const LoginIntro()),
-                                    );
-                              }
-                            });
-                          }
-                        });
-                      },
-                      child: createText('Poista tili'),
-                    ),
-              SizedBox(height: 30.h),
-              createSectionTitle('Versio'),
-              Text(
-                '1.5.4',
+            ),
+            SizedBox(height: 10.h),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
                 style: TextStyle(
-                  fontSize: 17.sp,
+                  fontSize: 14.sp,
                   fontFamily: 'Rubik',
                   color: Colors.white,
                 ),
+                children: <TextSpan>[
+                  const TextSpan(
+                    text: 'Voit myös liittyä keskusteluun ',
+                  ),
+                  TextSpan(
+                    text: 'Discord-kanavallamme.',
+                    style: const TextStyle(
+                      color: AppStyle.lightPurple,
+                      fontFamily: 'Rubik',
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        launchUrl(Uri.parse('https://discord.gg/aagEzSetdC'));
+                      },
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            SizedBox(height: 30.h),
+            createSectionTitle('Yhteystiedot:'),
+            getSomeSpace(10),
+            createHyperLink(
+              "Seuraa meitä Instagramissa",
+              'https://www.instagram.com/miittiapp/',
+            ),
+            getSomeSpace(10),
+            createHyperLink(
+              "info@miitti.app",
+              'mailto:info@miitti.app',
+            ),
+            SizedBox(height: 30.h),
+            createSectionTitle(
+              'Dokumentit ja ehdot:',
+            ),
+            getSomeSpace(10),
+            createHyperLink(
+              "Käyttöehdot",
+              'https://www.miitti.app/kayttoehdot',
+            ),
+            getSomeSpace(10),
+            createHyperLink(
+              "Tietosuojaseloste",
+              'https://www.miitti.app/tietosuojaseloste',
+            ),
+            SizedBox(height: 20.h),
+            createSectionTitle('Tili:'),
+            getSomeSpace(10),
+            GestureDetector(
+                onTap: () => ap.userSignOut().then(
+                      (value) => pushNRemoveUntil(context, const LoginIntro()),
+                    ),
+                child: createText('Kirjaudu ulos')),
+            getSomeSpace(10),
+            ap.isAnonymous
+                ? GestureDetector(
+                    onTap: () {
+                      pushNRemoveUntil(context, const CompleteProfileOnboard());
+                    },
+                    child: createText('Viimeistele profiili'),
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const ConfirmDialog(
+                            title: 'Varmistus',
+                            mainText:
+                                'Oletko varma, että haluat poistaa tilisi? Tämä toimenpide on peruuttamaton, ja kaikki tietosi poistetaan pysyvästi.',
+                          );
+                        },
+                      ).then((confirmed) {
+                        if (confirmed != null && confirmed) {
+                          ap.removeUser(ap.miittiUser.uid).then((value) {
+                            showSnackBar(context, value.$2,
+                                value.$1 ? Colors.green : Colors.red);
+                            if (value.$1) {
+                              ap.userSignOut().then(
+                                    (value) => pushNRemoveUntil(
+                                        context, const LoginIntro()),
+                                  );
+                            }
+                          });
+                        }
+                      });
+                    },
+                    child: createText('Poista tili'),
+                  ),
+            SizedBox(height: 30.h),
+            createSectionTitle('Versio'),
+            Text(
+              '1.5.4',
+              style: TextStyle(
+                fontSize: 17.sp,
+                fontFamily: 'Rubik',
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );

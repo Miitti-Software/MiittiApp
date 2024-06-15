@@ -132,7 +132,7 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(70.w),
         child: AppBar(
-          backgroundColor: AppStyle.wineColor,
+          backgroundColor: AppStyle.black,
           automaticallyImplyLeading: false,
           title: Align(
             alignment: Alignment.bottomLeft,
@@ -282,7 +282,7 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                           width: 50.w,
                           decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppStyle.purpleColor
+                                  ? AppStyle.violet
                                   : Colors.transparent,
                               borderRadius: const BorderRadius.all(
                                   Radius.circular(10.0))),
@@ -336,7 +336,7 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  color: AppStyle.purpleColor,
+                                  color: AppStyle.violet,
                                   fontSize: 22.0.sp,
                                   fontFamily: 'Sora',
                                 ),
@@ -444,12 +444,12 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                     showSnackBar(
                         context,
                         'Varmista, että täytät kaikki tyhjät kohdat ja yritä uudeelleen!',
-                        Colors.red.shade800);
+                        AppStyle.red);
                   }
                 },
                 child: isLoading == true
                     ? const CircularProgressIndicator(
-                        color: AppStyle.lightPurpleColor,
+                        color: AppStyle.violet,
                       )
                     : Text(
                         'Tallenna muutokset',
@@ -540,8 +540,8 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
         height: 65.w,
         decoration: BoxDecoration(
           color: isSelected
-              ? AppStyle.lightPurpleColor
-              : AppStyle.lightPurpleColor.withOpacity(0.7),
+              ? AppStyle.lightPurple
+              : AppStyle.lightPurple.withOpacity(0.7),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(

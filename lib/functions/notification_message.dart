@@ -42,8 +42,8 @@ class _NotificationMessageState extends State<NotificationMessage> {
 
     //Navigate insted of creating here
     getPage(payload, context).then((page) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => page));
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => pushReplacement(context, page));
     });
 
     return const Scaffold(

@@ -6,6 +6,7 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:provider/provider.dart';
 
 class PhoneAuth extends StatefulWidget {
@@ -46,89 +47,87 @@ class _PhoneAuthState extends State<PhoneAuth> {
   Widget build(BuildContext context) {
     final ap = Provider.of<AuthProvider>(context, listen: true);
 
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppStyle.gapH50,
-              Center(child: OtherWidgets.getMiittiLogo),
+    return SafeScaffold(
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            gapH50,
+            Center(child: getMiittiLogo),
 
-              const Spacer(),
+            const Spacer(),
 
-              Text(
-                'Mikä on puhelinnumerosi?',
-                style: AppStyle.title.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            Text(
+              'Mikä on puhelinnumerosi?',
+              style: AppStyle.title.copyWith(
+                fontWeight: FontWeight.w700,
               ),
+            ),
 
-              AppStyle.gapH20,
+            gapH20,
 
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Container(
-                  width: 60.w,
-                  decoration: const BoxDecoration(
-                    color: AppStyle.pink,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    vertical: 13.h,
-                  ),
-                  child: Text(
-                    '+358',
-                    textAlign: TextAlign.center,
-                    style: AppStyle.hintText.copyWith(
-                      color: Colors.white,
-                    ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Container(
+                width: 60.w,
+                decoration: const BoxDecoration(
+                  color: AppStyle.pink,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                padding: EdgeInsets.symmetric(
+                  vertical: 13.h,
+                ),
+                child: Text(
+                  '+358',
+                  textAlign: TextAlign.center,
+                  style: AppStyle.hintText.copyWith(
+                    color: Colors.white,
                   ),
                 ),
-                title: ConstantsCustomTextField(
-                  hintText: '453301000',
-                  controller: phoneController,
-                  keyboardType: TextInputType.number,
-                  focusNode: myFocusNode,
-                ),
               ),
-
-              AppStyle.gapH8,
-
-              Text(
-                'Lähetämme hetken kuluttua vahvistuskoodin sisältävän tekstiviestin.',
-                style: AppStyle.warning,
+              title: ConstantsCustomTextField(
+                hintText: '453301000',
+                controller: phoneController,
+                keyboardType: TextInputType.number,
+                focusNode: myFocusNode,
               ),
+            ),
 
-              const Spacer(),
+            gapH8,
 
-              CustomButton(
-                buttonText: 'Seuraava',
-                onPressed: () {
-                  if (phoneController.text.trim().isNotEmpty) {
-                    sendPhoneNumberToFirebase(ap);
-                  } else {
-                    showSnackBar(
-                        context,
-                        'Huom! Sinun täytyy antaa puhelinnumerosi kirjautuaksesi sisään.',
-                        AppStyle.red);
-                  }
-                },
-              ), //Removed extra padding in ConstantsCustomButton
-              AppStyle.gapH10,
+            Text(
+              'Lähetämme hetken kuluttua vahvistuskoodin sisältävän tekstiviestin.',
+              style: AppStyle.warning,
+            ),
 
-              CustomButton(
-                buttonText: 'Takaisin',
-                isWhiteButton: true,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+            const Spacer(),
 
-              if (myFocusNode.hasFocus) AppStyle.gapH20
-            ],
-          ),
+            CustomButton(
+              buttonText: 'Seuraava',
+              onPressed: () {
+                if (phoneController.text.trim().isNotEmpty) {
+                  sendPhoneNumberToFirebase(ap);
+                } else {
+                  showSnackBar(
+                      context,
+                      'Huom! Sinun täytyy antaa puhelinnumerosi kirjautuaksesi sisään.',
+                      AppStyle.red);
+                }
+              },
+            ), //Removed extra padding in ConstantsCustomButton
+            gapH10,
+
+            CustomButton(
+              buttonText: 'Takaisin',
+              isWhiteButton: true,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+
+            if (myFocusNode.hasFocus) gapH20
+          ],
         ),
       ),
     );

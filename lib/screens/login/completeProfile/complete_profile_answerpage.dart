@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/widgets/custom_button.dart';
 
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/widgets/other_widgets.dart';
 
 class CompleteProfileAnswerPage extends StatefulWidget {
   final String question;
@@ -54,7 +55,7 @@ class _CompleteProfileAnswerPageState extends State<CompleteProfileAnswerPage> {
                   widget.question,
                   style: AppStyle.question,
                 ),
-                AppStyle.gapH10,
+                gapH10,
                 TextFormField(
                   maxLines: 5,
                   maxLength: 150,
@@ -81,14 +82,14 @@ class _CompleteProfileAnswerPageState extends State<CompleteProfileAnswerPage> {
                     ),
                   ),
                 ),
-                AppStyle.gapH20,
+                gapH20,
                 CustomButton(
                   buttonText: 'Tallenna',
                   onPressed: () {
                     Navigator.pop(context, answerController.text.trim());
                   },
                 ),
-                AppStyle.gapH10,
+                gapH10,
                 CustomButton(
                   buttonText: 'Takaisin',
                   isWhiteButton: true,

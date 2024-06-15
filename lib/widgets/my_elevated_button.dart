@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class MyElevatedButton extends StatelessWidget {
@@ -18,10 +17,7 @@ class MyElevatedButton extends StatelessWidget {
     this.margin = EdgeInsets.zero,
     this.width = 380,
     this.height = 65,
-    this.gradient = const LinearGradient(colors: [
-      AppStyle.lightRedColor,
-      AppStyle.orangeColor,
-    ]),
+    this.gradient = AppStyle.pinkGradient,
   });
 
   @override

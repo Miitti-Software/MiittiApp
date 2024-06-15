@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+//TODO: Seperate styles
 class ConfirmDialog extends StatelessWidget {
   final String title;
   final String mainText;
@@ -19,7 +20,7 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: AppStyle.darkPurpleColor,
+      backgroundColor: AppStyle.darkPurple,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),
@@ -68,8 +69,8 @@ class ConfirmDialog extends StatelessWidget {
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red.shade600, // Set the button color
-            foregroundColor: Colors.white, // Set the text color
+            backgroundColor: AppStyle.red, // Set the button color
+            foregroundColor: AppStyle.white, // Set the text color
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),

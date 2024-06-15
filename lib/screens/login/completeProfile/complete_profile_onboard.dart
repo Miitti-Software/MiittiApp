@@ -24,6 +24,7 @@ import 'package:miitti_app/screens/login/completeProfile/complete_profile_answer
 import 'package:miitti_app/services/auth_provider.dart';
 
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
@@ -260,7 +261,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
   }
 
   Future<void> selectImage({required bool isCamera}) async {
-    OtherWidgets.showLoadingDialog(context);
+    showLoadingDialog(context);
 
     image = isCamera
         ? await pickImageFromCamera(context)
@@ -697,7 +698,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                         ),
                       ),
                     ),
-              AppStyle.gapH10,
+              gapH10,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -717,7 +718,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                             Icons.image_search_rounded,
                             color: Colors.white,
                           ),
-                          AppStyle.gapW5,
+                          gapW5,
                           Text(
                             'Lisää uusi kuva',
                             style: AppStyle.body.copyWith(fontSize: 16.sp),
@@ -742,7 +743,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                             Icons.photo_camera_rounded,
                             color: Colors.white,
                           ),
-                          AppStyle.gapW5,
+                          gapW5,
                           Text(
                             'Ota uusi kuva',
                             style: AppStyle.body.copyWith(fontSize: 16.sp),
@@ -1163,69 +1164,63 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Flex(
-          direction: Axis.vertical,
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: onboardingScreens.length,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  ConstantsOnboarding screen = onboardingScreens[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        screen.isFullView == true
-                            ? AppStyle.gapH10
-                            : const Spacer(),
-                        Text(
-                          screen.title,
-                          style: AppStyle.title,
-                        ),
-                        Text(
-                          screen.warningText!,
-                          style: AppStyle.warning,
-                        ),
-                        AppStyle.gapH20,
-                        mainWidgetsForScreens(index),
+    return SafeScaffold(
+      Flex(
+        direction: Axis.vertical,
+        children: [
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: onboardingScreens.length,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                ConstantsOnboarding screen = onboardingScreens[index];
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      screen.isFullView == true ? gapH10 : const Spacer(),
+                      Text(
+                        screen.title,
+                        style: AppStyle.title,
+                      ),
+                      Text(
+                        screen.warningText!,
+                        style: AppStyle.warning,
+                      ),
+                      gapH20,
+                      mainWidgetsForScreens(index),
 
-                        screen.isFullView == true
-                            ? AppStyle.gapH10
-                            : const Spacer(),
-                        CustomButton(
-                          buttonText: screen.title == 'Vielä lopuksi!'
-                              ? 'Hyväksyn yhteisönormit'
-                              : 'Seuraava',
-                          onPressed: () => errorHandlingScreens(index),
-                        ), //Removed extra padding in ConstantsCustomButton
-                        AppStyle.gapH10,
-                        CustomButton(
-                          buttonText: 'Takaisin',
-                          isWhiteButton: true,
-                          onPressed: () {
-                            if (_pageController.page != 0) {
-                              _pageController.previousPage(
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.linear,
-                              );
-                            } else {
-                              Navigator.pop(context);
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                      screen.isFullView == true ? gapH10 : const Spacer(),
+                      CustomButton(
+                        buttonText: screen.title == 'Vielä lopuksi!'
+                            ? 'Hyväksyn yhteisönormit'
+                            : 'Seuraava',
+                        onPressed: () => errorHandlingScreens(index),
+                      ), //Removed extra padding in ConstantsCustomButton
+                      gapH10,
+                      CustomButton(
+                        buttonText: 'Takaisin',
+                        isWhiteButton: true,
+                        onPressed: () {
+                          if (_pageController.page != 0) {
+                            _pageController.previousPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.linear,
+                            );
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

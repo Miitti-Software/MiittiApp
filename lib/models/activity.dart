@@ -50,7 +50,7 @@ class Activity {
             child: Stack(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppStyle.purpleColor,
+                  backgroundColor: AppStyle.violet,
                   radius: 37.r,
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(activity.activityPhoto),
@@ -67,12 +67,12 @@ class Activity {
                     children: [
                       Icon(
                         Icons.circle,
-                        color: AppStyle.purpleColor,
+                        color: AppStyle.violet,
                         size: 25,
                       ),
                       Icon(
                         Icons.verified,
-                        color: AppStyle.lightPurpleColor,
+                        color: AppStyle.lightPurple,
                         size: 20,
                       ),
                     ],

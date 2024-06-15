@@ -4,6 +4,7 @@ import 'package:miitti_app/widgets/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/widgets/other_widgets.dart';
 
 class AnonymousDialog extends StatelessWidget {
   const AnonymousDialog({super.key});
@@ -57,7 +58,7 @@ class AnonymousDialog extends StatelessWidget {
                                     const CompleteProfileOnboard()));
                       },
                     ), //Removed extra padding in ConstantsCustomButton
-                    AppStyle.gapH10,
+                    gapH10,
                     CustomButton(
                       buttonText: 'Ei vielä',
                       isWhiteButton: true,

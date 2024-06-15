@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthService {
@@ -20,6 +21,10 @@ class AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  void signInWithApple(BuildContext context) {}
+
+  void signInWithGoogle(BuildContext context) {}
 
   // Other auth-related methods
 }

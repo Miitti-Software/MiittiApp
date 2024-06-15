@@ -138,9 +138,8 @@ class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
                     margin:
                         EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                     decoration: BoxDecoration(
-                      color: AppStyle.wineColor,
-                      border:
-                          Border.all(color: AppStyle.purpleColor, width: 2.0),
+                      color: AppStyle.black,
+                      border: Border.all(color: AppStyle.violet, width: 2.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
@@ -162,7 +161,7 @@ class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
                                 children: [
                                   const Icon(
                                     Icons.calendar_month,
-                                    color: AppStyle.lightPurpleColor,
+                                    color: AppStyle.violet,
                                   ),
                                   SizedBox(width: 4.w),
                                   Flexible(
@@ -175,7 +174,7 @@ class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
                                   SizedBox(width: 16.w),
                                   const Icon(
                                     Icons.location_on_outlined,
-                                    color: AppStyle.lightPurpleColor,
+                                    color: AppStyle.lightPurple,
                                   ),
                                   SizedBox(width: 4.w),
                                   Flexible(
@@ -190,7 +189,7 @@ class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
                               Row(
                                 children: [
                                   getListTileButton(
-                                    AppStyle.purpleColor,
+                                    AppStyle.violet,
                                     'Katso lisätiedot',
                                     () => Navigator.push(
                                         context,
@@ -208,7 +207,7 @@ class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
                                     width: 10.w,
                                   ),
                                   getListTileButton(
-                                    AppStyle.lightRedColor,
+                                    AppStyle.red,
                                     'Poista miitti',
                                     () => removeActivity(activity.activityUid),
                                   ),

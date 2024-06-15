@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/widgets/my_elevated_button.dart';
+import 'package:miitti_app/widgets/safe_scaffold.dart';
 
 class QuestionAnswer extends StatefulWidget {
   final Map<String, String>? recievedData;
@@ -62,19 +63,17 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: 20.w,
-          ),
-          child: Column(
-            children: [
-              _buildHeader(),
-              SizedBox(height: 10.h),
-              _buildQuestionList(),
-            ],
-          ),
+    return SafeScaffold(
+      Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: 20.w,
+        ),
+        child: Column(
+          children: [
+            _buildHeader(),
+            SizedBox(height: 10.h),
+            _buildQuestionList(),
+          ],
         ),
       ),
     );
@@ -95,9 +94,7 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
-        gradient: const LinearGradient(
-          colors: [AppStyle.lightRedColor, AppStyle.orangeColor],
-        ),
+        gradient: AppStyle.pinkGradient,
       ),
       child: TextButton(
         onPressed: () => Navigator.pop(context, answers),
@@ -200,7 +197,7 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
     return Container(
       margin: EdgeInsets.all(8.w),
       decoration: BoxDecoration(
-        color: AppStyle.lightPurpleColor,
+        color: AppStyle.lightPurple,
         borderRadius: BorderRadius.circular(50.0),
       ),
       padding: EdgeInsets.all(15.w),
@@ -248,14 +245,14 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(
-                  color: AppStyle.purpleColor,
+                  color: AppStyle.violet,
                   width: 2.0,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
                 borderSide: const BorderSide(
-                  color: AppStyle.purpleColor,
+                  color: AppStyle.violet,
                   width: 2.0,
                 ),
               ),

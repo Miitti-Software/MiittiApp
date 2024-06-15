@@ -34,7 +34,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: AppStyle.purpleColor,
+        color: AppStyle.violet,
       ),
       child: ListTile(
         title: Text(
@@ -106,12 +106,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                   width: 60.h,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    gradient: const LinearGradient(
-                      colors: [
-                        AppStyle.lightRedColor,
-                        AppStyle.orangeColor,
-                      ],
-                    ),
+                    gradient: AppStyle.pinkGradient,
                   ),
                   child: Icon(
                     Icons.arrow_back,

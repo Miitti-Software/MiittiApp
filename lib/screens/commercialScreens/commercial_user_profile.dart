@@ -30,7 +30,7 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(70.h),
         child: AppBar(
-          backgroundColor: AppStyle.wineColor,
+          backgroundColor: AppStyle.black,
           automaticallyImplyLeading: false,
           title: Align(
             alignment: Alignment.bottomLeft,
@@ -88,12 +88,7 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
                       padding: EdgeInsets.all(15.w),
                       decoration: BoxDecoration(
                         color: miittiColor,
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppStyle.lightRedColor,
-                            AppStyle.orangeColor,
-                          ],
-                        ),
+                        gradient: AppStyle.pinkGradient,
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Icon(
@@ -122,7 +117,7 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
                       style: TextStyle(
                         fontFamily: 'Rubik',
                         fontSize: 17.0.sp,
-                        color: AppStyle.lightPurpleColor,
+                        color: AppStyle.lightPurple,
                       ),
                     ),
                     SizedBox(

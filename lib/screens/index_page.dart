@@ -99,7 +99,7 @@ class IndexPageState extends State<IndexPage> with WidgetsBindingObserver {
           ? SizedBox(
               height: 60.h,
               width: 60.h,
-              child: OtherWidgets().getFloatingButton(
+              child: getFloatingButton(
                 onPressed: () async {
                   if (ap.isAnonymous) {
                     showDialog(

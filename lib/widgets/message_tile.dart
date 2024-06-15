@@ -27,7 +27,7 @@ class MessageTile extends StatelessWidget {
       nipWidth: 8,
       nipHeight: 24,
       nip: sentByMe ? BubbleNip.rightBottom : BubbleNip.leftBottom,
-      color: sentByMe ? AppStyle.lightPurpleColor : AppStyle.purpleColor,
+      color: sentByMe ? AppStyle.lightPurple : AppStyle.pink,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
