@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/main.dart';
+import 'package:miitti_app/services/firestore_service.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/services/auth_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -12,26 +15,19 @@ import 'dart:convert';
 
 import 'package:permission_handler/permission_handler.dart';
 
-class PushNotifications {
-  static final _firebaseMessaging = FirebaseMessaging.instance;
+class PushNotificationService {
+  final Ref ref;
+  final _firebaseMessaging = FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  static Future<bool> checkPermission() async {
+  PushNotificationService(this.ref);
+
+  Future<bool> checkPermission() async {
     return await Permission.notification.isGranted;
   }
 
-  static Future<bool> requestPermission(bool requestEvenDenied) async {
-    bool permanentlyDenied = await Permission.notification.isPermanentlyDenied;
-    if (permanentlyDenied && requestEvenDenied) {
-      await openAppSettings();
-      return await Permission.notification.isGranted;
-    } else {
-      return await Permission.notification.request().isGranted;
-    }
-  }
-
-  static Future init(AuthProvider ap) async {
+  Future init() async {
     //on background notification tapped
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
@@ -56,11 +52,19 @@ class PushNotifications {
     debugPrint("############################################################");
 
     //Save token to user data(needed to access other users tokens in code)
-    if (!ap.isAnonymous) {
-      if (ap.miittiUser.fcmToken != token) {
-        ap.miittiUser.fcmToken = token!;
-        ap.updateUserInfo(updatedUser: ap.miittiUser);
-      }
+    MiittiUser? user = ref.read(firestoreService).miittiUser;
+    if (user != null && user.fcmToken != token) {
+      ref.read(firestoreService).updateUser({"fcmToken": token});
+    }
+  }
+
+  Future<bool> requestPermission(bool requestEvenDenied) async {
+    bool permanentlyDenied = await Permission.notification.isPermanentlyDenied;
+    if (permanentlyDenied && requestEvenDenied) {
+      await openAppSettings();
+      return await Permission.notification.isGranted;
+    } else {
+      return await Permission.notification.request().isGranted;
     }
   }
 
@@ -72,7 +76,7 @@ class PushNotifications {
   }
 
   // initalize local notifications
-  static Future localNotiInit() async {
+  Future localNotiInit() async {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -95,7 +99,7 @@ class PushNotifications {
       String payloadData = jsonEncode(message.data);
       debugPrint("Got a message in foreground");
       if (message.notification != null) {
-        PushNotifications.showSimpleNotification(
+        PushNotificationService.showSimpleNotification(
             title: message.notification!.title!,
             body: message.notification!.body!,
             payload: payloadData);
@@ -142,7 +146,7 @@ class PushNotifications {
         .show(0, title, body, notificationDetails, payload: payload);
   }
 
-  static void sendInviteNotification(
+  void sendInviteNotification(
       MiittiUser current, MiittiUser receiver, PersonActivity activity) async {
     sendNotification(
       receiver.fcmToken,
@@ -153,23 +157,27 @@ class PushNotifications {
     );
   }
 
-  static Future sendRequestNotification(
-      AuthProvider ap, PersonActivity activity) async {
-    MiittiUser? admin = await ap.getUser(activity.admin);
+  Future sendRequestNotification(PersonActivity activity) async {
+    if (ref.read(isAnonymous)) {
+      debugPrint("Cannot send request notification as anonymous user");
+      return;
+    }
+    FirestoreService firestore = ref.read(firestoreService);
+    MiittiUser? admin = await firestore.getUser(activity.admin);
     if (admin != null) {
       sendNotification(
         admin.fcmToken,
         "Pääsiskö miittiin mukaan?",
-        "${ap.miittiUser.userName} pyysi päästä miittiin: ${activity.activityTitle}",
+        "${firestore.miittiUser!.userName} pyysi päästä miittiin: ${activity.activityTitle}",
         "request",
-        ap.miittiUser.uid,
+        firestore.miittiUser!.uid,
       );
     } else {
       debugPrint("Couldn't find admin to send request notification to.");
     }
   }
 
-  static void sendAcceptedNotification(
+  void sendAcceptedNotification(
       MiittiUser receiver, MiittiActivity activity) async {
     sendNotification(
       receiver.fcmToken,
@@ -180,8 +188,8 @@ class PushNotifications {
     );
   }
 
-  static Future sendNotification(String receiverToken, String title,
-      String message, String type, String data) async {
+  Future sendNotification(String receiverToken, String title, String message,
+      String type, String data) async {
     debugPrint("Trying to send message: $message");
     final callable =
         FirebaseFunctions.instance.httpsCallable("sendNotificationTo");
@@ -200,7 +208,7 @@ class PushNotifications {
     }
   }
 
-  static void sendMessageNotification(String receiverToken, String senderName,
+  void sendMessageNotification(String receiverToken, String senderName,
       MiittiActivity activity, String message) async {
     sendNotification(
       receiverToken,

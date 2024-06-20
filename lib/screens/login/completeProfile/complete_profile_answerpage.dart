@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
 
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
@@ -83,14 +83,14 @@ class _CompleteProfileAnswerPageState extends State<CompleteProfileAnswerPage> {
                   ),
                 ),
                 gapH20,
-                CustomButton(
+                MyButton(
                   buttonText: 'Tallenna',
                   onPressed: () {
                     Navigator.pop(context, answerController.text.trim());
                   },
                 ),
                 gapH10,
-                CustomButton(
+                MyButton(
                   buttonText: 'Takaisin',
                   isWhiteButton: true,
                   onPressed: () {

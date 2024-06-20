@@ -1,7 +1,7 @@
 //TODO: Refactor
 
 import 'package:flutter/material.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
@@ -10,8 +10,8 @@ import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:provider/provider.dart';
 
-class LoginDecideScreen extends StatelessWidget {
-  const LoginDecideScreen({super.key});
+class ExploreDecisionScreen extends StatelessWidget {
+  const ExploreDecisionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class LoginDecideScreen extends StatelessWidget {
                 const Spacer(),
 
                 //continue building profile button
-                CustomButton(
+                MyButton(
                   buttonText: 'Jatka profiilin luomista',
                   onPressed: () {
                     //continue profile

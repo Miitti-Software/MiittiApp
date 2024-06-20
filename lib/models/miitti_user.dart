@@ -4,7 +4,7 @@ class MiittiUser {
   String userEmail;
   String userName;
   String userPhoneNumber;
-  String userBirthday;
+  Timestamp userBirthday;
   String userArea;
   Set<String> userFavoriteActivities;
   Map<String, String> userChoices;
@@ -13,10 +13,10 @@ class MiittiUser {
   String profilePicture;
   String uid;
   Set<String> invitedActivities;
-  String userStatus;
+  Timestamp userStatus;
   String userSchool;
   String fcmToken;
-  String userRegistrationDate;
+  Timestamp userRegistrationDate;
 
   MiittiUser(
       {required this.userName,
@@ -46,9 +46,9 @@ class MiittiUser {
       userEmail: map['userEmail'] ?? '',
       uid: map['uid'] ?? '',
       userPhoneNumber: map['userPhoneNumber'] ?? '',
-      userBirthday: map['userBirthday'] ?? '',
+      userBirthday: resolveTimestamp(map['userBirthday']),
       userArea: map['userArea'] ?? '',
-      userFavoriteActivities: resolveActivities(
+      userFavoriteActivities: _resolveActivities(
           (map['userFavoriteActivities'] as List<dynamic>? ?? [])
               .cast<String>()),
       userChoices: (map['userChoices'] as Map<String, dynamic>? ?? {})
@@ -88,7 +88,33 @@ class MiittiUser {
     };
   }
 
-  static Set<String> resolveActivities(List<String> favorites) {
+  void updateUser(Map<String, dynamic> newData) {
+    userName = newData['userName'] ?? userName;
+    userEmail = newData['userEmail'] ?? userEmail;
+    userPhoneNumber = newData['userPhoneNumber'] ?? userPhoneNumber;
+    userBirthday = newData['userBirthday'] ?? userBirthday;
+    userArea = newData['userArea'] ?? userArea;
+    userFavoriteActivities = _resolveActivities(
+        (newData['userFavoriteActivities'] as List<dynamic>? ?? [])
+            .cast<String>());
+    userChoices = (newData['userChoices'] as Map<String, dynamic>? ?? {})
+        .cast<String, String>();
+    userGender = newData['userGender'] ?? userGender;
+    userLanguages = (newData['userLanguages'] as List<dynamic>? ?? [])
+        .cast<String>()
+        .toSet();
+    profilePicture = newData['profilePicture'] ?? profilePicture;
+    invitedActivities = (newData['invitedActivities'] as List<dynamic>? ?? [])
+        .cast<String>()
+        .toSet();
+    userStatus = newData['userStatus'] ?? userStatus;
+    userSchool = newData['userSchool'] ?? userSchool;
+    fcmToken = newData['fcmToken'] ?? fcmToken;
+    userRegistrationDate =
+        newData['userRegistrationDate'] ?? userRegistrationDate;
+  }
+
+  static Set<String> _resolveActivities(List<String> favorites) {
     Map<String, String> changed = {
       "Jalkapallo": "Pallopeleille",
       "Golf": "Golfaamaan",
@@ -110,4 +136,21 @@ class MiittiUser {
 
     return favorites.toSet();
   }
+
+  static Timestamp resolveTimestamp(dynamic time) {
+    if (time == null) {
+      return _defaultTime;
+    }
+    try {
+      return time as Timestamp;
+    } catch (e) {
+      final birthDate = (time as String).split('/');
+      final day = int.parse(birthDate[0]);
+      final month = int.parse(birthDate[1]);
+      final year = int.parse(birthDate[2]);
+      return Timestamp.fromDate(DateTime(year, month, day));
+    }
+  }
+
+  static final Timestamp _defaultTime = Timestamp.fromDate(DateTime(2000));
 }

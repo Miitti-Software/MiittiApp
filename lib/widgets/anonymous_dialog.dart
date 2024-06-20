@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/functions/utils.dart';
@@ -48,7 +48,7 @@ class AnonymousDialog extends StatelessWidget {
                       ),
                     ),
                     getSomeSpace(10),
-                    CustomButton(
+                    MyButton(
                       buttonText: 'Viimeistele profiili',
                       onPressed: () {
                         Navigator.push(
@@ -59,7 +59,7 @@ class AnonymousDialog extends StatelessWidget {
                       },
                     ), //Removed extra padding in ConstantsCustomButton
                     gapH10,
-                    CustomButton(
+                    MyButton(
                       buttonText: 'Ei vielä',
                       isWhiteButton: true,
                       onPressed: () {

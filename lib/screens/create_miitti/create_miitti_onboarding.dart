@@ -16,7 +16,7 @@ import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:location/location.dart' as location;
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
@@ -727,14 +727,14 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                         gapH20,
                         mainWidgetsForScreens(index),
                         gapH10,
-                        CustomButton(
+                        MyButton(
                           buttonText: screen.isFullView == true
                               ? 'Julkaise'
                               : 'Seuraava',
                           onPressed: () => errorHandlingScreens(index),
                         ),
                         gapH10,
-                        CustomButton(
+                        MyButton(
                           buttonText: 'Takaisin',
                           isWhiteButton: true,
                           onPressed: () {

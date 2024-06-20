@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/providers.dart';
+import 'package:miitti_app/services/providers.dart';
 
 class AuthButton extends ConsumerWidget {
   final bool apple;

@@ -14,10 +14,10 @@ import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/functions/push_notifications.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 
-import 'package:miitti_app/widgets/my_elevated_button.dart';
+import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -390,7 +390,7 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
     if (!isAlreadyJoined) {
       final ap = Provider.of<AuthProvider>(context, listen: false);
       await ap.joinCommercialActivity(widget.myActivity.activityUid);
-      PushNotifications.sendAcceptedNotification(
+      PushNotificationService.sendAcceptedNotification(
           ap.miittiUser, widget.myActivity);
       setState(() {
         isAlreadyJoined = true;

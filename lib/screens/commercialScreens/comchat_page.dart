@@ -9,7 +9,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/widgets/message_tile.dart';
 import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/functions/push_notifications.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:provider/provider.dart';
@@ -191,7 +191,7 @@ class _ChatPageState extends State<ComChatPage> {
       var receivers = await ap.fetchUsersByUids(widget.activity.participants);
       for (MiittiUser receiver in receivers) {
         if (receiver.uid == ap.uid) continue;
-        PushNotifications.sendMessageNotification(receiver.fcmToken,
+        PushNotificationService.sendMessageNotification(receiver.fcmToken,
             ap.miittiUser.userName, widget.activity, messageController.text);
       }
 

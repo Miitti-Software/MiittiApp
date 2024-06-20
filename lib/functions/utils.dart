@@ -14,6 +14,12 @@ import 'dart:math';
 
 enum Gender { male, female, nonBinary }
 
+void afterFrame(Function() callback) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    callback();
+  });
+}
+
 String replaceCharacters(String text) {
   text = text.replaceAll('ä', 'a');
   text = text.replaceAll('ö', 'o');
@@ -218,27 +224,20 @@ void pushPage(BuildContext context, Widget page) {
   );
 }
 
-int calculateAge(String birthDateString) {
-  if (birthDateString.isNotEmpty) {
-    // Parse the birth date string into a DateTime object
-    List<String> dateParts = birthDateString.split('/');
-    int day = int.parse(dateParts[0]);
-    int month = int.parse(dateParts[1]);
-    int year = int.parse(dateParts[2]);
-    DateTime birthDate = DateTime(year, month, day);
-    DateTime today = DateTime.now();
+int calculateAge(Timestamp birthday) {
+  // Parse the birth date string into a DateTime object
+  DateTime today = DateTime.now();
+  DateTime birthDate = birthday.toDate();
 
-    int age = today.year - birthDate.year;
+  int age = today.year - birthDate.year;
 
-    // Adjust age if the birth date hasn't occurred yet this year
-    if (today.month < birthDate.month ||
-        (today.month == birthDate.month && today.day < birthDate.day)) {
-      age--;
-    }
-
-    return age;
+  // Adjust age if the birth date hasn't occurred yet this year
+  if (today.month < birthDate.month ||
+      (today.month == birthDate.month && today.day < birthDate.day)) {
+    age--;
   }
-  return 18;
+
+  return age;
 }
 
 int daysSince(Timestamp timestamp) {

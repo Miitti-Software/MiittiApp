@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
-class ConstantsCustomTextField extends StatelessWidget {
+class MyTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final FocusNode? focusNode;
 
-  const ConstantsCustomTextField({
+  const MyTextField({
     super.key,
     required this.hintText,
     required this.controller,

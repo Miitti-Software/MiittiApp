@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/screens/adminPanel/admin_userinfo.dart';
-import 'package:miitti_app/widgets/admin_searchbar.dart';
+import 'package:miitti_app/widgets/fields/admin_searchbar.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/services/auth_provider.dart';
@@ -111,10 +111,8 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                   MiittiUser user = searchResults[index];
 
                   // Format the date and time in the desired format or provide an empty string if null
-                  String formattedDate = user.userStatus.isEmpty
-                      ? ''
-                      : DateFormat('MMMM d, HH:mm')
-                          .format(DateTime.tryParse(user.userStatus)!);
+                  String formattedDate = DateFormat('MMMM d, HH:mm')
+                      .format(user.userStatus.toDate());
 
                   return Container(
                     decoration: const BoxDecoration(

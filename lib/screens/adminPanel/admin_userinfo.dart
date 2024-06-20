@@ -18,10 +18,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
 
   @override
   void initState() {
-    userLastOpenDate = widget.user.userStatus.isEmpty
-        ? ''
-        : DateFormat('MMMM d, HH:mm')
-            .format(DateTime.tryParse(widget.user.userStatus)!);
+    DateFormat('MMMM d, HH:mm').format(widget.user.userStatus.toDate());
     super.initState();
   }
 
@@ -128,8 +125,8 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                   'Puhelinnumero', widget.user.userPhoneNumber, context, true),
               getRichText('Ollut viimeksi aktiivisena:   ', userLastOpenDate),
               SizedBox(height: 5.h),
-              getRichText(
-                  'Profiili luotu:  ', widget.user.userRegistrationDate),
+              getRichText('Profiili luotu:  ',
+                  widget.user.userRegistrationDate.toString()),
               SizedBox(height: 5.h),
               getRichText('Käytössä oleva sovellusversio:  ', '1.2.8'),
             ],

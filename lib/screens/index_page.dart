@@ -1,12 +1,13 @@
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
 
 import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/functions/push_notifications.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,7 @@ import 'navBarScreens/people_screen.dart';
 import 'navBarScreens/profile_screen.dart';
 
 //TODO: Refactor
-class IndexPage extends StatefulWidget {
+class IndexPage extends ConsumerStatefulWidget {
   final int? initialPage;
 
   const IndexPage({super.key, this.initialPage});
@@ -27,7 +28,8 @@ class IndexPage extends StatefulWidget {
   IndexPageState createState() => IndexPageState();
 }
 
-class IndexPageState extends State<IndexPage> with WidgetsBindingObserver {
+class IndexPageState extends ConsumerState<IndexPage>
+    with WidgetsBindingObserver {
   //Integer index that is used for deciding which screen gets to be displayed in body
   int _currentIndex = 1;
 
@@ -80,14 +82,12 @@ class IndexPageState extends State<IndexPage> with WidgetsBindingObserver {
   // Helper function to update the user status
 
   void setUserStatus() {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
     ap.setUserStatus();
   }
 
   void initPushNotifications() {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    PushNotifications.init(ap);
-    PushNotifications.localNotiInit();
+    PushNotificationService.init(ap);
+    PushNotificationService.localNotiInit();
   }
 
   @override

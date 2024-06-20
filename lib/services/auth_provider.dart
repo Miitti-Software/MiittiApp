@@ -31,7 +31,7 @@ import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/functions/filter_settings.dart';
 import 'package:miitti_app/screens/index_page.dart';
 
-import 'package:miitti_app/screens/login/login_decide_screen.dart';
+import 'package:miitti_app/screens/login/explore_decision_screen.dart';
 import 'package:miitti_app/screens/login/phone/phone_sms.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -272,7 +272,7 @@ class AuthProvider extends ChangeNotifier {
         } else {
           await setSignIn();
           await setAnonymousModeOn();
-          pushNRemoveUntil(context, const LoginDecideScreen());
+          pushNRemoveUntil(context, const ExploreDecisionScreen());
         }
       });
     } catch (error) {
@@ -296,11 +296,12 @@ class AuthProvider extends ChangeNotifier {
 
 // #region Report
 
-  Future<void> reportUser(
-      String message, String reportedId, String senderId) async {
+  Future<void> reportUser(String message, String reportedId) async {
     try {
       _isLoading = true;
       notifyListeners();
+
+      String senderId = uid;
 
       DocumentSnapshot documentSnapshot =
           await _fireStore.collection('reportedUsers').doc(reportedId).get();
@@ -331,11 +332,11 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> reportActivity(
-      String message, String reportedId, String senderId) async {
+  Future<void> reportActivity(String message, String reportedId) async {
+    _isLoading = true;
+    notifyListeners();
     try {
-      _isLoading = true;
-      notifyListeners();
+      String senderId = uid;
 
       DocumentSnapshot documentSnapshot = await _fireStore
           .collection('reportedActivities')
@@ -968,8 +969,7 @@ class AuthProvider extends ChangeNotifier {
           .then((value) {
         userModel.profilePicture = value;
       }).onError((error, stackTrace) {});
-      userModel.userRegistrationDate =
-          DateFormat('dd/MM/yyyy').format(DateTime.now());
+      userModel.userRegistrationDate = Timestamp.now();
       userModel.userPhoneNumber = _firebaseAuth.currentUser!.phoneNumber ?? '';
       userModel.uid = _firebaseAuth.currentUser!.uid;
       _uid = userModel.uid;

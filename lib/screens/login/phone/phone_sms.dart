@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
+import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:pinput/pinput.dart';
-import 'package:provider/provider.dart';
 
-class PhoneSms extends StatefulWidget {
+class PhoneSms extends ConsumerStatefulWidget {
   final String verificationId;
   const PhoneSms({required this.verificationId, super.key});
 
   @override
-  State<PhoneSms> createState() => _PhoneSmsState();
+  ConsumerState<PhoneSms> createState() => _PhoneSmsState();
 }
 
-class _PhoneSmsState extends State<PhoneSms> {
+class _PhoneSmsState extends ConsumerState<PhoneSms> {
   late FocusNode smsFocusNode;
   String? smsCode;
 
@@ -34,15 +34,11 @@ class _PhoneSmsState extends State<PhoneSms> {
   }
 
   void verifyOtp(BuildContext context, String userOtp) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    ap.verifyOtp(
-      context: context,
-      verificationId: widget.verificationId,
-      userOtp: userOtp,
-      onSuccess: () {
-        ap.afterSigning(context);
-      },
-    );
+    ref.read(authService).verifyOtp(
+          context: context,
+          verificationId: widget.verificationId,
+          userOtp: userOtp,
+        );
   }
 
   @override
@@ -102,7 +98,7 @@ class _PhoneSmsState extends State<PhoneSms> {
 
             const Spacer(),
 
-            CustomButton(
+            MyButton(
               buttonText: 'Seuraava',
               onPressed: () {
                 if (smsCode != null) {
@@ -118,7 +114,7 @@ class _PhoneSmsState extends State<PhoneSms> {
             ), //Removed extra padding in ConstantsCustomButton
             gapH10,
 
-            CustomButton(
+            MyButton(
               buttonText: 'Takaisin',
               isWhiteButton: true,
               onPressed: () {

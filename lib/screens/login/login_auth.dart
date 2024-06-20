@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/app_texts.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/buttons/auth_button.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/screens/login/phone/phone_auth.dart';
@@ -60,12 +61,7 @@ class _LoginAuthState extends State<LoginAuth> {
 
   Widget choosePhoneLogin(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const PhoneAuth(),
-        ),
-      ),
+      onTap: () => pushPage(context, const PhoneAuth()),
       child: Container(
         width: 350.w,
         margin: EdgeInsets.symmetric(

@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/functions/push_notifications.dart';
-import 'package:miitti_app/widgets/choice_button.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
+import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
 
-import 'package:miitti_app/widgets/custom_button.dart';
-import 'package:miitti_app/widgets/custom_textfield.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
+import 'package:miitti_app/widgets/fields/custom_textfield.dart';
 import 'package:miitti_app/models/onboarding_part.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
@@ -277,14 +277,14 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
     ConstantsOnboarding screen = onboardingScreens[page];
     switch (page) {
       case 0:
-        return ConstantsCustomTextField(
+        return MyTextField(
           hintText: screen.hintText!,
           controller: _nameController,
           keyboardType: screen.keyboardType,
           focusNode: nameFocusNode,
         );
       case 1:
-        return ConstantsCustomTextField(
+        return MyTextField(
           hintText: screen.hintText!,
           controller: _emailController,
           keyboardType: screen.keyboardType,
@@ -823,7 +823,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
               text: "Hyväksyn push-ilmoitukset",
               onSelected: (bool selected) {
                 if (!selected) {
-                  PushNotifications.requestPermission(true)
+                  PushNotificationService.requestPermission(true)
                       .then((bool granted) {
                     if (granted) {
                       _pageController.nextPage(
@@ -1068,14 +1068,15 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
             ),
           );
         } else {
-          PushNotifications.checkPermission().then((granted) {
+          PushNotificationService.checkPermission().then((granted) {
             if (granted) {
               _pageController.nextPage(
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.linear,
               );
             } else {
-              PushNotifications.requestPermission(true).then((grantFixed) {
+              PushNotificationService.requestPermission(true)
+                  .then((grantFixed) {
                 if (grantFixed) {
                   _pageController.nextPage(
                     duration: const Duration(milliseconds: 500),
@@ -1111,7 +1112,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
 
       if (page == 9) {
         //Next page is notification page, if push notifications are already enabled, skip this page
-        PushNotifications.checkPermission().then((enabled) {
+        PushNotificationService.checkPermission().then((enabled) {
           if (enabled) {
             _pageController.animateToPage(
               11,
@@ -1123,7 +1124,8 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
               duration: const Duration(milliseconds: 500),
               curve: Curves.linear,
             );
-            PushNotifications.requestPermission(false).then((bool granted) {
+            PushNotificationService.requestPermission(false)
+                .then((bool granted) {
               if (granted) {
                 _pageController.nextPage(
                   duration: const Duration(milliseconds: 500),
@@ -1193,14 +1195,14 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                       mainWidgetsForScreens(index),
 
                       screen.isFullView == true ? gapH10 : const Spacer(),
-                      CustomButton(
+                      MyButton(
                         buttonText: screen.title == 'Vielä lopuksi!'
                             ? 'Hyväksyn yhteisönormit'
                             : 'Seuraava',
                         onPressed: () => errorHandlingScreens(index),
                       ), //Removed extra padding in ConstantsCustomButton
                       gapH10,
-                      CustomButton(
+                      MyButton(
                         buttonText: 'Takaisin',
                         isWhiteButton: true,
                         onPressed: () {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/widgets/my_elevated_button.dart';
+import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 
 class QuestionAnswer extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
-class CustomButton extends StatelessWidget {
+class MyButton extends StatelessWidget {
   final String buttonText;
   final double? buttonWidth;
   final double? buttonHeight;
@@ -11,7 +11,7 @@ class CustomButton extends StatelessWidget {
 
   final Function() onPressed;
 
-  const CustomButton({
+  const MyButton({
     required this.buttonText,
     this.isWhiteButton = false,
     this.buttonHeight = 50,

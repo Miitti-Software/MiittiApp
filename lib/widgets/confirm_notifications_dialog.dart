@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/functions/push_notifications.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
+import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
-class ConfirmNotificationsDialog extends StatelessWidget {
+class ConfirmNotificationsDialog extends ConsumerWidget {
   const ConfirmNotificationsDialog({super.key, required this.nextPage});
 
   final Function nextPage;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -50,11 +52,12 @@ class ConfirmNotificationsDialog extends StatelessWidget {
                       ),
                     ),
                     getSomeSpace(10),
-                    CustomButton(
+                    MyButton(
                       buttonText: 'Hyväksy ilmoitukset',
                       onPressed: () async {
-                        bool granted =
-                            await PushNotifications.requestPermission(true);
+                        bool granted = await ref
+                            .read(notificationService)
+                            .requestPermission(true);
                         if (granted) {
                           if (context.mounted) {
                             Navigator.pop(context);
@@ -71,7 +74,7 @@ class ConfirmNotificationsDialog extends StatelessWidget {
                       },
                     ), //Removed extra padding in ConstantsCustomButton
                     gapH10,
-                    CustomButton(
+                    MyButton(
                       buttonText: 'Ei vielä',
                       isWhiteButton: true,
                       onPressed: () {

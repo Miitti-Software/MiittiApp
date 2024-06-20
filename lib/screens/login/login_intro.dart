@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:miitti_app/constants/app_texts.dart';
 import 'package:miitti_app/functions/utils.dart';
 
-import 'package:miitti_app/widgets/custom_button.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/screens/login/login_auth.dart';
@@ -33,7 +33,7 @@ class LoginIntro extends StatelessWidget {
                 style: AppStyle.body,
               ),
               const Spacer(),
-              CustomButton(
+              MyButton(
                 buttonText: t('lets-start'),
                 onPressed: () => pushPage(context, const LoginAuth()),
               ),

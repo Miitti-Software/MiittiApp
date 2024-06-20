@@ -14,7 +14,7 @@ import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 
 import 'index_page.dart';
-import '../widgets/my_elevated_button.dart';
+import '../widgets/buttons/my_elevated_button.dart';
 
 //TODO: New UI
 

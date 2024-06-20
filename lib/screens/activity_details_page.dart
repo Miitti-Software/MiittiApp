@@ -2,6 +2,7 @@ import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_stor
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -11,15 +12,17 @@ import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/services/firestore_service.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
 import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/functions/push_notifications.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
 
-import 'package:miitti_app/widgets/my_elevated_button.dart';
+import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +31,7 @@ import '../models/miitti_user.dart';
 
 //TODO: New UI
 
-class ActivityDetailsPage extends StatefulWidget {
+class ActivityDetailsPage extends ConsumerStatefulWidget {
   const ActivityDetailsPage({
     required this.myActivity,
     super.key,
@@ -37,10 +40,11 @@ class ActivityDetailsPage extends StatefulWidget {
   final PersonActivity myActivity;
 
   @override
-  State<ActivityDetailsPage> createState() => _ActivityDetailsPageState();
+  ConsumerState<ActivityDetailsPage> createState() =>
+      _ActivityDetailsPageState();
 }
 
-class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
+class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
   late LatLng myCameraPosition;
 
   UserStatusInActivity userStatus = UserStatusInActivity.none;
@@ -87,8 +91,7 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: true);
-    final isLoading = ap.isLoading;
+    final isLoading = ref.watch(providerLoading);
 
     return SafeScaffold(
       Column(
@@ -201,14 +204,13 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
                                           builder: (context) =>
                                               const AnonymousDialog());
                                     } else {
-                                      Navigator.push(
+                                      String uid = ref.read(authService).uid;
+                                      pushPage(
                                           context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ap.miittiUser.uid == user.uid
-                                                      ? const ProfileScreen()
-                                                      : UserProfileEditScreen(
-                                                          user: user)));
+                                          uid == user.uid
+                                              ? const ProfileScreen()
+                                              : UserProfileEditScreen(
+                                                  user: user));
                                     }
                                   },
                                   child: CircleAvatar(
@@ -302,13 +304,13 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
             ),
           ),
           getMyButton(isLoading),
-          reportActivity(ap)
+          reportActivity(),
         ],
       ),
     );
   }
 
-  Widget reportActivity(AuthProvider ap) {
+  Widget reportActivity() {
     if (userStatus == UserStatusInActivity.joined) {
       return Center(
         child: GestureDetector(
@@ -325,12 +327,13 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
             ).then(
               (confirmed) {
                 if (confirmed) {
-                  ap.reportActivity('Activity blocked',
-                      widget.myActivity.activityUid, ap.uid);
-
-                  Navigator.of(context).pop();
-                  showSnackBar(context, "Aktiviteetti ilmiannettu",
-                      Colors.green.shade800);
+                  ref.read(firestoreService).reportActivity(
+                      widget.myActivity.activityUid, 'Activity blocked');
+                  afterFrame(() {
+                    Navigator.of(context).pop();
+                    showSnackBar(context, "Aktiviteetti ilmiannettu",
+                        Colors.green.shade800);
+                  });
                 }
               },
             );
@@ -354,18 +357,23 @@ class _ActivityDetailsPageState extends State<ActivityDetailsPage> {
 
   void sendActivityRequest() async {
     if (userStatus != UserStatusInActivity.none) return;
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    ap.joinOrRequestActivity(widget.myActivity.activityUid).then((newStatus) {
+    if (isAnonymous) return;
+    FirestoreService firestore = ref.read(firestoreService);
+    firestore
+        .joinOrRequestActivity(widget.myActivity.activityUid)
+        .then((newStatus) {
       if (newStatus == UserStatusInActivity.requested) {
-        PushNotifications.sendRequestNotification(ap, widget.myActivity);
+        ref
+            .read(notificationService)
+            .sendRequestNotification(widget.myActivity);
         setState(() {
           userStatus = UserStatusInActivity.requested;
-          widget.myActivity.requests.add(ap.uid);
+          widget.myActivity.requests.add(firestore.miittiUser!.uid);
         });
       } else if (newStatus == UserStatusInActivity.joined) {
         setState(() {
           userStatus = UserStatusInActivity.joined;
-          widget.myActivity.participants.add(ap.uid);
+          widget.myActivity.participants.add(firestore.miittiUser!.uid);
         });
       }
     });

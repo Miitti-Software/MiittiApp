@@ -16,10 +16,10 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/functions/push_notifications.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/widgets/my_elevated_button.dart';
+import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:provider/provider.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -484,7 +484,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               fetchDataFromFirebase()
                                   .then((value) => buildOtherActivities());
                             } else {
-                              PushNotifications.sendAcceptedNotification(
+                              PushNotificationService.sendAcceptedNotification(
                                   user, activity);
                             }
                           },

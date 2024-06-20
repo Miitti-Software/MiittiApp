@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
-import 'package:miitti_app/widgets/custom_textfield.dart';
+import 'package:miitti_app/constants/app_texts.dart';
+import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
+import 'package:miitti_app/widgets/fields/custom_textfield.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
-import 'package:provider/provider.dart';
 
-class PhoneAuth extends StatefulWidget {
+//TODO: Refactor
+class PhoneAuth extends ConsumerStatefulWidget {
   const PhoneAuth({super.key});
 
   @override
-  State<PhoneAuth> createState() => _PhoneAuthState();
+  ConsumerState<PhoneAuth> createState() => _PhoneAuthState();
 }
 
-class _PhoneAuthState extends State<PhoneAuth> {
+class _PhoneAuthState extends ConsumerState<PhoneAuth> {
   late FocusNode myFocusNode;
 
   final phoneController = TextEditingController();
@@ -34,19 +36,8 @@ class _PhoneAuthState extends State<PhoneAuth> {
     super.dispose();
   }
 
-  void sendPhoneNumberToFirebase(AuthProvider authProvider) {
-    String phoneNumber = phoneController.text.trim();
-    if (phoneNumber[0] == '0') {
-      // Remove the first character of the phone so  it is in this format +358449759068
-      phoneNumber = phoneNumber.substring(1);
-    }
-    authProvider.signInWithPhone(context, "+358$phoneNumber");
-  }
-
   @override
   Widget build(BuildContext context) {
-    final ap = Provider.of<AuthProvider>(context, listen: true);
-
     return SafeScaffold(
       Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -59,7 +50,7 @@ class _PhoneAuthState extends State<PhoneAuth> {
             const Spacer(),
 
             Text(
-              'Mikä on puhelinnumerosi?',
+              t('whats-your-phone-number'),
               style: AppStyle.title.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -86,8 +77,8 @@ class _PhoneAuthState extends State<PhoneAuth> {
                   ),
                 ),
               ),
-              title: ConstantsCustomTextField(
-                hintText: '453301000',
+              title: MyTextField(
+                hintText: '000000000',
                 controller: phoneController,
                 keyboardType: TextInputType.number,
                 focusNode: myFocusNode,
@@ -97,28 +88,26 @@ class _PhoneAuthState extends State<PhoneAuth> {
             gapH8,
 
             Text(
-              'Lähetämme hetken kuluttua vahvistuskoodin sisältävän tekstiviestin.',
+              t('we-send-verif-code-soon'),
               style: AppStyle.warning,
             ),
 
             const Spacer(),
 
-            CustomButton(
-              buttonText: 'Seuraava',
+            MyButton(
+              buttonText: t('next'),
               onPressed: () {
                 if (phoneController.text.trim().isNotEmpty) {
-                  sendPhoneNumberToFirebase(ap);
+                  sendPhoneNumberToFirebase();
                 } else {
                   showSnackBar(
-                      context,
-                      'Huom! Sinun täytyy antaa puhelinnumerosi kirjautuaksesi sisään.',
-                      AppStyle.red);
+                      context, t('phone-number-cannot-be-empty'), AppStyle.red);
                 }
               },
             ), //Removed extra padding in ConstantsCustomButton
             gapH10,
 
-            CustomButton(
+            MyButton(
               buttonText: 'Takaisin',
               isWhiteButton: true,
               onPressed: () {
@@ -131,5 +120,14 @@ class _PhoneAuthState extends State<PhoneAuth> {
         ),
       ),
     );
+  }
+
+  void sendPhoneNumberToFirebase() {
+    String phoneNumber = phoneController.text.trim();
+    if (phoneNumber[0] == '0') {
+      // Remove the first character of the phone so it can be put to the format +358449759068
+      phoneNumber = phoneNumber.substring(1);
+    }
+    ref.read(authService).signInWithPhone(context, "+358$phoneNumber");
   }
 }

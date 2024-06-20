@@ -7,10 +7,10 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/functions/push_notifications.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
 
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/widgets/my_elevated_button.dart';
+import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:provider/provider.dart';
 
 class UserProfileEditScreen extends StatefulWidget {
@@ -423,7 +423,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
             .inviteUserToYourActivity(
                 widget.user.uid, myActivities.first.activityUid)
             .then((value) {
-          PushNotifications.sendInviteNotification(
+          PushNotificationService.sendInviteNotification(
               ap.miittiUser, widget.user, myActivities.first);
           showDialog(
             context: context,
@@ -576,7 +576,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
                             .inviteUserToYourActivity(
                                 widget.user.uid, activity.activityUid)
                             .then((value) {
-                          PushNotifications.sendInviteNotification(
+                          PushNotificationService.sendInviteNotification(
                               ap.miittiUser, widget.user, activity);
                           Navigator.of(context).pop(); // Close the SimpleDialog
                           showDialog(
@@ -737,7 +737,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
                     initRequests(ap);
                   });
                   if (value) {
-                    PushNotifications.sendAcceptedNotification(
+                    PushNotificationService.sendAcceptedNotification(
                         widget.user, activity);
                   }
                 });
