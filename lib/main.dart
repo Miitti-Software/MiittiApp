@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/login/login_intro.dart';
@@ -58,10 +59,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       designSize: const Size(390, 844),
       builder: (context, child) => MaterialApp(
         navigatorKey: navigatorKey,
-        theme: ThemeData(
-          scaffoldBackgroundColor: AppStyle.black,
-          fontFamily: 'RedHatDisplay',
-        ),
+        theme: miittiTheme,
         debugShowCheckedModeBanner: false,
         home: _buildAuthScreen(context),
         routes: {
