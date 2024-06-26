@@ -7,6 +7,7 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
 
 import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
@@ -28,8 +29,7 @@ class IndexPage extends ConsumerStatefulWidget {
   IndexPageState createState() => IndexPageState();
 }
 
-class IndexPageState extends ConsumerState<IndexPage>
-    with WidgetsBindingObserver {
+class IndexPageState extends ConsumerState<IndexPage> {
   //Integer index that is used for deciding which screen gets to be displayed in body
   int _currentIndex = 1;
 
@@ -46,10 +46,6 @@ class IndexPageState extends ConsumerState<IndexPage>
   void initState() {
     super.initState();
 
-    initPushNotifications();
-
-    WidgetsBinding.instance.addObserver(this);
-
     // Initialize selected index if an initialPage is provided
     if (widget.initialPage != null &&
         widget.initialPage! >= 0 &&
@@ -60,40 +56,10 @@ class IndexPageState extends ConsumerState<IndexPage>
     //_pageController = PageController(initialPage: currentIndex);
 
     // Update user status on initialization
-    setUserStatus();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-
-    // Update user status on lifecycle changes
-    if (state == AppLifecycleState.resumed) {
-      setUserStatus();
-    }
-  }
-
-  // Helper function to update the user status
-
-  void setUserStatus() {
-    ap.setUserStatus();
-  }
-
-  void initPushNotifications() {
-    PushNotificationService.init(ap);
-    PushNotificationService.localNotiInit();
   }
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: false);
-
     return Scaffold(
       floatingActionButton: _currentIndex == 1
           ? SizedBox(
@@ -101,7 +67,7 @@ class IndexPageState extends ConsumerState<IndexPage>
               width: 60.h,
               child: getFloatingButton(
                 onPressed: () async {
-                  if (ap.isAnonymous) {
+                  if (ref.read(isAnonymous)) {
                     showDialog(
                         context: context,
                         builder: (context) => const AnonymousDialog());
@@ -118,12 +84,12 @@ class IndexPageState extends ConsumerState<IndexPage>
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      bottomNavigationBar: _buildBottomNavigationBar(ap),
+      bottomNavigationBar: _buildBottomNavigationBar(),
       body: _pages[_currentIndex],
     );
   }
 
-  Widget _buildBottomNavigationBar(AuthProvider ap) {
+  Widget _buildBottomNavigationBar() {
     return CustomNavigationBar(
       iconSize: 35.sp,
       selectedColor: AppStyle.pink,

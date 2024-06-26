@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
@@ -11,18 +12,19 @@ import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:provider/provider.dart';
 
-class PeopleScreen extends StatefulWidget {
+class PeopleScreen extends ConsumerStatefulWidget {
   const PeopleScreen({super.key});
 
   @override
-  State<PeopleScreen> createState() => _PeopleScreenState();
+  ConsumerState<PeopleScreen> createState() => _PeopleScreenState();
 }
 
-class _PeopleScreenState extends State<PeopleScreen> {
+class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   Color miittiColor = const Color.fromRGBO(255, 136, 27, 1);
 
   final batchSize = 6;
@@ -40,9 +42,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
   }
 
   void initLists() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-
-    if (ap.isAnonymous) {
+    if (ref.read(isAnonymous)) {
       Future.delayed(const Duration(milliseconds: 500)).then((value) {
         showDialog(
             context: context, builder: (context) => const AnonymousDialog());
@@ -51,8 +51,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
       return;
     }
 
-    List responses =
-        await Future.wait([initList(0, ap), initList(1, ap), initList(2, ap)]);
+    List responses = await Future.wait([initList(0), initList(1), initList(2)]);
 
     setState(() {
       for (int i = 0; i < 3; i++) {
@@ -62,14 +61,16 @@ class _PeopleScreenState extends State<PeopleScreen> {
     });
   }
 
-  Future<List<MiittiUser>> initList(int type, AuthProvider ap) async {
+  Future<List<MiittiUser>> initList(int type) async {
     try {
-      QuerySnapshot snapshot = await ap.lazyFilteredUsers(type, batchSize);
+      QuerySnapshot snapshot =
+          await ref.read(firestoreService).lazyFilteredUsers(type, batchSize);
       if (snapshot.docs.isNotEmpty) {
         lastDocuments[type] = snapshot.docs.last;
         return snapshot.docs
             .map((doc) => MiittiUser.fromDoc(doc))
-            .where((user) => user.uid != ap.uid && user.userName != "")
+            .where((user) =>
+                user.uid != ref.read(authService).uid && user.userName != "")
             .toList();
       }
       return [];
@@ -85,9 +86,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
     }
 
     listLoading[type] = true;
-
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    final snapshot = await ap.lazyFilteredUsers(
+    final snapshot = await ref.read(firestoreService).lazyFilteredUsers(
         type, batchSize + _filteredUsers.length, lastDocuments[type]);
     if (snapshot.docs.isNotEmpty) {
       if (snapshot.docs.length < batchSize) {
@@ -100,7 +99,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
       setState(() {
         _filteredUsers[type].addAll(snapshot.docs
             .map((doc) => MiittiUser.fromDoc(doc))
-            .where((user) => user.uid != ap.uid)
+            .where((user) => user.uid != ref.read(authService).uid)
             .toList());
       });
     } else {
@@ -111,8 +110,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    if (ap.isAnonymous) {
+    if (ref.read(isAnonymous)) {
       return const AnonymousUserScreen();
     } else {
       return SafeArea(
@@ -223,8 +221,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
       height: 35.h,
       width: 110.w,
       onPressed: () {
-        final ap = Provider.of<AuthProvider>(context, listen: false);
-        if (ap.isAnonymous) {
+        if (ref.read(isAnonymous)) {
           showDialog(
               context: context, builder: (context) => const AnonymousDialog());
         } else {

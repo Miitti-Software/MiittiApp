@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
@@ -13,7 +15,7 @@ import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:provider/provider.dart';
 
-class UserProfileEditScreen extends StatefulWidget {
+class UserProfileEditScreen extends ConsumerStatefulWidget {
   final MiittiUser user;
   final bool? comingFromAdmin;
 
@@ -24,10 +26,11 @@ class UserProfileEditScreen extends StatefulWidget {
   });
 
   @override
-  State<UserProfileEditScreen> createState() => _UserProfileEditScreenState();
+  ConsumerState<UserProfileEditScreen> createState() =>
+      _UserProfileEditScreenState();
 }
 
-class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
+class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
   Color miittiColor = const Color.fromRGBO(255, 136, 27, 1);
 
   List<String> filteredActivities = [];
@@ -37,12 +40,15 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
   void initState() {
     super.initState();
     //Initialize the list from given data
-    initRequests(Provider.of<AuthProvider>(context, listen: false));
+    initRequests();
     filteredActivities = widget.user.userFavoriteActivities.toList();
   }
 
-  void initRequests(AuthProvider ap) async {
-    ap.fetchActivitiesRequestsFrom(widget.user.uid).then((value) {
+  void initRequests() async {
+    ref
+        .read(firestoreService)
+        .fetchActivitiesRequestsFrom(widget.user.uid)
+        .then((value) {
       setState(() {
         userRequests = value;
       });
@@ -52,7 +58,6 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: true);
     //final isLoading = ap.isLoading;
 
     List<String> answeredQuestions = questionOrder
@@ -61,7 +66,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
     return Scaffold(
       appBar: buildAppBar(),
-      body: buildBody(ap.isLoading, ap, answeredQuestions),
+      body: buildBody(ref.watch(providerLoading), answeredQuestions),
     );
   }
 
@@ -87,8 +92,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     );
   }
 
-  Widget buildBody(
-      bool isLoading, AuthProvider ap, List<String> answeredQuestions) {
+  Widget buildBody(bool isLoading, List<String> answeredQuestions) {
     List<Widget> widgets = [];
 
     if (isLoading) {
@@ -123,11 +127,11 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
     // Add invite button and report user button
     if (userRequests.isNotEmpty) {
-      widgets.add(requestList(ap));
+      widgets.add(requestList());
     }
 
-    widgets.add(buildInviteButton(isLoading, ap));
-    widgets.add(buildReportUserButton(ap));
+    widgets.add(buildInviteButton(isLoading));
+    widgets.add(buildReportUserButton());
 
     return ListView(children: widgets);
   }
@@ -352,7 +356,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     );
   }
 
-  Widget buildInviteButton(bool isLoading, AuthProvider ap) {
+  Widget buildInviteButton(bool isLoading) {
     return widget.comingFromAdmin != null
         ? Container()
         : Container(
@@ -374,7 +378,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
           );
   }
 
-  Widget buildReportUserButton(AuthProvider ap) {
+  Widget buildReportUserButton() {
     return Center(
       child: GestureDetector(
         onTap: () {
@@ -389,11 +393,14 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
             },
           ).then((confirmed) {
             if (confirmed) {
-              ap.reportUser('User blocked', widget.user.uid, ap.uid);
-
-              Navigator.of(context).pop();
-              showSnackBar(
-                  context, "Käyttäjä ilmiannettu", Colors.green.shade800);
+              ref
+                  .read(firestoreService)
+                  .reportUser('User blocked', widget.user.uid);
+              afterFrame(() {
+                Navigator.of(context).pop();
+                showSnackBar(
+                    context, "Käyttäjä ilmiannettu", Colors.green.shade800);
+              });
             }
           });
         },
@@ -410,8 +417,8 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
   }
 
   Future<void> inviteToYourActivity() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    List<PersonActivity> myActivities = await ap.fetchAdminActivities();
+    List<PersonActivity> myActivities =
+        await ref.read(firestoreService).fetchAdminActivities();
 
     if (myActivities.isNotEmpty) {
       if (myActivities.length == 1 &&
@@ -419,12 +426,15 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
               myActivities.first.personLimit &&
           !myActivities.first.participants.contains(widget.user.uid) &&
           !myActivities.first.requests.contains(widget.user.uid)) {
-        ap
+        ref
+            .read(firestoreService)
             .inviteUserToYourActivity(
                 widget.user.uid, myActivities.first.activityUid)
             .then((value) {
-          PushNotificationService.sendInviteNotification(
-              ap.miittiUser, widget.user, myActivities.first);
+          ref.read(notificationService).sendInviteNotification(
+              ref.read(firestoreService).miittiUser!,
+              widget.user,
+              myActivities.first);
           showDialog(
             context: context,
             barrierColor: Colors.white.withOpacity(0.9),
@@ -495,32 +505,25 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
   }
 
   String getUserStatus() {
-    if (widget.user.userStatus.isEmpty || widget.user.userStatus == 'Online') {
-      return '';
-    } else {
-      String lastActiveString = widget.user.userStatus;
-      DateTime lastActiveDate = DateTime.parse(lastActiveString).toLocal();
-      Duration difference = DateTime.now().difference(lastActiveDate);
+    Duration difference =
+        DateTime.now().difference(widget.user.userStatus.toDate());
 
-      if (difference < const Duration(minutes: 5)) {
-        return 'Paikalla';
-      } else if (difference < const Duration(hours: 1)) {
-        return 'Paikalla äskettäin';
-      } else if (difference < const Duration(hours: 24)) {
-        return 'Paikalla tänään';
-      } else if (difference < const Duration(days: 7)) {
-        return 'Paikalla tällä viikolla';
-      } else if (difference > const Duration(days: 7)) {
-        return 'Epäaktiivinen';
-      } else {
-        return 'Paikalla';
-      }
+    if (difference < const Duration(minutes: 5)) {
+      return 'Paikalla';
+    } else if (difference < const Duration(hours: 1)) {
+      return 'Paikalla äskettäin';
+    } else if (difference < const Duration(hours: 24)) {
+      return 'Paikalla tänään';
+    } else if (difference < const Duration(days: 7)) {
+      return 'Paikalla tällä viikolla';
+    } else if (difference > const Duration(days: 7)) {
+      return 'Epäaktiivinen';
+    } else {
+      return '';
     }
   }
 
   Widget createSelectBetweenActivitesDialog(List<PersonActivity> myActivities) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-
     return AlertDialog(
       backgroundColor: AppStyle.black,
       shape: RoundedRectangleBorder(
@@ -572,20 +575,26 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
                       if (activity.participants.length < activity.personLimit &&
                           !activity.participants.contains(widget.user.uid) &&
                           !activity.requests.contains(widget.user.uid)) {
-                        ap
+                        ref
+                            .read(firestoreService)
                             .inviteUserToYourActivity(
                                 widget.user.uid, activity.activityUid)
                             .then((value) {
-                          PushNotificationService.sendInviteNotification(
-                              ap.miittiUser, widget.user, activity);
-                          Navigator.of(context).pop(); // Close the SimpleDialog
-                          showDialog(
-                            context: context,
-                            barrierColor: Colors.white.withOpacity(0.9),
-                            builder: (BuildContext context) {
-                              return createInviteActivityDialog();
-                            },
-                          );
+                          ref.read(notificationService).sendInviteNotification(
+                              ref.read(firestoreService).miittiUser!,
+                              widget.user,
+                              activity);
+                          afterFrame(() {
+                            Navigator.of(context)
+                                .pop(); // Close the SimpleDialog
+                            showDialog(
+                              context: context,
+                              barrierColor: Colors.white.withOpacity(0.9),
+                              builder: (BuildContext context) {
+                                return createInviteActivityDialog();
+                              },
+                            );
+                          });
                         });
                       } else {
                         Navigator.of(context).pop();
@@ -646,7 +655,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     );
   }
 
-  Widget requestList(AuthProvider ap) {
+  Widget requestList() {
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: 15.h,
@@ -673,14 +682,14 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
               )),
           Column(
               children: userRequests
-                  .map<Widget>((activity) => requestItem(activity, ap))
+                  .map<Widget>((activity) => requestItem(activity))
                   .toList()),
         ],
       ),
     );
   }
 
-  Widget requestItem(PersonActivity activity, AuthProvider ap) {
+  Widget requestItem(PersonActivity activity) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -704,12 +713,13 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
               height: 40.h,
               width: 140.w,
               onPressed: () async {
-                ap
+                ref
+                    .read(firestoreService)
                     .updateUserJoiningActivity(
                         activity.activityUid, widget.user.uid, false)
                     .then((value) {
                   setState(() {
-                    initRequests(ap);
+                    initRequests();
                   });
                 });
               },
@@ -729,16 +739,18 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
               height: 40.h,
               width: 140.w,
               onPressed: () async {
-                ap
+                ref
+                    .read(firestoreService)
                     .updateUserJoiningActivity(
                         activity.activityUid, widget.user.uid, true)
                     .then((value) {
                   setState(() {
-                    initRequests(ap);
+                    initRequests();
                   });
                   if (value) {
-                    PushNotificationService.sendAcceptedNotification(
-                        widget.user, activity);
+                    ref
+                        .read(notificationService)
+                        .sendAcceptedNotification(widget.user, activity);
                   }
                 });
               },

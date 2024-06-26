@@ -2,6 +2,7 @@ import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_stor
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -14,6 +15,7 @@ import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 
@@ -25,7 +27,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/miitti_user.dart';
 
-class ComActDetailsPage extends StatefulWidget {
+class ComActDetailsPage extends ConsumerStatefulWidget {
   final bool? comingFromAdmin;
 
   const ComActDetailsPage({
@@ -37,10 +39,10 @@ class ComActDetailsPage extends StatefulWidget {
   final CommercialActivity myActivity;
 
   @override
-  State<ComActDetailsPage> createState() => _ActivityDetailsPageState();
+  ConsumerState<ComActDetailsPage> createState() => _ActivityDetailsPageState();
 }
 
-class _ActivityDetailsPageState extends State<ComActDetailsPage> {
+class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
   late LatLng myCameraPosition;
 
   bool isAlreadyJoined = false;
@@ -77,9 +79,6 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading =
-        Provider.of<AuthProvider>(context, listen: true).isLoading;
-
     return SafeScaffold(
       Column(
         children: [
@@ -364,7 +363,9 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
               ),
             ),
           ),
-          widget.comingFromAdmin == true ? Container() : getMyButton(isLoading)
+          widget.comingFromAdmin == true
+              ? Container()
+              : getMyButton(ref.watch(providerLoading)),
         ],
       ),
     );
@@ -373,10 +374,12 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
   void checkIfJoined() async {
     if (isAlreadyJoined) return;
 
-    final ap = Provider.of<AuthProvider>(context, listen: false);
     final activityUid = widget.myActivity.activityUid;
 
-    await ap.checkIfUserJoined(activityUid, commercial: true).then((joined) {
+    await ref
+        .read(firestoreService)
+        .checkIfUserJoined(activityUid, commercial: true)
+        .then((joined) {
       if (joined) {
         setState(() {
           isAlreadyJoined = true;
@@ -388,13 +391,12 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
   void joinActivity() async {
     checkIfJoined();
     if (!isAlreadyJoined) {
-      final ap = Provider.of<AuthProvider>(context, listen: false);
-      await ap.joinCommercialActivity(widget.myActivity.activityUid);
-      PushNotificationService.sendAcceptedNotification(
-          ap.miittiUser, widget.myActivity);
+      await ref
+          .read(firestoreService)
+          .joinCommercialActivity(widget.myActivity.activityUid);
       setState(() {
         isAlreadyJoined = true;
-        widget.myActivity.participants.add(ap.miittiUser.uid);
+        widget.myActivity.participants.add(ref.read(authService).uid);
       });
     }
   }
@@ -435,9 +437,9 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
   }
 
   void fetchUsersJoinedActivity() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    ap
-        .fetchUsersByUids(widget.myActivity.participants)
+    ref
+        .read(firestoreService)
+        .fetchUsersByUids(widget.myActivity.participants.toList())
         .then((value) => setState(() {
               participantList = value;
               participantCount = value.length;
@@ -445,10 +447,12 @@ class _ActivityDetailsPageState extends State<ComActDetailsPage> {
   }
 
   void fetchAdmin() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    ap.getCommercialUser(widget.myActivity.admin).then((value) => setState(() {
-          company = value;
-        }));
+    ref
+        .read(firestoreService)
+        .getCommercialUser(widget.myActivity.admin)
+        .then((value) => setState(() {
+              company = value;
+            }));
   }
 
   String getButtonText() {

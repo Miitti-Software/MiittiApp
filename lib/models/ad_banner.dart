@@ -89,7 +89,6 @@ class AdBanner {
     try {
       return GestureDetector(
         onTap: () async {
-          Provider.of<AuthProvider>(context, listen: false).addAdClick(uid);
           await launchUrl(Uri.parse(link));
         },
         child: Card(

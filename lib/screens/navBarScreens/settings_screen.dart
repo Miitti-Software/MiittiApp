@@ -2,8 +2,10 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/screens/login/login_intro.dart';
@@ -13,14 +15,14 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final WebViewController controller = WebViewController();
 
   Widget createHyperLink(String text, String url) {
@@ -61,8 +63,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(8.w),
@@ -171,12 +171,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             createSectionTitle('Tili:'),
             getSomeSpace(10),
             GestureDetector(
-                onTap: () => ap.userSignOut().then(
+                onTap: () => ref.read(authService).userSignOut().then(
                       (value) => pushNRemoveUntil(context, const LoginIntro()),
                     ),
                 child: createText('Kirjaudu ulos')),
             getSomeSpace(10),
-            ap.isAnonymous
+            ref.read(isAnonymous)
                 ? GestureDetector(
                     onTap: () {
                       pushNRemoveUntil(context, const CompleteProfileOnboard());
@@ -196,11 +196,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ).then((confirmed) {
                         if (confirmed != null && confirmed) {
-                          ap.removeUser(ap.miittiUser.uid).then((value) {
+                          ref.read(authService).removeUser().then((value) {
                             showSnackBar(context, value.$2,
                                 value.$1 ? Colors.green : Colors.red);
                             if (value.$1) {
-                              ap.userSignOut().then(
+                              ref.read(authService).userSignOut().then(
                                     (value) => pushNRemoveUntil(
                                         context, const LoginIntro()),
                                   );

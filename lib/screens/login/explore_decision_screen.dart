@@ -1,6 +1,8 @@
 //TODO: Refactor
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/index_page.dart';
@@ -10,15 +12,13 @@ import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:provider/provider.dart';
 
-class ExploreDecisionScreen extends StatelessWidget {
+class ExploreDecisionScreen extends ConsumerWidget {
   const ExploreDecisionScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final ap = Provider.of<AuthProvider>(context, listen: true);
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafeScaffold(
-      ap.isLoading
+      ref.watch(providerLoading)
           ? const Center(
               child: CircularProgressIndicator(
                 color: Colors.white,

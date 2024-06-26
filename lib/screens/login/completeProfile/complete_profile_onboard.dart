@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
@@ -28,14 +31,17 @@ import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
-class CompleteProfileOnboard extends StatefulWidget {
+//TODO: Seperate to multiple files, move onboardingScreens list elsewhere and change text to localized strings using t() function, l
+//lists like languages and cities need to be downloaded from Firestore
+class CompleteProfileOnboard extends ConsumerStatefulWidget {
   const CompleteProfileOnboard({super.key});
 
   @override
-  State<CompleteProfileOnboard> createState() => _CompleteProfileOnboard();
+  ConsumerState<CompleteProfileOnboard> createState() =>
+      _CompleteProfileOnboard();
 }
 
-class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
+class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
   late PageController _pageController;
 
   File? myImage;
@@ -120,8 +126,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
   //PAGE 2 EMAIL
 
   //PAGE 3 BDAY
-  String birthdayText = 'DDMMYYYY';
-  String editiedVersionOfBirthdayText = "";
+  Timestamp? birthdayText;
 
   //PAGE 4 GENDER
   final List<String> genders = ['Mies', 'Nainen', 'Ei-binäärinen'];
@@ -236,15 +241,8 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
   void initState() {
     super.initState();
     selectedList = questionsAboutMe;
-    /*_formControllers = List.generate(onboardingScreens.length - 1, (index) {
-      if (index == 1) {
-        var ap = Provider.of<AuthProvider>(context, listen: false);
-        return TextEditingController(text: ap.getUserEmail());
-      }
-      return TextEditingController();
-    });*/
-    var ap = Provider.of<AuthProvider>(context, listen: false);
-    _emailController = TextEditingController(text: ap.getUserEmail());
+    _emailController =
+        TextEditingController(text: ref.read(authService).getUserEmail());
     _nameController = TextEditingController();
     _pageController = PageController();
   }
@@ -317,10 +315,11 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
           onCompleted: (String value) {
             if (value.length == 8 && validateBirthdayDate(value)) {
               setState(() {
-                editiedVersionOfBirthdayText = "${value.substring(0, 2)}/"
-                    "${value.substring(2, 4)}/"
-                    "${value.substring(4, 8)}";
-                birthdayText = value;
+                birthdayText = Timestamp.fromDate(DateTime(
+                  int.parse(value.substring(4, 8)),
+                  int.parse(value.substring(2, 4)),
+                  int.parse(value.substring(0, 2)),
+                ));
               });
             } else {
               showSnackBar(
@@ -331,50 +330,6 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
             }
           },
         );
-      /*Row(
-          children: [
-            for (int i = 0; i <= 7; i++)
-              GestureDetector(
-                onTap: () => pickBirthdayDate(
-                  context: context,
-                  onDateTimeChanged: (dateTime) {
-                    setState(() {
-                      editiedVersionOfBirthdayText =
-                          '${dateTime.month}/${dateTime.day}/${dateTime.year}';
-                      birthdayText =
-                          '${dateTime.day.toString().padLeft(2, '0')}${dateTime.month.toString().padLeft(2, '0')}${dateTime.year}';
-                    });
-                  },
-                ),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(152, 28, 228, 0.10),
-                    border: Border(
-                      bottom: BorderSide(width: 1.0, color: Colors.white),
-                    ),
-                  ),
-                  margin: EdgeInsets.only(
-                    right: (i == 1 || i == 3)
-                        ? i == 7
-                            ? 0.w
-                            : 18.w
-                        : 7.w,
-                  ),
-                  padding: EdgeInsets.all(10.w),
-                  child: Center(
-                    child: Text(
-                      birthdayText[i],
-                      style: ConstantStyles.body.copyWith(
-                        color: Colors.white.withOpacity(
-                          birthdayText == "DDMMYYYY" ? 0.5 : 1.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        );*/
       case 3:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -823,7 +778,9 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
               text: "Hyväksyn push-ilmoitukset",
               onSelected: (bool selected) {
                 if (!selected) {
-                  PushNotificationService.requestPermission(true)
+                  ref
+                      .read(notificationService)
+                      .requestPermission(true)
                       .then((bool granted) {
                     if (granted) {
                       _pageController.nextPage(
@@ -914,47 +871,16 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
   }
 
   void registerUser(BuildContext context, MiittiUser user) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    /*user.uid = ap.uid;
-    if (ap.isAnonymous) {
-      ap
-          .updateUserInfo(
-            updatedUser: user,
-            imageFile: image,
-            context: context,
-          )
-          .then(
-            (value) => ap.saveUserDataToSP().then(
-                  (value) => ap.setSignIn().then(
-                        (value) => ap.setAnonymousModeOf().then(
-                            (value) => Navigator.pop(
-                                context) /*pushNRemoveUntil(
-                                context,
-                                const IndexPage(),
-                              ),*/
-                            ),
-                      ),
-                ),
-          );
-    } else {*/
-    ap.saveUserDatatoFirebase(
-      context: context,
-      userModel: user,
-      image: image,
-      onSuccess: () {
-        ap.saveUserDataToSP().then(
-              (value) => ap.setAnonymousModeOff().then(
-                    (value) => ap.setSignIn().then(
-                      (value) {
-                        pushNRemoveUntil(context, const IndexPage());
-                      },
-                    ),
-                  ),
-            );
-      },
-    );
-    //}
+    ref.read(firestoreService).saveUserDatatoFirebase(
+          context: context,
+          userModel: user,
+          image: image,
+          onSuccess: () {
+            pushNRemoveUntil(context, const IndexPage());
+          },
+        );
   }
+  //}
 
   void errorHandlingScreens(int page) {
     final currentPage = _pageController.page!.toInt();
@@ -981,7 +907,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
         }
         break;
       case 2:
-        if (birthdayText == 'DDMMYYYY') {
+        if (birthdayText == null) {
           showSnackBar(
             context,
             'Syntymäpäivä ei kelpaa!',
@@ -1068,14 +994,16 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
             ),
           );
         } else {
-          PushNotificationService.checkPermission().then((granted) {
+          ref.read(notificationService).checkPermission().then((granted) {
             if (granted) {
               _pageController.nextPage(
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.linear,
               );
             } else {
-              PushNotificationService.requestPermission(true)
+              ref
+                  .read(notificationService)
+                  .requestPermission(true)
                   .then((grantFixed) {
                 if (grantFixed) {
                   _pageController.nextPage(
@@ -1083,11 +1011,11 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
                     curve: Curves.linear,
                   );
                 } else {
-                  showSnackBar(
-                    context,
-                    'Hyväksy push-ilmoitukset myös laitteeltasi jatkaaksesi!',
-                    AppStyle.red,
-                  );
+                  afterFrame(() => showSnackBar(
+                        context,
+                        'Hyväksy push-ilmoitukset myös laitteeltasi jatkaaksesi!',
+                        AppStyle.red,
+                      ));
                 }
               });
             }
@@ -1112,7 +1040,7 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
 
       if (page == 9) {
         //Next page is notification page, if push notifications are already enabled, skip this page
-        PushNotificationService.checkPermission().then((enabled) {
+        ref.read(notificationService).checkPermission().then((enabled) {
           if (enabled) {
             _pageController.animateToPage(
               11,
@@ -1124,7 +1052,9 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
               duration: const Duration(milliseconds: 500),
               curve: Curves.linear,
             );
-            PushNotificationService.requestPermission(false)
+            ref
+                .read(notificationService)
+                .requestPermission(false)
                 .then((bool granted) {
               if (granted) {
                 _pageController.nextPage(
@@ -1147,18 +1077,18 @@ class _CompleteProfileOnboard extends State<CompleteProfileOnboard> {
         userEmail: _emailController.text.trim(),
         uid: '',
         userPhoneNumber: '',
-        userBirthday: editiedVersionOfBirthdayText,
+        userBirthday: birthdayText!,
         userArea: selectedCities.join(","),
-        userFavoriteActivities: favoriteActivities,
+        userFavoriteActivities: favoriteActivities.toList(),
         userChoices: userChoices,
         userGender: selectedGender,
-        userLanguages: selectedLanguages,
+        userLanguages: selectedLanguages.toList(),
         profilePicture: '',
-        invitedActivities: {},
-        userStatus: '',
+        invitedActivities: [],
+        userStatus: Timestamp.now(),
         userSchool: noLifeSituation ? '' : selectedLifeOption,
         fcmToken: '',
-        userRegistrationDate: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+        userRegistrationDate: Timestamp.now(),
       );
       registerUser(context, miittiUser);
     }

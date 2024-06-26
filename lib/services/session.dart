@@ -1,9 +1,11 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/services/providers.dart';
 
-class SessionNotifier with WidgetsBindingObserver {
+class Session with WidgetsBindingObserver {
   final Ref ref;
 
   Timestamp startTime;
@@ -12,11 +14,17 @@ class SessionNotifier with WidgetsBindingObserver {
   Map<String, Duration> pageDurations;
   Map<String, int> actions;
 
-  SessionNotifier(this.ref)
+  Session(this.ref)
       : startTime = Timestamp.now(),
         pageDurations = {},
         actions = {} {
     WidgetsBinding.instance.addObserver(this);
+    initPushNotifications();
+  }
+
+  void initPushNotifications() {
+    ref.read(notificationService).init();
+    ref.read(notificationService).localNotiInit();
   }
 
   void dispose() {
@@ -32,7 +40,9 @@ class SessionNotifier with WidgetsBindingObserver {
     }
   }
 
+  //TODO: Call from navigation functions to track page changes
   void startPage(String pageName) {
+    endPage();
     currentPageStartTime = Timestamp.now();
     currentPageName = pageName;
   }
@@ -45,6 +55,7 @@ class SessionNotifier with WidgetsBindingObserver {
     }
   }
 
+  //TODO: Call from onPressed or onTap to track user actions
   void addAction(String actionName) {
     if (actions.containsKey(actionName)) {
       actions[actionName] = actions[actionName]! + 1;
@@ -54,9 +65,10 @@ class SessionNotifier with WidgetsBindingObserver {
   }
 
   void endSession() {
+    endPage();
     final duration = Timestamp.now().millisecondsSinceEpoch -
         startTime.millisecondsSinceEpoch;
     pageDurations['total'] = Duration(milliseconds: duration);
-    // Save to Firestore
+    //TODO: Save to Firestore
   }
 }

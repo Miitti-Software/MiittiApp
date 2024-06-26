@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
@@ -9,16 +10,17 @@ import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:provider/provider.dart';
 
-class AdminSearchMiitti extends StatefulWidget {
+class AdminSearchMiitti extends ConsumerStatefulWidget {
   const AdminSearchMiitti({super.key});
 
   @override
-  State<AdminSearchMiitti> createState() => _AdminSearchMiittiState();
+  ConsumerState<AdminSearchMiitti> createState() => _AdminSearchMiittiState();
 }
 
-class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
+class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
   int showAllMiitit = 0;
 
   //All Users
@@ -35,8 +37,7 @@ class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getAllTheActivities() async {
     List<MiittiActivity> activities =
-        await Provider.of<AuthProvider>(context, listen: false)
-            .fetchActivities();
+        await ref.read(firestoreService).fetchActivities();
 
     _miittiActivities = activities.reversed.toList();
     setState(() {});
@@ -44,8 +45,8 @@ class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
 
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getReportedActivities() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    _miittiActivities = await ap.fetchReportedActivities();
+    _miittiActivities =
+        await ref.read(firestoreService).fetchReportedActivities();
     setState(() {});
   }
 
@@ -68,8 +69,7 @@ class _AdminSearchMiittiState extends State<AdminSearchMiitti> {
   }
 
   Future<void> removeActivity(String activityId) async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    await ap.removeActivity(activityId);
+    await ref.read(firestoreService).removeActivity(activityId);
     showAllMiitit == 0 ? getAllTheActivities() : getReportedActivities();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showSnackBar(

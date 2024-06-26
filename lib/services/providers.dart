@@ -3,6 +3,7 @@ import 'package:miitti_app/services/auth_service.dart';
 import 'package:miitti_app/services/firestore_service.dart';
 import 'package:miitti_app/services/local_storage_service.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
+import 'package:miitti_app/services/session.dart';
 
 //Bool isAnonymous from fireStoreService.miittiUser == null
 final isAnonymous = Provider<bool>((ref) {
@@ -15,6 +16,10 @@ final providerLoading = Provider<bool>((ref) {
   final auth = ref.watch(authService);
 
   return db.isLoading || auth.isLoading;
+});
+
+final session = Provider<Session>((ref) {
+  return Session(ref);
 });
 
 // Provider for AuthService

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -8,6 +9,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 
 import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/question_answer.dart';
 import 'package:miitti_app/functions/utils.dart';
 
@@ -18,16 +20,16 @@ import '../widgets/buttons/my_elevated_button.dart';
 
 //TODO: New UI
 
-class MyProfileEditForm extends StatefulWidget {
+class MyProfileEditForm extends ConsumerStatefulWidget {
   const MyProfileEditForm({required this.user, super.key});
 
   final MiittiUser user;
 
   @override
-  State<MyProfileEditForm> createState() => _MyProfileEditFormState();
+  ConsumerState<MyProfileEditForm> createState() => _MyProfileEditFormState();
 }
 
-class _MyProfileEditFormState extends State<MyProfileEditForm> {
+class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
   Color miittiColor = const Color.fromRGBO(255, 136, 27, 1);
 
   final _formKey = GlobalKey<FormState>();
@@ -51,9 +53,10 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
   void initState() {
     super.initState();
     filteredActivities = activities.keys.toList();
-    favoriteActivities = updateActiviesId(widget.user.userFavoriteActivities);
+    favoriteActivities =
+        updateActiviesId(widget.user.userFavoriteActivities.toSet());
 
-    selectedLanguages = widget.user.userLanguages;
+    selectedLanguages = widget.user.userLanguages.toSet();
     userAreaController.text = widget.user.userArea;
     userSchoolController.text = widget.user.userSchool;
     userChoices = widget.user.userChoices;
@@ -120,10 +123,6 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
 
   @override
   Widget build(BuildContext context) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    final isLoading =
-        Provider.of<AuthProvider>(context, listen: true).isLoading;
-
     List<String> answeredQuestions = questionOrder
         .where((question) => userChoices.containsKey(question))
         .toList();
@@ -189,7 +188,10 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                             const BorderRadius.all(Radius.circular(20)),
                         child: image == null
                             ? Image.network(
-                                ap.miittiUser.profilePicture,
+                                ref
+                                    .read(firestoreService)
+                                    .miittiUser!
+                                    .profilePicture,
                                 height: 400.h,
                                 width: 400.w,
                                 fit: BoxFit.cover,
@@ -403,42 +405,40 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                       favoriteActivities.length >= 3) {
                     _formKey.currentState!.save();
 
+                    final miittiUser = ref.read(firestoreService).miittiUser!;
                     final updatedUser = MiittiUser(
-                      userName: ap.miittiUser.userName,
-                      userEmail: ap.miittiUser.userEmail,
-                      uid: ap.miittiUser.uid,
-                      userPhoneNumber: ap.miittiUser.userPhoneNumber,
-                      userBirthday: ap.miittiUser.userBirthday,
+                      userName: miittiUser.userName,
+                      userEmail: miittiUser.userEmail,
+                      uid: miittiUser.uid,
+                      userPhoneNumber: miittiUser.userPhoneNumber,
+                      userBirthday: miittiUser.userBirthday,
                       userArea: userAreaController.text.trim(),
                       userFavoriteActivities: favoriteActivities
                           .map((activity) => activity)
-                          .toSet(),
+                          .toList(),
                       userChoices: userChoices,
-                      userGender: ap.miittiUser.userGender,
-                      profilePicture: ap.miittiUser.profilePicture,
-                      userLanguages: selectedLanguages,
-                      invitedActivities: ap.miittiUser.invitedActivities,
-                      userStatus: ap.miittiUser.userStatus,
+                      userGender: miittiUser.userGender,
+                      profilePicture: miittiUser.profilePicture,
+                      userLanguages: selectedLanguages.toList(),
+                      invitedActivities: miittiUser.invitedActivities,
+                      userStatus: miittiUser.userStatus,
                       userSchool: userSchoolController.text,
-                      fcmToken: ap.miittiUser.fcmToken,
-                      userRegistrationDate: ap.miittiUser.userRegistrationDate,
+                      fcmToken: miittiUser.fcmToken,
+                      userRegistrationDate: miittiUser.userRegistrationDate,
                     );
-                    await ap
+                    await ref
+                        .read(firestoreService)
                         .updateUserInfo(
-                      updatedUser: updatedUser,
-                      imageFile: image,
-                      context: context,
-                    )
+                          updatedUser: updatedUser,
+                          imageFile: image,
+                          context: context,
+                        )
                         .then((value) {
-                      ap
-                          .saveUserDataToSP()
-                          .then((value) => ap.setSignIn().then((value) {
-                                pushNRemoveUntil(
-                                    context,
-                                    const IndexPage(
-                                      initialPage: 3,
-                                    ));
-                              }));
+                      pushNRemoveUntil(
+                          context,
+                          const IndexPage(
+                            initialPage: 3,
+                          ));
                     });
                   } else {
                     showSnackBar(
@@ -447,7 +447,7 @@ class _MyProfileEditFormState extends State<MyProfileEditForm> {
                         AppStyle.red);
                   }
                 },
-                child: isLoading == true
+                child: ref.watch(providerLoading)
                     ? const CircularProgressIndicator(
                         color: AppStyle.violet,
                       )

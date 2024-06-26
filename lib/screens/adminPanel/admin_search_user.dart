@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/screens/adminPanel/admin_userinfo.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/fields/admin_searchbar.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
@@ -10,14 +12,14 @@ import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:provider/provider.dart';
 
-class AdminSearchUser extends StatefulWidget {
+class AdminSearchUser extends ConsumerStatefulWidget {
   const AdminSearchUser({super.key});
 
   @override
-  State<AdminSearchUser> createState() => _AdminSearchUserState();
+  ConsumerState<AdminSearchUser> createState() => _AdminSearchUserState();
 }
 
-class _AdminSearchUserState extends State<AdminSearchUser> {
+class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
   //All Users
   List<MiittiUser> _miittiUsers = [];
 
@@ -42,8 +44,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
 
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getAllTheUsers() async {
-    List<MiittiUser> users =
-        await Provider.of<AuthProvider>(context, listen: false).fetchUsers();
+    List<MiittiUser> users = ref.read(firestoreService).fetchUsers();
 
     _miittiUsers = users.reversed.toList();
     searchResults = _miittiUsers;

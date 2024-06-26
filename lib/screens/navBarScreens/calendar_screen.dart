@@ -1,6 +1,7 @@
 //TODO: Implement new UI
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/screens/chat_page.dart';
@@ -8,6 +9,7 @@ import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
@@ -22,14 +24,14 @@ import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:provider/provider.dart';
 
-class CalendarScreen extends StatefulWidget {
+class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
 
   @override
-  State<CalendarScreen> createState() => _CalendarScreenState();
+  ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   //List of Activities that user has been joined or sended a request to join
   List<MiittiActivity> _myJoinedActivities = [];
 
@@ -57,19 +59,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Future fetchDataFromFirebase() async {
     //This method ensures that all the data is coming successfully from Database through AuthProvider and then updates the State
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    if (ap.isAnonymous) {
-      Future.delayed(const Duration(milliseconds: 500)).then((value) {
-        showDialog(
-            context: context, builder: (context) => const AnonymousDialog());
-      });
+    if (ref.read(isAnonymous)) {
+      showDialog(
+          context: context, builder: (context) => const AnonymousDialog());
+
       return;
     }
 
-    final joinedActivities = await ap.fetchUserActivities();
-    final comingRequests = await ap.fetchActivitiesRequests();
+    final joinedActivities =
+        await ref.read(firestoreService).fetchUserActivities();
+    final comingRequests =
+        await ref.read(firestoreService).fetchActivitiesRequests();
 
-    if (ap.isAnonymous && mounted) {}
     _myJoinedActivities = joinedActivities;
     _otherRequests = comingRequests;
     isLoading = false;
@@ -93,9 +94,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     int index,
     bool isInvited,
   ) {
-    //initializing the AuthProvider
-    final ap = Provider.of<AuthProvider>(context);
-
     String activityAddress = activity.activityAdress;
 
     List<String> addressParts = activityAddress.split(',');
@@ -164,7 +162,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   },
                                 ).then((confirmed) {
                                   if (confirmed != null && confirmed) {
-                                    ap
+                                    ref
+                                        .read(firestoreService)
                                         .removeActivity(activity.activityUid)
                                         .then((value) {
                                       setState(() {
@@ -195,10 +194,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   },
                                 ).then((confirmed) {
                                   if (confirmed != null && confirmed) {
-                                    ap.removeUserFromActivity(
-                                      activity.activityUid,
-                                      isWaiting,
-                                    );
+                                    ref
+                                        .read(firestoreService)
+                                        .removeUserFromActivity(
+                                          activity.activityUid,
+                                          isWaiting,
+                                        );
                                     setState(() {
                                       fetchDataFromFirebase();
                                     });
@@ -270,8 +271,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               child: MyElevatedButton(
                                 height: 40.h,
                                 onPressed: () async {
-                                  await ap.reactToInvite(
-                                      activity.activityUid, false);
+                                  await ref
+                                      .read(firestoreService)
+                                      .reactToInvite(
+                                          activity.activityUid, false);
 
                                   _myJoinedActivities.removeAt(index);
                                   fetchDataFromFirebase().then(
@@ -297,8 +300,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               child: MyElevatedButton(
                                 height: 40.h,
                                 onPressed: () async {
-                                  bool operationCompleted =
-                                      await ap.reactToInvite(
+                                  bool operationCompleted = await ref
+                                      .read(firestoreService)
+                                      .reactToInvite(
                                           activity.activityUid, true);
                                   if (operationCompleted) {
                                     fetchDataFromFirebase().then(
@@ -364,7 +368,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget buildUserItem(Map<String, dynamic> userData, int index) {
-    final ap = Provider.of<AuthProvider>(context);
     final MiittiUser user = userData['user'];
     final PersonActivity activity = userData['activity'];
     return Container(
@@ -450,8 +453,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         child: MyElevatedButton(
                           height: 40.h,
                           onPressed: () async {
-                            bool operationCompleted =
-                                await ap.updateUserJoiningActivity(
+                            bool operationCompleted = await ref
+                                .read(firestoreService)
+                                .updateUserJoiningActivity(
                                     activity.activityUid, user.uid, false);
                             if (!operationCompleted) {
                               _otherRequests.removeAt(index);
@@ -477,15 +481,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         child: MyElevatedButton(
                           height: 40.h,
                           onPressed: () async {
-                            bool operationCompleted =
-                                await ap.updateUserJoiningActivity(
+                            bool operationCompleted = await ref
+                                .read(firestoreService)
+                                .updateUserJoiningActivity(
                                     activity.activityUid, user.uid, true);
                             if (operationCompleted) {
                               fetchDataFromFirebase()
                                   .then((value) => buildOtherActivities());
                             } else {
-                              PushNotificationService.sendAcceptedNotification(
-                                  user, activity);
+                              ref
+                                  .read(notificationService)
+                                  .sendAcceptedNotification(user, activity);
                             }
                           },
                           child: Text(
@@ -562,8 +568,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               //getting the single activity from the list
               MiittiActivity singleActivity = _myJoinedActivities[index];
 
-              final ap = Provider.of<AuthProvider>(context);
-              String userId = ap.uid;
+              String userId = ref.read(authService).uid;
 
               //checking if the activity is created by the user
               bool isAdmin = singleActivity.admin == userId;
@@ -599,9 +604,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: false);
-
-    return ap.isAnonymous
+    return ref.read(isAnonymous)
         ? const AnonymousUserScreen()
         : SafeArea(
             child: Stack(

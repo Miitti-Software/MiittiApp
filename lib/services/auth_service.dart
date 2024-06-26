@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -12,6 +11,7 @@ import 'package:miitti_app/screens/login/explore_decision_screen.dart';
 import 'package:miitti_app/screens/login/phone/phone_sms.dart';
 import 'package:miitti_app/services/firestore_service.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final FirebaseAuth _auth;
@@ -24,11 +24,6 @@ class AuthService {
   bool get isSignedIn => _auth.currentUser != null;
 
   bool isLoading = false;
-
-  Future<void> signOut() async {
-    ref.read(firestoreService).reset();
-    await _auth.signOut();
-  }
 
   Future<void> signInWithApple(BuildContext context) async {
     _wait(() async {
@@ -174,6 +169,15 @@ class AuthService {
       debugPrint('Got error after signing $error');
     }
   }
+
+  Future signOut() async {
+    SharedPreferences s = await SharedPreferences.getInstance();
+    ref.read(firestoreService).reset();
+    await _auth.signOut();
+    s.clear();
+  }
+
+  F
 
   // Other auth-related methods
   Future<T> _wait<T>(Function action) async {

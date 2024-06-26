@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
@@ -16,20 +17,23 @@ import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:location/location.dart' as location;
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-class CreateMiittiOnboarding extends StatefulWidget {
+class CreateMiittiOnboarding extends ConsumerStatefulWidget {
   const CreateMiittiOnboarding({super.key});
 
   @override
-  State<CreateMiittiOnboarding> createState() => _CreateMiittiOnboardingState();
+  ConsumerState<CreateMiittiOnboarding> createState() =>
+      _CreateMiittiOnboardingState();
 }
 
-class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
+class _CreateMiittiOnboardingState
+    extends ConsumerState<CreateMiittiOnboarding> {
   late PageController _pageController;
 
   final List<ConstantsOnboarding> onboardingScreens = [
@@ -133,9 +137,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
   }*/
 
   void fetchSpots() {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: false);
-
-    ap.fetchCommercialSpots().then((value) {
+    ref.read(firestoreService).fetchCommercialSpots().then((value) {
       setState(() {
         spots = value;
       });
@@ -691,11 +693,10 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
   }
 
   Future<void> saveMiittiToFirebase(PersonActivity personActivity) async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.saveMiittiActivityDataToFirebase(
-      context: context,
-      activityModel: personActivity,
-    );
+    await ref.read(firestoreService).saveMiittiActivityDataToFirebase(
+          context: context,
+          activityModel: personActivity,
+        );
   }
 
   @override

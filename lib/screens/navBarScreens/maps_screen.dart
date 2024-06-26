@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
@@ -20,19 +21,20 @@ import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/auth_provider.dart';
+import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
-class MapsScreen extends StatefulWidget {
+class MapsScreen extends ConsumerStatefulWidget {
   const MapsScreen({super.key});
 
   @override
-  State<MapsScreen> createState() => _MapsScreenState();
+  ConsumerState<MapsScreen> createState() => _MapsScreenState();
 }
 
-class _MapsScreenState extends State<MapsScreen> {
+class _MapsScreenState extends ConsumerState<MapsScreen> {
   final Location _location = Location();
 
   List<MiittiActivity> _activities = [];
@@ -116,8 +118,8 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   void fetchActivities() async {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: false);
-    List<MiittiActivity> activities = await ap.fetchActivities();
+    List<MiittiActivity> activities =
+        await ref.read(firestoreService).fetchActivities();
     setState(() {
       _activities = activities.reversed.toList();
     });
@@ -140,13 +142,12 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   void fetchAd() async {
-    AuthProvider provider = Provider.of<AuthProvider>(context, listen: false);
-    List<AdBanner> ad = await provider.fetchAds();
+    List<AdBanner> ad = await ref.read(firestoreService).fetchAds();
     setState(() {
       _ads = ad;
     });
     if (_ads.isNotEmpty) {
-      provider.addAdView(_ads[0].uid);
+      ref.read(firestoreService).addAdView(_ads[0].uid);
     }
   }
 

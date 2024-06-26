@@ -125,7 +125,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
+  /*Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
       showLoadingDialog(context);
       await _firebaseAuth.verifyPhoneNumber(
@@ -169,7 +169,7 @@ class AuthProvider extends ChangeNotifier {
       showSnackBar(context, "Kirjautuminen epäonnistui: ${e.message}",
           Colors.red.shade800);
     }
-  }
+  }*/
 
   void verifyOtp({
     required BuildContext context,
@@ -200,7 +200,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future signInWithGoogle(BuildContext context) async {
+  /*Future signInWithGoogle(BuildContext context) async {
     try {
       //begin interactive sign process
       final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
@@ -230,9 +230,9 @@ class AuthProvider extends ChangeNotifier {
       showSnackBar(context, "Kirjautuminen epäonnistui: $error!", AppStyle.red);
       debugPrint('Got error signing with Google $error');
     }
-  }
+  }*/
 
-  Future<void> signInWithApple(BuildContext context) async {
+  /*Future<void> signInWithApple(BuildContext context) async {
     try {
       showLoadingDialog(context);
 
@@ -248,9 +248,9 @@ class AuthProvider extends ChangeNotifier {
       debugPrint('Got error signing with Apple $error');
       Navigator.of(context).pop();
     }
-  }
+  }*/
 
-  void afterSigning(BuildContext context) async {
+  /*void afterSigning(BuildContext context) async {
     try {
       checkExistingUser().then((value) async {
         if (value == true) {
@@ -280,7 +280,7 @@ class AuthProvider extends ChangeNotifier {
           AppStyle.red);
       debugPrint('Got error after signing $error');
     }
-  }
+  }*/
 
   String getUserEmail() {
     try {
@@ -1076,7 +1076,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future getDataFromFirestore() async {
+  /*Future getDataFromFirestore() async {
     await _getUserDoc(_firebaseAuth.currentUser!.uid)
         .then((DocumentSnapshot snapshot) {
       _miittiUser = MiittiUser(
@@ -1108,7 +1108,7 @@ class AuthProvider extends ChangeNotifier {
     }).onError((error, stackTrace) {
       debugPrint('ERROR: ${error.toString()}');
     });
-  }
+  }*/
 
   Future<void> setUserStatus() async {
     if (_isAnonymous) return;

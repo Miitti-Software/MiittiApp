@@ -379,19 +379,6 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
     });
   }
 
-  /*void joinIfInvited() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    bool operationCompleted =
-        await ap.reactToInvite(widget.myActivity.activityUid, true);
-    if (operationCompleted) {
-      setState(() {
-        userStatus = UserStatusInActivity.joined;
-        widget.myActivity.participants.add(ap.uid);
-        didGotInvited = false;
-      });
-    }
-  }*/
-
   Widget getMyButton(bool isLoading) {
     String buttonText = getButtonText();
 
@@ -433,17 +420,17 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
   }
 
   Future<List<MiittiUser>> fetchUsersJoinedActivity() {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    return ap.fetchUsersByUids(widget.myActivity.participants);
+    return ref
+        .read(firestoreService)
+        .fetchUsersByUids(widget.myActivity.participants.toList());
   }
 
   UserStatusInActivity getStatusInActivity() {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: false);
-    if (ap.isAnonymous) {
+    if (isAnonymous) {
       isAnonymous = true;
       return UserStatusInActivity.none;
     }
-    final userId = ap.uid;
+    final userId = ref.read(authService).uid;
     return widget.myActivity.participants.contains(userId)
         ? UserStatusInActivity.joined
         : widget.myActivity.requests.contains(userId)
