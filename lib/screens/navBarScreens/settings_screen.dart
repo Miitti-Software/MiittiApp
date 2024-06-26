@@ -171,7 +171,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             createSectionTitle('Tili:'),
             getSomeSpace(10),
             GestureDetector(
-                onTap: () => ref.read(authService).userSignOut().then(
+                onTap: () => ref.read(authService).signOut().then(
                       (value) => pushNRemoveUntil(context, const LoginIntro()),
                     ),
                 child: createText('Kirjaudu ulos')),
@@ -196,11 +196,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         },
                       ).then((confirmed) {
                         if (confirmed != null && confirmed) {
-                          ref.read(authService).removeUser().then((value) {
+                          ref.read(authService).deleteUser().then((value) {
                             showSnackBar(context, value.$2,
                                 value.$1 ? Colors.green : Colors.red);
                             if (value.$1) {
-                              ref.read(authService).userSignOut().then(
+                              ref.read(authService).signOut().then(
                                     (value) => pushNRemoveUntil(
                                         context, const LoginIntro()),
                                   );

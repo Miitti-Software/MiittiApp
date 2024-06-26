@@ -25,6 +25,8 @@ class AuthService {
 
   bool isLoading = false;
 
+  String get email => _auth.currentUser?.email ?? "";
+
   Future<void> signInWithApple(BuildContext context) async {
     _wait(() async {
       try {
@@ -177,7 +179,14 @@ class AuthService {
     s.clear();
   }
 
-  F
+  Future deleteUser() {
+    return _wait(() async {
+      SharedPreferences s = await SharedPreferences.getInstance();
+      ref.read(firestoreService).deleteUser();
+      await _auth.currentUser!.delete();
+      s.clear();
+    });
+  }
 
   // Other auth-related methods
   Future<T> _wait<T>(Function action) async {

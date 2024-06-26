@@ -213,7 +213,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         if (receiver.uid == ref.read(firestoreService).uid) continue;
         ref.read(notificationService).sendMessageNotification(
             receiver.fcmToken,
-            ref.read(firestoreService).miittiUser.userName,
+            ref.read(firestoreService).miittiUser!.userName,
             widget.activity,
             messageController.text);
       }

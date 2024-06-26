@@ -44,7 +44,7 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
 
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getAllTheUsers() async {
-    List<MiittiUser> users = ref.read(firestoreService).fetchUsers();
+    List<MiittiUser> users = await ref.read(firestoreService).fetchUsers();
 
     _miittiUsers = users.reversed.toList();
     searchResults = _miittiUsers;

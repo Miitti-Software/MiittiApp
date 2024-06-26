@@ -241,8 +241,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
   void initState() {
     super.initState();
     selectedList = questionsAboutMe;
-    _emailController =
-        TextEditingController(text: ref.read(authService).getUserEmail());
+    _emailController = TextEditingController(text: ref.read(authService).email);
     _nameController = TextEditingController();
     _pageController = PageController();
   }

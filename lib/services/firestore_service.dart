@@ -1,13 +1,24 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/filter_settings.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/models/ad_banner.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
+import 'package:miitti_app/models/commercial_spot.dart';
+import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/report.dart';
+import 'package:miitti_app/screens/index_page.dart';
+import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/widgets/other_widgets.dart';
 
 import '../screens/activity_details_page.dart';
 
@@ -96,6 +107,19 @@ class FirestoreService {
       }),
     );
     return user;
+  }
+
+  Future<void> deleteUser({String? uid}) async {
+    uid ??= this.uid;
+    if (isAnonymous) {
+      debugPrint("Cannot delete anonymous user");
+      return;
+    }
+    try {
+      await _firestore.collection(_usersString).doc(uid).delete();
+    } catch (e) {
+      debugPrint('Got an error deleting user $e');
+    }
   }
 
   Future<UserStatusInActivity> joinOrRequestActivity(String activityId) async {
@@ -267,6 +291,430 @@ class FirestoreService {
     }
   }
 
+  Future<List<PersonActivity>> fetchReportedActivities() async {
+    try {
+      QuerySnapshot querySnapshot = await _getFireQuery('reportedActivities');
+
+      List<PersonActivity> list = [];
+
+      for (QueryDocumentSnapshot report in querySnapshot.docs) {
+        DocumentSnapshot doc = await _getActivityDoc(report.id);
+        list.add(PersonActivity.fromMap(doc.data() as Map<String, dynamic>));
+      }
+
+      return list;
+    } catch (e) {
+      debugPrint('Error fetching reported activities: $e');
+      return [];
+    }
+  }
+
+  Future<List<MiittiUser>> fetchUsers() async {
+    QuerySnapshot querySnapshot = await _getFireQuery(_usersString);
+
+    return querySnapshot.docs.map((doc) => MiittiUser.fromDoc(doc)).toList();
+  }
+
+  Future<List<PersonActivity>> fetchActivitiesRequestsFrom(
+      String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('activities')
+          .where('admin', isEqualTo: uid)
+          .where('requests', arrayContains: userId)
+          .get();
+
+      List<PersonActivity> activities =
+          querySnapshot.docs.map((doc) => PersonActivity.fromDoc(doc)).toList();
+      return activities;
+    } catch (e) {
+      debugPrint('Error fetching admin activities: $e');
+      return [];
+    }
+  }
+
+  Future<QuerySnapshot> lazyFilteredUsers(int type, int batchSize,
+      [DocumentSnapshot? startAfter]) {
+    Query query = _firestore.collection(_usersString);
+
+    if (type == 0) {
+      query = query.where('userArea', isEqualTo: miittiUser!.userArea);
+    } else if (type == 1) {
+      query = query.where('userFavoriteActivities',
+          arrayContainsAny: miittiUser!.userFavoriteActivities);
+    } else {
+      query = query.orderBy('userRegistrationDate', descending: true);
+    }
+
+    if (startAfter != null) {
+      query = query.startAfterDocument(startAfter);
+    }
+
+    return query.limit(batchSize).get();
+  }
+
+  void sendMessage(String activityId, Map<String, dynamic> chatMessageData,
+      [bool commercial = false]) async {
+    DocumentReference docRef = commercial
+        ? _comActivityDocRef(activityId)
+        : _activityDocRef(activityId);
+    await docRef.collection("messages").add(chatMessageData);
+
+    await docRef.update({
+      "recentMessage": chatMessageData['message'],
+      "recentMessageSender": chatMessageData['sender'],
+      "recentMessageTime": chatMessageData['time'].toString(),
+    });
+  }
+
+  Future<List<CommercialSpot>> fetchCommercialSpots() async {
+    try {
+      QuerySnapshot querySnapshot = await _getFireQuery('commercialSpots');
+
+      List<CommercialSpot> spots = querySnapshot.docs
+          .map((doc) =>
+              CommercialSpot.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      return spots;
+    } catch (e) {
+      debugPrint('Error fetching commercial spots: $e');
+      return [];
+    }
+  }
+
+  Future<void> saveUserDatatoFirebase({
+    required BuildContext context,
+    required MiittiUser userModel,
+    required File? image,
+    required Function onSuccess,
+  }) async {
+    try {
+      showLoadingDialog(context);
+      await uploadUserImage(ref.read(authService).uid, image).then((value) {
+        userModel.profilePicture = value;
+      }).onError((error, stackTrace) {});
+      userModel.userRegistrationDate = Timestamp.now();
+      userModel.userPhoneNumber =
+          ref.read(authService).currentUser?.phoneNumber ?? '';
+      userModel.uid = ref.read(authService).uid;
+      _miittiUser = userModel;
+
+      await _userDocRef(userModel.uid)
+          .set(userModel.toMap())
+          .then((value) async {
+        onSuccess();
+      }).onError(
+        (error, stackTrace) {
+          debugPrint('Error saving user data: $error');
+        },
+      );
+    } catch (e) {
+      showSnackBar(context, "Datan tallennus epäonnistui: ${e.toString()}",
+          AppStyle.red);
+      debugPrint("Userdata to firebase error: $e");
+    } finally {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<String> uploadUserImage(String uid, File? image) async {
+    final metadata = SettableMetadata(
+      contentType: 'image/jpeg',
+      // contentType: 'image/png',
+      customMetadata: {'picked-file-path': image!.path},
+    );
+
+    String filePath = 'userImages/$uid/profilePicture.jpg';
+    try {
+      final UploadTask uploadTask;
+      Reference ref = FirebaseStorage.instance.ref(filePath);
+
+      uploadTask = ref.putData(await image.readAsBytes(), metadata);
+
+      String imageUrl = await (await uploadTask).ref.getDownloadURL();
+
+      return imageUrl;
+    } catch (error) {
+      throw Exception("Upload failed: $error");
+    }
+  }
+
+  Future<void> removeUserFromActivity(
+    String activityId,
+    bool isRequested,
+  ) async {
+    try {
+      if (!isRequested) {
+        //check if activity or commercial activity
+        DocumentReference activityRef = _activityDocRef(activityId);
+        DocumentSnapshot snapshot = await activityRef.get();
+
+        if (snapshot.exists) {
+          await activityRef.update({
+            'participants': FieldValue.arrayRemove([uid])
+          });
+        } else {
+          await _comActivityDocRef(activityId).update({
+            'participants': FieldValue.arrayRemove([uid])
+          });
+        }
+      } else {
+        await _activityDocRef(activityId).update({
+          'requests': FieldValue.arrayRemove([uid])
+        });
+      }
+
+      debugPrint("User removed from activity successfully.");
+    } catch (e) {
+      debugPrint('Error removing user from activity: $e');
+    }
+  }
+
+  Future<List<AdBanner>> fetchAds() async {
+    try {
+      QuerySnapshot querySnapshot = await _getFireQuery('adBanners');
+
+      List<AdBanner> list = querySnapshot.docs
+          .map((doc) => AdBanner.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      if (_miittiUser != null) {
+        return AdBanner.sortBanners(list, miittiUser);
+      } else {
+        list.shuffle();
+        return list;
+      }
+    } catch (e) {
+      debugPrint("Error fetching ads $e");
+      return [];
+    }
+  }
+
+  void addAdView(String adUid) async {
+    try {
+      await _firestore.collection('adBanners').doc(adUid).update({
+        'views': FieldValue.increment(1),
+      });
+    } catch (e) {
+      debugPrint('Error adding view: $e');
+    }
+  }
+
+  Future<List<MiittiActivity>> fetchUserActivities() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _queryWhereContains(_activitiesString, 'participants', uid!);
+
+      QuerySnapshot commercialSnapshot =
+          await _queryWhereContains(_comactString, 'participants', uid!);
+
+      QuerySnapshot requestSnapshot =
+          await _queryWhereContains(_activitiesString, "requests", uid!);
+
+      List<PersonActivity> personActivities = [];
+      List<CommercialActivity> commercialActivities = [];
+
+      for (var doc in querySnapshot.docs) {
+        personActivities.add(PersonActivity.fromDoc(doc));
+      }
+
+      for (var doc in commercialSnapshot.docs) {
+        commercialActivities.add(CommercialActivity.fromDoc(doc));
+      }
+
+      for (var doc in requestSnapshot.docs) {
+        personActivities.add(PersonActivity.fromDoc(doc));
+      }
+
+      if (miittiUser!.invitedActivities.isNotEmpty) {
+        for (String activityId in miittiUser!.invitedActivities) {
+          DocumentSnapshot activitySnapshot = await _getActivityDoc(activityId);
+
+          if (activitySnapshot.exists) {
+            PersonActivity activity = PersonActivity.fromMap(
+                activitySnapshot.data() as Map<String, dynamic>);
+            personActivities.add(activity);
+          }
+        }
+      }
+
+      List<MiittiActivity> list = List<MiittiActivity>.from(personActivities);
+      list.addAll(List<MiittiActivity>.from(commercialActivities));
+      return list;
+    } catch (e, s) {
+      debugPrint('Error fetching user activities: $e, $s');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActivitiesRequests() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _queryWhereEquals(_activitiesString, 'admin', uid!);
+
+      List<PersonActivity> activities =
+          querySnapshot.docs.map((doc) => PersonActivity.fromDoc(doc)).toList();
+
+      List<Map<String, dynamic>> usersAndActivityIds = [];
+
+      for (PersonActivity activity in activities) {
+        List<MiittiUser> users =
+            await fetchUsersByUids(activity.requests.toList());
+        usersAndActivityIds.addAll(users.map((user) => {
+              'user': user,
+              'activity': activity,
+            }));
+      }
+
+      return usersAndActivityIds.toList();
+    } catch (e) {
+      debugPrint('Error fetching admin activities: $e');
+      return [];
+    }
+  }
+
+  Future updateUserInfo({
+    required MiittiUser updatedUser,
+    BuildContext? context,
+    File? imageFile,
+  }) async {
+    try {
+      if (context != null && context.mounted) {
+        showLoadingDialog(context);
+      }
+      if (imageFile != null) {
+        await uploadUserImage(ref.read(authService).uid, imageFile)
+            .then((value) {
+          updatedUser.profilePicture = value;
+        });
+      }
+
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .update(updatedUser.toMap())
+          .then((value) {
+        _miittiUser = updatedUser;
+      });
+
+      // Update the user in the provider
+    } catch (e) {
+      debugPrint('Error updating user info: $e');
+    } finally {
+      if (context != null && context.mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  Future<void> saveMiittiActivityDataToFirebase({
+    required BuildContext context,
+    required PersonActivity activityModel,
+  }) async {
+    showLoadingDialog(context);
+    try {
+      activityModel.admin = _miittiUser!.uid;
+      activityModel.adminAge = calculateAge(_miittiUser!.userBirthday);
+      activityModel.adminGender = _miittiUser!.userGender;
+      activityModel.activityUid = generateCustomId();
+      activityModel.participants.add(_miittiUser!.uid);
+
+      await _activityDocRef(activityModel.activityUid)
+          .set(activityModel.toMap())
+          .then((value) {
+        showSnackBar(context, 'Miittisi on luotu onnistuneesti!', Colors.green);
+
+        pushNRemoveUntil(context, const IndexPage());
+      });
+    } catch (e) {
+      showSnackBar(context, e.toString(), AppStyle.red);
+      pushNRemoveUntil(context, const IndexPage());
+    }
+  }
+
+  Future<CommercialUser> getCommercialUser(String id) async {
+    DocumentSnapshot doc =
+        await _firestore.collection("commercialUsers").doc(id).get();
+    CommercialUser user =
+        CommercialUser.fromMap(doc.data() as Map<String, dynamic>);
+
+    return user;
+  }
+
+  Future<void> joinCommercialActivity(String activityId) async {
+    try {
+      await _comActivityDocRef(activityId).update({
+        'participants': FieldValue.arrayUnion([uid!])
+      }).then((value) {
+        debugPrint("User joined the activity successfully");
+      }).catchError((error) {
+        debugPrint("Error joining the activity: $error");
+      });
+    } catch (e) {
+      debugPrint('Error while joining activity: $e');
+    }
+  }
+
+  Future<bool> checkIfUserJoined(String activityUid,
+      {bool commercial = false}) async {
+    final snapshot = await _firestore
+        .collection(commercial ? 'commercialActivities' : 'activities')
+        .doc(activityUid)
+        .get();
+
+    if (snapshot.exists) {
+      final activity = commercial
+          ? CommercialActivity.fromDoc(snapshot)
+          : PersonActivity.fromDoc(snapshot);
+      return activity.participants.contains(uid);
+    }
+
+    return false;
+  }
+
+  getChats(String activityId, [bool commercial = false]) async {
+    DocumentReference docRef = commercial
+        ? _comActivityDocRef(activityId)
+        : _activityDocRef(activityId);
+    return docRef
+        .collection('messages')
+        .orderBy('time', descending: true)
+        .snapshots();
+  }
+
+  Future<void> reportUser(String message, String reportedId) async {
+    try {
+      _isLoading = true;
+
+      String senderId = uid!;
+
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection('reportedUsers').doc(reportedId).get();
+
+      Report report;
+      if (documentSnapshot.exists) {
+        report = Report.fromMap(
+            documentSnapshot.data() as Map<String, dynamic>, true);
+        report.reasons.add("$senderId: $message");
+      } else {
+        report = Report(
+          reportedId: reportedId,
+          reasons: ["$senderId: $message"],
+          isUser: true,
+        );
+      }
+      await _firestore
+          .collection('reportedUsers')
+          .doc(reportedId)
+          .set(report.toMap());
+    } catch (e) {
+      debugPrint("Reporting failed: $e");
+    } finally {
+      _isLoading = false;
+    }
+  }
+
   //PRIVATE UTILS
 
   Future<bool> _tryGetUser(String userId,
@@ -282,6 +730,21 @@ class FirestoreService {
         await notFound();
       }
       return false;
+    }
+  }
+
+  Future<List<PersonActivity>> fetchAdminActivities() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _queryWhereEquals(_activitiesString, 'admin', uid!);
+
+      List<PersonActivity> activities =
+          querySnapshot.docs.map((doc) => PersonActivity.fromDoc(doc)).toList();
+
+      return activities;
+    } catch (e) {
+      debugPrint('Error fetching user activities: $e');
+      return [];
     }
   }
 
@@ -304,8 +767,32 @@ class FirestoreService {
     return _firestore.collection(_activitiesString).doc(activityId).get();
   }
 
+  DocumentReference _userDocRef(String userId) {
+    return _firestore.collection(_usersString).doc(userId);
+  }
+
+  DocumentReference _activityDocRef(String activityId) {
+    return _firestore.collection('activities').doc(activityId);
+  }
+
   DocumentReference _comActivityDocRef(String activityId) {
     return _firestore.collection('commercialActivities').doc(activityId);
+  }
+
+  Future<QuerySnapshot> _queryWhereContains(
+      String collection, String array, String value) {
+    return _firestore
+        .collection(collection)
+        .where(array, arrayContains: value)
+        .get();
+  }
+
+  Future<QuerySnapshot> _queryWhereEquals(
+      String collection, String field, String value) {
+    return _firestore
+        .collection(collection)
+        .where(field, isEqualTo: value)
+        .get();
   }
 
   Future<MiittiActivity> _personalOrCommercial(
@@ -326,4 +813,6 @@ class FirestoreService {
       return commercialActivity;
     }
   }
+
+  inviteUserToYourActivity(String uid, String activityUid) {}
 }
