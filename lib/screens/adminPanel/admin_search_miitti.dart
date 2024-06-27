@@ -8,10 +8,8 @@ import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/providers.dart';
-import 'package:provider/provider.dart';
 
 class AdminSearchMiitti extends ConsumerStatefulWidget {
   const AdminSearchMiitti({super.key});

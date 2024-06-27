@@ -6,12 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
 
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/services/providers.dart';
-import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:provider/provider.dart';
 
 import 'navBarScreens/calendar_screen.dart';
 import 'navBarScreens/settings_screen.dart';

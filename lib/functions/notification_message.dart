@@ -15,9 +15,7 @@ import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'dart:convert';
-import 'package:provider/provider.dart';
 
-import 'package:miitti_app/services/auth_provider.dart';
 
 class NotificationMessage extends ConsumerStatefulWidget {
   const NotificationMessage({super.key});

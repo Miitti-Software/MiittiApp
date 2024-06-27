@@ -7,10 +7,8 @@ import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/fields/admin_searchbar.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:provider/provider.dart';
 
 class AdminSearchUser extends ConsumerStatefulWidget {
   const AdminSearchUser({super.key});

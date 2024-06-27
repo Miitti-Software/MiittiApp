@@ -20,11 +20,9 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class MapsScreen extends ConsumerStatefulWidget {

@@ -8,12 +8,10 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/question_answer.dart';
 import 'package:miitti_app/functions/utils.dart';
 
-import 'package:provider/provider.dart';
 
 import 'index_page.dart';
 import '../widgets/buttons/my_elevated_button.dart';

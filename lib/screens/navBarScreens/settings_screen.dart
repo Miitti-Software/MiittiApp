@@ -9,9 +9,7 @@ import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/screens/login/login_intro.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
