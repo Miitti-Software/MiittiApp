@@ -54,7 +54,18 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    fetchDataFromFirebase();
+    Future.delayed(const Duration(milliseconds: 10)).then((value) {
+      if (ref.read(isAnonymous)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            builder: (context) => const AnonymousDialog(),
+          );
+        });
+      } else {
+        fetchDataFromFirebase();
+      }
+    });
   }
 
   Future fetchDataFromFirebase() async {

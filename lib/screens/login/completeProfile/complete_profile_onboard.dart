@@ -1084,7 +1084,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         userLanguages: selectedLanguages.toList(),
         profilePicture: '',
         invitedActivities: [],
-        userStatus: Timestamp.now(),
+        lastActive: Timestamp.now(),
         userSchool: noLifeSituation ? '' : selectedLifeOption,
         fcmToken: '',
         userRegistrationDate: Timestamp.now(),

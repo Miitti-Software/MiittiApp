@@ -40,7 +40,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   List<MiittiActivity> _activities = [];
   List<AdBanner> _ads = [];
 
-  LatLng myPosition = const LatLng(60.1699, 24.9325);
+  LatLng myPosition = const LatLng(60.1699, 24.9325);     // TODO: Move to global riverpod state and make home city or last location from local data into the default 
 
   SuperclusterMutableController clusterController =
       SuperclusterMutableController();
@@ -99,9 +99,11 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
       LatLng currentLatLng =
           LatLng(locationData.latitude!, locationData.longitude!);
 
-      setState(() {
-        myPosition = currentLatLng;
-      });
+      if (mounted) {
+        setState(() {
+          myPosition = currentLatLng;
+        });
+      }
     }
 
     /*myCameraPosition = CameraPosition(
@@ -120,11 +122,13 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   void fetchActivities() async {
     List<MiittiActivity> activities =
         await ref.read(firestoreService).fetchActivities();
-    setState(() {
-      _activities = activities.reversed.toList();
-    });
-    clusterController.addAll(_activities.map(activityMarker).toList());
-    //addGeojsonCluster(controller, _activities);
+    if (mounted) {
+      setState(() {
+        _activities = activities.reversed.toList();
+      });
+      clusterController.addAll(_activities.map(activityMarker).toList());
+      //addGeojsonCluster(controller, _activities);
+    }
   }
 
   Marker activityMarker(MiittiActivity activity) {

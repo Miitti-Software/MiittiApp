@@ -506,7 +506,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   String getUserStatus() {
     Duration difference =
-        DateTime.now().difference(widget.user.userStatus.toDate());
+        DateTime.now().difference(widget.user.lastActive.toDate());
 
     if (difference < const Duration(minutes: 5)) {
       return 'Paikalla';

@@ -30,7 +30,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 500)).then((value) {
+    Future.delayed(const Duration(milliseconds: 10)).then((value) {
       if (ref.read(isAnonymous)) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(

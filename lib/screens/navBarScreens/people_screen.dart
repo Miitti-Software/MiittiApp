@@ -43,9 +43,11 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
 
   void initLists() async {
     if (ref.read(isAnonymous)) {
-      Future.delayed(const Duration(milliseconds: 500)).then((value) {
-        showDialog(
-            context: context, builder: (context) => const AnonymousDialog());
+      Future.delayed(const Duration(milliseconds: 10)).then((value) {
+        if (mounted) {
+          showDialog(
+              context: context, builder: (context) => const AnonymousDialog());
+        }
       });
 
       return;

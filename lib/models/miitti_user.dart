@@ -13,7 +13,7 @@ class MiittiUser {
   String profilePicture;
   String uid;
   List<String> invitedActivities;
-  Timestamp userStatus;
+  Timestamp lastActive;
   String userSchool;
   String fcmToken;
   Timestamp userRegistrationDate;
@@ -31,7 +31,7 @@ class MiittiUser {
       required this.userLanguages,
       required this.profilePicture,
       required this.invitedActivities,
-      required this.userStatus,
+      required this.lastActive,
       required this.userSchool,
       required this.fcmToken,
       required this.userRegistrationDate});
@@ -46,20 +46,21 @@ class MiittiUser {
       userEmail: map['userEmail'] ?? '',
       uid: map['uid'] ?? '',
       userPhoneNumber: map['userPhoneNumber'] ?? '',
-      userBirthday: resolveTimestamp(map['userBirthday']),
+      userBirthday: resolveSimpleDate(map['userBirthday']),
       userArea: map['userArea'] ?? '',
       userFavoriteActivities: _resolveActivities(
-          map['userFavoriteActivities'] as List<String>? ?? []),
+          (map['userFavoriteActivities'] as List<dynamic>? ?? [])
+              .cast<String>()),
       userChoices: (map['userChoices'] as Map<String, dynamic>? ?? {})
           .cast<String, String>(),
       userGender: map['userGender'] ?? '', // Updated to single File
-      userLanguages: map['userLanguages'] as List<String>? ?? [],
+      userLanguages: (map['userLanguages'] as List<dynamic>? ?? []).cast<String>(),
       profilePicture: map['profilePicture'] ?? '',
-      invitedActivities: map['invitedActivities'] as List<String>? ?? [],
-      userStatus: map['userStatus'] ?? '',
+      invitedActivities: (map['invitedActivities'] as List<dynamic>? ?? []).cast<String>(),
+      lastActive: resolveTimestamp(map.containsKey('lastActive') ? map['lastActive'] : map['userStatus']), // lastActive was formerly called userStatus and hence the field might differ for new and old users
       userSchool: map['userSchool'] ?? '',
       fcmToken: map['fcmToken'] ?? '',
-      userRegistrationDate: map['userRegistrationDate'] ?? '',
+      userRegistrationDate: resolveSimpleDate(map['userRegistrationDate']),
     );
   }
 
@@ -77,7 +78,7 @@ class MiittiUser {
       'userLanguages': userLanguages.toList(),
       'profilePicture': profilePicture,
       'invitedActivities': invitedActivities.toList(),
-      'userStatus': userStatus,
+      'lastActive': lastActive,
       'userSchool': userSchool,
       'fcmToken': fcmToken,
       'userRegistrationDate': userRegistrationDate
@@ -91,7 +92,7 @@ class MiittiUser {
       userPhoneNumber = newData['userPhoneNumber'] ?? userPhoneNumber;
       userBirthday = newData['userBirthday'] ?? userBirthday;
       userArea = newData['userArea'] ?? userArea;
-      userStatus = newData['userStatus'] ?? userStatus;
+      lastActive = newData['lastActive'] ?? lastActive;
       userSchool = newData['userSchool'] ?? userSchool;
       fcmToken = newData['fcmToken'] ?? fcmToken;
       userRegistrationDate =
@@ -145,6 +146,21 @@ class MiittiUser {
     return favorites;
   }
 
+  static Timestamp resolveSimpleDate(dynamic time) {
+    if (time == null) {
+      return _defaultTime;
+    }
+    try {
+      return time as Timestamp;
+    } catch (e) {
+      final simpleDate = (time as String).split('/');
+      final day = int.parse(simpleDate[0]);
+      final month = int.parse(simpleDate[1]);
+      final year = int.parse(simpleDate[2]);
+      return Timestamp.fromDate(DateTime(year, month, day));
+    }
+  }
+
   static Timestamp resolveTimestamp(dynamic time) {
     if (time == null) {
       return _defaultTime;
@@ -152,11 +168,7 @@ class MiittiUser {
     try {
       return time as Timestamp;
     } catch (e) {
-      final birthDate = (time as String).split('/');
-      final day = int.parse(birthDate[0]);
-      final month = int.parse(birthDate[1]);
-      final year = int.parse(birthDate[2]);
-      return Timestamp.fromDate(DateTime(year, month, day));
+      return Timestamp.fromDate(DateTime.parse(time as String));
     }
   }
 
