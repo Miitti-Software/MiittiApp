@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/screens/login/explore_decision_screen.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/login/login_intro.dart';
@@ -72,9 +73,33 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget _buildAuthScreen(BuildContext context) {
     //Just checking if the user is signed up, before opening our app.
     return Consumer(builder: (context, ref, kid) {
-      final auth = ref.read(authService);
-      if (auth.isSignedIn) {
-        return const IndexPage();
+      if (ref.read(authService).isSignedIn) {
+        return FutureBuilder(
+            future: ref
+                .read(firestoreService)
+                .checkExistingUser(ref.read(authService).uid),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppStyle.pink),
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                debugPrint('Error occurred: ${snapshot.error}');
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Error occurred'),
+                  ),
+                );
+              } else if (snapshot.data == true) {
+                return const IndexPage();
+              } else {
+                return const ExploreDecisionScreen();
+              }
+            });
       } else {
         return const LoginIntro();
       }

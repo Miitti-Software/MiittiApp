@@ -117,6 +117,7 @@ class FirestoreService {
     }
     try {
       await _firestore.collection(_usersString).doc(uid).delete();
+      _miittiUser = null;
     } catch (e) {
       debugPrint('Got an error deleting user $e');
     }
@@ -722,7 +723,12 @@ class FirestoreService {
     DocumentSnapshot snapshot = await _getUserDoc(userId);
     if (snapshot.exists) {
       if (exists != null) {
-        await exists(MiittiUser.fromDoc(snapshot));
+        try {
+          MiittiUser user = MiittiUser.fromDoc(snapshot);
+          exists(user);
+        } catch (e) {
+          debugPrint('Error running function for existing user: $e');
+        }
       }
       return true;
     } else {

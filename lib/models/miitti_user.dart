@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:miitti_app/functions/dynamic_extensions.dart';
 
 class MiittiUser {
   String userEmail;
@@ -41,26 +43,30 @@ class MiittiUser {
   }
 
   factory MiittiUser.fromMap(Map<String, dynamic> map) {
-    return MiittiUser(
-      userName: map['userName'] ?? '',
-      userEmail: map['userEmail'] ?? '',
-      uid: map['uid'] ?? '',
-      userPhoneNumber: map['userPhoneNumber'] ?? '',
-      userBirthday: resolveTimestamp(map['userBirthday']),
-      userArea: map['userArea'] ?? '',
-      userFavoriteActivities: _resolveActivities(
-          map['userFavoriteActivities'] as List<String>? ?? []),
-      userChoices: (map['userChoices'] as Map<String, dynamic>? ?? {})
-          .cast<String, String>(),
-      userGender: map['userGender'] ?? '', // Updated to single File
-      userLanguages: map['userLanguages'] as List<String>? ?? [],
-      profilePicture: map['profilePicture'] ?? '',
-      invitedActivities: map['invitedActivities'] as List<String>? ?? [],
-      userStatus: map['userStatus'] ?? '',
-      userSchool: map['userSchool'] ?? '',
-      fcmToken: map['fcmToken'] ?? '',
-      userRegistrationDate: map['userRegistrationDate'] ?? '',
-    );
+    try {
+      return MiittiUser(
+        userName: map['userName'] ?? '',
+        userEmail: map['userEmail'] ?? '',
+        uid: map['uid'] ?? '',
+        userPhoneNumber: map['userPhoneNumber'] ?? '',
+        userBirthday: resolveTimestamp(map['userBirthday']),
+        userArea: map['userArea'] ?? '',
+        userFavoriteActivities:
+            _resolveActivities(_toStringList(map['userFavoriteActivities'])),
+        userChoices: _toStringMap(map['userChoices']),
+        userGender: map['userGender'] ?? '', // Updated to single File
+        userLanguages: _toStringList(map['userLanguages']),
+        profilePicture: map['profilePicture'] ?? '',
+        invitedActivities: _toStringList(map['invitedActivities']),
+        userStatus: resolveTimestamp(map['userStatus']),
+        userSchool: map['userSchool'] ?? '',
+        fcmToken: map['fcmToken'] ?? '',
+        userRegistrationDate: resolveTimestamp(map['userRegistrationDate']),
+      );
+    } catch (e, s) {
+      debugPrint('Error parsing user from map: $e | $s');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toMap() {
@@ -100,9 +106,8 @@ class MiittiUser {
       userGender = newData['userGender'] ?? userGender;
 
       if (newData['userFavoriteActivities'] is List<dynamic>) {
-        userFavoriteActivities =
-            _resolveActivities(newData['userFavoriteActivities'])
-                .cast<String>();
+        userFavoriteActivities = _resolveActivities(
+            _toStringList(newData['userFavoriteActivities']));
       }
       if (newData['userChoices'] is Map<String, String>) {
         userChoices = newData['userChoices'];
@@ -145,6 +150,20 @@ class MiittiUser {
     return favorites;
   }
 
+  static List<String> _toStringList(dynamic list) {
+    if (list is List<dynamic>) {
+      return list.cast<String>();
+    }
+    return [];
+  }
+
+  static Map<String, String> _toStringMap(dynamic map) {
+    if (map is Map<String, dynamic>) {
+      return map.cast<String, String>();
+    }
+    return {};
+  }
+
   static Timestamp resolveTimestamp(dynamic time) {
     if (time == null) {
       return _defaultTime;
@@ -152,11 +171,19 @@ class MiittiUser {
     try {
       return time as Timestamp;
     } catch (e) {
-      final birthDate = (time as String).split('/');
-      final day = int.parse(birthDate[0]);
-      final month = int.parse(birthDate[1]);
-      final year = int.parse(birthDate[2]);
-      return Timestamp.fromDate(DateTime(year, month, day));
+      try {
+        final birthDate = (time as String).split('/');
+        final day = int.parse(birthDate[0]);
+        final month = int.parse(birthDate[1]);
+        final year = int.parse(birthDate[2]);
+        return Timestamp.fromDate(DateTime(year, month, day));
+      } catch (e) {
+        try {
+          return Timestamp.fromDate(DateTime.parse(time));
+        } catch (e) {
+          return _defaultTime;
+        }
+      }
     }
   }
 
