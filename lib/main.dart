@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/screens/login/explore_decision_screen.dart';
 import 'package:miitti_app/services/providers.dart';
