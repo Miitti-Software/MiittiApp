@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplify `MiittiUser` class and modify Firestore database accordingly
 - Refactor UI components to use `miitti_theme.dart`
 - Rename strings role-wise instead of content-wise
+- Refactor `firestoreService` functions from function after `updateUser` till function before `_wait`
 
 ### To Be Fixed
 
@@ -46,6 +47,8 @@ Currently published app is version at the time of adding this is 1.5.4. Hence, s
 
 - `return` keyword was added to the `t()` function in `app_texts.dart` to fix red screen upon signing in.
 - Various `mounted` checks to fix freezing resulting from calls to asynchronous methods.
+- Fixed parsing MiittiUser lists, maps and time
+- Modified error management in `app_text.dart` to not crash app in debugmode if key is not found
 
 ### Changed
 
