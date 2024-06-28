@@ -52,6 +52,16 @@ class FirestoreService {
         }));
   }
 
+  Future<MiittiUser?> getUser(String userId) async {
+    MiittiUser? user;
+    _wait(
+      () => _tryGetUser(userId, exists: (miittiUser) {
+        user = miittiUser;
+      }),
+    );
+    return user;
+  }
+
   Future<void> updateUser(Map<String, dynamic> data, {uid = "current"}) async {
     if (isAnonymous) {
       debugPrint("Cannot update anonymous user");
@@ -97,16 +107,6 @@ class FirestoreService {
       debugPrint("Reporting failed: $e");
       updateUser({'lastActivity': activity});
     }
-  }
-
-  Future<MiittiUser?> getUser(String userId) async {
-    MiittiUser? user;
-    _wait(
-      () => _tryGetUser(userId, exists: (miittiUser) {
-        user = miittiUser;
-      }),
-    );
-    return user;
   }
 
   Future<void> deleteUser({String? uid}) async {

@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
 Map<String, String> appTexts = {
   'auth-greet-title': "Heippa,",
   'auth-greet-subtitle':
@@ -11,6 +14,8 @@ Map<String, String> appTexts = {
 };
 
 t(String key) {
-  assert(appTexts[key] != null, "Key $key not found in appTexts");
+  if (kDebugMode && appTexts[key] == null) {
+    debugPrint("Key $key not found in appTexts.");
+  }
   return appTexts[key] ?? key;
 }
