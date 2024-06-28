@@ -13,19 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-language support
 - Small and large, compressed versions of profile pictures
 - Collection and storage of relevant data
+- Use Firebase Remote Config, Performance Monitoring, Test Lab and Crashlytics
 
 ### To Be Changed
 
 - Modernize the UI of all screens
 - Simplify `MiittiUser` class and modify Firestore database accordingly
 - Refactor UI components to use `miitti_theme.dart`
+- Rename strings role-wise instead of content-wise
 
 ### To Be Fixed
 
 - Google Sign-In so that users with pre-existing accounts will not appear as anonymous users
+- Make it impossible to participate in an event as an anonymous user -> finish your profile prompt
 
 ### To Be Removed
 
+- Admin IDs of non-contributors
 - `AuthProvider` class will become redundant once `AuthService` has been fully implemented
 
 ## [1.5.5] - 2024-06-27

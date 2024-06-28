@@ -2,8 +2,106 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+  	//Käyttäjällä on profiili
+    function hasProfile() {
+    return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    
+    //Käyttäjä on kirjautunut
+    function signedIn()
+    {
+    	return request.auth != null;
+    }
+    
+    //Katsotaan sisältääkö adminlista käyttäjän id:n
+    function isAdmin()
+    {
+    	return request.auth.uid in [
+      'I1nASRt60QcQtzPOECyzM3WxxJ33',
+  		'43uacOhSQKOBxXEsEzTucaN7b5B2',
+  		'PCgz01aA7nbGAQigFsKyFnrHpMF2',
+  		'cyn5uJdDskdwGaZDvmNtztfxsRm2',
+  		'TI4jAfRnjnUWM46zwsL4pYUrF3Z2',
+      ]
+    }
+    
+    //Säännöt käyttäjädokumentille
+    match /users/{userId} {
+      allow read: if signedIn();
+      //Ainoastaan admin tai käyttäjä itse voi päivittää tai poistaa profiilinsa
+      allow update, delete: if hasProfile() && request.auth.uid == userId || isAdmin();
+      allow create: if signedIn();
+    }
+    
+    //Säännöt aktiviteeteille
+    match /activities/{activityId} {
+      allow read: if signedIn();
+      //Osallistujia ja pyyntöjä voi muokata muutki ku adminit
+      allow update: if hasProfile() && (request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['participants','requests']));
+      //viimeisintä viestiä voi muokata muutki ku adminit
+      allow update: if (request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['recentMessage','recentMessageSender','recentMessageTime'])) && isParticipant();
+      //Muita juttuja voi muokata vaan adminit
+      allow update, delete: if hasProfile() && isActivityAdmin() || isAdmin();
+      allow create: if hasProfile();
+      
+      function isParticipant()
+      {
+      	return hasProfile() && request.auth.uid in resource.data.participants;
+      }
+      
+      function isActivityAdmin()
+      {
+      	return hasProfile() && request.auth.uid == resource.data.admin;
+      }
+      
+      match /messages/{messageId} 
+      {
+      	//Osallistujat voi luoda ja lukea viestejä
+      	allow read, create: if isParticipant() || isAdmin();
+        //Adminit voi poistaa viestejä
+        allow delete: if isActivityAdmin() || isAdmin();
+        //Viestejä ei voi päivittää
+        allow update: if false
+      }
+    }
+    
+		//Säännöt kaupallisilleAktivitiiteille
+    match /commercialActivities/{activityId} {
+      allow read: if signedIn();
+      allow update: if signedIn() && (request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['participants']));
+      allow update: if (request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['recentMessage','recentMessageSender','recentMessageTime'])) && isParticipant();
+      allow write: if false;
+      
+      function isParticipant()
+      {
+      	return signedIn() && request.auth.uid in resource.data.participants;
+      }
+      
+      match /messages/{messageId} 
+      {
+      	allow read, create: if isParticipant() || isAdmin();
+        allow write: if false; 
+      }
+    }
+    
+    //Säännöt mainoksille
+    match /adBanners/{bannerId}
+    {
+    	allow read: if signedIn();
+      //Dokumentin voi päivittää jos ainoastaan näyttökertojen tai klikkauksien määrää muutetaan
+      allow update: if singnedIn() && (request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['views', 'clicks']));
+      allow write: if false;
+      
+    }
+    
+    //Säännöt muille dokumenteille
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if signedIn();
     }
   }
 }
