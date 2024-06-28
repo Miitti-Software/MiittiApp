@@ -11,8 +11,6 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:intl/intl.dart';
 import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
@@ -31,8 +29,6 @@ import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/functions/filter_settings.dart';
 import 'package:miitti_app/screens/index_page.dart';
 
-import 'package:miitti_app/screens/login/explore_decision_screen.dart';
-import 'package:miitti_app/screens/login/phone/phone_sms.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // #endregion

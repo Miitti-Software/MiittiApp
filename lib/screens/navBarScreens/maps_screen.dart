@@ -20,11 +20,9 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class MapsScreen extends ConsumerStatefulWidget {
@@ -40,7 +38,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   List<MiittiActivity> _activities = [];
   List<AdBanner> _ads = [];
 
-  LatLng myPosition = const LatLng(60.1699, 24.9325);
+  LatLng myPosition = const LatLng(60.1699, 24.9325);     // TODO: Move to global riverpod state and make home city or last location from local data into the default 
 
   SuperclusterMutableController clusterController =
       SuperclusterMutableController();
@@ -99,9 +97,11 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
       LatLng currentLatLng =
           LatLng(locationData.latitude!, locationData.longitude!);
 
-      setState(() {
-        myPosition = currentLatLng;
-      });
+      if (mounted) {
+        setState(() {
+          myPosition = currentLatLng;
+        });
+      }
     }
 
     /*myCameraPosition = CameraPosition(
@@ -120,11 +120,13 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   void fetchActivities() async {
     List<MiittiActivity> activities =
         await ref.read(firestoreService).fetchActivities();
-    setState(() {
-      _activities = activities.reversed.toList();
-    });
-    clusterController.addAll(_activities.map(activityMarker).toList());
-    //addGeojsonCluster(controller, _activities);
+    if (mounted) {
+      setState(() {
+        _activities = activities.reversed.toList();
+      });
+      clusterController.addAll(_activities.map(activityMarker).toList());
+      //addGeojsonCluster(controller, _activities);
+    }
   }
 
   Marker activityMarker(MiittiActivity activity) {

@@ -18,7 +18,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
 
   @override
   void initState() {
-    DateFormat('MMMM d, HH:mm').format(widget.user.userStatus.toDate());
+    DateFormat('MMMM d, HH:mm').format(widget.user.lastActive.toDate());
     super.initState();
   }
 

@@ -17,15 +17,12 @@ import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
-import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
 
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 
 import '../models/miitti_user.dart';
 

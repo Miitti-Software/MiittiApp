@@ -7,10 +7,8 @@ import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
-import 'package:provider/provider.dart';
 
 class ExploreDecisionScreen extends ConsumerWidget {
   const ExploreDecisionScreen({super.key});

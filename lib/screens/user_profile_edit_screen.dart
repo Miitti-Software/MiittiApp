@@ -8,12 +8,9 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
-import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/services/push_notification_service.dart';
 
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
-import 'package:provider/provider.dart';
 
 class UserProfileEditScreen extends ConsumerStatefulWidget {
   final MiittiUser user;
@@ -506,7 +503,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   String getUserStatus() {
     Duration difference =
-        DateTime.now().difference(widget.user.userStatus.toDate());
+        DateTime.now().difference(widget.user.lastActive.toDate());
 
     if (difference < const Duration(minutes: 5)) {
       return 'Paikalla';

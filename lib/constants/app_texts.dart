@@ -12,5 +12,5 @@ Map<String, String> appTexts = {
 
 t(String key) {
   assert(appTexts[key] != null, "Key $key not found in appTexts");
-  appTexts[key] ?? key;
+  return appTexts[key] ?? key;
 }

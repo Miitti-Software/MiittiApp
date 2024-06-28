@@ -8,10 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/services/providers.dart';
-import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
 
@@ -24,12 +22,10 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/login/completeProfile/complete_profile_answerpage.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 import 'package:pinput/pinput.dart';
-import 'package:provider/provider.dart';
 
 //TODO: Seperate to multiple files, move onboardingScreens list elsewhere and change text to localized strings using t() function, l
 //lists like languages and cities need to be downloaded from Firestore
@@ -1084,7 +1080,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         userLanguages: selectedLanguages.toList(),
         profilePicture: '',
         invitedActivities: [],
-        userStatus: Timestamp.now(),
+        lastActive: Timestamp.now(),
         userSchool: noLifeSituation ? '' : selectedLifeOption,
         fcmToken: '',
         userRegistrationDate: Timestamp.now(),

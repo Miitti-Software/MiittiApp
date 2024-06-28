@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
-import 'package:miitti_app/services/auth_provider.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AdBanner {

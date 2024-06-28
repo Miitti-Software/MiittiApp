@@ -13,9 +13,7 @@ import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/my_profile_edit_form.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:provider/provider.dart';
 
-import '../../services/auth_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -30,7 +28,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 500)).then((value) {
+    Future.delayed(const Duration(milliseconds: 10)).then((value) {
       if (ref.read(isAnonymous)) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(

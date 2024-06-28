@@ -10,11 +10,8 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/message_tile.dart';
-import 'package:miitti_app/services/auth_provider.dart';
-import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
-import 'package:provider/provider.dart';
 
 import 'package:intl/intl.dart'; // Add this line for the DateFormat class
 

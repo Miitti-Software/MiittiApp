@@ -15,7 +15,7 @@ class MiittiUser {
   String profilePicture;
   String uid;
   List<String> invitedActivities;
-  Timestamp userStatus;
+  Timestamp lastActive;
   String userSchool;
   String fcmToken;
   Timestamp userRegistrationDate;
@@ -33,7 +33,7 @@ class MiittiUser {
       required this.userLanguages,
       required this.profilePicture,
       required this.invitedActivities,
-      required this.userStatus,
+      required this.lastActive,
       required this.userSchool,
       required this.fcmToken,
       required this.userRegistrationDate});
@@ -58,7 +58,7 @@ class MiittiUser {
         userLanguages: _toStringList(map['userLanguages']),
         profilePicture: map['profilePicture'] ?? '',
         invitedActivities: _toStringList(map['invitedActivities']),
-        userStatus: resolveTimestamp(map['userStatus']),
+        lastActive: resolveTimestamp(map['userStatus']),
         userSchool: map['userSchool'] ?? '',
         fcmToken: map['fcmToken'] ?? '',
         userRegistrationDate: resolveTimestamp(map['userRegistrationDate']),
@@ -83,7 +83,7 @@ class MiittiUser {
       'userLanguages': userLanguages.toList(),
       'profilePicture': profilePicture,
       'invitedActivities': invitedActivities.toList(),
-      'userStatus': userStatus,
+      'lastActive': lastActive,
       'userSchool': userSchool,
       'fcmToken': fcmToken,
       'userRegistrationDate': userRegistrationDate
@@ -97,7 +97,7 @@ class MiittiUser {
       userPhoneNumber = newData['userPhoneNumber'] ?? userPhoneNumber;
       userBirthday = newData['userBirthday'] ?? userBirthday;
       userArea = newData['userArea'] ?? userArea;
-      userStatus = newData['userStatus'] ?? userStatus;
+      lastActive = newData['lastActive'] ?? lastActive;
       userSchool = newData['userSchool'] ?? userSchool;
       fcmToken = newData['fcmToken'] ?? fcmToken;
       userRegistrationDate =
