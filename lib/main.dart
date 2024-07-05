@@ -17,42 +17,38 @@ import 'package:flutter/services.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-  //Making sure that 3rd party widgets work properly
+  // Ensure that the WidgetsBinding has been set up before the app is run so that the widgets can interact with the Flutter engine.
   WidgetsFlutterBinding.ensureInitialized();
 
-  //Sets up Firebase
+  // Initialize Firebase with the default options
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  //listen to background
+  // Initialize Firebase Messaging via PushNotificationService
   FirebaseMessaging.onBackgroundMessage(
-      PushNotificationService.firebaseBackgroundMessage);
-
-  //listen to foreground
+      PushNotificationService.firebaseBackgroundMessage
+  );
   PushNotificationService.listenForeground();
-
-  //Listen terminated
   PushNotificationService.listenTerminated();
 
-  //Forces the app to only work in Portarait Mode
+  // Force the app to always run in portrait mode
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((_) {
-    //Running the app
-    //ProviderScope is used for the Riverpod state management
-    runApp(const ProviderScope(child: MyApp()));
+    // Run the app wrapped in a ProviderScope, which enables Riverpod state management
+    runApp(const ProviderScope(child: MiittiApp()));
   });
 }
 
-class MyApp extends ConsumerStatefulWidget {
-  const MyApp({super.key});
+class MiittiApp extends ConsumerStatefulWidget {
+  const MiittiApp({super.key});
 
   @override
-  ConsumerState<MyApp> createState() => _MyAppState();
+  ConsumerState<MiittiApp> createState() => _MiittiAppState();
 }
 
-class _MyAppState extends ConsumerState<MyApp> {
+class _MiittiAppState extends ConsumerState<MiittiApp> {
   @override
   Widget build(BuildContext context) {
     //ScreenUtilInit is used to make the app responsive

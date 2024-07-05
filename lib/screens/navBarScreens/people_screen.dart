@@ -53,12 +53,14 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
 
     List responses = await Future.wait([initList(0), initList(1), initList(2)]);
 
-    setState(() {
-      for (int i = 0; i < 3; i++) {
-        _filteredUsers[i] = responses[i];
-        listLoading[i] = false;
-      }
-    });
+  if (mounted) {
+      setState(() {
+        for (int i = 0; i < 3; i++) {
+          _filteredUsers[i] = responses[i];
+          listLoading[i] = false;
+        }
+      });
+    }
   }
 
   Future<List<MiittiUser>> initList(int type) async {

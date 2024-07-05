@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### To Be Added
 
+- Development environment using flutter flavors
 - Dynamic loading of texts and activities from Firebase
 - Multi-language support
 - Small and large, compressed versions of profile pictures
 - Collection and storage of relevant data
 - Use Firebase Remote Config, Performance Monitoring, Test Lab and Crashlytics
+- Testing of most major operations such as signing in, signing up, creating and joining a miitti, viewing major pages and deleting account.
 
 ### To Be Changed
 

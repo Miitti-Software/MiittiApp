@@ -82,7 +82,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     _myJoinedActivities = joinedActivities;
     _otherRequests = comingRequests;
     isLoading = false;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Color getColorForContainer(bool isAdmin, bool isInvited) {
