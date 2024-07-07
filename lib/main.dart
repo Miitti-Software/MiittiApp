@@ -14,15 +14,43 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 
+import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
+import 'package:miitti_app/envs/firebase_stag_configuration.dart' as stg;
+
 final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   // Ensure that the WidgetsBinding has been set up before the app is run so that the widgets can interact with the Flutter engine.
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Firebase default options for each environment
+  final firebaseProd = prod.DefaultFirebaseOptions.currentPlatform;
+  final firebaseStg = stg.DefaultFirebaseOptions.currentPlatform;
+  final firebaseDev = stg.DefaultFirebaseOptions.currentPlatform;       // TODO: Change to dev configuration
+
+  // Variable to hold the FirebaseOptions of the current environment
+  late FirebaseOptions config;
+
+  // Get the current environment name using the FLUTTER_APP_FLAVOR environment variable
+  const env = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+
+  // Set the Firebase configuration based on the current environment
+  switch (env) {
+    case "staging":
+      config = firebaseStg;
+      break;
+    case "production":
+      config = firebaseProd;
+      break;
+    case "development":
+    default:
+      config = firebaseDev;
+      break;
+  }
+
   // Initialize Firebase with the default options
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: config,
   );
 
   // Initialize Firebase Messaging via PushNotificationService

@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
+    id 'com.google.firebase.crashlytics'
 }
 
 def localProperties = new Properties()
@@ -74,6 +75,32 @@ android {
         debug {
             signingConfig signingConfigs.debug
             minifyEnabled true
+        }
+    }
+
+    // Flavors to create different compile-time configurations of the app for the development, staging and production environments. 
+    // Enables you to have multiple versions of the app on your phone simultaneously a development preview, a testing build and the actual currently published app with different names and icons.
+    flavorDimensions 'default'
+
+    productFlavors {
+        
+        production {
+            dimension 'default'
+            resValue "string", "app_name", "Miitti"
+        }
+
+        development {
+            dimension 'default'
+            applicationIdSuffix '.dev'
+            versionNameSuffix '.dev'
+            resValue "string", "app_name", "Miitti DEV"
+        }
+
+        staging {
+            dimension 'default'
+            applicationIdSuffix '.stg'
+            versionNameSuffix '.stg'
+            resValue "string", "app_name", "Miitti TEST"
         }
     }
 }

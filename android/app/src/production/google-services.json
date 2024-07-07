@@ -1,0 +1,86 @@
+{
+    "project_info": {
+      "project_number": "862736860065",
+      "project_id": "miittiapp-8182e",
+      "storage_bucket": "miittiapp-8182e.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:862736860065:android:b72d4d172bb2edeb7701e0",
+          "android_client_info": {
+            "package_name": "com.miittisoftwareoy.miitti_app"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "862736860065-ehm260603g62pom262mhl6nv05htr757.apps.googleusercontent.com",
+            "client_type": 1,
+            "android_info": {
+              "package_name": "com.miittisoftwareoy.miitti_app",
+              "certificate_hash": "16edc638104d1a9b6637c1b72a909be85b16a24b"
+            }
+          },
+          {
+            "client_id": "862736860065-fslb3ch7dn1us6tb34vhtqqs7kskocod.apps.googleusercontent.com",
+            "client_type": 1,
+            "android_info": {
+              "package_name": "com.miittisoftwareoy.miitti_app",
+              "certificate_hash": "d21aa018150d0ceb6cbeac99f5716603ef54b07a"
+            }
+          },
+          {
+            "client_id": "862736860065-hqmtod1ckt31nv7qub8etukecinjqabu.apps.googleusercontent.com",
+            "client_type": 1,
+            "android_info": {
+              "package_name": "com.miittisoftwareoy.miitti_app",
+              "certificate_hash": "fca543dfb5a78bde15f8b32f4c93e149281a13c3"
+            }
+          },
+          {
+            "client_id": "862736860065-mrjn3dlvjei9o58p7a9sp3oneu2cta15.apps.googleusercontent.com",
+            "client_type": 1,
+            "android_info": {
+              "package_name": "com.miittisoftwareoy.miitti_app",
+              "certificate_hash": "86bc14699b90cfa00dac0192363a2c3e292c5018"
+            }
+          },
+          {
+            "client_id": "862736860065-tnarp8n3j5our2pp022ucb1o8mgl3j79.apps.googleusercontent.com",
+            "client_type": 1,
+            "android_info": {
+              "package_name": "com.miittisoftwareoy.miitti_app",
+              "certificate_hash": "f23b3475a127149bc9472d25110c1c13b6e1ef40"
+            }
+          },
+          {
+            "client_id": "862736860065-6lslfj2herv3g8sqjmr8b181kbp8su26.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyBaHgeEdrJ8zbUL5ZYSwQHbJUhHF9sFE4I"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "862736860065-25u7smpsovluq0eebdgpd2a4435nst0j.apps.googleusercontent.com",
+                "client_type": 3
+              },
+              {
+                "client_id": "862736860065-7g0fii784drvgurf66karpuo8nfnol91.apps.googleusercontent.com",
+                "client_type": 2,
+                "ios_info": {
+                  "bundle_id": "com.miittisoftwareoy.miittiApp"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

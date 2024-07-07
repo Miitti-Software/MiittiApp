@@ -35,6 +35,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Admin IDs of non-contributors
 - `AuthProvider` class will become redundant once `AuthService` has been fully implemented
 
+## [1.5.6] - 2024-07-08
+
+Added development, staging and production environments to enable risk-free offline development, support testing and avoid polluting the real database as well as other accidents. This is documented in more detail in [NOTES.md](NOTES.md). 
+
+### Added
+
+- A new Firebase project called MiittiAppDev to create a staging/testing/standardized development environment.
+- Android app flavors for different build configurations to facilitate different environments.
+- Different Firebase configuration files in `envs` corresponding to the development, staging and production environments.
+- `google-services.json` files corresponding to above configurations.
+
 ## [1.5.5] - 2024-06-27
 
 Currently published app is version at the time of adding this is 1.5.4. Hence, starting this from 1.5.5. Restored app to working confition where one can sign in without it freezing.
