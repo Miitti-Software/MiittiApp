@@ -1,8 +1,9 @@
 {
   "projects": {
-    "default": "miittiapp-8182e",
+    "default": "miittiappdev",
     "production": "miittiapp-8182e",
-    "staging": "miittiappdev"
+    "development": "miittiappdev",
+    "staging": "miittiappstage"
   },
   "targets": {},
   "etags": {},

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,22 +18,25 @@ import 'package:flutter/services.dart';
 
 import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
 import 'package:miitti_app/envs/firebase_stag_configuration.dart' as stg;
+import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
+
   // Ensure that the WidgetsBinding has been set up before the app is run so that the widgets can interact with the Flutter engine.
   WidgetsFlutterBinding.ensureInitialized();
 
   // Firebase default options for each environment
   final firebaseProd = prod.DefaultFirebaseOptions.currentPlatform;
   final firebaseStg = stg.DefaultFirebaseOptions.currentPlatform;
-  final firebaseDev = stg.DefaultFirebaseOptions.currentPlatform;       // TODO: Change to dev configuration
+  final firebaseDev = dev.DefaultFirebaseOptions.currentPlatform;
 
   // Variable to hold the FirebaseOptions of the current environment
   late FirebaseOptions config;
 
   // Get the current environment name using the FLUTTER_APP_FLAVOR environment variable
+  // that corresponds to the --flavor argument in the launch configuration
   const env = String.fromEnvironment('FLUTTER_APP_FLAVOR');
 
   // Set the Firebase configuration based on the current environment
@@ -52,6 +57,16 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: config,
   );
+
+  // Enable Firestore Emulator for development environment - Not working currently
+  // if (env == "development") {
+  //   try {
+  //     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  //     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  //   } catch (e) {
+  //     debugPrint('Make sure the emulators are running by running `firebase emulators:start` \n Error connecting to Firestore emulator: $e');
+  //   }
+  // }
 
   // Initialize Firebase Messaging via PushNotificationService
   FirebaseMessaging.onBackgroundMessage(

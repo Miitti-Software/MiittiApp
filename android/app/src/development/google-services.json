@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "82682289256",
+    "project_id": "miittiappdev",
+    "storage_bucket": "miittiappdev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82682289256:android:162f15484eab426ec0afdd",
+        "android_client_info": {
+          "package_name": "com.miittisoftwareoy.miitti_app.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "82682289256-0an485blbmg57qbststqai1le8nvcqkj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcjlVxHN29F9qQkgpRx4Rbb--Yq_uVmXM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "82682289256-0an485blbmg57qbststqai1le8nvcqkj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "82682289256-d3lb47ujpluicf2qujoel9fc5lncbpn5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.miittisoftwareoy.miittiApp.dev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

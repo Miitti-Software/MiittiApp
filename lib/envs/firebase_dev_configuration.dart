@@ -50,20 +50,22 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBC_D5lV3Eve7_4JrVlyM7cknL08LgV148',
-    appId: '1:377453260995:android:96c8db20dbb3c1a3a63276',
-    messagingSenderId: '377453260995',
-    projectId: 'miittiappstage',
-    storageBucket: 'miittiappstage.appspot.com',
+    apiKey: 'AIzaSyDcjlVxHN29F9qQkgpRx4Rbb--Yq_uVmXM',
+    appId: '1:82682289256:android:162f15484eab426ec0afdd',
+    messagingSenderId: '82682289256',
+    projectId: 'miittiappdev',
+    storageBucket: 'miittiappdev.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAhNO-JekPGUQ-0K5eyfq3fgK_UBsE7V68',
-    appId: '1:377453260995:ios:13bdc56602c749a7a63276',
-    messagingSenderId: '377453260995',
-    projectId: 'miittiappstage',
-    storageBucket: 'miittiappstage.appspot.com',
-    iosBundleId: 'com.miittisoftwareoy.miittiApp.stg',
+    apiKey: 'AIzaSyDpeQuf8IaR7RYkwI2WnOD_zmCQlkuW0SY',
+    appId: '1:82682289256:ios:4a0550a73f7caa77c0afdd',
+    messagingSenderId: '82682289256',
+    projectId: 'miittiappdev',
+    storageBucket: 'miittiappdev.appspot.com',
+    androidClientId: '82682289256-m5s6191f9c2f2fhbrokjl3cl583omqhf.apps.googleusercontent.com',
+    iosClientId: '82682289256-d3lb47ujpluicf2qujoel9fc5lncbpn5.apps.googleusercontent.com',
+    iosBundleId: 'com.miittisoftwareoy.miittiApp.dev',
   );
 
 }
