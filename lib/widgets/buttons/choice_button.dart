@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class ChoiceButton extends StatelessWidget {
@@ -20,8 +19,8 @@ class ChoiceButton extends StatelessWidget {
         onSelected(isSelected);
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: 15.h, right: 10.w),
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+        margin: const EdgeInsets.only(bottom: 15, right: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           color: const Color(0xFF2A1026),
           borderRadius: BorderRadius.circular(10.0),

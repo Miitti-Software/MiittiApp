@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -55,11 +54,11 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
         children: <TextSpan>[
           TextSpan(
             text: _miittiActivities.length.toString(),
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          TextSpan(
+          const TextSpan(
             text: ' miittiä löydetty',
-            style: TextStyle(fontSize: 15.sp),
+            style: TextStyle(fontSize: 15),
           ),
         ],
       ),
@@ -79,10 +78,10 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(
-          horizontal: 10.w,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
         ),
-        minimumSize: Size(0, 35.h),
+        minimumSize: const Size(0, 35),
         backgroundColor: mainColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
@@ -132,9 +131,9 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                   String cityName = addressParts[0].trim();
 
                   return Container(
-                    height: 160.h,
+                    height: 160,
                     margin:
-                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: AppStyle.black,
                       border: Border.all(color: AppStyle.violet, width: 2.0),
@@ -161,7 +160,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                                     Icons.calendar_month,
                                     color: AppStyle.violet,
                                   ),
-                                  SizedBox(width: 4.w),
+                                  const SizedBox(width: 4),
                                   Flexible(
                                     child: Text(
                                       activity.timeString,
@@ -169,12 +168,12 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                                       style: AppStyle.body,
                                     ),
                                   ),
-                                  SizedBox(width: 16.w),
+                                  const SizedBox(width: 16),
                                   const Icon(
                                     Icons.location_on_outlined,
                                     color: AppStyle.lightPurple,
                                   ),
-                                  SizedBox(width: 4.w),
+                                  const SizedBox(width: 4),
                                   Flexible(
                                     child: Text(
                                       cityName,
@@ -201,8 +200,8 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                                                     myActivity: activity
                                                         as CommercialActivity))),
                                   ),
-                                  SizedBox(
-                                    width: 10.w,
+                                  const SizedBox(
+                                    width: 10,
                                   ),
                                   getListTileButton(
                                     AppStyle.red,

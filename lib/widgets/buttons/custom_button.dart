@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class MyButton extends StatelessWidget {
@@ -25,8 +24,8 @@ class MyButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: buttonWidth?.w,
-        height: buttonHeight?.h,
+        width: buttonWidth,
+        height: buttonHeight,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(10)),
           border: Border.all(

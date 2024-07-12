@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class AdminButton extends StatelessWidget {
@@ -12,18 +11,18 @@ class AdminButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(25.w),
-        margin: EdgeInsets.symmetric(horizontal: 25.w),
+        padding: const EdgeInsets.all(25),
+        margin: const EdgeInsets.symmetric(horizontal: 25),
         decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.circular(8.0),
         ),
-        child: Center(
+        child: const Center(
           child: Text(
             'Kirjaudu Sisään',
             style: TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 17.sp,
+              fontSize: 17,
               color: AppStyle.white,
             ),
           ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class AdminNotifications extends StatefulWidget {
@@ -14,13 +13,13 @@ class _AdminNotificationsState extends State<AdminNotifications> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
-      body: SafeArea(
+      body: const SafeArea(
         child: Center(
           child: Text(
             'COMING SOON...',
             style: TextStyle(
               color: AppStyle.black,
-              fontSize: 40.sp,
+              fontSize: 40,
             ),
           ),
         ),

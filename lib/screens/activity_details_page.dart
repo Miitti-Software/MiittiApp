@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -136,17 +135,17 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                       Navigator.pop(context);
                     },
                     child: Container(
-                      margin: EdgeInsets.only(left: 10.w, top: 40.h),
-                      height: 60.h,
-                      width: 60.h,
+                      margin: const EdgeInsets.only(left: 10, top: 40),
+                      height: 60,
+                      width: 60,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                         gradient: AppStyle.pinkGradient,
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back,
                         color: Colors.white,
-                        size: 30.r,
+                        size: 30,
                       ),
                     ),
                   ),
@@ -168,7 +167,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                     children: [
                       Image.asset(
                         'images/${Activity.solveActivityId(widget.myActivity.activityCategory)}.png',
-                        height: 90.h,
+                        height: 90,
                       ),
                       Flexible(
                         child: Text(
@@ -185,14 +184,14 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                       if (snapshot.connectionState == ConnectionState.done) {
                         participantCount = snapshot.data!.length;
                         return SizedBox(
-                          height: 75.0.h,
+                          height: 75.0,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: snapshot.data!.length,
                             itemBuilder: (BuildContext context, int index) {
                               MiittiUser user = snapshot.data![index];
                               return Padding(
-                                padding: EdgeInsets.only(left: 16.0.w),
+                                padding: const EdgeInsets.only(left: 16.0),
                                 child: GestureDetector(
                                   onTap: () {
                                     if (isAnonymous) {
@@ -214,7 +213,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                                     backgroundImage:
                                         NetworkImage(user.profilePicture),
                                     backgroundColor: AppStyle.violet,
-                                    radius: 25.r,
+                                    radius: 25,
                                   ),
                                 ),
                               );
@@ -229,13 +228,13 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                     },
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0.w),
+                    padding: const EdgeInsets.all(8.0),
                     child: Text(
                       widget.myActivity.activityDescription,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Rubik',
-                        fontSize: 17.0.sp,
+                        fontSize: 17.0,
                         color: Colors.white,
                       ),
                     ),
@@ -254,8 +253,8 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                         '  $participantCount/${widget.myActivity.personLimit} osallistujaa',
                         style: AppStyle.body,
                       ),
-                      SizedBox(
-                        width: 20.w,
+                      const SizedBox(
+                        width: 20,
                       ),
                       const Icon(
                         Icons.location_on_outlined,
@@ -280,8 +279,8 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                             : 'Maksuton',
                         style: AppStyle.body,
                       ),
-                      SizedBox(
-                        width: 20.w,
+                      const SizedBox(
+                        width: 20,
                       ),
                       const Icon(
                         Icons.calendar_month,
@@ -293,8 +292,8 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 10.h,
+                  const SizedBox(
+                    height: 10,
                   ),
                 ],
               ),
@@ -336,12 +335,12 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
             );
           },
           child: Container(
-            margin: EdgeInsets.only(top: 10.h),
-            child: Text(
+            margin: const EdgeInsets.only(top: 10),
+            child: const Text(
               "Ilmianna aktiviteetti",
               style: TextStyle(
                 fontFamily: 'Rubik',
-                fontSize: 19.sp,
+                fontSize: 19,
                 color: Colors.red,
               ),
             ),
@@ -380,7 +379,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
     String buttonText = getButtonText();
 
     return MyElevatedButton(
-      height: 50.h,
+      height: 50,
       onPressed: () {
         if (userStatus == UserStatusInActivity.none &&
             participantCount < widget.myActivity.personLimit) {
@@ -403,12 +402,12 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
       child: isLoading
           ? LoadingAnimationWidget.waveDots(
               color: Colors.white,
-              size: 50.r,
+              size: 50,
             )
           : Text(
               buttonText,
-              style: TextStyle(
-                fontSize: 19.sp,
+              style: const TextStyle(
+                fontSize: 19,
                 color: Colors.white,
                 fontFamily: 'Rubik',
               ),

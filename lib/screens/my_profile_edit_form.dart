@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
@@ -127,21 +126,21 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70.w),
+        preferredSize: const Size.fromHeight(70),
         child: AppBar(
           backgroundColor: AppStyle.black,
           automaticallyImplyLeading: false,
           title: Align(
             alignment: Alignment.bottomLeft,
             child: Padding(
-              padding: EdgeInsets.only(top: 20.h),
+              padding: const EdgeInsets.only(top: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Muokkaa profiilia',
                     style: TextStyle(
-                      fontSize: 27.sp,
+                      fontSize: 27,
                       fontFamily: 'Sora',
                       color: Colors.white,
                     ),
@@ -151,9 +150,9 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.settings,
-                      size: 30.r,
+                      size: 30,
                       color: Colors.white,
                     ),
                   ),
@@ -164,7 +163,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
         ),
       ),
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Form(
           key: _formKey,
           child: ListView(
@@ -190,14 +189,14 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                                     .read(firestoreService)
                                     .miittiUser!
                                     .profilePicture,
-                                height: 400.h,
-                                width: 400.w,
+                                height: 400,
+                                width: 400,
                                 fit: BoxFit.cover,
                               )
                             : Image.file(
                                 image!,
-                                height: 400.h,
-                                width: 400.w,
+                                height: 400,
+                                width: 400,
                                 fit: BoxFit.cover,
                               ),
                       ),
@@ -210,7 +209,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                 subtitle:
                     'Emme tunge kylään, mutta näin osaamme ehdottaa sopiva miittejä alueellasi',
                 mainWidget: getOurTextField(
-                  myPadding: EdgeInsets.only(right: 10.w),
+                  myPadding: const EdgeInsets.only(right: 10),
                   myController: userAreaController,
                   myFocusNode: userAreaFocusNode,
                   myOnChanged: (_) => capitalizeInput(),
@@ -226,7 +225,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                 title: 'Missä opiskelet',
                 subtitle: 'Yliopisto vai kahvilan nurkka?',
                 mainWidget: getOurTextField(
-                  myPadding: EdgeInsets.only(right: 10.w),
+                  myPadding: const EdgeInsets.only(right: 10),
                   myController: userSchoolController,
                   myFocusNode: userSchoolFocusNode,
                   myOnChanged: (_) => capitalizeInput(),
@@ -255,15 +254,15 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 20.h,
+              const SizedBox(
+                height: 20,
               ),
               createSection(
                 textTitle: 'Lisää lempiaktiviteettisi',
                 textSubtitle:
                     'Valitse vähintään 3 lempiaktiviteettisi, mitä haluaisit tehdä muiden kanssa',
                 secondWidget: SizedBox(
-                  height: 400.h,
+                  height: 400,
                   child: GridView.builder(
                     itemCount: filteredActivities.length,
                     gridDelegate:
@@ -278,8 +277,8 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       return GestureDetector(
                         onTap: () => _toggleFavoriteActivity(activity),
                         child: Container(
-                          height: 100.h,
-                          width: 50.w,
+                          height: 100,
+                          width: 50,
                           decoration: BoxDecoration(
                               color: isSelected
                                   ? AppStyle.violet
@@ -290,14 +289,14 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                             children: [
                               Text(
                                 Activity.getActivity(activity).emojiData,
-                                style: TextStyle(fontSize: 50.0.sp),
+                                style: const TextStyle(fontSize: 50.0),
                               ),
                               Text(
                                 Activity.getActivity(activity).name,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Rubik',
-                                  fontSize: 19.0.sp,
+                                  fontSize: 19.0,
                                   color: Colors.white,
                                 ),
                               ),
@@ -314,7 +313,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                 textSubtitle:
                     'Valitse 1-5 Q&A korttia, joiden avulla voit kertoa itsestäsi enemmän',
                 inputWidget: SizedBox(
-                  height: 200.w,
+                  height: 200,
                   child: PageView.builder(
                     itemCount: userChoices.length,
                     itemBuilder: (context, index) {
@@ -327,7 +326,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                         ),
                         elevation: 5.0,
                         child: Container(
-                          padding: EdgeInsets.all(15.w),
+                          padding: const EdgeInsets.all(15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -335,21 +334,21 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                                 question,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppStyle.violet,
-                                  fontSize: 22.0.sp,
+                                  fontSize: 22.0,
                                   fontFamily: 'Sora',
                                 ),
                               ),
-                              SizedBox(
-                                height: 8.h,
+                              const SizedBox(
+                                height: 8,
                               ),
                               Text(
                                 answer,
                                 maxLines: 4,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black,
-                                  fontSize: 22.sp,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Rubik',
                                 ),
@@ -363,8 +362,8 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                 ),
                 secondWidget: Center(
                   child: MyElevatedButton(
-                    width: 225.w,
-                    height: 45.w,
+                    width: 225,
+                    height: 45,
                     onPressed: () async {
                       Map<String, String>? result = await Navigator.push(
                         context,
@@ -382,10 +381,10 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                         );
                       }
                     },
-                    child: Text(
+                    child: const Text(
                       "+ Lisää uusi Q&A",
                       style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 16,
                         fontFamily: 'Rubik',
                         color: Colors.white,
                       ),
@@ -464,11 +463,11 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
   Widget returnTexts(String? bigText, String? smallText, bool isBigText) {
     if (isBigText) {
       return Padding(
-        padding: EdgeInsets.only(top: 20.0.h, bottom: 5.0.h),
+        padding: const EdgeInsets.only(top: 20.0, bottom: 5.0),
         child: Text(
           bigText!,
           style: TextStyle(
-            fontSize: 20.0.sp,
+            fontSize: 20.0,
             fontFamily: 'Sora',
             fontWeight: FontWeight.bold,
             color: miittiColor,
@@ -477,11 +476,11 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
       );
     } else {
       return Padding(
-        padding: EdgeInsets.only(bottom: 15.0.h),
+        padding: const EdgeInsets.only(bottom: 15.0),
         child: Text(
           smallText!,
           style: TextStyle(
-            fontSize: 13.0.sp,
+            fontSize: 13.0,
             fontFamily: 'Sora',
             color: miittiColor,
           ),
@@ -506,12 +505,12 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
           textSubtitle,
           style: AppStyle.body,
         ),
-        SizedBox(
-          height: 10.h,
+        const SizedBox(
+          height: 10,
         ),
         secondWidget,
-        SizedBox(
-          height: 30.h,
+        const SizedBox(
+          height: 30,
         ),
       ],
     );
@@ -533,9 +532,9 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
         });
       },
       child: Container(
-        margin: EdgeInsets.only(right: 20.w),
-        width: 65.w,
-        height: 65.w,
+        margin: const EdgeInsets.only(right: 20),
+        width: 65,
+        height: 65,
         decoration: BoxDecoration(
           color: isSelected
               ? AppStyle.lightPurple
@@ -545,8 +544,8 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
         child: Center(
           child: Text(
             language,
-            style: TextStyle(
-              fontSize: 40.0.sp,
+            style: const TextStyle(
+              fontSize: 40.0,
             ),
           ),
         ),
@@ -571,16 +570,16 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
           textSubtitle,
           style: AppStyle.body,
         ),
-        SizedBox(
-          height: 10.h,
+        const SizedBox(
+          height: 10,
         ),
         inputWidget,
-        SizedBox(
-          height: 10.h,
+        const SizedBox(
+          height: 10,
         ),
         secondWidget,
-        SizedBox(
-          height: 30.h,
+        const SizedBox(
+          height: 30,
         ),
       ],
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
@@ -37,7 +36,7 @@ class _SecondChatPageState extends State<SecondChatPage> {
         children: [
           getOurTextField(
             myController: messageController,
-            myPadding: EdgeInsets.all(8.0.w),
+            myPadding: const EdgeInsets.all(8.0),
             myFocusNode: messageChatFocus,
             myOnTap: () {
               if (messageChatFocus.hasFocus) {
@@ -47,9 +46,9 @@ class _SecondChatPageState extends State<SecondChatPage> {
             mySuffixIcon: GestureDetector(
               onTap: () {},
               child: Container(
-                height: 50.w,
-                width: 50.w,
-                margin: EdgeInsets.all(10.0.w),
+                height: 50,
+                width: 50,
+                margin: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [

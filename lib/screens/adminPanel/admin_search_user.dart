@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/screens/adminPanel/admin_userinfo.dart';
 import 'package:miitti_app/services/providers.dart';
@@ -57,11 +56,11 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
         children: <TextSpan>[
           TextSpan(
             text: searchResults.length.toString(),
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          TextSpan(
+          const TextSpan(
             text: ' profiilia löydetty',
-            style: TextStyle(fontSize: 15.sp),
+            style: TextStyle(fontSize: 15),
           ),
         ],
       ),
@@ -72,10 +71,10 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(
-          horizontal: 10.w,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
         ),
-        minimumSize: Size(0, 35.h),
+        minimumSize: const Size(0, 35),
         backgroundColor: mainColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
@@ -100,7 +99,7 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
               onChanged: onQueryChanged,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: getRichText(),
             ),
             Expanded(
@@ -122,8 +121,8 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
                       ),
                     ),
                     margin:
-                        EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
-                    height: 100.h,
+                        const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    height: 100,
                     child: Row(
                       children: [
                         ClipRRect(
@@ -134,8 +133,8 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
                           child: Image.network(
                             user.profilePicture,
                             fit: BoxFit.cover,
-                            height: 100.h,
-                            width: 100.w,
+                            height: 100,
+                            width: 100,
                           ),
                         ),
                         Padding(
@@ -145,15 +144,15 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
                             children: [
                               Text(
                                 "${user.userName}, ${calculateAge(user.userBirthday)}",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'Rubik',
-                                  fontSize: 18.sp,
+                                  fontSize: 18,
                                 ),
                               ),
                               Text(
                                 'Aktiivisena viimeksi $formattedDate',
-                                style: TextStyle(
-                                  fontSize: 11.sp,
+                                style: const TextStyle(
+                                  fontSize: 11,
                                   fontFamily: 'Sora',
                                 ),
                               ),
@@ -176,8 +175,8 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 10.w,
+                                    const SizedBox(
+                                      width: 10,
                                     ),
                                     getListTileButton(
                                       AppStyle.violet,

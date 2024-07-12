@@ -111,6 +111,8 @@ Due to lack of MacBooks and iPhones in the development team, flavors nor Firebas
 
 ## Firebase
 
+Firebase is a Backend-as-a-Service (BaaS) solution that we use for authentication, data storage, messaging, analytics and so on.
+
 Reading list:
 1. https://firebase.google.com/docs/projects/learn-more
 2. https://firebase.google.com/docs/projects/dev-workflows/general-best-practices
@@ -118,7 +120,13 @@ Reading list:
 
 ### Authentication
 
-## State management
+### Messaging
+
+### Admin SDK
+
+Used for admin sfunctions such as sending messages from a trusted environment such as cloud functions. This is not to be used in the app. 
+
+## State management with Riverpod
 
 Reading list:
 1. https://riverpod.dev/docs/introduction/why_riverpod

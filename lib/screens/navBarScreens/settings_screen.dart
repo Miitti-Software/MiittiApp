@@ -3,12 +3,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
-import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
-import 'package:miitti_app/screens/login/login_intro.dart';
+import 'package:miitti_app/screens/authentication/login/completeProfile/complete_profile_onboard.dart';
+import 'package:miitti_app/screens/authentication/login/login_intro.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -28,8 +27,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       onTap: () => launchUrl(Uri.parse(url)),
       child: Text(
         text,
-        style: TextStyle(
-          fontSize: 17.sp,
+        style: const TextStyle(
+          fontSize: 17,
           fontFamily: 'Rubik',
           color: AppStyle.lightPurple,
         ),
@@ -40,8 +39,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget createSectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: 13.sp,
+      style: const TextStyle(
+        fontSize: 13,
         fontFamily: 'Poppins',
         color: Colors.white,
       ),
@@ -52,7 +51,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Text(
       text,
       style: TextStyle(
-        fontSize: fontSize.sp,
+        fontSize: fontSize,
         fontFamily: 'Rubik',
         color: AppStyle.lightPurple,
       ),
@@ -62,20 +61,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(8.w),
+      body: SafeArea(child: Padding(
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Asetukset',
               style: TextStyle(
-                fontSize: 35.sp,
+                fontSize: 35,
                 color: Colors.white,
                 fontFamily: 'Sora',
               ),
             ),
-            SizedBox(height: 20.h),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () =>
                   launchUrl(Uri.parse('https://miittiapp.canny.io/')),
@@ -89,22 +88,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 minimumSize: WidgetStateProperty.all<Size>(const Size(
                     double.infinity, 120)), // Makes the button 100% wide
               ),
-              child: Column(
+              child: const Column(
                 mainAxisAlignment:
                     MainAxisAlignment.center, // Center the text vertically
                 children: [
                   Text(
                     'Anna palautetta',
                     style: TextStyle(
-                      fontSize: 22.sp,
+                      fontSize: 22,
                       color: Colors.white,
                     ), // Large text
                   ),
-                  SizedBox(height: 10.h),
+                  SizedBox(height: 10),
                   Text(
                     'Ehdota uusia ominaisuuksia, ilmoita ongelmista tai liity keskusteluun parannusehdotuksista!',
                     style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 14,
                       color: Colors.white,
                     ),
                     textAlign: TextAlign.center,
@@ -112,12 +111,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 10.h),
+            const SizedBox(height: 10),
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
-                style: TextStyle(
-                  fontSize: 14.sp,
+                style: const TextStyle(
+                  fontSize: 14,
                   fontFamily: 'Rubik',
                   color: Colors.white,
                 ),
@@ -139,7 +138,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 30.h),
+            const SizedBox(height: 30),
             createSectionTitle('Yhteystiedot:'),
             getSomeSpace(10),
             createHyperLink(
@@ -151,7 +150,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               "info@miitti.app",
               'mailto:info@miitti.app',
             ),
-            SizedBox(height: 30.h),
+            const SizedBox(height: 30),
             createSectionTitle(
               'Dokumentit ja ehdot:',
             ),
@@ -165,7 +164,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               "Tietosuojaseloste",
               'https://www.miitti.app/tietosuojaseloste',
             ),
-            SizedBox(height: 20.h),
+            const SizedBox(height: 20),
             createSectionTitle('Tili:'),
             getSomeSpace(10),
             GestureDetector(
@@ -209,12 +208,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     },
                     child: createText('Poista tili'),
                   ),
-            SizedBox(height: 30.h),
+            const SizedBox(height: 30),
             createSectionTitle('Versio'),
-            Text(
+            const Text(
               '1.5.4',
               style: TextStyle(
-                fontSize: 17.sp,
+                fontSize: 17,
                 fontFamily: 'Rubik',
                 color: Colors.white,
               ),
@@ -222,6 +221,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ],
         ),
       ),
+    )
     );
   }
 }

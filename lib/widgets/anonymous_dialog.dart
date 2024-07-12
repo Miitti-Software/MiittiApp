@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/screens/login/completeProfile/complete_profile_onboard.dart';
+import 'package:miitti_app/screens/authentication/login/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
@@ -27,7 +26,7 @@ class AnonymousDialog extends StatelessWidget {
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.all(10.w),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
                     const Divider(
@@ -41,7 +40,7 @@ class AnonymousDialog extends StatelessWidget {
                       style: AppStyle.title,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
                         'Näyttää siltä, ettet ole vielä viimeistellyt profiiliasi, joten et voi käyttää vielä\n sovelluksen kaikkia ominaisuuksia.\n\n Korjataanko asia?',
                         style: AppStyle.body,
@@ -66,12 +65,12 @@ class AnonymousDialog extends StatelessWidget {
                         Navigator.of(context).pop();
                       },
                     ), //Removed extra padding in ConstantsCustomButton
-                    getSomeSpace(10.h),
+                    getSomeSpace(10),
                     Text(
                       'Voit myös viimeistellä profiilisi myöhemmin asetussivulla!',
                       style: AppStyle.warning,
                     ),
-                    getSomeSpace(10.h),
+                    getSomeSpace(10),
                   ],
                 ),
               ),

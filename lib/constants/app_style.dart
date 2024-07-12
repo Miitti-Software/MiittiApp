@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppStyle {
   static const Color pink = Color(0xFFE05494);
@@ -18,43 +17,43 @@ class AppStyle {
     ],
   );
 
-  static TextStyle title = TextStyle(
+  static TextStyle title = const TextStyle(
     fontWeight: FontWeight.w600,
-    fontSize: 32.sp,
+    fontSize: 32,
     color: Colors.white,
   );
 
-  static TextStyle body = TextStyle(
-    fontSize: 18.sp,
+  static TextStyle body = const TextStyle(
+    fontSize: 18,
     fontWeight: FontWeight.w600,
     color: Colors.white,
   );
 
   static TextStyle hintText = TextStyle(
-    fontSize: 16.sp,
+    fontSize: 16,
     fontWeight: FontWeight.w300,
     color: Colors.white.withOpacity(0.6),
   );
 
   static TextStyle warning = TextStyle(
-    fontSize: 12.sp,
+    fontSize: 12,
     fontWeight: FontWeight.w300,
     color: Colors.white.withOpacity(0.6),
   );
 
-  static TextStyle question = TextStyle(
-    fontSize: 14.sp,
+  static TextStyle question = const TextStyle(
+    fontSize: 14,
     fontWeight: FontWeight.w600,
     color: Colors.white,
   );
-  static TextStyle activityName = TextStyle(
-    fontSize: 16.sp,
+  static TextStyle activityName = const TextStyle(
+    fontSize: 16,
     fontWeight: FontWeight.w700,
     color: Colors.white,
   );
 
-  static TextStyle activitySubName = TextStyle(
-    fontSize: 12.sp,
+  static TextStyle activitySubName = const TextStyle(
+    fontSize: 12,
     fontWeight: FontWeight.w300,
     color: Colors.white,
   );

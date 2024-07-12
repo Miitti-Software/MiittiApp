@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
@@ -72,28 +71,28 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
                   );
                 },
                 child: Container(
-                  height: 55.w,
-                  width: 55.w,
+                  height: 55,
+                  width: 55,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
                       gradient: AppStyle.pinkGradient),
-                  child: Icon(
+                  child: const Icon(
                     Icons.arrow_back,
                     color: Colors.white,
-                    size: 30.r,
+                    size: 30,
                   ),
                 ),
               ),
-              SizedBox(
-                width: 5.w,
+              const SizedBox(
+                width: 5,
               ),
               Expanded(
                 child: Text(
                   widget.activity.activityTitle,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 20.sp,
+                  style: const TextStyle(
+                    fontSize: 20,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Sora',
@@ -101,13 +100,13 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
                 ),
               ),
               SizedBox(
-                  height: 75.w, child: Activity.getSymbol(widget.activity)),
+                  height: 75, child: Activity.getSymbol(widget.activity)),
             ],
           ),
           Expanded(child: chatMessages()),
           getOurTextField(
             myController: messageController,
-            myPadding: EdgeInsets.all(8.0.w),
+            myPadding: const EdgeInsets.all(8.0),
             myFocusNode: messageChatFocus,
             myOnTap: () {
               if (messageChatFocus.hasFocus) {
@@ -122,9 +121,9 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
                 }
               },
               child: Container(
-                height: 50.w,
-                width: 50.w,
-                margin: EdgeInsets.all(10.0.w),
+                height: 50,
+                width: 50,
+                margin: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   gradient: AppStyle.pinkGradient,
                   borderRadius: BorderRadius.circular(30),

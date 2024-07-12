@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/services/providers.dart';
@@ -21,7 +20,7 @@ class AuthButton extends ConsumerWidget {
         }
       },
       child: Container(
-        height: 60.h,
+        height: 60,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
@@ -30,9 +29,9 @@ class AuthButton extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             apple
-                ? Icon(
+                ? const Icon(
                     Icons.apple,
-                    size: 30.sp,
+                    size: 30,
                   )
                 : SvgPicture.asset(
                     'images/googleIcon.svg',

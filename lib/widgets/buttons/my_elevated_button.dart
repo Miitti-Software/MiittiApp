@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class MyElevatedButton extends StatelessWidget {
@@ -23,8 +22,8 @@ class MyElevatedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width!.w, // Use .w to make width responsive
-      height: height.h, // Use .h to make height responsive
+      width: width!, // Use .w to make width responsive
+      height: height, // Use .h to make height responsive
       margin: margin,
       decoration: BoxDecoration(
         gradient: gradient,

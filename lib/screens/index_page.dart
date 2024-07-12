@@ -1,7 +1,6 @@
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
@@ -60,8 +59,8 @@ class IndexPageState extends ConsumerState<IndexPage> {
     return Scaffold(
       floatingActionButton: _currentIndex == 1
           ? SizedBox(
-              height: 60.h,
-              width: 60.h,
+              height: 60,
+              width: 60,
               child: getFloatingButton(
                 onPressed: () async {
                   if (ref.read(isAnonymous)) {
@@ -88,7 +87,7 @@ class IndexPageState extends ConsumerState<IndexPage> {
 
   Widget _buildBottomNavigationBar() {
     return CustomNavigationBar(
-      iconSize: 35.sp,
+      iconSize: 35,
       selectedColor: AppStyle.pink,
       unSelectedColor: Colors.white,
       strokeColor: AppStyle.black.withOpacity(0.9),

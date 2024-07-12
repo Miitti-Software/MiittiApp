@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/functions/utils.dart';
@@ -93,9 +92,9 @@ class AdBanner {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
-          margin: EdgeInsets.all(10.0.w),
+          margin: const EdgeInsets.all(10.0),
           child: Container(
-            width: 400.w,
+            width: 400,
             decoration: const BoxDecoration(
               color: AppStyle.black,
               borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -122,11 +121,11 @@ class AdBanner {
                           topLeft: Radius.circular(10),
                           bottomRight: Radius.circular(10)),
                     ),
-                    child: Text(
+                    child: const Text(
                       "Sponsoroitu",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12.sp,
+                        fontSize: 12,
                         fontFamily: 'Rubik',
                       ),
                     ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 //TODO: Seperate styles
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -26,18 +24,18 @@ class ConfirmDialog extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Sora',
-          fontSize: 20.0.sp,
+          fontSize: 20.0,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
       ),
       content: Text(
         mainText,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Rubik',
-          fontSize: 16.0.sp,
+          fontSize: 16.0,
           color: Colors.white70,
         ),
       ),

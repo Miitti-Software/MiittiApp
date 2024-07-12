@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 Map<String, String> appTexts = {
   'auth-greet-title': "Heippa,",

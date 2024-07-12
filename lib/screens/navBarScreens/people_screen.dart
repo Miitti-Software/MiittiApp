@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
@@ -117,7 +116,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
     } else {
       return SafeArea(
           child: ListView(
-        padding: EdgeInsets.only(left: 20.w),
+        padding: const EdgeInsets.only(left: 20),
         children: [
           _buildSectionHeader("Löydä kavereita läheltä"),
           myListView(0),
@@ -134,24 +133,24 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 30.h),
+        const SizedBox(height: 30),
         Text(
           text,
-          style: TextStyle(
-            fontSize: 20.sp,
+          style: const TextStyle(
+            fontSize: 20,
             color: Colors.white,
             fontFamily: 'Rubik',
           ),
         ),
-        SizedBox(height: 10.h),
+        const SizedBox(height: 10),
       ],
     );
   }
 
   Widget buildCard(MiittiUser user) {
     return Container(
-      height: 225.w,
-      width: 160.w,
+      height: 225,
+      width: 160,
       decoration: BoxDecoration(
         color: AppStyle.black,
         border: Border.all(color: AppStyle.violet, width: 2.0),
@@ -162,17 +161,17 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(8.0.w),
+            padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
               backgroundColor: Colors.white,
-              radius: 45.r,
+              radius: 45,
               backgroundImage: CachedNetworkImageProvider(user.profilePicture,
                   maxHeight: 120, maxWidth: 120, scale: 0.5),
             ),
           ),
           _buildUserInfo(user),
-          SizedBox(
-            height: 5.h,
+          const SizedBox(
+            height: 5,
           ),
           _buildElevatedButton(user),
         ],
@@ -192,8 +191,8 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       maxLines: 2,
       overflow: TextOverflow.clip,
       textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: 13.sp,
+      style: const TextStyle(
+        fontSize: 13,
         color: AppStyle.lightPurple,
         fontFamily: 'Rubik',
       ),
@@ -206,13 +205,13 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
         Text(
           "${user.userName}, ${calculateAge(user.userBirthday)}",
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 18.sp,
+          style: const TextStyle(
+            fontSize: 18,
             color: Colors.white,
             fontFamily: 'Rubik',
           ),
         ),
-        SizedBox(height: 8.h),
+        const SizedBox(height: 8),
         buildUserActivitiesText(user),
       ],
     );
@@ -220,8 +219,8 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
 
   Widget _buildElevatedButton(MiittiUser user) {
     return MyElevatedButton(
-      height: 35.h,
-      width: 110.w,
+      height: 35,
+      width: 110,
       onPressed: () {
         if (ref.read(isAnonymous)) {
           showDialog(
@@ -235,12 +234,12 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
                       )));
         }
       },
-      child: Text(
+      child: const Text(
         'Tutustu',
         style: TextStyle(
           fontFamily: 'Rubik',
           color: Colors.white,
-          fontSize: 15.0.sp,
+          fontSize: 15.0,
         ),
       ),
     );
@@ -249,16 +248,16 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   Widget myListView(int type) {
     final list = _filteredUsers[type];
     if (list.isEmpty) {
-      return SizedBox(
-          height: 225.w,
+      return const SizedBox(
+          height: 225,
           child: Center(
               child: Text(
             'Ei tuloksia',
-            style: TextStyle(color: Colors.white, fontSize: 20.sp),
+            style: TextStyle(color: Colors.white, fontSize: 20),
           )));
     }
     return SizedBox(
-      height: 225.w,
+      height: 225,
       child: NotificationListener(
         onNotification: (notification) {
           if (notification is ScrollUpdateNotification) {
@@ -278,7 +277,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
             return Row(
               children: [
                 buildCard(user),
-                if (index != list.length - 1) SizedBox(width: 20.w),
+                if (index != list.length - 1) const SizedBox(width: 20),
               ],
             );
           },

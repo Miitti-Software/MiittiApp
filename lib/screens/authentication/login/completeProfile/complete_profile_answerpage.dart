@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 
 import 'package:miitti_app/constants/app_style.dart';
@@ -46,7 +45,7 @@ class _CompleteProfileAnswerPageState extends State<CompleteProfileAnswerPage> {
         alignment: Alignment.center,
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.w),
+            padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,19 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
-import 'package:miitti_app/screens/login/explore_decision_screen.dart';
+import 'package:miitti_app/screens/authentication/login/explore_decision_screen.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
-import 'package:miitti_app/screens/login/login_intro.dart';
+import 'package:miitti_app/screens/authentication/login/login_intro.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 
 import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
@@ -23,7 +19,6 @@ import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
 final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
-
   // Ensure that the WidgetsBinding has been set up before the app is run so that the widgets can interact with the Flutter engine.
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -31,6 +26,8 @@ Future<void> main() async {
   final firebaseProd = prod.DefaultFirebaseOptions.currentPlatform;
   final firebaseStg = stg.DefaultFirebaseOptions.currentPlatform;
   final firebaseDev = dev.DefaultFirebaseOptions.currentPlatform;
+
+
 
   // Variable to hold the FirebaseOptions of the current environment
   late FirebaseOptions config;
@@ -58,7 +55,7 @@ Future<void> main() async {
     options: config,
   );
 
-  // Enable Firestore Emulator for development environment - Not working currently
+  // Enable Firestore Emulator for development environment -- Not working currently
   // if (env == "development") {
   //   try {
   //     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
@@ -70,8 +67,7 @@ Future<void> main() async {
 
   // Initialize Firebase Messaging via PushNotificationService
   FirebaseMessaging.onBackgroundMessage(
-      PushNotificationService.firebaseBackgroundMessage
-  );
+      PushNotificationService.firebaseBackgroundMessage);
   PushNotificationService.listenForeground();
   PushNotificationService.listenTerminated();
 
@@ -84,20 +80,14 @@ Future<void> main() async {
   });
 }
 
-class MiittiApp extends ConsumerStatefulWidget {
+
+// The main app widget at the root of the widget tree
+class MiittiApp extends ConsumerWidget {
   const MiittiApp({super.key});
 
   @override
-  ConsumerState<MiittiApp> createState() => _MiittiAppState();
-}
-
-class _MiittiAppState extends ConsumerState<MiittiApp> {
-  @override
-  Widget build(BuildContext context) {
-    //ScreenUtilInit is used to make the app responsive
-    return ScreenUtilInit(
-      designSize: const Size(390, 844),
-      builder: (context, child) => MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp(
         navigatorKey: navigatorKey,
         theme: miittiTheme,
         debugShowCheckedModeBanner: false,
@@ -105,8 +95,7 @@ class _MiittiAppState extends ConsumerState<MiittiApp> {
         routes: {
           '/notificationmessage': (context) => const NotificationMessage()
         },
-      ),
-    );
+      );
   }
 
   Widget _buildAuthScreen(BuildContext context) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Colors used for building the custom theme
 const Color _pink = Color(0xFFE05494);
@@ -50,38 +49,38 @@ final ThemeData miittiTheme = ThemeData(
   fontFamily: 'RedHatDisplay',
 
   textTheme: TextTheme(
-    titleLarge: TextStyle(          // ex title
-      fontSize: 32.sp,
+    titleLarge: const TextStyle(          // ex title
+      fontSize: 32,
       fontWeight: FontWeight.w600,
       color: _white,
     ),
-    bodyMedium: TextStyle(          // ex body
-      fontSize: 18.sp,
+    bodyMedium: const TextStyle(          // ex body
+      fontSize: 18,
       fontWeight: FontWeight.w600,
       color: _white,
     ),
     labelLarge: TextStyle(          // ex hintText
-      fontSize: 16.sp,
+      fontSize: 16,
       fontWeight: FontWeight.w300,
       color: _white.withOpacity(0.6),
     ),
     labelSmall: TextStyle(          // ex warning
-      fontSize: 12.sp,
+      fontSize: 12,
       fontWeight: FontWeight.w300,
       color: _white.withOpacity(0.6),
     ),
-    labelMedium: TextStyle(         // ex question
-      fontSize: 14.sp,
+    labelMedium: const TextStyle(         // ex question
+      fontSize: 14,
       fontWeight: FontWeight.w600,
       color: _white,
     ),
-    titleMedium: TextStyle(         // ex activityName
-      fontSize: 16.sp,
+    titleMedium: const TextStyle(         // ex activityName
+      fontSize: 16,
       fontWeight: FontWeight.w700,
       color: _white,
     ),
-    titleSmall: TextStyle(          // ex activitySubName
-      fontSize: 12.sp,
+    titleSmall: const TextStyle(          // ex activitySubName
+      fontSize: 12,
       fontWeight: FontWeight.w300,
       color: _white,
     ),

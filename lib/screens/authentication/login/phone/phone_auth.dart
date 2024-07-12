@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_texts.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
@@ -40,7 +39,7 @@ class _PhoneAuthState extends ConsumerState<PhoneAuth> {
   Widget build(BuildContext context) {
     return SafeScaffold(
       Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,13 +60,13 @@ class _PhoneAuthState extends ConsumerState<PhoneAuth> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Container(
-                width: 60.w,
+                width: 60,
                 decoration: const BoxDecoration(
                   color: AppStyle.pink,
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
-                padding: EdgeInsets.symmetric(
-                  vertical: 13.h,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 13,
                 ),
                 child: Text(
                   '+358',

@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
@@ -110,8 +109,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     String cityName = addressParts[0].trim();
 
     return Container(
-      height: 150.h,
-      margin: EdgeInsets.all(10.0.w),
+      height: 150,
+      margin: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         color: AppStyle.black,
         border: Border.all(
@@ -141,7 +140,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.all(8.0.w),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,11 +229,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       ? Flexible(
                           child: GestureDetector(
                             onTap: () {},
-                            child: Text(
+                            child: const Text(
                               'Sinulle on aktiviteettikutsu',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: 15.sp,
+                                fontSize: 15,
                                 color: Colors.white,
                                 fontFamily: 'Sora',
                               ),
@@ -249,7 +248,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               Icons.calendar_month,
                               color: AppStyle.lightPurple,
                             ),
-                            SizedBox(width: 4.w),
+                            const SizedBox(width: 4),
                             Flexible(
                               child: Text(
                                 activity.timeString,
@@ -257,12 +256,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 style: AppStyle.body,
                               ),
                             ),
-                            SizedBox(width: 16.w),
+                            const SizedBox(width: 16),
                             const Icon(
                               Icons.location_on_outlined,
                               color: AppStyle.lightPurple,
                             ),
-                            SizedBox(width: 4.w),
+                            const SizedBox(width: 4),
                             Flexible(
                               child: Text(
                                 cityName,
@@ -279,7 +278,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           children: [
                             Expanded(
                               child: MyElevatedButton(
-                                height: 40.h,
+                                height: 40,
                                 onPressed: () async {
                                   await ref
                                       .read(firestoreService)
@@ -293,22 +292,22 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                     },
                                   );
                                 },
-                                child: Text(
+                                child: const Text(
                                   "Hylkää",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16.sp,
+                                    fontSize: 16,
                                     fontFamily: 'Rubik',
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              width: 5.w,
+                            const SizedBox(
+                              width: 5,
                             ),
                             Expanded(
                               child: MyElevatedButton(
-                                height: 40.h,
+                                height: 40,
                                 onPressed: () async {
                                   bool operationCompleted = await ref
                                       .read(firestoreService)
@@ -319,11 +318,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                         (value) => buildJoinedActivities());
                                   }
                                 },
-                                child: Text(
+                                child: const Text(
                                   "Hyväksy",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16.sp,
+                                    fontSize: 16,
                                     fontFamily: 'Rubik',
                                   ),
                                 ),
@@ -336,8 +335,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           child: Opacity(
                             opacity: isWaiting ? 0.8 : 1,
                             child: MyElevatedButton(
-                              width: 250.w,
-                              height: 40.w,
+                              width: 250,
+                              height: 40,
                               onPressed: () {
                                 if (!isWaiting) {
                                   Navigator.push(
@@ -359,9 +358,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 isWaiting
                                     ? 'Odottaa hyväksyntää'
                                     : "Siirry keskusteluun",
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16.sp,
+                                  fontSize: 16,
                                   fontFamily: 'Rubik',
                                 ),
                               ),
@@ -381,8 +380,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final MiittiUser user = userData['user'];
     final PersonActivity activity = userData['activity'];
     return Container(
-      height: 150.h,
-      margin: EdgeInsets.all(10.0.w),
+      height: 150,
+      margin: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         color: AppStyle.black,
         border: Border.all(color: AppStyle.violet, width: 2.0),
@@ -400,12 +399,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   .then((value) => fetchDataFromFirebase());
             },
             child: Padding(
-              padding: EdgeInsets.all(8.0.w),
+              padding: const EdgeInsets.all(8.0),
               child: ClipOval(
                 child: Image.network(
                   user.profilePicture,
-                  height: 100.h,
-                  width: 100.w,
+                  height: 100,
+                  width: 100,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -413,7 +412,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.all(8.0.w),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,8 +430,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       child: Text(
                         activity.activityTitle,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 19.sp,
+                        style: const TextStyle(
+                          fontSize: 19,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Rubik',
@@ -447,9 +446,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       Flexible(
                         child: Text(
                           '${user.userName} haluaa liittyä miittiisi',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Rubik',
-                            fontSize: 13.sp,
+                            fontSize: 13,
                             color: AppStyle.white,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -461,7 +460,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     children: [
                       Expanded(
                         child: MyElevatedButton(
-                          height: 40.h,
+                          height: 40,
                           onPressed: () async {
                             bool operationCompleted = await ref
                                 .read(firestoreService)
@@ -474,22 +473,22 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               });
                             }
                           },
-                          child: Text(
+                          child: const Text(
                             "Hylkää",
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 15.sp,
+                              fontSize: 15,
                               fontFamily: 'Rubik',
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 5.w,
+                      const SizedBox(
+                        width: 5,
                       ),
                       Expanded(
                         child: MyElevatedButton(
-                          height: 40.h,
+                          height: 40,
                           onPressed: () async {
                             bool operationCompleted = await ref
                                 .read(firestoreService)
@@ -504,11 +503,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   .sendAcceptedNotification(user, activity);
                             }
                           },
-                          child: Text(
+                          child: const Text(
                             "Hyväksy",
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 15.sp,
+                              fontSize: 15,
                               fontFamily: 'Rubik',
                             ),
                           ),
@@ -556,12 +555,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               return buildUserItem(userData, index);
             },
           )
-        : Center(
+        : const Center(
             child: Text(
               'Kukaan ei ole vielä lähettänyt liittymispyyntöä',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 22.sp,
+                fontSize: 22,
                 fontFamily: 'Sora',
                 color: AppStyle.white,
               ),
@@ -599,12 +598,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             },
           )
         : //Returning a info text to the user if the data is null
-        Center(
+        const Center(
             child: Text(
               'Et ole osallistunut mihinkään aktiviteettiin',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 22.sp,
+                fontSize: 22,
                 fontFamily: 'Sora',
                 color: AppStyle.white,
               ),
@@ -626,7 +625,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         ),
                       )
                     : Container(
-                        margin: EdgeInsets.only(top: 60.h),
+                        margin: const EdgeInsets.only(top: 60),
                         child: showMyActivities
                             ? buildJoinedActivities()
                             : buildOtherActivities(),

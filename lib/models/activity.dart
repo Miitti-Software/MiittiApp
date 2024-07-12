@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/constants.dart';
@@ -46,15 +45,15 @@ class Activity {
   static Widget getSymbol(MiittiActivity activity) {
     return activity is CommercialActivity
         ? Padding(
-            padding: EdgeInsets.all(13.0.h),
+            padding: const EdgeInsets.all(13.0),
             child: Stack(
               children: [
                 CircleAvatar(
                   backgroundColor: AppStyle.violet,
-                  radius: 37.r,
+                  radius: 37,
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(activity.activityPhoto),
-                    radius: 34.r,
+                    radius: 34,
                     onBackgroundImageError: (exception, stackTrace) => AssetImage(
                         'images/${solveActivityId(activity.activityCategory)}.png'),
                   ),
@@ -83,7 +82,7 @@ class Activity {
           )
         : Image.asset(
             'images/${solveActivityId(activity.activityCategory)}.png',
-            height: 100.h,
+            height: 100,
             errorBuilder: (cpntext, error, stacktrace) =>
                 Image.asset('images/adventure.png'),
           );

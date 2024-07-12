@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -93,7 +92,7 @@ Widget getOurTextField({
       keyboardType: myKeyboardType,
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding: EdgeInsets.all(22.w),
+        contentPadding: const EdgeInsets.all(22),
         hintText: hintText,
         counterStyle: const TextStyle(
           color: Colors.white,
@@ -114,8 +113,8 @@ Widget getOurTextField({
         ),
         prefixIcon: myPrefixIcon,
         suffixIcon: mySuffixIcon,
-        hintStyle: TextStyle(
-          fontSize: 21.sp,
+        hintStyle: const TextStyle(
+          fontSize: 21,
           color: Colors.grey,
           fontFamily: 'Rubik',
         ),
@@ -126,7 +125,7 @@ Widget getOurTextField({
 
 Widget getChatBubble(String text) {
   return Container(
-    margin: EdgeInsets.only(top: 10.h, bottom: 10.h, right: 10.w),
+    margin: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
     decoration: BoxDecoration(
       color: AppStyle.lightPurple,
       border: Border.all(
@@ -139,7 +138,7 @@ Widget getChatBubble(String text) {
       ),
     ),
     child: Padding(
-      padding: EdgeInsets.all(10.w),
+      padding: const EdgeInsets.all(10),
       child: Text(
         text,
         style: AppStyle.body,
@@ -154,7 +153,7 @@ Widget getSections({
   required Widget mainWidget,
 }) {
   return Container(
-    margin: EdgeInsets.only(top: 20.h),
+    margin: const EdgeInsets.only(top: 20),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -162,15 +161,15 @@ Widget getSections({
           title,
           style: AppStyle.body,
         ),
-        SizedBox(
-          height: 5.h,
+        const SizedBox(
+          height: 5,
         ),
         Text(
           subtitle,
           style: AppStyle.body,
         ),
-        SizedBox(
-          height: 15.h,
+        const SizedBox(
+          height: 15,
         ),
         mainWidget
       ],
@@ -180,10 +179,10 @@ Widget getSections({
 
 Widget getGraphicImages(String imageName) {
   return Container(
-    margin: EdgeInsets.only(top: 20.h),
+    margin: const EdgeInsets.only(top: 20),
     child: Image.asset(
       'images/$imageName.png',
-      height: 250.h,
+      height: 250,
       fit: BoxFit.cover,
     ),
   );
@@ -271,19 +270,19 @@ bool validatePhoneNumber(String value) {
 
 Widget createListTile(String title) {
   return Padding(
-    padding: EdgeInsets.all(8.w),
+    padding: const EdgeInsets.all(8),
     child: ListTile(
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontFamily: 'Rubik',
-          fontSize: 18.sp,
+          fontSize: 18,
         ),
       ),
-      leading: Icon(
+      leading: const Icon(
         Icons.verified_user,
-        size: 30.sp,
+        size: 30,
         color: AppStyle.red,
       ),
     ),
@@ -455,7 +454,7 @@ Widget getMyFloatingButton({required void Function()? onPressed}) {
           end: Alignment.bottomRight,
         ),
       ),
-      child: Icon(Icons.add, size: 65.r),
+      child: const Icon(Icons.add, size: 65),
     ),
   );
 }
@@ -477,9 +476,9 @@ Widget createExitButton(BuildContext context) {
         Navigator.pop(context);
       },
       child: Container(
-        height: 55.w,
-        width: 55.w,
-        margin: EdgeInsets.only(left: 10.w),
+        height: 55,
+        width: 55,
+        margin: const EdgeInsets.only(left: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
           gradient: const LinearGradient(
@@ -489,10 +488,10 @@ Widget createExitButton(BuildContext context) {
             ],
           ),
         ),
-        child: Icon(
+        child: const Icon(
           Icons.arrow_back,
           color: Colors.white,
-          size: 30.r,
+          size: 30,
         ),
       ),
     ),
@@ -502,7 +501,7 @@ Widget createExitButton(BuildContext context) {
 //Use gp
 Widget getSomeSpace(double height) {
   return SizedBox(
-    height: height.h,
+    height: height,
   );
 }
 
@@ -527,18 +526,18 @@ Widget createMainToggleSwitch({
   required void Function(int?)? onToggle,
 }) {
   return ToggleSwitch(
-    minWidth: 150.w,
-    minHeight: 50.h,
+    minWidth: 150,
+    minHeight: 50,
     initialLabelIndex: initialLabelIndex,
-    cornerRadius: 50.sp,
+    cornerRadius: 50,
     activeFgColor: Colors.white,
     inactiveBgColor: AppStyle.black,
     inactiveFgColor: Colors.white,
     totalSwitches: 2,
     curve: Curves.linear,
-    customTextStyles: [
+    customTextStyles: const [
       TextStyle(
-        fontSize: 14.sp,
+        fontSize: 14,
         fontFamily: 'Rubik',
       ),
     ],

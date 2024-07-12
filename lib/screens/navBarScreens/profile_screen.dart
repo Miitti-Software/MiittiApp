@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
@@ -54,10 +53,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               MaterialPageRoute(builder: (context) => const AdminHomePage()));
         },
         child: Container(
-          margin: EdgeInsets.only(left: 20.w),
-          child: Icon(
+          margin: const EdgeInsets.only(left: 20),
+          child: const Icon(
             Icons.admin_panel_settings_rounded,
-            size: 30.r,
+            size: 30,
             color: Colors.white,
           ),
         ),
@@ -97,8 +96,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Text(
             ref.read(firestoreService).miittiUser!.userName,
-            style: TextStyle(
-              fontSize: 30.sp,
+            style: const TextStyle(
+              fontSize: 30,
               fontFamily: 'Sora',
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -112,9 +111,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         user: ref.read(firestoreService).miittiUser!,
                       )));
             },
-            child: Icon(
+            child: const Icon(
               Icons.settings,
-              size: 30.r,
+              size: 30,
               color: Colors.white,
             ),
           ),
@@ -164,16 +163,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Image.network(
           ref.read(firestoreService).miittiUser!.profilePicture,
-          height: 400.h,
-          width: 400.w,
+          height: 400,
+          width: 400,
           fit: BoxFit.cover,
         ),
       ),
@@ -182,8 +181,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Widget buildQuestionCard(String question, String answer) {
     return Container(
-      padding: EdgeInsets.all(15.w),
-      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
@@ -194,20 +193,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Text(
             question,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppStyle.violet,
-              fontSize: 18.sp,
+              fontSize: 18,
               fontFamily: 'Rubik',
             ),
           ),
-          SizedBox(height: 5.h),
+          const SizedBox(height: 5),
           Text(
             answer,
             maxLines: 4,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.black,
               overflow: TextOverflow.clip,
-              fontSize: 20.sp,
+              fontSize: 20,
               fontFamily: 'Poppins',
             ),
           ),
@@ -223,15 +222,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
       child: Container(
-        height: miittiUser.userSchool.isNotEmpty ? 330.w : 240.w,
-        margin: EdgeInsets.only(
-          left: 5.w,
-          top: 10.h,
+        height: miittiUser.userSchool.isNotEmpty ? 330 : 240,
+        margin: const EdgeInsets.only(
+          left: 5,
+          top: 10,
         ),
         child: Column(
           children: [
@@ -259,12 +258,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       leading: Icon(
         icon,
         color: AppStyle.lightPurple,
-        size: 30.sp,
+        size: 30,
       ),
       title: Text(
         text,
-        style: TextStyle(
-          fontSize: 24.sp,
+        style: const TextStyle(
+          fontSize: 24,
           color: Colors.black,
           fontFamily: 'Rubik',
         ),
@@ -284,17 +283,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   double returnActivitiesGridSize(int listLenght) {
     if (listLenght > 6) {
-      return 375.w;
+      return 375;
     } else if (listLenght > 3) {
-      return 250.w;
+      return 250;
     } else {
-      return 125.w;
+      return 125;
     }
   }
 
   Widget buildActivitiesGrid() {
     return Padding(
-      padding: EdgeInsets.all(15.0.w),
+      padding: const EdgeInsets.all(15.0),
       child: SizedBox(
         height: returnActivitiesGridSize(filteredActivities.length),
         child: GridView.builder(
@@ -316,8 +315,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Widget buildActivityItem(Activity activity) {
     return Container(
-      height: 100.h,
-      width: 50.w,
+      height: 100,
+      width: 50,
       decoration: const BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -326,14 +325,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         children: [
           Text(
             activity.emojiData,
-            style: TextStyle(fontSize: 50.0.sp),
+            style: const TextStyle(fontSize: 50.0),
           ),
           Text(
             activity.name,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'Rubik',
-              fontSize: 15.0.sp,
+              fontSize: 15.0,
               color: Colors.white,
             ),
           ),

@@ -1,6 +1,5 @@
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 import 'package:miitti_app/screens/adminPanel/admin_notifications.dart';
@@ -28,7 +27,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   Widget _buildBottomNavBar() {
     return CustomNavigationBar(
-      iconSize: 35.sp,
+      iconSize: 35,
       selectedColor: AppStyle.pink,
       unSelectedColor: Colors.white,
       strokeColor: AppStyle.black.withOpacity(0.9),

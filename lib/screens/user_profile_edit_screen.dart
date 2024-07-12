@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/person_activity.dart';
@@ -76,8 +75,8 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
         children: [
           Text(
             widget.user.userName,
-            style: TextStyle(
-              fontSize: 30.sp,
+            style: const TextStyle(
+              fontSize: 30,
               fontFamily: 'Sora',
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -139,9 +138,9 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
       child: Stack(
         children: [
@@ -149,28 +148,28 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
             borderRadius: const BorderRadius.all(Radius.circular(15)),
             child: Image.network(
               widget.user.profilePicture,
-              height: 400.h,
-              width: 400.w,
+              height: 400,
+              width: 400,
               fit: BoxFit.cover,
             ),
           ),
           Positioned(
-            top: 10.h,
-            left: 10.w,
+            top: 10,
+            left: 10,
             child: GestureDetector(
               onTap: () {
                 Navigator.pop(context);
               },
               child: Container(
-                padding: EdgeInsets.all(15.w),
+                padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   gradient: AppStyle.pinkGradient,
                   borderRadius: BorderRadius.circular(50),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.arrow_back,
                   color: Colors.white,
-                  size: 30.r,
+                  size: 30,
                 ),
               ),
             ),
@@ -182,7 +181,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   Widget buildAnsweredQuestionsCard(List<String> answeredQuestions) {
     return SizedBox(
-      height: 210.h,
+      height: 210,
       child: PageView.builder(
         itemCount: widget.user.userChoices.length,
         itemBuilder: (context, index) {
@@ -196,8 +195,8 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   Widget buildQuestionCard(String question, String answer) {
     return Container(
-      padding: EdgeInsets.all(15.w),
-      margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
@@ -208,20 +207,20 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
           Text(
             question,
             textAlign: TextAlign.start,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppStyle.violet,
-              fontSize: 18.sp,
+              fontSize: 18,
               fontFamily: 'Rubik',
             ),
           ),
-          SizedBox(height: 5.h),
+          const SizedBox(height: 5),
           Text(
             answer,
             maxLines: 4,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.black,
               overflow: TextOverflow.clip,
-              fontSize: 20.sp,
+              fontSize: 20,
               fontFamily: 'Poppins',
             ),
           ),
@@ -236,15 +235,15 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
       child: Container(
-        height: 320.w,
-        margin: EdgeInsets.only(
-          left: 5.w,
-          top: 10.h,
+        height: 320,
+        margin: const EdgeInsets.only(
+          left: 5,
+          top: 10,
         ),
         child: Column(
           children: [
@@ -270,12 +269,12 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
       leading: Icon(
         icon,
         color: AppStyle.lightPurple,
-        size: 30.sp,
+        size: 30,
       ),
       title: Text(
         text,
-        style: TextStyle(
-          fontSize: 24.sp,
+        style: const TextStyle(
+          fontSize: 24,
           color: Colors.black,
           fontFamily: 'Rubik',
         ),
@@ -295,17 +294,17 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   double returnActivitiesGridSize(int listLenght) {
     if (listLenght > 6) {
-      return 375.w;
+      return 375;
     } else if (listLenght > 3) {
-      return 250.w;
+      return 250;
     } else {
-      return 125.w;
+      return 125;
     }
   }
 
   Widget buildActivitiesGrid() {
     return Padding(
-      padding: EdgeInsets.all(15.0.w),
+      padding: const EdgeInsets.all(15.0),
       child: SizedBox(
         height: returnActivitiesGridSize(filteredActivities.length),
         child: GridView.builder(
@@ -327,8 +326,8 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   Widget buildActivityItem(Activity activity) {
     return Container(
-      height: 100.h,
-      width: 50.w,
+      height: 100,
+      width: 50,
       decoration: const BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -337,14 +336,14 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
         children: [
           Text(
             activity.emojiData,
-            style: TextStyle(fontSize: 50.0.sp),
+            style: const TextStyle(fontSize: 50.0),
           ),
           Text(
             activity.name,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'Rubik',
-              fontSize: 15.0.sp,
+              fontSize: 15.0,
               color: Colors.white,
             ),
           ),
@@ -357,9 +356,9 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
     return widget.comingFromAdmin != null
         ? Container()
         : Container(
-            margin: EdgeInsets.symmetric(
-              vertical: 15.h,
-              horizontal: 15.w,
+            margin: const EdgeInsets.symmetric(
+              vertical: 15,
+              horizontal: 15,
             ),
             child: MyElevatedButton(
               onPressed: () => inviteToYourActivity(),
@@ -401,11 +400,11 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
             }
           });
         },
-        child: Text(
+        child: const Text(
           "Ilmianna käyttäjä",
           style: TextStyle(
             fontFamily: 'Rubik',
-            fontSize: 19.sp,
+            fontSize: 19,
             color: Colors.red,
           ),
         ),
@@ -494,7 +493,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
       status.isNotEmpty ? '● $status' : "",
       style: TextStyle(
         color: color,
-        fontSize: 15.0.sp,
+        fontSize: 15.0,
         fontFamily: 'Sora',
         fontWeight: FontWeight.bold,
       ),
@@ -527,15 +526,15 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
         borderRadius: BorderRadius.circular(20),
       ),
       content: SizedBox(
-        height: 330.w,
-        width: 330.w,
+        height: 330,
+        width: 330,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
               'images/thinkingFace.png',
-              height: 125.w,
-              width: 125.w,
+              height: 125,
+              width: 125,
             ),
             Text(
               'Valitse kutsuttava aktiviteetti',
@@ -561,9 +560,9 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                     ),
                     title: Text(
                       activity.activityTitle,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Rubik',
-                        fontSize: 19.sp,
+                        fontSize: 19,
                         overflow: TextOverflow.ellipsis,
                         color: AppStyle.white,
                       ),
@@ -615,15 +614,15 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
         borderRadius: BorderRadius.circular(20),
       ),
       content: SizedBox(
-        height: 300.w,
-        width: 300.w,
+        height: 300,
+        width: 300,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
               'images/postbox.png',
-              height: 125.w,
-              width: 125.w,
+              height: 125,
+              width: 125,
             ),
             Text(
               'Kutsu miittisi on lähetetty',
@@ -636,7 +635,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
               style: AppStyle.body,
             ),
             MyElevatedButton(
-              height: 45.h,
+              height: 45,
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pop(context, 2);
@@ -654,11 +653,11 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   Widget requestList() {
     return Container(
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
-      padding: EdgeInsets.all(15.0.w),
+      padding: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
         color: AppStyle.black,
         border: Border.all(
@@ -672,9 +671,9 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
         children: [
           Text("${widget.user.userName} on pyytäny päästä miittiisi:",
               textAlign: TextAlign.start,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
-                fontSize: 15.sp,
+                fontSize: 15,
                 fontFamily: 'Rubik',
               )),
           Column(
@@ -690,25 +689,25 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20.0.h),
+        const SizedBox(height: 20.0),
         Text(
             "${activities[activity.activityCategory]?.emojiData} ${activity.activityTitle}",
             textAlign: TextAlign.start,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
-              fontSize: 17.sp,
+              fontSize: 17,
               fontFamily: 'Rubik',
             )),
-        SizedBox(
-          height: 6.0.h,
+        const SizedBox(
+          height: 6.0,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             MyElevatedButton(
-              height: 40.h,
-              width: 140.w,
+              height: 40,
+              width: 140,
               onPressed: () async {
                 ref
                     .read(firestoreService)
@@ -720,21 +719,21 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                   });
                 });
               },
-              child: Text(
+              child: const Text(
                 "Hylkää",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontFamily: 'Rubik',
                 ),
               ),
             ),
-            SizedBox(
-              width: 12.w,
+            const SizedBox(
+              width: 12,
             ),
             MyElevatedButton(
-              height: 40.h,
-              width: 140.w,
+              height: 40,
+              width: 140,
               onPressed: () async {
                 ref
                     .read(firestoreService)
@@ -751,11 +750,11 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                   }
                 });
               },
-              child: Text(
+              child: const Text(
                 "Hyväksy",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontFamily: 'Rubik',
                 ),
               ),

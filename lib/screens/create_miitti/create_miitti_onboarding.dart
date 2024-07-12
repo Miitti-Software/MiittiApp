@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
@@ -167,10 +166,10 @@ class _CreateMiittiOnboardingState
                   });
                 },
                 child: Container(
-                  width: 100.w,
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10.h,
-                    horizontal: 5.h,
+                  width: 100,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 5,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected ? AppStyle.pink : Colors.transparent,
@@ -206,8 +205,8 @@ class _CreateMiittiOnboardingState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 300.w,
-                width: 350.w,
+                height: 300,
+                width: 350,
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   child: FutureBuilder(
@@ -272,7 +271,7 @@ class _CreateMiittiOnboardingState
                               Center(
                                 child: Image.asset(
                                   'images/location.png',
-                                  height: 65.h,
+                                  height: 65,
                                 ),
                               ),
                             ]);
@@ -461,8 +460,8 @@ class _CreateMiittiOnboardingState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 300.w,
-                width: 350.w,
+                height: 300,
+                width: 350,
                 child: Stack(
                   children: [
                     ClipRRect(
@@ -508,7 +507,7 @@ class _CreateMiittiOnboardingState
                     Center(
                       child: Image.asset(
                         'images/${Activity.solveActivityId(favoriteActivity)}.png',
-                        height: 65.h,
+                        height: 65,
                       ),
                     ),
                   ],
@@ -517,7 +516,7 @@ class _CreateMiittiOnboardingState
               gapH20,
               Text(
                 titleController.text.trim(),
-                style: AppStyle.body.copyWith(fontSize: 24.sp),
+                style: AppStyle.body.copyWith(fontSize: 24),
               ),
               gapH10,
               Row(
@@ -713,7 +712,7 @@ class _CreateMiittiOnboardingState
                 itemBuilder: (context, index) {
                   ConstantsOnboarding screen = onboardingScreens[index];
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -721,7 +720,7 @@ class _CreateMiittiOnboardingState
                         Text(
                           screen.title,
                           style:
-                              AppStyle.activityName.copyWith(fontSize: 20.sp),
+                              AppStyle.activityName.copyWith(fontSize: 20),
                         ),
                         gapH20,
                         mainWidgetsForScreens(index),

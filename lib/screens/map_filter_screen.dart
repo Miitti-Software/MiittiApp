@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 
@@ -59,13 +58,13 @@ class _MapFilterState extends State<MapFilter> {
 
   Widget makeToggleSwitch(String textValue, bool value, String target) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10.0.w),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
         children: [
           Text(
             textValue,
-            style: TextStyle(
-              fontSize: 19.sp,
+            style: const TextStyle(
+              fontSize: 19,
               color: Colors.white,
               fontFamily: 'Rubik',
             ),
@@ -90,7 +89,7 @@ class _MapFilterState extends State<MapFilter> {
       Column(
         children: [
           Container(
-            padding: EdgeInsets.all(8.0.w),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 GestureDetector(
@@ -99,26 +98,26 @@ class _MapFilterState extends State<MapFilter> {
                     Navigator.pop(context);
                   },
                   child: Container(
-                    height: 60.w,
-                    width: 60.w,
+                    height: 60,
+                    width: 60,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                         gradient: AppStyle.pinkGradient),
-                    child: Icon(
+                    child: const Icon(
                       Icons.arrow_back,
                       color: Colors.white,
-                      size: 30.r,
+                      size: 30,
                     ),
                   ),
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 8,
                 ),
-                Text(
+                const Text(
                   'Suodata miittejä',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 21.sp,
+                    fontSize: 21,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Rubik',
@@ -127,33 +126,33 @@ class _MapFilterState extends State<MapFilter> {
               ],
             ),
           ),
-          SizedBox(
-            height: 30.h,
+          const SizedBox(
+            height: 30,
           ),
           makeToggleSwitch(
             'Hae vain samaa sukupuolta',
             searchSameGender,
             'sameGender',
           ),
-          SizedBox(
-            height: 10.h,
+          const SizedBox(
+            height: 10,
           ),
           makeToggleSwitch(
             'Hae useamman ihmisen miittejä',
             searchMultiplePeople,
             'multiplePeople',
           ),
-          SizedBox(
-            height: 80.h,
+          const SizedBox(
+            height: 80,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 10.0.w),
+            margin: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Row(
               children: [
-                Text(
+                const Text(
                   'Ikähaarukka',
                   style: TextStyle(
-                    fontSize: 19.sp,
+                    fontSize: 19,
                     color: Colors.white,
                     fontFamily: 'Rubik',
                   ),
@@ -161,8 +160,8 @@ class _MapFilterState extends State<MapFilter> {
                 const Expanded(child: SizedBox()),
                 Text(
                   "${_values.start.toStringAsFixed(0)} - ${_values.end.toStringAsFixed(0)}",
-                  style: TextStyle(
-                    fontSize: 19.sp,
+                  style: const TextStyle(
+                    fontSize: 19,
                     color: Colors.white,
                     fontFamily: 'Rubik',
                   ),

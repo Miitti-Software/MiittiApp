@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -122,16 +121,16 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                       Navigator.pop(context);
                     },
                     child: Container(
-                      margin: EdgeInsets.only(left: 10.w, top: 40.h),
-                      height: 60.h,
-                      width: 60.h,
+                      margin: const EdgeInsets.only(left: 10, top: 40),
+                      height: 60,
+                      width: 60,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           gradient: AppStyle.pinkGradient),
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back,
                         color: Colors.white,
-                        size: 30.r,
+                        size: 30,
                       ),
                     ),
                   ),
@@ -152,14 +151,14 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                   Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(13.0.h),
+                        padding: const EdgeInsets.all(13.0),
                         child: CircleAvatar(
                           backgroundColor: AppStyle.violet,
-                          radius: 37.r,
+                          radius: 37,
                           child: CircleAvatar(
                             backgroundImage:
                                 NetworkImage(widget.myActivity.activityPhoto),
-                            radius: 34.r,
+                            radius: 34,
                             onBackgroundImageError: (exception, stackTrace) =>
                                 AssetImage(
                                     'images/${Activity.solveActivityId(widget.myActivity.activityCategory)}.png'),
@@ -177,7 +176,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                   Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 16.0.w, right: 8.0.w),
+                        padding: const EdgeInsets.only(left: 16.0, right: 8.0),
                         child: GestureDetector(
                           onTap: () {
                             if (company != null) {
@@ -193,7 +192,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                             backgroundImage:
                                 NetworkImage(company!.profilePicture),
                             backgroundColor: AppStyle.violet,
-                            radius: 25.r,
+                            radius: 25,
                             child: const Align(
                               alignment: Alignment.topRight,
                               child: Stack(
@@ -217,7 +216,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                       ),
                       Expanded(
                         child: SizedBox(
-                          height: 75.0.h,
+                          height: 75.0,
                           width: double.infinity,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
@@ -227,7 +226,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                               MiittiUser user = participantList[index];
                               debugPrint("$index: ${user.userName} osallistuu");
                               return Padding(
-                                padding: EdgeInsets.only(left: 16.0.w),
+                                padding: const EdgeInsets.only(left: 16.0),
                                 child: GestureDetector(
                                   onTap: () {
                                     Navigator.push(
@@ -241,7 +240,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                                     backgroundImage:
                                         NetworkImage(user.profilePicture),
                                     backgroundColor: AppStyle.violet,
-                                    radius: 25.r,
+                                    radius: 25,
                                   ),
                                 ),
                               );
@@ -253,14 +252,14 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.all(8.0.w),
+                      padding: const EdgeInsets.all(8.0),
                       child: SingleChildScrollView(
                         child: Text(
                           widget.myActivity.activityDescription,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Rubik',
-                            fontSize: 15.0.sp,
+                            fontSize: 15.0,
                             color: Colors.white,
                           ),
                         ),
@@ -271,7 +270,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                     child: SizedBox(),'
                   ),*/
                   Padding(
-                    padding: EdgeInsets.all(8.0.w),
+                    padding: const EdgeInsets.all(8.0),
                     child: InkWell(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -279,18 +278,18 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                             Text(
                               widget.myActivity.linkTitle,
                               textAlign: TextAlign.end,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontFamily: 'Rubik',
-                                fontSize: 17.0.sp,
+                                fontSize: 17.0,
                                 color: AppStyle.lightPurple,
                               ),
                             ),
-                            SizedBox(
-                              width: 4.0.w,
+                            const SizedBox(
+                              width: 4.0,
                             ),
-                            Icon(
+                            const Icon(
                               Icons.arrow_forward_ios_rounded,
-                              size: 12.0.sp,
+                              size: 12.0,
                               color: Colors.white,
                             )
                           ],
@@ -300,8 +299,8 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                               Uri.parse(widget.myActivity.hyperlink));
                         }),
                   ),
-                  SizedBox(
-                    width: 8.0.w,
+                  const SizedBox(
+                    width: 8.0,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -314,8 +313,8 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                         '  $participantCount/${widget.myActivity.personLimit} osallistujaa',
                         style: AppStyle.body,
                       ),
-                      SizedBox(
-                        width: 20.w,
+                      const SizedBox(
+                        width: 20,
                       ),
                       const Icon(
                         Icons.location_on_outlined,
@@ -340,8 +339,8 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                             : 'Maksuton',
                         style: AppStyle.body,
                       ),
-                      SizedBox(
-                        width: 20.w,
+                      const SizedBox(
+                        width: 20,
                       ),
                       const Icon(
                         Icons.calendar_month,
@@ -353,8 +352,8 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 10.h,
+                  const SizedBox(
+                    height: 10,
                   ),
                 ],
               ),
@@ -403,7 +402,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
 
     //There is still place left
     return MyElevatedButton(
-      height: 50.h,
+      height: 50,
       onPressed: () {
         if (!isAlreadyJoined &&
             participantCount < widget.myActivity.personLimit) {
@@ -420,12 +419,12 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
       child: isLoading
           ? LoadingAnimationWidget.waveDots(
               color: Colors.white,
-              size: 50.r,
+              size: 50,
             )
           : Text(
               buttonText,
-              style: TextStyle(
-                fontSize: 19.sp,
+              style: const TextStyle(
+                fontSize: 19,
                 color: Colors.white,
                 fontFamily: 'Rubik',
               ),

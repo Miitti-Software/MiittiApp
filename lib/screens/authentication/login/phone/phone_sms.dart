@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -45,7 +44,7 @@ class _PhoneSmsState extends ConsumerState<PhoneSms> {
   Widget build(BuildContext context) {
     return SafeScaffold(
       Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -70,8 +69,8 @@ class _PhoneSmsState extends ConsumerState<PhoneSms> {
               keyboardType: TextInputType.number,
               length: 6,
               defaultPinTheme: PinTheme(
-                height: 60.h,
-                width: 45.w,
+                height: 60,
+                width: 45,
                 textStyle: AppStyle.body.copyWith(
                   fontWeight: FontWeight.w700,
                 ),

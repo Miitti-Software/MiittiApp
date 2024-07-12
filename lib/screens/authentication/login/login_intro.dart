@@ -8,7 +8,7 @@ import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/screens/login/login_auth.dart';
+import 'package:miitti_app/screens/authentication/login/login_auth.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class LoginIntro extends StatelessWidget {

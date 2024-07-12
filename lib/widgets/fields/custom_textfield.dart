@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
 class MyTextField extends StatelessWidget {
@@ -29,7 +28,7 @@ class MyTextField extends StatelessWidget {
       style: AppStyle.hintText.copyWith(color: Colors.white),
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+        contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: const BorderSide(

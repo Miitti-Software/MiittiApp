@@ -8,7 +8,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
@@ -302,9 +301,9 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
           child: Align(
             alignment: Alignment.topCenter,
             child: Container(
-              height: 40.h,
-              width: 260.w,
-              padding: EdgeInsets.all(3.w),
+              height: 40,
+              width: 260,
+              padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
                 color: AppStyle.black.withOpacity(0.8),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -369,7 +368,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
                       }
                       //(marker.child as GestureDetector).onTap!();
                     },
-                    clusterWidgetSize: Size(100.0.r, 100.0.r),
+                    clusterWidgetSize: const Size(100.0, 100.0),
                     maxClusterRadius: 205,
                     builder: (context, position, markerCount,
                             extraClusterData) =>
@@ -379,11 +378,11 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
                               "images/circlebackground.png",
                             ),
                             Positioned(
-                              top: 20.h,
+                              top: 20,
                               child: Text("$markerCount",
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 32.sp,
+                                  style: const TextStyle(
+                                    fontSize: 32,
                                     color: Colors.white,
                                     fontWeight: FontWeight.normal,
                                     fontFamily: "Rubik",
@@ -407,7 +406,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
-          margin: EdgeInsets.only(top: 60.h),
+          margin: const EdgeInsets.only(top: 60),
           child: ListView.builder(
             itemCount: _activities.length + (_ads.isNotEmpty ? 1 : 0),
             itemBuilder: (BuildContext context, int index) {
@@ -434,9 +433,9 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
-                    margin: EdgeInsets.all(10.0.w),
+                    margin: const EdgeInsets.all(10.0),
                     child: Container(
-                      height: 125.h,
+                      height: 125,
                       decoration: BoxDecoration(
                         color: AppStyle.black.withOpacity(0.8),
                         borderRadius:

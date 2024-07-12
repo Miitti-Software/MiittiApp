@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -17,8 +16,8 @@ Widget getLanguagesButtons() {
     children: [
       for (String language in appLanguages)
         Container(
-          margin: EdgeInsets.only(right: 15.w, bottom: 45.h),
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+          margin: const EdgeInsets.only(right: 15, bottom: 45),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: const Color(0xFF2A1026),
             borderRadius: BorderRadius.circular(10.0),
@@ -53,7 +52,7 @@ Widget createPinkDivider(String text) {
         ),
       ),
       Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Text(
           text,
           style: AppStyle.body.copyWith(
@@ -91,13 +90,13 @@ Widget mapToggleSwitch({
   required void Function(int?)? onToggle,
 }) {
   return ToggleSwitch(
-    minWidth: 200.w,
+    minWidth: 200,
     initialLabelIndex: initialLabelIndex,
     cornerRadius: 7,
     totalSwitches: 2,
     curve: Curves.linear,
     customTextStyles: [
-      AppStyle.body.copyWith(fontSize: 16.sp),
+      AppStyle.body.copyWith(fontSize: 16),
     ],
     labels: const ['Näytä kartalla', 'Näytä listana'],
     activeBgColors: const [
@@ -130,7 +129,7 @@ Widget getFloatingButton({required void Function()? onPressed}) {
         ),
       ),
       child:
-          Icon(Icons.add, size: 60.r, color: AppStyle.black.withOpacity(0.9)),
+          Icon(Icons.add, size: 60, color: AppStyle.black.withOpacity(0.9)),
     ),
   );
 }
@@ -172,20 +171,20 @@ Widget getCustomTextFormField(
   );
 }
 
-final gapW5 = SizedBox(width: 5.w);
-final gapW8 = SizedBox(width: 8.w);
-final gapW10 = SizedBox(width: 10.w);
-final gapW15 = SizedBox(width: 15.w);
-final gapW20 = SizedBox(width: 20.w);
+final gapW5 = const SizedBox(width: 5);
+final gapW8 = const SizedBox(width: 8);
+final gapW10 = const SizedBox(width: 10);
+final gapW15 = const SizedBox(width: 15);
+final gapW20 = const SizedBox(width: 20);
 
-final gapW50 = SizedBox(width: 50.w);
-final gapW100 = SizedBox(width: 100.w);
+final gapW50 = const SizedBox(width: 50);
+final gapW100 = const SizedBox(width: 100);
 
-final gapH5 = SizedBox(height: 5.h);
-final gapH8 = SizedBox(height: 8.h);
-final gapH10 = SizedBox(height: 10.h);
-final gapH15 = SizedBox(height: 15.h);
-final gapH20 = SizedBox(height: 20.w);
+final gapH5 = const SizedBox(height: 5);
+final gapH8 = const SizedBox(height: 8);
+final gapH10 = const SizedBox(height: 10);
+final gapH15 = const SizedBox(height: 15);
+final gapH20 = const SizedBox(height: 20);
 
-final gapH50 = SizedBox(height: 50.h);
-final gapH100 = SizedBox(height: 100.h);
+final gapH50 = const SizedBox(height: 50);
+final gapH100 = const SizedBox(height: 100);

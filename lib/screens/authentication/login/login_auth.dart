@@ -1,12 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/app_texts.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/buttons/auth_button.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/screens/login/phone/phone_auth.dart';
+import 'package:miitti_app/screens/authentication/login/phone/phone_auth.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 
 class LoginAuth extends StatefulWidget {
@@ -22,7 +21,7 @@ class _LoginAuthState extends State<LoginAuth> {
     return SafeScaffold(
       SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.w),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,13 +62,13 @@ class _LoginAuthState extends State<LoginAuth> {
     return GestureDetector(
       onTap: () => pushPage(context, const PhoneAuth()),
       child: Container(
-        width: 350.w,
-        margin: EdgeInsets.symmetric(
-          vertical: 20.h,
-          horizontal: 10.w,
+        width: 350,
+        margin: const EdgeInsets.symmetric(
+          vertical: 20,
+          horizontal: 10,
         ),
-        padding: EdgeInsets.symmetric(
-          vertical: 8.w,
+        padding: const EdgeInsets.symmetric(
+          vertical: 8,
         ),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(10)),

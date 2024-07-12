@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
@@ -37,7 +36,7 @@ class CommercialSpot {
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: Container(
-        height: highlight ? 90.h : 80.h,
+        height: highlight ? 90 : 80,
         decoration: BoxDecoration(
           color: AppStyle.black,
           border: Border.all(
@@ -100,8 +99,8 @@ class CommercialSpot {
               right: 0,
               bottom: 0,
               child: Container(
-                height: 24.w,
-                width: 100.h,
+                height: 24,
+                width: 100,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   color: AppStyle.pink,
@@ -110,11 +109,11 @@ class CommercialSpot {
                     bottomRight: Radius.circular(12),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "Sponsoroitu",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.sp,
+                    fontSize: 12,
                     fontFamily: 'Rubik',
                   ),
                 ),

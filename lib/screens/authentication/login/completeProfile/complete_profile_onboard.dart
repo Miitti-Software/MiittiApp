@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
@@ -21,7 +20,7 @@ import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/index_page.dart';
-import 'package:miitti_app/screens/login/completeProfile/complete_profile_answerpage.dart';
+import 'package:miitti_app/screens/authentication/login/completeProfile/complete_profile_answerpage.dart';
 
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
@@ -290,15 +289,15 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
           autofocus: true,
           separatorBuilder: (index) {
             if (index == 1 || index == 3) {
-              return SizedBox(width: 16.w);
+              return const SizedBox(width: 16);
             }
-            return SizedBox(
-              width: 8.w,
+            return const SizedBox(
+              width: 8,
             );
           },
           defaultPinTheme: PinTheme(
-            height: 45.h,
-            width: 40.w,
+            height: 45,
+            width: 40,
             textStyle: AppStyle.body.copyWith(fontWeight: FontWeight.w800),
             decoration: const BoxDecoration(
               color: Color.fromRGBO(152, 28, 228, 0.10),
@@ -392,8 +391,8 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                   });
                 },
                 child: Container(
-                  padding: EdgeInsets.all(10.w),
-                  margin: EdgeInsets.only(bottom: 8.h),
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(224, 84, 148, 0.05),
                     border: Border.all(
@@ -417,7 +416,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 220.h,
+              height: 220,
               child: ListView.builder(
                 itemCount: lifeOptions.length,
                 itemBuilder: (context, index) {
@@ -433,8 +432,8 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                     child: Opacity(
                       opacity: !noLifeSituation ? 1.0 : 0.2,
                       child: Container(
-                        padding: EdgeInsets.all(10.w),
-                        margin: EdgeInsets.only(bottom: 8.h),
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.only(bottom: 8),
                         decoration: BoxDecoration(
                           color: const Color.fromRGBO(224, 84, 148, 0.05),
                           border: Border.all(
@@ -489,9 +488,9 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                     });
                   },
                   child: Container(
-                    margin: EdgeInsets.only(right: 10.w, bottom: 10.h),
+                    margin: const EdgeInsets.only(right: 10, bottom: 10),
                     padding:
-                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2A1026),
                       borderRadius: BorderRadius.circular(10.0),
@@ -515,9 +514,9 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                     });
                   },
                   child: Container(
-                    margin: EdgeInsets.only(right: 10.w, bottom: 10.h),
+                    margin: const EdgeInsets.only(right: 10, bottom: 10),
                     padding:
-                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2A1026),
                       borderRadius: BorderRadius.circular(10.0),
@@ -541,9 +540,9 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                     });
                   },
                   child: Container(
-                    margin: EdgeInsets.only(right: 10.w, bottom: 10.h),
+                    margin: const EdgeInsets.only(right: 10, bottom: 10),
                     padding:
-                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2A1026),
                       borderRadius: BorderRadius.circular(10.0),
@@ -563,7 +562,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
               ],
             ),
             SizedBox(
-              height: 500.h,
+              height: 500,
               child: ListView.builder(
                 itemCount: selectedList.length,
                 itemBuilder: (context, index) {
@@ -590,7 +589,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                       }
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 15.h),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
                       decoration: const BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
@@ -624,8 +623,8 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
             children: [
               image != null
                   ? SizedBox(
-                      height: 350.h,
-                      width: 350.w,
+                      height: 350,
+                      width: 350,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.file(
@@ -635,8 +634,8 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                       ),
                     )
                   : Container(
-                      height: 350.h,
-                      width: 350.w,
+                      height: 350,
+                      width: 350,
                       decoration: const BoxDecoration(
                         color: Color.fromRGBO(250, 250, 253, 0.10),
                         borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -644,7 +643,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                       child: Center(
                         child: Text(
                           'Ei lisättyjä kuvia',
-                          style: AppStyle.body.copyWith(fontSize: 24.sp),
+                          style: AppStyle.body.copyWith(fontSize: 24),
                         ),
                       ),
                     ),
@@ -657,7 +656,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                       selectImage(isCamera: false);
                     },
                     child: Container(
-                      padding: EdgeInsets.all(10.w),
+                      padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
                         color: Color.fromRGBO(250, 250, 253, 0.05),
                         borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -671,7 +670,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                           gapW5,
                           Text(
                             'Lisää uusi kuva',
-                            style: AppStyle.body.copyWith(fontSize: 16.sp),
+                            style: AppStyle.body.copyWith(fontSize: 16),
                           ),
                         ],
                       ),
@@ -682,7 +681,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                       selectImage(isCamera: true);
                     },
                     child: Container(
-                      padding: EdgeInsets.all(10.w),
+                      padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
                         color: Color.fromRGBO(250, 250, 253, 0.05),
                         borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -696,7 +695,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                           gapW5,
                           Text(
                             'Ota uusi kuva',
-                            style: AppStyle.body.copyWith(fontSize: 16.sp),
+                            style: AppStyle.body.copyWith(fontSize: 16),
                           ),
                         ],
                       ),
@@ -732,10 +731,10 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                   });
                 },
                 child: Container(
-                  width: 100.w,
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10.h,
-                    horizontal: 5.h,
+                  width: 100,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 5,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected ? AppStyle.pink : Colors.transparent,
@@ -825,8 +824,8 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
                     });
                   },
                   child: Container(
-                    margin: EdgeInsets.only(bottom: 15.h),
-                    padding: EdgeInsets.all(10.w),
+                    margin: const EdgeInsets.only(bottom: 15),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2A1026),
                       borderRadius: BorderRadius.circular(10.0),
@@ -1103,7 +1102,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
               itemBuilder: (context, index) {
                 ConstantsOnboarding screen = onboardingScreens[index];
                 return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

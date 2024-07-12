@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -30,7 +29,7 @@ class ConfirmNotificationsDialog extends ConsumerWidget {
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.all(10.w),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
                     const Divider(
@@ -44,7 +43,7 @@ class ConfirmNotificationsDialog extends ConsumerWidget {
                       style: AppStyle.title,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
                         'Oletko aivan varma valinnastasi. Sovellusilmoitukset ovat sinua varten. Missaat paljon ilman niitä.',
                         style: AppStyle.body,
@@ -81,7 +80,7 @@ class ConfirmNotificationsDialog extends ConsumerWidget {
                         nextPage();
                       },
                     ), //Removed extra padding in ConstantsCustomButton
-                    getSomeSpace(10.h),
+                    getSomeSpace(10),
                   ],
                 ),
               ),
