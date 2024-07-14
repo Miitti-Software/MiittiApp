@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor UI components to use `miitti_theme.dart`
 - Rename strings role-wise instead of content-wise
 - Refactor `firestoreService` functions from function after `updateUser` till function before `_wait`
+- Send a new email confirmation email after a couple of days in order to counteract temporary email accounts.
+- Compose Mitti icons on the map from a background gradient and an emoji - not png files
 
 ### To Be Fixed
 
@@ -39,9 +41,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Refactoring
 
+### Added
+
+- Firebase Remote Config for changing, modifying and rapidly experimenting with app text, UI and content without always having to release new updates in app stores
+
 ### Removed
 
-- `ScreenUtilInit` widget and dependencies in order to create a uniform experience across devices 
+- `ScreenUtilInit` widget and dependencies in order to create a uniform user experience across devices.
+- Sign-in via a phone number due to redundancy and potential extra costs.
 
 ## [1.5.6] - 2024-07-08
 

@@ -120,6 +120,14 @@ Reading list:
 
 ### Authentication
 
+### Remote Config
+
+Remote Config is a relatively self-explanatory way to set `String`, `Number`, `Boolean` and `JSON` values for an app remotely. Where it differs from simply using a regular database such as Firestore for the purpose is that data is meant to flow only in a single direction from the configuration to the app, where it is often cached for much longer and it enables, for example, A/B testing, personalization and fractional rollouts of, for example, new features as well as calling them back. 
+
+The Firebase interaction is encapsulated in `remote_config_service.dart` which uses the defaults loaded from the `.json` files in `lib/constants` until receiving new configurations from Firebase so that remotely configurable values are accessed via the `RemoteConfigService` singleton object, which is initialized in the `remoteConfigService` provider.
+
+https://medium.com/teamkraken/using-firebase-remote-config-in-flutter-dec10d712c68
+
 ### Messaging
 
 ### Admin SDK

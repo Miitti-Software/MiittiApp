@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
 import 'package:miitti_app/envs/firebase_stag_configuration.dart' as stg;
 import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
+import 'package:miitti_app/services/remote_config_service.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -87,6 +88,9 @@ class MiittiApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Access the RemoteConfigService to ensure it is initialized
+    ref.read(remoteConfigService);
+
     return MaterialApp(
         navigatorKey: navigatorKey,
         theme: miittiTheme,
@@ -98,8 +102,8 @@ class MiittiApp extends ConsumerWidget {
       );
   }
 
+  // A private method checking if the user is signed in and returning the appropriate screen
   Widget _buildAuthScreen(BuildContext context) {
-    //Just checking if the user is signed up, before opening our app.
     return Consumer(builder: (context, ref, kid) {
       if (ref.read(authService).isSignedIn) {
         return FutureBuilder(

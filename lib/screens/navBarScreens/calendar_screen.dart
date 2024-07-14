@@ -73,10 +73,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       return;
     }
 
+    final fiSe = ref.read(firestoreService);
+
     final joinedActivities =
-        await ref.read(firestoreService).fetchUserActivities();
+        await fiSe.fetchUserActivities();
     final comingRequests =
-        await ref.read(firestoreService).fetchActivitiesRequests();
+        await fiSe.fetchActivitiesRequests();
 
     _myJoinedActivities = joinedActivities;
     _otherRequests = comingRequests;

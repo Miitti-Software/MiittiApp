@@ -8,11 +8,11 @@ import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/authentication/login/explore_decision_screen.dart';
-import 'package:miitti_app/screens/authentication/login/phone/phone_sms.dart';
 import 'package:miitti_app/services/firestore_service.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// A class for interfacing with the Firebase Authentication service
 class AuthService {
   final FirebaseAuth _auth;
   final Ref ref;
@@ -21,11 +21,10 @@ class AuthService {
 
   User? get currentUser => _auth.currentUser;
   String get uid => _auth.currentUser!.uid;
-  bool get isSignedIn => _auth.currentUser != null;
-
-  bool isLoading = false;
-
   String get email => _auth.currentUser?.email ?? "";
+
+  bool get isSignedIn => _auth.currentUser != null;
+  bool isLoading = false;
 
   Future<void> signInWithApple(BuildContext context) async {
     _wait(() async {
@@ -76,78 +75,6 @@ class AuthService {
         debugPrint('Got error signing with Google $error');
         afterFrame(() => showSnackBar(
             context, "${t('login-error')}: $error!", AppStyle.red));
-      }
-    });
-  }
-
-  Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
-    _wait(() async {
-      try {
-        showLoadingDialog(context);
-        await _auth.verifyPhoneNumber(
-          phoneNumber: phoneNumber,
-          verificationCompleted:
-              (PhoneAuthCredential phoneAuthCredential) async {
-            await _auth.signInWithCredential(phoneAuthCredential);
-
-            afterFrame(() {
-              showSnackBar(context, t('code-retrieved-automatically'),
-                  Colors.green.shade600);
-              _afterSigning(context);
-              Navigator.of(context).pop();
-            });
-
-            debugPrint("$phoneNumber signed in");
-          },
-          verificationFailed: (error) {
-            Navigator.of(context).pop();
-            showSnackBar(
-                context, "Failed phone verification: $error", AppStyle.red);
-
-            throw Exception(error.message);
-          },
-          codeSent: (verificationId, forceResendingToken) {
-            debugPrint("sending code to $phoneNumber");
-            pushNRemoveUntil(context, PhoneSms(verificationId: verificationId));
-          },
-          codeAutoRetrievalTimeout: (verificationId) {},
-        );
-      } on FirebaseAuthException catch (e) {
-        debugPrint("Kirjautuminen epäonnistui: ${e.message}");
-        afterFrame(() => showSnackBar(
-            context, "${t('login-error')}: ${e.message}", Colors.red.shade800));
-      }
-    });
-  }
-
-  void verifyOtp({
-    required BuildContext context,
-    required String verificationId,
-    required String userOtp,
-  }) async {
-    _wait(() async {
-      showLoadingDialog(context);
-      try {
-        if (_auth.currentUser == null) {
-          PhoneAuthCredential creds = PhoneAuthProvider.credential(
-            verificationId: verificationId,
-            smsCode: userOtp,
-          );
-
-          await _auth.signInWithCredential(creds);
-        }
-
-        afterFrame(() {
-          _afterSigning(context);
-          Navigator.of(context).pop();
-        });
-      } on FirebaseAuthException catch (e) {
-        debugPrint("Vahvistus epäonnistui: ${e.message} (${e.code})");
-        afterFrame(() {
-          showSnackBar(context, 'SMS vahvistus epäonnistui ${e.message}',
-              Colors.red.shade800);
-          Navigator.of(context).pop();
-        });
       }
     });
   }
