@@ -5,5 +5,7 @@
     "auth-title": "Moro,",
     "auth-subtitle": "Hauska tutustua, aika upgreidata sosiaalinen elämäsi?",
     "auth-google": "Kirjaudu käyttäen Googlea",
-    "auth-apple": "Kirjaudu käyttäen Apple ID:tä"
+    "auth-apple": "Kirjaudu käyttäen Apple ID:tä",
+    "first-auth-welcome-title": "Tervetuloa Miittiin! 🎊",
+    "first-auth-welcome-subtitle": "Haluaisitko seuraavaksi suorittaa profiilin luonnin loppuun, vai tutustua sovellukseen?"
 }

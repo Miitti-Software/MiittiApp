@@ -45,6 +45,15 @@ Refactoring
 
 - Firebase Remote Config for changing, modifying and rapidly experimenting with app text, UI and content without always having to release new updates in app stores
 
+### Fixed
+
+- Account removal process
+
+### Changed
+
+- The Google account to be signed in with must be separately selected each time so that people (developers) can easily switch between accounts.
+- Refactored `AuthService` sign-in methods to be parameterless to reduce dependencies, encapsulate backend logic and so enhance reusability and return boolean futures in order to shift UI logic to the widgets using them.
+
 ### Removed
 
 - `ScreenUtilInit` widget and dependencies in order to create a uniform user experience across devices.

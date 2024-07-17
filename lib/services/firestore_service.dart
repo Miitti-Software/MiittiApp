@@ -22,6 +22,7 @@ import 'package:miitti_app/widgets/other_widgets.dart';
 
 import '../screens/activity_details_page.dart';
 
+// A class for interfacing with the Firebase Firestore service
 class FirestoreService {
   static const String _usersString = 'users';
   static const String _activitiesString = 'activities';

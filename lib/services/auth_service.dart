@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/constants/app_texts.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/authentication/login/explore_decision_screen.dart';
 import 'package:miitti_app/services/firestore_service.dart';
-import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // A class for interfacing with the Firebase Authentication service
@@ -26,60 +24,41 @@ class AuthService {
   bool get isSignedIn => _auth.currentUser != null;
   bool isLoading = false;
 
-  Future<void> signInWithApple(BuildContext context) async {
-    _wait(() async {
-      try {
-        showLoadingDialog(context);
-
-        final appleProvider = AppleAuthProvider();
-        await FirebaseAuth.instance.signInWithProvider(appleProvider);
-
-        afterFrame(() => _afterSigning(context));
-      } catch (error) {
-        debugPrint('Got error signing with Apple $error');
-        afterFrame(() {
-          showSnackBar(context, "${t('login-error')}: $error!", AppStyle.red);
-          Navigator.of(context).pop();
-        });
-      }
-    });
+  Future<bool> signInWithApple() async {
+    try {
+      final appleProvider = AppleAuthProvider();
+      await FirebaseAuth.instance.signInWithProvider(appleProvider);
+      return true;
+    } catch (error) {
+      debugPrint('Got error signing with Apple $error');
+      return false;
+    }
   }
 
-  Future signInWithGoogle(BuildContext context) async {
-    _wait(() async {
+  Future<bool> signInWithGoogle() async {
       try {
-        //begin interactive sign process
         final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
-        //if user cancels the sign-in attempt
-        if (gUser == null) return;
+        if (gUser == null) return false;
 
-        //obtain auth details for request
         final GoogleSignInAuthentication gAuth = await gUser.authentication;
 
-        //create new credentials for user
+        // Create new credentials for user
         final credential = GoogleAuthProvider.credential(
           accessToken: gAuth.accessToken,
           idToken: gAuth.idToken,
         );
 
-        //finally, lets sign in
-        if (context.mounted) {
-          showLoadingDialog(context);
-        }
-
         await FirebaseAuth.instance.signInWithCredential(credential);
-
-        afterFrame(() => _afterSigning(context));
+        return true;
+        
       } catch (error) {
         debugPrint('Got error signing with Google $error');
-        afterFrame(() => showSnackBar(
-            context, "${t('login-error')}: $error!", AppStyle.red));
+        return false;
       }
-    });
-  }
+    }
 
-  void _afterSigning(BuildContext context) async {
+  void afterSigning(BuildContext context) async {
     try {
       FirestoreService db = ref.read(firestoreService);
       db.checkExistingUser(uid).then((value) async {
@@ -103,14 +82,17 @@ class AuthService {
     SharedPreferences s = await SharedPreferences.getInstance();
     ref.read(firestoreService).reset();
     await _auth.signOut();
+    GoogleSignIn().signOut();
     s.clear();
   }
 
   Future deleteUser() {
     return _wait(() async {
       SharedPreferences s = await SharedPreferences.getInstance();
+      await signInWithGoogle();
       ref.read(firestoreService).deleteUser();
       await _auth.currentUser!.delete();
+      GoogleSignIn().signOut();
       s.clear();
     });
   }

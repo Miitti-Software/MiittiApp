@@ -15,7 +15,6 @@ import 'package:flutter/services.dart';
 import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
 import 'package:miitti_app/envs/firebase_stag_configuration.dart' as stg;
 import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
-import 'package:miitti_app/services/remote_config_service.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -76,7 +75,7 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]).then((_) {
-    // Run the app wrapped in a ProviderScope, which enables Riverpod state management
+    // Run the app wrapped in a ProviderScope, which enables global Riverpod state management
     runApp(const ProviderScope(child: MiittiApp()));
   });
 }
@@ -88,7 +87,7 @@ class MiittiApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Access the RemoteConfigService to ensure it is initialized
+    // Access the RemoteConfigService that provides the universal app constants to ensure that it is initialized
     ref.read(remoteConfigService);
 
     return MaterialApp(
@@ -97,20 +96,22 @@ class MiittiApp extends ConsumerWidget {
         debugShowCheckedModeBanner: false,
         home: _buildAuthScreen(context),
         routes: {
-          '/notificationmessage': (context) => const NotificationMessage()
+          '/notificationmessage': (context) => const NotificationMessage()      // TODO: Switch to a more elegant routing solution (e.g. go_router)
         },
       );
   }
 
-  // A private method checking if the user is signed in and returning the appropriate screen
+  // Check if the user is signed in and return the corresponding screen
   Widget _buildAuthScreen(BuildContext context) {
     return Consumer(builder: (context, ref, kid) {
-      if (ref.read(authService).isSignedIn) {
+      if (ref.read(authService).isSignedIn) {                                   // TODO: change the value observed so that people can choose again which account to use 
+        // Build a widget based on the current status of the future that checks if the user already exists in the database
         return FutureBuilder(
             future: ref
                 .read(firestoreService)
                 .checkExistingUser(ref.read(authService).uid),
             builder: (context, snapshot) {
+              // While the future is in progress fetching user data, display a loading overlay
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(
                   body: Center(
@@ -119,13 +120,15 @@ class MiittiApp extends ConsumerWidget {
                     ),
                   ),
                 );
+              // If fetching user data fails, display an error message
               } else if (snapshot.hasError) {
-                debugPrint('Error occurred: ${snapshot.error}');
+                debugPrint('Sign-in error occurred: ${snapshot.error}');
                 return const Scaffold(
                   body: Center(
-                    child: Text('Error occurred'),
+                    child: Text('An error occurred fetching user data. Please try again and if it still does not work, contact support.'),
                   ),
                 );
+              // Once the future has completed, return the appropriate screen based on whether the user exists or not
               } else if (snapshot.data == true) {
                 return const IndexPage();
               } else {
@@ -133,6 +136,7 @@ class MiittiApp extends ConsumerWidget {
               }
             });
       } else {
+        // If the user is not signed in, display the login screen
         return const LoginIntro();
       }
     });

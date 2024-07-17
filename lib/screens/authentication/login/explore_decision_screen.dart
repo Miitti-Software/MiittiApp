@@ -27,14 +27,14 @@ class ExploreDecisionScreen extends ConsumerWidget {
                 const Spacer(),
                 //title
                 Text(
-                  'Tervetuloa Miittiin! 🎊',
+                  ref.read(remoteConfigService).get<String>('first-auth-welcome-title'),
                   textAlign: TextAlign.center,
                   style: AppStyle.title,
                 ),
 
                 //body
                 Text(
-                  'Haluaisitko seuraavaksi suorittaa profiilin luonnin loppuun, vai tutustua\n sovellukseen?',
+                  ref.read(remoteConfigService).get<String>('first-auth-welcome-subtitle'),
                   textAlign: TextAlign.center,
                   style: AppStyle.body,
                 ),

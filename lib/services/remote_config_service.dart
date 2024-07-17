@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,7 +50,7 @@ class RemoteConfigService {
   Future<void> _setConfigSettings() async => _remoteConfig.setConfigSettings(
     RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: Duration(hours: 12),
+      minimumFetchInterval: const Duration(hours: 12),
     ),
   );
 

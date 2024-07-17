@@ -15,6 +15,7 @@ import 'navBarScreens/maps_screen.dart';
 import 'navBarScreens/people_screen.dart';
 import 'navBarScreens/profile_screen.dart';
 
+// Index page that contains the bottom navigation bar and the body of the app
 //TODO: Refactor
 class IndexPage extends ConsumerStatefulWidget {
   final int? initialPage;

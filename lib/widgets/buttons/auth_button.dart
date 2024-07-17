@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/constants/app_texts.dart';
+import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/widgets/other_widgets.dart';
 
 class AuthButton extends ConsumerWidget {
   final bool apple;
@@ -12,11 +15,22 @@ class AuthButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     return InkWell(
-      onTap: () {
+      onTap: () async {
+        bool signInSuccess;
+        showLoadingDialog(context); // Show loading dialog
+
         if (apple) {
-          ref.read(authService).signInWithApple(context);
+          signInSuccess = await ref.read(authService).signInWithApple();
         } else {
-          ref.read(authService).signInWithGoogle(context);
+          signInSuccess = await ref.read(authService).signInWithGoogle();
+        }
+
+        Navigator.of(context).pop(); // Dismiss loading dialog
+
+        if (signInSuccess) {
+          ref.read(authService).afterSigning(context);
+        } else {
+          showSnackBar(context, "${t('login-error')}", AppStyle.red);
         }
       },
       child: Container(
@@ -38,8 +52,8 @@ class AuthButton extends ConsumerWidget {
                   ),
             Text(
               apple
-                  ? 'Kirjaudu käyttäen Apple ID:tä'
-                  : 'Kirjaudu käyttäen Googlea',
+                  ? ref.read(remoteConfigService).get<String>('auth-apple')
+                  : ref.read(remoteConfigService).get<String>('auth-google'),
               textAlign: TextAlign.center,
               style: AppStyle.body
                   .copyWith(fontWeight: FontWeight.w700)

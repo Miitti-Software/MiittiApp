@@ -173,41 +173,39 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                 child: createText('Kirjaudu ulos')),
             getSomeSpace(10),
-            ref.read(isAnonymous)
-                ? GestureDetector(
-                    onTap: () {
-                      pushNRemoveUntil(context, const CompleteProfileOnboard());
-                    },
-                    child: createText('Viimeistele profiili'),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const ConfirmDialog(
-                            title: 'Varmistus',
-                            mainText:
-                                'Oletko varma, että haluat poistaa tilisi? Tämä toimenpide on peruuttamaton, ja kaikki tietosi poistetaan pysyvästi.',
-                          );
-                        },
-                      ).then((confirmed) {
-                        if (confirmed != null && confirmed) {
-                          ref.read(authService).deleteUser().then((value) {
-                            showSnackBar(context, value.$2,
-                                value.$1 ? Colors.green : Colors.red);
-                            if (value.$1) {
-                              ref.read(authService).signOut().then(
-                                    (value) => pushNRemoveUntil(
-                                        context, const LoginIntro()),
-                                  );
-                            }
-                          });
-                        }
-                      });
-                    },
-                    child: createText('Poista tili'),
-                  ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (ref.read(isAnonymous)) GestureDetector(
+                  onTap: () {
+                    pushNRemoveUntil(context, const CompleteProfileOnboard());
+                  },
+                  child: createText('Viimeistele profiili'),
+                ),
+                GestureDetector(
+                  onTap: () => {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const ConfirmDialog(
+                          title: 'Varmistus',
+                          mainText:
+                              'Oletko varma, että haluat poistaa tilisi? Tämä toimenpide on peruuttamaton, ja kaikki tietosi poistetaan pysyvästi.',
+                        );
+                      },
+                    ).then((confirmed) => {
+                      if (confirmed != null && confirmed) {
+                        ref.read(authService).deleteUser().then(
+                            (value) => pushNRemoveUntil(
+                                context, const LoginIntro())
+                        )
+                          }
+                        })
+                  },
+                  child: createText('Poista tili'),
+                ),
+              ],
+            ),
             const SizedBox(height: 30),
             createSectionTitle('Versio'),
             const Text(
