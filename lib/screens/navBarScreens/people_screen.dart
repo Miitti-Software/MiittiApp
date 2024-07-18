@@ -10,7 +10,7 @@ import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 
@@ -39,7 +39,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   }
 
   void initLists() async {
-    if (ref.read(isAnonymous)) {
+    if (ref.read(firestoreService).isAnonymous) {
       Future.delayed(const Duration(milliseconds: 10)).then((value) {
         if (mounted) {
           showDialog(
@@ -111,7 +111,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (ref.read(isAnonymous)) {
+    if (ref.read(firestoreService).isAnonymous) {
       return const AnonymousUserScreen();
     } else {
       return SafeArea(
@@ -222,7 +222,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       height: 35,
       width: 110,
       onPressed: () {
-        if (ref.read(isAnonymous)) {
+        if (ref.read(firestoreService).isAnonymous) {
           showDialog(
               context: context, builder: (context) => const AnonymousDialog());
         } else {

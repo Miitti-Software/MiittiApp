@@ -1,10 +1,11 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/screens/authentication/login/explore_decision_screen.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/authentication/login/login_intro.dart';
 import 'package:miitti_app/functions/notification_message.dart';
@@ -65,11 +66,18 @@ Future<void> main() async {
   //   }
   // }
 
+
+
   // Initialize Firebase Messaging via PushNotificationService
   FirebaseMessaging.onBackgroundMessage(
       PushNotificationService.firebaseBackgroundMessage);
   PushNotificationService.listenForeground();
   PushNotificationService.listenTerminated();
+
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: env == 'production' ? AndroidProvider.playIntegrity : AndroidProvider.debug,
+    appleProvider: env == 'production' ? AppleProvider.deviceCheck : AppleProvider.debug,
+  );
 
   // Force the app to always run in portrait mode
   SystemChrome.setPreferredOrientations([

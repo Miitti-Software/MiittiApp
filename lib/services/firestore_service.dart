@@ -17,7 +17,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/report.dart';
 import 'package:miitti_app/screens/index_page.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
 import '../screens/activity_details_page.dart';
@@ -48,9 +48,9 @@ class FirestoreService {
   }
 
   Future<bool> checkExistingUser(String userId) async {
-    return _wait(() => _tryGetUser(userId, exists: (miittiUser) {
-          _miittiUser = miittiUser;
-        }));
+    return _wait(() => _tryGetUser(userId, exists: (miittiUser) =>
+          _miittiUser = miittiUser
+        ));
   }
 
   Future<MiittiUser?> getUser(String userId) async {
@@ -719,8 +719,7 @@ class FirestoreService {
 
   //PRIVATE UTILS
 
-  Future<bool> _tryGetUser(String userId,
-      {Function(MiittiUser user)? exists, Function? notFound}) async {
+  Future<bool> _tryGetUser(String userId, {Function(MiittiUser user)? exists, Function? notFound}) async {
     DocumentSnapshot snapshot = await _getUserDoc(userId);
     if (snapshot.exists) {
       if (exists != null) {

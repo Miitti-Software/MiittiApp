@@ -12,7 +12,7 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/firestore_service.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';

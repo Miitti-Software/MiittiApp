@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/authentication/login/explore_decision_screen.dart';
 import 'package:miitti_app/services/firestore_service.dart';
@@ -51,7 +51,7 @@ class AuthService {
 
         await FirebaseAuth.instance.signInWithCredential(credential);
         return true;
-        
+
       } catch (error) {
         debugPrint('Got error signing with Google $error');
         return false;
@@ -61,7 +61,7 @@ class AuthService {
   void afterSigning(BuildContext context) async {
     try {
       FirestoreService db = ref.read(firestoreService);
-      db.checkExistingUser(uid).then((value) async {
+      await db.checkExistingUser(uid).then((value) async {
         if (value == true) {
           //TODO: Before publishing refactoring, delete all anonymous docs from firestore,
           //because this will incorrectly set anonymous mode off for them, and we don't use docs for anonymous users anymore
@@ -91,6 +91,7 @@ class AuthService {
       SharedPreferences s = await SharedPreferences.getInstance();
       await signInWithGoogle();
       ref.read(firestoreService).deleteUser();
+      ref.read(firestoreService).reset();
       await _auth.currentUser!.delete();
       GoogleSignIn().signOut();
       s.clear();

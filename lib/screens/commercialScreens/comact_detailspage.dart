@@ -13,7 +13,7 @@ import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';

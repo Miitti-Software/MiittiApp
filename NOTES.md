@@ -1,10 +1,55 @@
 # Notes
 
-Notes, remarks, tips & tricks, links to useful resources and other miscellaneous documentation on broader topics, technologes and development in general. The idea is for this to be a great place for new developers to quickly browse through and occasionally return to in order to quickly get up to speed on a new area of development. 
+Notes, remarks, tips & tricks, links to useful resources and other miscellaneous documentation on broader topics, technologes and development in general. The idea is for this to be a great place for new developers to quickly browse through and occasionally return to in order to quickly get up to speed on a new area of development. This is the most up-to-date place for documentation and therefore overrides all other sources. 
 
 ## Code Guidelines
 
-To facilitate seamless collaboration, a set of guidelines for writing code, organizing the project and using git has been established and written at: https://docs.google.com/document/d/1Mg8uGGTysDH5yLrEbZZMRYrex6_8VIaa9aV8Bjrf88E/edit?usp=sharing.
+**Motivation:**
+
+All code should be maximally reusable, efficiently modifiable and understandable. The relationships between pieces of code should be obvious and all interfaces should be as coherent and universal as possible for efficient use.
+
+Minor UI changes such as changing colors, fonts and the shape, spacing and content of cards and list items should be doable entirely by manipulating constants and atomic components alone, whereas layout changes can be done by modifying screens and both UI and logic of larger processes such as registration and creating Miittis can be tweaked in a single location separately from everything else.
+
+**General guidelines:**
+
+- Default to using Effective Dart (https://dart.dev/effective-dart)
+- Name variables, functions and classes descriptively according to Effective Dart guidelines
+    - Ideally, the name would communicate as much as a comment would
+    - Avoid verbs in widget names for declarative clarity
+    - Use verbs for function names
+    - Prioritise clarity over conciseness but aim to be economical
+- Comment your code descriptively above non-trivial class and function definitions
+    - Explain the purpose and role of the class/function
+    - Clarify the intended context of use
+    - Define and elaborate upon the input parameters and output
+    - Use doc comments (https://dart.dev/effective-dart/documentation#doc-comments) for major APIs
+    - Prioritise clarity over conciseness but aim to be economical
+    - Use TODOs (https://dart.dev/tools/linter-rules/flutter_style_todos)
+- Separate UI components and business logic functions
+    - All interaction components should have (a) parameter(s) for functions to be executed upon actions on it instead of pre-defined ones so that the components remain widely applicable
+- Create well defined UI components where only their content changes
+    - E.g. a button should take as parameters only: text and/or an icon, color and a function to be executed on tap. Size, shape and anything else related to their form should be rigidly defined within and not be subject to change via outside influence as this would require the code to be edited in multiple places upon changes
+- UI dependencies should flow in a single direction only: constants → components → screens/functionalities (where right of arrow depends on the left of arrow)
+- Never hardcode constants outside the constants file
+    - All UI component parameters should be defined in the constants file to avoid having to change the code in multiple places
+    - Strings should be loaded from a database for easy changeability and translatability
+- Use GitHub flow branching strategy (https://docs.github.com/en/get-started/using-github/github-flow) where branches are created on a feature basis with short, descriptive names and merged to main via pull requests after completion and review.
+- Git commit and push often
+    - Every time you step away from your computer without errors and warnings is a great time to commit and push to feature branch. This significantly reduces the risk of irreversible damage and shows others how much progress is being made, where, and at what pace, thus significantly aiding in coordination.
+- Remove redundant code (after first committing!) if nothing breaks
+- Pull requests must not have any errors
+- Document your changes and rationales for them in the changelog
+
+## Project structure
+
+- **main.dart** serves as the entrypoint to the app
+- **constants** folder contains the app theme and default values for [Remote Config](https://firebase.google.com/docs/remote-config) resources such as static app text
+- **envs** contains Firebase options and potentially other files corresponding to each [deployment environment](https://en.wikipedia.org/wiki/Deployment_environment)
+- **functions** contains functions and utilities not directly related to backend services
+- **models** contains templates for data objects as well as other abstract classes 
+- **screens** contains larger, singular UI views and templates composed of atomic widgets
+- **services** contains all backend related classes and functions such as the interfaces for communicating with Firebase services
+- **Widgets** contains small and potentially repetitive, "atomic" UI elements used to construct higher level widgets and screens
 
 ## Flutter
 
@@ -24,7 +69,7 @@ Reading list:
 
 ## Development, staging and production environments
 
-The broad idea of different environments is to have the same code interact with different data depending on where it is currently in the development cycle. The development version can interact with mock data separated from the real database, whereas the production version operates with real user data. This separation allows for freely testing different kinds of data without having to worry about accidents or pollution of the real database. Furthermore, it can be cheaper to not have to call the real database and less confusing for our users when we do not have to worry about accidentally displaying mock data in our app. 
+The broad idea of different [deployment environments](https://en.wikipedia.org/wiki/Deployment_environment) is to have the same code interact with different data depending on where it is currently in the development cycle. The development version can interact with mock data separated from the real database, whereas the production version operates with real user data. This separation allows for freely testing different kinds of data without having to worry about accidents or pollution of the real database. Furthermore, it can be cheaper to not have to call the real database and less confusing for our users when we do not have to worry about accidentally displaying mock data in our app. 
 
 The three development, staging and production environments are currently configured according to [this article](https://medium.com/flutter-community/using-different-environments-with-firebase-and-flutter-aa4fb0e0dd52) so that the `envs` folder contains three different firebase options files for each environment respectively: `firebase_dev_configuration.dart`, `firebase_stag_configuration.dart` and `firebase_prod_configuration.dart`. The Firebase instance corresponding to the selected environment is used to initialize the app in `main.dart` depending on the chosen app [flavor](https://docs.flutter.dev/deployment/flavors), which are defined in `android/app/build.gradle` to enable different build configurations for Android along different app and package naming so that multiple versions of the app can simultaneously exist on the same device. The configuration files are paired with their respective `google-services.json` files for Android under `android/app/src/development`, `android/app/src/staging` and `android/app/src/production`, which can be downloaded from their respective Firebase projects used to fully separate the environments as recommended [here](https://firebase.google.com/docs/projects/dev-workflows/overview-environments) and [here](https://firebase.google.com/docs/projects/multiprojects).
 

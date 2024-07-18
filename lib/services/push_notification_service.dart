@@ -7,7 +7,7 @@ import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/services/firestore_service.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'dart:convert';
@@ -157,7 +157,7 @@ class PushNotificationService {
   }
 
   Future sendRequestNotification(PersonActivity activity) async {
-    if (ref.read(isAnonymous)) {
+    if (ref.read(firestoreService).isAnonymous) {
       debugPrint("Cannot send request notification as anonymous user");
       return;
     }

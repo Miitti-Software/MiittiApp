@@ -8,7 +8,7 @@ import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
@@ -51,7 +51,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 10)).then((value) {
-      if (ref.read(isAnonymous)) {
+      if (ref.read(firestoreService).isAnonymous) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
             context: context,
@@ -66,7 +66,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   Future fetchDataFromFirebase() async {
     //This method ensures that all the data is coming successfully from Database through AuthProvider and then updates the State
-    if (ref.read(isAnonymous)) {
+    if (ref.read(firestoreService).isAnonymous) {
       showDialog(
           context: context, builder: (context) => const AnonymousDialog());
 
@@ -615,7 +615,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ref.read(isAnonymous)
+    return ref.read(firestoreService).isAnonymous
         ? const AnonymousUserScreen()
         : SafeArea(
             child: Stack(

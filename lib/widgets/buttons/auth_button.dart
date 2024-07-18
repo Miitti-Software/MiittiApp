@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/app_texts.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
 class AuthButton extends ConsumerWidget {

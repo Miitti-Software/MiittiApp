@@ -13,7 +13,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'dart:convert';
 
 

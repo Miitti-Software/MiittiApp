@@ -6,7 +6,7 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/activity.dart';
@@ -28,7 +28,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 10)).then((value) {
-      if (ref.read(isAnonymous)) {
+      if (ref.read(firestoreService).isAnonymous) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
             context: context,
@@ -68,7 +68,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     bool isLoading = ref.watch(providerLoading);
-    bool anonymous = ref.read(isAnonymous);
+    bool anonymous = ref.read(firestoreService).isAnonymous;
 
     if (anonymous) {
       return const AnonymousUserScreen();

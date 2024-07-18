@@ -4,7 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/services/providers.dart';
+import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/authentication/login/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/screens/authentication/login/login_intro.dart';
@@ -176,7 +176,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (ref.read(isAnonymous)) GestureDetector(
+                if (ref.read(firestoreService).isAnonymous) GestureDetector(
                   onTap: () {
                     pushNRemoveUntil(context, const CompleteProfileOnboard());
                   },
