@@ -46,9 +46,9 @@ Minor UI changes such as changing colors, fonts and the shape, spacing and conte
 - **constants** folder contains the app theme and default values for [Remote Config](https://firebase.google.com/docs/remote-config) resources such as static app text
 - **envs** contains Firebase options and potentially other files corresponding to each [deployment environment](https://en.wikipedia.org/wiki/Deployment_environment)
 - **functions** contains functions and utilities not directly related to backend services
-- **models** contains templates for data objects as well as other abstract classes 
+- **models** contains templates for data objects as well as other abstract classes, which are meant to be instantiated elsewhere in the code
 - **screens** contains larger, singular UI views and templates composed of atomic widgets
-- **services** contains all backend related classes and functions such as the interfaces for communicating with Firebase services
+- **services** contains all backend related classes and functions such as the interfaces for communicating with Firebase services and local storage and settings
 - **Widgets** contains small and potentially repetitive, "atomic" UI elements used to construct higher level widgets and screens
 
 ## Flutter

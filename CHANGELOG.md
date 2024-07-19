@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### To Be Added
 
-- Development environment using flutter flavors
 - Dynamic loading of texts and activities from Firebase
 - Multi-language support
 - Small and large, compressed versions of profile pictures
@@ -29,7 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### To Be Fixed
 
-- Google Sign-In so that users with pre-existing accounts will not appear as anonymous users
 - Make it impossible to participate in an event as an anonymous user -> finish your profile prompt
 
 ### To Be Removed
@@ -44,6 +42,8 @@ Refactoring
 ### Added
 
 - Firebase Remote Config for changing, modifying and rapidly experimenting with app text, UI and content without always having to release new updates in app stores
+- Language setting stored in `LocalStorageService`
+- Language-based loading of Remote Config values (multi-language support)
 
 ### Fixed
 

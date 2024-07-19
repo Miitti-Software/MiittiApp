@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miitti_app/services/service_providers.dart';
 
 // A singleton class for interfacing with the Firebase Remote Config service to enable dynamic configuration of the texts, UI and features of the app
 class RemoteConfigService {
@@ -71,14 +72,18 @@ class RemoteConfigService {
   }
 
   // Load the config values fetched from Firebase
-  void _loadConfigValues() {
-    for (final file in _jsonFiles) {
-      final jsonString = _remoteConfig.getString(file);
-      final values = json.decode(jsonString) as Map<String, dynamic>;
-      _configValues.addAll(values);
-    }
-    _configController.add(_configValues);
+void _loadConfigValues() async {
+  // Get the current language from LocalStorageService
+  final language = ref.read(localStorageService).language;
+  final languageSuffix = language.name;
+
+  for (final file in _jsonFiles) {
+    final jsonString = _remoteConfig.getString('$file\_$languageSuffix');
+    final values = json.decode(jsonString) as Map<String, dynamic>;
+    _configValues.addAll(values);
   }
+  _configController.add(_configValues);
+}
 
   // Set up a listener for config updates in order to update the config values in real time
   void _setupListener() {
