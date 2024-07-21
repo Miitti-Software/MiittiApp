@@ -28,8 +28,6 @@ Future<void> main() async {
   final firebaseStg = stg.DefaultFirebaseOptions.currentPlatform;
   final firebaseDev = dev.DefaultFirebaseOptions.currentPlatform;
 
-
-
   // Variable to hold the FirebaseOptions of the current environment
   late FirebaseOptions config;
 
@@ -66,17 +64,22 @@ Future<void> main() async {
   //   }
   // }
 
-
-
   // Initialize Firebase Messaging via PushNotificationService
   FirebaseMessaging.onBackgroundMessage(
       PushNotificationService.firebaseBackgroundMessage);
   PushNotificationService.listenForeground();
   PushNotificationService.listenTerminated();
 
+  // Initialize the RemoteConfigService to fetch and activate the remote config values
+  await ProviderContainer().read(remoteConfigService).initialize();
+
+  // Activate Firebase App Check for the current environment
   await FirebaseAppCheck.instance.activate(
-    androidProvider: env == 'production' ? AndroidProvider.playIntegrity : AndroidProvider.debug,
-    appleProvider: env == 'production' ? AppleProvider.deviceCheck : AppleProvider.debug,
+    androidProvider: env == 'production'
+        ? AndroidProvider.playIntegrity
+        : AndroidProvider.debug,
+    appleProvider:
+        env == 'production' ? AppleProvider.deviceCheck : AppleProvider.debug,
   );
 
   // Force the app to always run in portrait mode
@@ -84,10 +87,13 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]).then((_) {
     // Run the app wrapped in a ProviderScope, which enables global Riverpod state management
-    runApp(const ProviderScope(child: MiittiApp()));
+    runApp(
+      const ProviderScope(
+        child: MiittiApp(),
+      ),
+    );
   });
 }
-
 
 // The main app widget at the root of the widget tree
 class MiittiApp extends ConsumerWidget {
@@ -95,24 +101,23 @@ class MiittiApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Access the RemoteConfigService that provides the universal app constants to ensure that it is initialized
-    ref.read(remoteConfigService);
-
     return MaterialApp(
-        navigatorKey: navigatorKey,
-        theme: miittiTheme,
-        debugShowCheckedModeBanner: false,
-        home: _buildAuthScreen(context),
-        routes: {
-          '/notificationmessage': (context) => const NotificationMessage()      // TODO: Switch to a more elegant routing solution (e.g. go_router)
-        },
-      );
+      navigatorKey: navigatorKey,
+      theme: miittiTheme,
+      debugShowCheckedModeBanner: false,
+      home: _buildAuthScreen(context),
+      routes: {
+        '/notificationmessage': (context) =>
+            const NotificationMessage() // TODO: Switch to a more elegant routing solution (e.g. go_router)
+      },
+    );
   }
 
   // Check if the user is signed in and return the corresponding screen
   Widget _buildAuthScreen(BuildContext context) {
     return Consumer(builder: (context, ref, kid) {
-      if (ref.read(authService).isSignedIn) {                                   // TODO: change the value observed so that people can choose again which account to use 
+      if (ref.read(authService).isSignedIn) {
+        // TODO: change the value observed so that people can choose again which account to use
         // Build a widget based on the current status of the future that checks if the user already exists in the database
         return FutureBuilder(
             future: ref
@@ -128,15 +133,16 @@ class MiittiApp extends ConsumerWidget {
                     ),
                   ),
                 );
-              // If fetching user data fails, display an error message
+                // If fetching user data fails, display an error message
               } else if (snapshot.hasError) {
                 debugPrint('Sign-in error occurred: ${snapshot.error}');
                 return const Scaffold(
                   body: Center(
-                    child: Text('An error occurred fetching user data. Please try again and if it still does not work, contact support.'),
+                    child: Text(
+                        'An error occurred fetching user data. Please try again and if it still does not work, contact support.'),
                   ),
                 );
-              // Once the future has completed, return the appropriate screen based on whether the user exists or not
+                // Once the future has completed, return the appropriate screen based on whether the user exists or not
               } else if (snapshot.data == true) {
                 return const IndexPage();
               } else {

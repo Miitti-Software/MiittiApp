@@ -1,9 +1,8 @@
-//Refactor done
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:miitti_app/constants/app_texts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/services/service_providers.dart';
 
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -11,11 +10,12 @@ import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/screens/authentication/login/login_auth.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class LoginIntro extends StatelessWidget {
+// The first page that an user 
+class LoginIntro extends ConsumerWidget {
   const LoginIntro({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Stack(
         children: [
@@ -28,13 +28,13 @@ class LoginIntro extends StatelessWidget {
               getMiittiLogo,
               gapH15,
               Text(
-                t('upgrade-social-life'),
+                ref.read(remoteConfigService).get<String>('slogan'),
                 textAlign: TextAlign.center,
                 style: AppStyle.body,
               ),
               const Spacer(),
               MyButton(
-                buttonText: t('lets-start'),
+                buttonText: ref.read(remoteConfigService).get<String>('auth-call-to-action'),
                 onPressed: () => pushPage(context, const LoginAuth()),
               ),
               gapH8,
