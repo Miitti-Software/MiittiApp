@@ -1,16 +1,15 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:miitti_app/widgets/dynamic_rich_text.dart';
+
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/service_providers.dart';
-
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
-import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/screens/authentication/login/login_auth.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
-// The first page that an user 
+// The first page that an user sees when opening the app without being signed in
 class LoginIntro extends ConsumerWidget {
   const LoginIntro({super.key});
 
@@ -19,26 +18,37 @@ class LoginIntro extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          _background(),
+          _background(context),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(),
-              getMiittiLogo,
-              gapH15,
+              SvgPicture.asset('images/miittiLogo.svg',),
+              const SizedBox(height: 15,),
               Text(
                 ref.read(remoteConfigService).get<String>('slogan'),
                 textAlign: TextAlign.center,
-                style: AppStyle.body,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const Spacer(),
-              MyButton(
-                buttonText: ref.read(remoteConfigService).get<String>('auth-call-to-action'),
+              MyButton(                                                   // TODO: Refactor to be a default button based on theme
+                buttonText: ref
+                    .read(remoteConfigService)
+                    .get<String>('auth-call-to-action'),
                 onPressed: () => pushPage(context, const LoginAuth()),
               ),
-              gapH8,
-              _richText(),
+              const SizedBox(height: 15,),
+              Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.85,
+                  child: DynamicRichText(
+                    richTextData: ref.read(remoteConfigService).getRichText('rich-terms-of-usage-notice'),
+                    textStyle: Theme.of(context).textTheme.labelSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
               const Spacer(),
               getLanguagesButtons(),
             ],
@@ -48,8 +58,8 @@ class LoginIntro extends ConsumerWidget {
     );
   }
 
-  Widget _background() {
-    //background gif with 0.8 opacity purple
+  // Background gif with 0.8 opacity purple
+  Widget _background(context) {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -57,46 +67,11 @@ class LoginIntro extends ConsumerWidget {
             "images/splashscreen.gif",
           ),
           colorFilter: ColorFilter.mode(
-            AppStyle.black.withOpacity(0.2),
+            Theme.of(context).colorScheme.surface.withOpacity(0.2),
             BlendMode.dstATop,
           ),
           fit: BoxFit.cover,
         ),
-      ),
-    );
-  }
-
-  Widget _richText() {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(
-        style: AppStyle.warning,
-        children: <TextSpan>[
-          const TextSpan(
-              text:
-                  'Ottamalla Miitti App -sovelluksen käyttöön hyväksyt samalla voimassaolevan '),
-          TextSpan(
-            text: 'tietosuojaselosteen',
-            recognizer: TapGestureRecognizer()
-              ..onTap = () =>
-                  launchUrlString('https://www.miitti.app/tietosuojaseloste'),
-            style: const TextStyle(
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const TextSpan(text: ' sekä '),
-          TextSpan(
-            recognizer: TapGestureRecognizer()
-              ..onTap =
-                  () => launchUrlString('https://www.miitti.app/kayttoehdot'),
-            text: 'käyttöehdot',
-            style: const TextStyle(
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }

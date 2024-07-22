@@ -1,11 +1,29 @@
 {
-    "slogan": "Upgreidaa sosiaalinen elämäsi",
-    
-    "auth-call-to-action": "Aloitetaan!",
-    "auth-title": "Moro,",
-    "auth-subtitle": "Hauska tutustua, aika upgreidata sosiaalinen elämäsi?",
-    "auth-google": "Kirjaudu käyttäen Googlea",
-    "auth-apple": "Kirjaudu käyttäen Apple ID:tä",
-    "first-auth-welcome-title": "Tervetuloa Miittiin! 🎊",
-    "first-auth-welcome-subtitle": "Haluaisitko seuraavaksi suorittaa profiilin luonnin loppuun, vai tutustua sovellukseen?"
-}
+    "slogan": "Upgrade your social life",
+
+    "auth-call-to-action": "Let's begin!",
+
+    "rich-terms-of-usage-notice": [
+        {
+        "text": "By signing in to Miitti App, you accept our "
+        },
+        {
+        "text": "privacy policy",
+        "url": "https://www.miitti.app/tietosuojaseloste"
+        },
+        {
+        "text": " and "
+        },
+        {
+        "text": "terms & conditions",
+        "url": "https://www.miitti.app/kayttoehdot"
+        }
+    ],
+
+    "auth-title": "Hiya",
+    "auth-subtitle": "Whatsupp?",
+    "auth-google": "Sign in using Google",
+    "auth-apple": "Sign in using Apple ID",
+    "first-auth-welcome-title": "Welcome to Miitti! 🎊",
+    "first-auth-welcome-subtitle": "Would you next like to finish your profile or take a tour of the app?"
+  }

@@ -33,6 +33,12 @@ class RemoteConfigService {
   // Generic getter for fetching values of any type that are defined in the json configuration files
   T get<T>(String key) => _configValues[key] as T;
 
+  // Get a list of maps of rich text values with keys "text" and "url" fetched from the remote config
+  List<Map<String, dynamic>> getRichText(String key) {
+    final richTextData = _configValues[key] as List<dynamic>;
+    return richTextData.cast<Map<String, dynamic>>();
+  }
+
   // Stream controller to broadcast config changes
   final _configController = StreamController<Map<String, dynamic>>.broadcast();
 
