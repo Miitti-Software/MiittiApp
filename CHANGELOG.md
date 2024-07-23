@@ -35,7 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Admin IDs of non-contributors
 - `AuthProvider` class will become redundant once `AuthService` has been fully implemented
 
-## [1.5.7] - 2024-07-14
+
+## [1.5.7] - 2024-07-24
 
 Refactoring
 
@@ -48,6 +49,7 @@ Refactoring
 ### Fixed
 
 - Account removal process
+- Refactored widgets role-wise so that they can be reused based on their puprose
 
 ### Changed
 

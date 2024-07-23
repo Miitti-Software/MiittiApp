@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/dynamic_rich_text.dart';
 
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/service_providers.dart';
-import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/screens/authentication/login/login_auth.dart';
 
-// The first page that an user sees when opening the app without being signed in
+// The first page that a user sees when opening the app without being signed in
 class LoginIntro extends ConsumerWidget {
   const LoginIntro({super.key});
 
@@ -32,16 +33,14 @@ class LoginIntro extends ConsumerWidget {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const Spacer(),
-              MyButton(                                                   // TODO: Refactor to be a default button based on theme
-                buttonText: ref
-                    .read(remoteConfigService)
-                    .get<String>('auth-call-to-action'),
-                onPressed: () => pushPage(context, const LoginAuth()),
+              ForwardButton(
+                buttonText: ref.read(remoteConfigService).get<String>('auth-call-to-action'),
+                onPressed: () => pushPage(context, const LoginAuth()),                            // TODO: Switch navigation solution
               ),
               const SizedBox(height: 15,),
               Center(
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.85,
+                  width: Sizes.fullContentWidth,
                   child: DynamicRichText(
                     richTextData: ref.read(remoteConfigService).getRichText('rich-terms-of-usage-notice'),
                     textStyle: Theme.of(context).textTheme.labelSmall,
@@ -50,7 +49,7 @@ class LoginIntro extends ConsumerWidget {
                 ),
               ),
               const Spacer(),
-              getLanguagesButtons(),
+              getLanguagesButtons(),                // TODO: Implement language selection
             ],
           ),
         ],
@@ -58,7 +57,7 @@ class LoginIntro extends ConsumerWidget {
     );
   }
 
-  // Background gif with 0.8 opacity purple
+  // Background gif under a partially transparent surface color
   Widget _background(context) {
     return Container(
       decoration: BoxDecoration(
