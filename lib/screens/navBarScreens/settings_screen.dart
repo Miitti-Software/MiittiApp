@@ -3,6 +3,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
@@ -168,9 +169,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             createSectionTitle('Tili:'),
             getSomeSpace(10),
             GestureDetector(
-                onTap: () => ref.read(authService).signOut().then(
-                      (value) => pushNRemoveUntil(context, const LoginIntro()),
-                    ),
+                onTap: () async {
+                  await ref.read(authService).signOut();
+                  if (mounted) {                            // TODO: Remove when no longer necessary?
+                    context.go('/login');
+                  }
+                },
                 child: createText('Kirjaudu ulos')),
             getSomeSpace(10),
             Column(

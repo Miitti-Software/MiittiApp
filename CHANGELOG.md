@@ -45,6 +45,7 @@ Refactoring
 - Firebase Remote Config for changing, modifying and rapidly experimenting with app text, UI and content without always having to release new updates in app stores
 - Language setting stored in `LocalStorageService`
 - Language-based loading of Remote Config values (multi-language support)
+- A more robust routing solution using [GoRouter](https://pub.dev/packages/go_router) for deep linking and redirecting support as well as for a more uniform routing interface in code
 
 ### Fixed
 

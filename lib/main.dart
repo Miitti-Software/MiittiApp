@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/routing/app_router.dart';
 import 'package:miitti_app/screens/authentication/login/explore_decision_screen.dart';
 import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/screens/index_page.dart';
@@ -101,28 +102,30 @@ class MiittiApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
+    return MaterialApp.router(
+      routerConfig: AppRouter(ref).router,
+      // navigatorKey: navigatorKey,
+      title: 'Miitti',
       theme: miittiTheme,
       debugShowCheckedModeBanner: false,
-      home: _buildAuthScreen(context),
-      routes: {
-        '/notificationmessage': (context) =>
-            const NotificationMessage() // TODO: Switch to a more elegant routing solution (e.g. go_router)
-      },
+      // home: _buildAuthScreen(context),
+      // routes: {
+        // '/notificationmessage': (context) =>
+            // const NotificationMessage() // TODO: Switch to a more elegant routing solution (e.g. go_router)
+      // },
     );
   }
 
   // Check if the user is signed in and return the corresponding screen
   Widget _buildAuthScreen(BuildContext context) {
     return Consumer(builder: (context, ref, kid) {
-      if (ref.read(authService).isSignedIn) {
+      if (ref.watch(authService).isSignedIn) {
         // TODO: change the value observed so that people can choose again which account to use
         // Build a widget based on the current status of the future that checks if the user already exists in the database
         return FutureBuilder(
             future: ref
-                .read(firestoreService)
-                .checkExistingUser(ref.read(authService).uid),
+                .watch(firestoreService)
+                .checkExistingUser(ref.watch(authService).uid),
             builder: (context, snapshot) {
               // While the future is in progress fetching user data, display a loading overlay
               if (snapshot.connectionState == ConnectionState.waiting) {

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -45,17 +46,13 @@ class ExploreDecisionScreen extends ConsumerWidget {
                 MyButton(
                   buttonText: 'Jatka profiilin luomista',
                   onPressed: () {
-                    //continue profile
-                    pushNRemoveUntil(context, const CompleteProfileOnboard());
+                    context.go('/login/complete-profile');
                   },
                 ),
 
                 //get to know the app button
                 TextButton(
-                  onPressed: () => pushNRemoveUntil(
-                    context,
-                    const IndexPage(),
-                  ),
+                  onPressed: () => context.go('/'),
                   child: Text(
                     'Tutustu sovellukseen',
                     style: AppStyle.body,

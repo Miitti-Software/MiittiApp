@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/dynamic_rich_text.dart';
 
-import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/service_providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/screens/authentication/login/login_auth.dart';
 
 // The first page that a user sees when opening the app without being signed in
 class LoginIntro extends ConsumerWidget {
@@ -28,21 +27,21 @@ class LoginIntro extends ConsumerWidget {
               SvgPicture.asset('images/miittiLogo.svg',),
               const SizedBox(height: 15,),
               Text(
-                ref.read(remoteConfigService).get<String>('slogan'),
+                ref.watch(remoteConfigService).get<String>('slogan'),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const Spacer(),
               ForwardButton(
-                buttonText: ref.read(remoteConfigService).get<String>('auth-call-to-action'),
-                onPressed: () => pushPage(context, const LoginAuth()),                            // TODO: Switch navigation solution
+                buttonText: ref.watch(remoteConfigService).get<String>('auth-call-to-action'),
+                onPressed: () => context.go('/login/authenticate'),                            // TODO: Switch navigation solution
               ),
               const SizedBox(height: 15,),
               Center(
                 child: SizedBox(
                   width: Sizes.fullContentWidth,
                   child: DynamicRichText(
-                    richTextData: ref.read(remoteConfigService).getRichText('rich-terms-of-usage-notice'),
+                    richTextData: ref.watch(remoteConfigService).getRichText('rich-terms-of-usage-notice'),
                     textStyle: Theme.of(context).textTheme.labelSmall,
                     textAlign: TextAlign.center,
                   ),

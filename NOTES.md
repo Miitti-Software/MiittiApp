@@ -47,6 +47,7 @@ Minor UI changes such as changing colors, fonts and the shape, spacing and conte
 - **envs** contains Firebase options and potentially other files corresponding to each [deployment environment](https://en.wikipedia.org/wiki/Deployment_environment)
 - **functions** contains functions and utilities not directly related to backend services
 - **models** contains templates for data objects as well as other abstract classes, which are meant to be instantiated elsewhere in the code
+- **routing** contains all routing-related logic
 - **screens** contains larger, singular UI views and templates composed of atomic widgets
 - **services** contains all backend related classes and functions such as the interfaces for communicating with Firebase services and local storage and settings
 - **Widgets** contains small and potentially repetitive, "atomic" UI elements used to construct higher level widgets and screens
@@ -184,7 +185,13 @@ Used for admin sfunctions such as sending messages from a trusted environment su
 Reading list:
 1. https://riverpod.dev/docs/introduction/why_riverpod
 
-## Navigation and routing
+Prefer using `ref.watch` over `ref.read`, except for asynchronous methods and State life-cycles such as initState, where `ref.read`should be used instead. https://riverpod.dev/docs/concepts/reading
+
+## Navigation and routing with GoRouter
+
+[GoRouter](https://pub.dev/packages/go_router) is a robust library for navigation and routing, which is defined in `lib/routing/app_router.dart` such that major pages have top-level route whereas UX flows consist of subroutes.
+
+Route `name` and `path` are very different things, where the latter corresponds to URI structure without the [limitations of named routes](https://docs.flutter.dev/ui/navigation), which, on the other hand, simply have non-structural references to them leading to non-customizable deep links and lack of support for browser forward button. 
 
 https://pub.dev/packages/go_router
 
