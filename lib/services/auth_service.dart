@@ -6,7 +6,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/service_providers.dart';
-import 'package:miitti_app/screens/authentication/login/explore_decision_screen.dart';
 import 'package:miitti_app/services/firestore_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,6 +22,8 @@ class AuthService {
 
   bool get isSignedIn => _auth.currentUser != null;
   bool isLoading = false;
+
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
 
   Future<bool> signInWithApple() async {
     try {

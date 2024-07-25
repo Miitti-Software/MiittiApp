@@ -185,6 +185,8 @@ Used for admin sfunctions such as sending messages from a trusted environment su
 Reading list:
 1. https://riverpod.dev/docs/introduction/why_riverpod
 
+Providers are initialized upon first access.
+
 Prefer using `ref.watch` over `ref.read`, except for asynchronous methods and State life-cycles such as initState, where `ref.read`should be used instead. https://riverpod.dev/docs/concepts/reading
 
 ## Navigation and routing with GoRouter

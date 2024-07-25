@@ -109,18 +109,16 @@ class AppRouter {
       // ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
-      final isSignInRoute = state.matchedLocation == '/login'; // Use `subloc` instead of `matchedLocation` for more accurate matching.
       final isAuthenticated = ref.watch(authService).isSignedIn;
 
       // Redirect unauthenticated users to the login screen if they are not already there.
-      if (!isAuthenticated && !isSignInRoute && state.matchedLocation != '/login/authenticate') {
+      if (!isAuthenticated && state.matchedLocation != '/login' && state.matchedLocation != '/login/authenticate') {
         return '/login';
       }
-      // Redirect authenticated users to the home screen if they are on the login screen.
-      if (isAuthenticated && isSignInRoute) {
-        return '/';
+      // Check if the user has completed their profile and redirect them to the onboarding screen if they have not.
+      if (isAuthenticated) {
+        ref.watch(firestoreService).checkExistingUser(ref.watch(authService).uid);
       }
-      // No redirection needed
       return null;
     },
     errorBuilder: (context, state) => Scaffold(

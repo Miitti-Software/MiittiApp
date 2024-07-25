@@ -171,9 +171,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             GestureDetector(
                 onTap: () async {
                   await ref.read(authService).signOut();
-                  if (mounted) {                            // TODO: Remove when no longer necessary?
-                    context.go('/login');
-                  }
                 },
                 child: createText('Kirjaudu ulos')),
             getSomeSpace(10),
@@ -199,12 +196,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       },
                     ).then((confirmed) => {
                       if (confirmed != null && confirmed) {
-                        ref.read(authService).deleteUser().then(
-                            (value) => pushNRemoveUntil(
-                                context, const LoginIntro())
-                        )
-                          }
-                        })
+                        ref.read(authService).deleteUser()
+                      }
+                    })
                   },
                   child: createText('Poista tili'),
                 ),

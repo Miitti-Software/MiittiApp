@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/services/auth_service.dart';
 import 'package:miitti_app/services/firestore_service.dart';
@@ -6,14 +7,8 @@ import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/services/remote_config_service.dart';
 import 'package:miitti_app/services/session.dart';
 
-// Providers are initialized upon first access
 
-final providerLoading = Provider<bool>((ref) {
-  final db = ref.watch(firestoreService);
-  final auth = ref.watch(authService);
-
-  return db.isLoading || auth.isLoading;
-});
+// Providers exposing the service interfaces
 
 final session = Provider<Session>((ref) {
   return Session(ref);
@@ -43,4 +38,19 @@ final localStorageService = Provider<LocalStorageService>((ref) {
 
 final notificationService = Provider<PushNotificationService>((ref) {
   return PushNotificationService(ref);
+});
+
+
+// Individual providers for more specialized use cases
+
+final authState = StreamProvider<User?>((ref) {
+  final authServiceInstance = ref.watch(authService);
+  return authServiceInstance.authStateChanges;
+});
+
+final providerLoading = Provider<bool>((ref) {
+  final db = ref.watch(firestoreService);
+  final auth = ref.watch(authService);
+
+  return db.isLoading || auth.isLoading;
 });

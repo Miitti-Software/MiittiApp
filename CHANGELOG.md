@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `AuthProvider` class will become redundant once `AuthService` has been fully implemented
 
 
-## [1.5.7] - 2024-07-24
+## [1.5.7] - 2024-07-25
 
 Refactoring
 
@@ -61,6 +61,7 @@ Refactoring
 
 - `ScreenUtilInit` widget and dependencies in order to create a uniform user experience across devices.
 - Sign-in via a phone number due to redundancy and potential extra costs.
+- `_buildAuthScreen` method from `MiittiApp` due to becoming redundant after GoRouter was implemented
 
 ## [1.5.6] - 2024-07-08
 
