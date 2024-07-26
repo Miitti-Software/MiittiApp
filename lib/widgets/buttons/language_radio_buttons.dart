@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/state/settings.dart';
 
+/// Radio buttons for selecting the language.
 class LanguageRadioButtons extends ConsumerStatefulWidget {
-  const LanguageRadioButtons({Key? key}) : super(key: key);
+  const LanguageRadioButtons({super.key});
 
   @override
   _LanguageRadioButtonsState createState() => _LanguageRadioButtonsState();

@@ -7,7 +7,7 @@ import 'package:miitti_app/state/settings.dart';
 
 import '../constants/languages.dart';
 
-// A singleton class for interfacing with the Firebase Remote Config service to enable dynamic configuration of the texts, UI and features of the app
+/// A singleton class for interfacing with the Firebase Remote Config service to enable dynamic configuration of the texts, UI and features of the app
 class RemoteConfigService {
 
   // A reference to the Riverpod state provider instantiating and initializing the class and providing global access to the Firebase Remote Config instance
@@ -27,15 +27,15 @@ class RemoteConfigService {
   // List of remote config json file names to be loaded as defaults and fetched from Firebase - the same file names should be present both locally and in the Firebase console
   final List<String> _jsonFiles = ['app_texts']; // TODO: 'activities', 'question_cards'
 
-  // Getters for the different types of values that can be fetched from the remote config
+  /// Getters for the different types of values that can be fetched from the remote config
   String getString(String key) => _remoteConfig.getString(key);
   bool getBool(String key) =>_remoteConfig.getBool(key);
   int getInt(String key) =>_remoteConfig.getInt(key);
   double getDouble(String key) =>_remoteConfig.getDouble(key);
-  // Generic getter for fetching values of any type that are defined in the json configuration files
+  /// Generic getter for fetching values of any type that are defined in the json configuration files
   T get<T>(String key) => _configValues[key] as T;
 
-  // Get a list of maps of rich text values with keys "text" and "url" fetched from the remote config
+  /// Get a list of maps of rich text values with keys "text" and "url" fetched from the remote config
   List<Map<String, dynamic>> getRichText(String key) {
     final richTextData = _configValues[key] as List<dynamic>;
     return richTextData.cast<Map<String, dynamic>>();
@@ -44,10 +44,10 @@ class RemoteConfigService {
   // Stream controller to broadcast config changes
   final _configController = StreamController<Map<String, dynamic>>.broadcast();
 
-  // Stream of config changes
+  /// Stream of config changes
   Stream<Map<String, dynamic>> get configStream => _configController.stream;
 
-  // Initialize the Firebase Remote Config instance by setting defaults, config settings, fetching and activating the remote config values and setting up a listener for config updates
+  /// Initialize the Firebase Remote Config instance by setting defaults, config settings, fetching and activating the remote config values and setting up a listener for config updates
   Future<void> initialize() async {
     final language = ref.read(languageProvider);
     await _setDefaults();
@@ -74,7 +74,7 @@ class RemoteConfigService {
     }
   }
 
-  // Fetch and activate the remote config values from Firebase
+  /// Fetch and activate the remote config values from Firebase
   Future<void> fetchAndActivate(language) async {
     await _remoteConfig.fetchAndActivate();
     _loadConfigValues(language);
@@ -92,14 +92,15 @@ class RemoteConfigService {
     _configController.add(_configValues);
   }
 
-  // Set up a listener for config updates in order to update the config values in real time
+  /// Set up a listener for config updates in order to update the config values in real time
   void setupListener() {
     _remoteConfig.onConfigUpdated.listen((event) async {
+      await ref.watch(languageProvider.notifier).loadLanguage();
       await fetchAndActivate(ref.read(languageProvider));
     });
   }
 
-  // Dispose the stream controller
+  /// Dispose the stream controller
   void dispose() {
     _configController.close();
   }

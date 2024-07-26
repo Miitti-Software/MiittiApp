@@ -20,6 +20,12 @@ class Colors {
   );
 }
 
+class Graphics {
+  static const String miittiLogo = 'images/miittiLogo.svg';
+  static const String splashBackground = 'images/splashscreen.gif';
+  static const String backgroundOverlay = 'images/background-gradient.png';
+}
+
 // Sizes used in building and shaping the app widgets
 class Sizes {
   static const double fullContentWidth = 350;

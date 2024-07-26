@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/screens/authentication/explore_decision_screen.dart';
-import 'package:miitti_app/screens/authentication/login_auth.dart';
+import 'package:miitti_app/screens/authentication/login_screen.dart';
 import 'package:miitti_app/screens/authentication/login_intro.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/navBarScreens/calendar_screen.dart';
@@ -14,6 +14,7 @@ import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
 import 'package:miitti_app/state/service_providers.dart';
 
+// A class to define the app's routing configuration and behavior
 class AppRouter {
   final WidgetRef ref;
 
@@ -40,13 +41,13 @@ class AppRouter {
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginIntro(),
+        builder: (context, state) => const LoginIntroScreen(),
         routes: [
           GoRoute(
             path: 'authenticate',
             pageBuilder: (context, state) => NoTransitionPage<void>(
               key: state.pageKey,
-              child: const LoginAuth(),
+              child: const LoginScreen(),
             ),
           ),
           GoRoute(

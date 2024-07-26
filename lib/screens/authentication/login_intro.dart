@@ -3,15 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/widgets/background_gradient.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/buttons/language_radio_buttons.dart';
 import 'package:miitti_app/widgets/dynamic_rich_text.dart';
 
 import 'package:miitti_app/state/service_providers.dart';
 
-// The first page that a user sees when opening the app without being signed in
-class LoginIntro extends ConsumerWidget {
-  const LoginIntro({super.key});
+/// The first page that a user sees when opening the app without being signed in
+class LoginIntroScreen extends ConsumerWidget {
+  const LoginIntroScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,22 +22,20 @@ class LoginIntro extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          _background(context),
+          _gifBackground(context),
 
           // Handle the different states of the stream
           configStreamAsyncValue.when(
+            
+            // When the data is loaded, build the UI with the data
             data: (data) {
-              // Cast the dynamic list containing the rich text to List<Map<String, dynamic>>
-              final richTextData = (data['rich-terms-of-usage-notice'] as List)
-                  .map((item) => item as Map<String, dynamic>)
-                  .toList();
 
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Spacer(),
-                  SvgPicture.asset('images/miittiLogo.svg',),
+                  SvgPicture.asset(Graphics.miittiLogo),
                   const SizedBox(height: 15,),
                   Text(
                     data['slogan'],
@@ -53,7 +52,7 @@ class LoginIntro extends ConsumerWidget {
                   SizedBox(
                     width: Sizes.fullContentWidth,
                     child: DynamicRichText(
-                      richTextData: richTextData,
+                      richTextData: (data['rich-terms-of-usage-notice'] as List).map((item) => item as Map<String, dynamic>).toList(),
                       textStyle: Theme.of(context).textTheme.labelSmall,
                       textAlign: TextAlign.center,
                     ),
@@ -63,29 +62,32 @@ class LoginIntro extends ConsumerWidget {
                 ],
               );
             },
+            // When the data is loading, show a loading indicator
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => Center(child: Text('Error: $error')),
+            // When the data is an error, show an error message
+            error: (error, stack) => Center(child: Text('An error was encountered loading remote configuration: $error \n\nPlease try again or contact support.')),
           ),
         ],
       ),
     );
   }
 
-  // Background gif under a partially transparent surface color
-  Widget _background(context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: const AssetImage(
-            "images/splashscreen.gif",
+  // Background gif with overlaid background gradient
+  Widget _gifBackground(context) {
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                Graphics.splashBackground,
+              ),
+              fit: BoxFit.cover,
+            ),
           ),
-          colorFilter: ColorFilter.mode(
-            Theme.of(context).colorScheme.surface.withOpacity(0.2),
-            BlendMode.dstATop,
-          ),
-          fit: BoxFit.cover,
         ),
-      ),
+        const BackgroundGradient(),
+      ]
     );
   }
 }
