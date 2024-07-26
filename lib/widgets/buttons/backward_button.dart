@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 
-// A button widget that is used to navigate to the previous screen
+// A button widget meant for navigating to the previous screen, signaling pausing or going back
 class BackwardButton extends StatelessWidget {
   final String buttonText;
   final Function() onPressed;

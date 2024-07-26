@@ -8,7 +8,7 @@ import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 
 class AdminSearchMiitti extends ConsumerStatefulWidget {
   const AdminSearchMiitti({super.key});
@@ -34,7 +34,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getAllTheActivities() async {
     List<MiittiActivity> activities =
-        await ref.read(firestoreService).fetchActivities();
+        await ref.read(firestoreServiceProvider).fetchActivities();
 
     _miittiActivities = activities.reversed.toList();
     setState(() {});
@@ -43,7 +43,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getReportedActivities() async {
     _miittiActivities =
-        await ref.read(firestoreService).fetchReportedActivities();
+        await ref.read(firestoreServiceProvider).fetchReportedActivities();
     setState(() {});
   }
 
@@ -66,7 +66,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
   }
 
   Future<void> removeActivity(String activityId) async {
-    await ref.read(firestoreService).removeActivity(activityId);
+    await ref.read(firestoreServiceProvider).removeActivity(activityId);
     showAllMiitit == 0 ? getAllTheActivities() : getReportedActivities();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showSnackBar(

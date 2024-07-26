@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/screens/adminPanel/admin_userinfo.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/fields/admin_searchbar.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
@@ -41,7 +41,7 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
 
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getAllTheUsers() async {
-    List<MiittiUser> users = await ref.read(firestoreService).fetchUsers();
+    List<MiittiUser> users = await ref.read(firestoreServiceProvider).fetchUsers();
 
     _miittiUsers = users.reversed.toList();
     searchResults = _miittiUsers;

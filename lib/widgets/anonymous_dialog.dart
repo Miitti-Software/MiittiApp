@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/screens/authentication/login/completeProfile/complete_profile_onboard.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 

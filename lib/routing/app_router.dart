@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
-import 'package:miitti_app/screens/authentication/login/completeProfile/complete_profile_onboard.dart';
-import 'package:miitti_app/screens/authentication/login/explore_decision_screen.dart';
-import 'package:miitti_app/screens/authentication/login/login_auth.dart';
-import 'package:miitti_app/screens/authentication/login/login_intro.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_onboard.dart';
+import 'package:miitti_app/screens/authentication/explore_decision_screen.dart';
+import 'package:miitti_app/screens/authentication/login_auth.dart';
+import 'package:miitti_app/screens/authentication/login_intro.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/navBarScreens/calendar_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/maps_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 
 class AppRouter {
   final WidgetRef ref;
@@ -21,7 +21,7 @@ class AppRouter {
 
   late final router = GoRouter(
     debugLogDiagnostics: true,
-    refreshListenable: ValueNotifier<bool>(ref.watch(authService).isSignedIn),
+    refreshListenable: ValueNotifier<bool>(ref.watch(authServiceProvider).isSignedIn),
     initialLocation: '/',
     routes: [
       GoRoute(
@@ -109,15 +109,15 @@ class AppRouter {
       // ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
-      final isAuthenticated = ref.watch(authService).isSignedIn;
+      final isAuthenticated = ref.watch(authServiceProvider).isSignedIn;
 
       // Redirect unauthenticated users to the login screen if they are not already there.
       if (!isAuthenticated && state.matchedLocation != '/login' && state.matchedLocation != '/login/authenticate') {
         return '/login';
       }
       // Check if the user has completed their profile and redirect them to the onboarding screen if they have not.
-      if (isAuthenticated) {
-        ref.watch(firestoreService).checkExistingUser(ref.watch(authService).uid);
+      if (isAuthenticated && state.matchedLocation != '/login/explore') {
+        ref.watch(firestoreServiceProvider).checkExistingUser(ref.watch(authServiceProvider).uid);  // TODO: User with no account gets stuck because of this
       }
       return null;
     },

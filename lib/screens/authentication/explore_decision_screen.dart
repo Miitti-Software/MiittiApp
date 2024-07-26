@@ -3,12 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/screens/index_page.dart';
-import 'package:miitti_app/screens/authentication/login/completeProfile/complete_profile_onboard.dart';
-import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
 
 class ExploreDecisionScreen extends ConsumerWidget {
@@ -17,7 +14,7 @@ class ExploreDecisionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SafeScaffold(
-      ref.watch(providerLoading)
+      ref.watch(providerLoading)                // TODO: User with no account gets stuck because of this combined with app_router call
           ? const Center(
               child: CircularProgressIndicator(
                 color: Colors.white,
@@ -28,14 +25,14 @@ class ExploreDecisionScreen extends ConsumerWidget {
                 const Spacer(),
                 //title
                 Text(
-                  ref.read(remoteConfigService).get<String>('first-auth-welcome-title'),
+                  ref.watch(remoteConfigServiceProvider).get<String>('first-auth-welcome-title'),
                   textAlign: TextAlign.center,
                   style: AppStyle.title,
                 ),
 
                 //body
                 Text(
-                  ref.read(remoteConfigService).get<String>('first-auth-welcome-subtitle'),
+                  ref.watch(remoteConfigServiceProvider).get<String>('first-auth-welcome-subtitle'),
                   textAlign: TextAlign.center,
                   style: AppStyle.body,
                 ),

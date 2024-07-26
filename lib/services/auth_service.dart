@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/services/firestore_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -61,13 +61,15 @@ class AuthService {
 
   void afterSigning(BuildContext context) async {
     try {
-      FirestoreService db = ref.read(firestoreService);
+      FirestoreService db = ref.read(firestoreServiceProvider);
+      print('we here');
       await db.checkExistingUser(uid).then((value) async {
         if (value == true) {
           //TODO: Before publishing refactoring, delete all anonymous docs from firestore,
           //because this will incorrectly set anonymous mode off for them, and we don't use docs for anonymous users anymore
           afterFrame(() => context.go('/'));
         } else {
+          print('we further');
           afterFrame(
               () => context.go('/login/explore'));
         }
@@ -81,7 +83,7 @@ class AuthService {
 
   Future signOut() async {
     SharedPreferences s = await SharedPreferences.getInstance();
-    ref.read(firestoreService).reset();
+    ref.read(firestoreServiceProvider).reset();
     await _auth.signOut();
     GoogleSignIn().signOut();
     s.clear();
@@ -92,8 +94,8 @@ class AuthService {
       // TODO: Delete all user's profile picture variants from storage
       SharedPreferences s = await SharedPreferences.getInstance();
       await signInWithGoogle();
-      ref.read(firestoreService).deleteUser();
-      ref.read(firestoreService).reset();
+      ref.read(firestoreServiceProvider).deleteUser();
+      ref.read(firestoreServiceProvider).reset();
       await _auth.currentUser!.delete();
       GoogleSignIn().signOut();
       s.clear();

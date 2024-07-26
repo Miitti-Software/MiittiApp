@@ -15,7 +15,7 @@ import 'package:miitti_app/models/onboarding_part.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:location/location.dart' as location;
 import 'package:miitti_app/widgets/other_widgets.dart';
@@ -134,7 +134,7 @@ class _CreateMiittiOnboardingState
   }*/
 
   void fetchSpots() {
-    ref.read(firestoreService).fetchCommercialSpots().then((value) {
+    ref.read(firestoreServiceProvider).fetchCommercialSpots().then((value) {
       setState(() {
         spots = value;
       });
@@ -690,7 +690,7 @@ class _CreateMiittiOnboardingState
   }
 
   Future<void> saveMiittiToFirebase(PersonActivity personActivity) async {
-    await ref.read(firestoreService).saveMiittiActivityDataToFirebase(
+    await ref.read(firestoreServiceProvider).saveMiittiActivityDataToFirebase(
           context: context,
           activityModel: personActivity,
         );

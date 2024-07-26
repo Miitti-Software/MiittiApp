@@ -17,7 +17,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/report.dart';
 import 'package:miitti_app/screens/index_page.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
 import '../screens/activity_details_page.dart';
@@ -393,13 +393,13 @@ class FirestoreService {
   }) async {
     try {
       showLoadingDialog(context);
-      await uploadUserImage(ref.read(authService).uid, image).then((value) {
+      await uploadUserImage(ref.read(authServiceProvider).uid, image).then((value) {
         userModel.profilePicture = value;
       }).onError((error, stackTrace) {});
       userModel.userRegistrationDate = Timestamp.now();
       userModel.userPhoneNumber =
-          ref.read(authService).currentUser?.phoneNumber ?? '';
-      userModel.uid = ref.read(authService).uid;
+          ref.read(authServiceProvider).currentUser?.phoneNumber ?? '';
+      userModel.uid = ref.read(authServiceProvider).uid;
       _miittiUser = userModel;
 
       await _userDocRef(userModel.uid)
@@ -586,7 +586,7 @@ class FirestoreService {
         showLoadingDialog(context);
       }
       if (imageFile != null) {
-        await uploadUserImage(ref.read(authService).uid, imageFile)
+        await uploadUserImage(ref.read(authServiceProvider).uid, imageFile)
             .then((value) {
           updatedUser.profilePicture = value;
         });

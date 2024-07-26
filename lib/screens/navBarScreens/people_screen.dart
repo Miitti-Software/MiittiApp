@@ -10,7 +10,7 @@ import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 
@@ -39,7 +39,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   }
 
   void initLists() async {
-    if (ref.read(firestoreService).isAnonymous) {
+    if (ref.read(firestoreServiceProvider).isAnonymous) {
       Future.delayed(const Duration(milliseconds: 10)).then((value) {
         if (mounted) {
           showDialog(
@@ -65,13 +65,13 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   Future<List<MiittiUser>> initList(int type) async {
     try {
       QuerySnapshot snapshot =
-          await ref.read(firestoreService).lazyFilteredUsers(type, batchSize);
+          await ref.read(firestoreServiceProvider).lazyFilteredUsers(type, batchSize);
       if (snapshot.docs.isNotEmpty) {
         lastDocuments[type] = snapshot.docs.last;
         return snapshot.docs
             .map((doc) => MiittiUser.fromDoc(doc))
             .where((user) =>
-                user.uid != ref.read(authService).uid && user.userName != "")
+                user.uid != ref.read(authServiceProvider).uid && user.userName != "")
             .toList();
       }
       return [];
@@ -87,7 +87,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
     }
 
     listLoading[type] = true;
-    final snapshot = await ref.read(firestoreService).lazyFilteredUsers(
+    final snapshot = await ref.read(firestoreServiceProvider).lazyFilteredUsers(
         type, batchSize + _filteredUsers.length, lastDocuments[type]);
     if (snapshot.docs.isNotEmpty) {
       if (snapshot.docs.length < batchSize) {
@@ -100,7 +100,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       setState(() {
         _filteredUsers[type].addAll(snapshot.docs
             .map((doc) => MiittiUser.fromDoc(doc))
-            .where((user) => user.uid != ref.read(authService).uid)
+            .where((user) => user.uid != ref.read(authServiceProvider).uid)
             .toList());
       });
     } else {
@@ -111,7 +111,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (ref.read(firestoreService).isAnonymous) {
+    if (ref.read(firestoreServiceProvider).isAnonymous) {
       return const AnonymousUserScreen();
     } else {
       return SafeArea(
@@ -222,7 +222,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       height: 35,
       width: 110,
       onPressed: () {
-        if (ref.read(firestoreService).isAnonymous) {
+        if (ref.read(firestoreServiceProvider).isAnonymous) {
           showDialog(
               context: context, builder: (context) => const AnonymousDialog());
         } else {

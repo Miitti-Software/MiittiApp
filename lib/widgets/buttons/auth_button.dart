@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/app_texts.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
 class AuthButton extends ConsumerWidget {
@@ -20,15 +20,15 @@ class AuthButton extends ConsumerWidget {
         showLoadingDialog(context); // Show loading dialog
 
         if (apple) {
-          signInSuccess = await ref.read(authService).signInWithApple();
+          signInSuccess = await ref.read(authServiceProvider).signInWithApple();
         } else {
-          signInSuccess = await ref.read(authService).signInWithGoogle();
+          signInSuccess = await ref.read(authServiceProvider).signInWithGoogle();
         }
 
         Navigator.of(context).pop(); // Dismiss loading dialog
 
         if (signInSuccess) {
-          ref.read(authService).afterSigning(context);
+          ref.read(authServiceProvider).afterSigning(context);
         } else {
           showSnackBar(context, "${t('login-error')}", AppStyle.red);
         }
@@ -52,8 +52,8 @@ class AuthButton extends ConsumerWidget {
                   ),
             Text(
               apple
-                  ? ref.read(remoteConfigService).get<String>('auth-apple')
-                  : ref.read(remoteConfigService).get<String>('auth-google'),
+                  ? ref.read(remoteConfigServiceProvider).get<String>('auth-apple')
+                  : ref.read(remoteConfigServiceProvider).get<String>('auth-google'),
               textAlign: TextAlign.center,
               style: AppStyle.body
                   .copyWith(fontWeight: FontWeight.w700)

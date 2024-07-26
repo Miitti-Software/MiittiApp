@@ -7,7 +7,7 @@ import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/message_tile.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
@@ -47,7 +47,7 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
 
   getChat() async {
     await ref
-        .read(firestoreService)
+        .read(firestoreServiceProvider)
         .getChats(widget.activity.activityUid)
         .then((value) {
       setState(() {
@@ -159,7 +159,7 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
                     message: snapshot.data.docs[index]['message'],
                     sender: snapshot.data.docs[index]['sender'],
                     senderName: snapshot.data.docs[index]['senderName'],
-                    sentByMe: ref.read(authService).uid ==
+                    sentByMe: ref.read(authServiceProvider).uid ==
                         snapshot.data.docs[index]['sender'],
                     time: DateFormat('HH:mm').format(
                       DateTime.fromMillisecondsSinceEpoch(
@@ -178,22 +178,22 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
         'message': messageController.text,
-        'sender': ref.read(authService).uid,
-        'senderName': ref.read(firestoreService).miittiUser!.userName,
+        'sender': ref.read(authServiceProvider).uid,
+        'senderName': ref.read(firestoreServiceProvider).miittiUser!.userName,
         'time': DateTime.now().millisecondsSinceEpoch,
       };
       ref
-          .read(firestoreService)
+          .read(firestoreServiceProvider)
           .sendMessage(widget.activity.activityUid, chatMessageMap);
 
       var receivers = await ref
-          .read(firestoreService)
+          .read(firestoreServiceProvider)
           .fetchUsersByUids(widget.activity.participants.toList());
       for (MiittiUser receiver in receivers) {
-        if (receiver.uid == ref.read(authService).uid) continue;
-        ref.read(notificationService).sendMessageNotification(
+        if (receiver.uid == ref.read(authServiceProvider).uid) continue;
+        ref.read(notificationServiceProvider).sendMessageNotification(
             receiver.fcmToken,
-            ref.read(firestoreService).miittiUser!.userName,
+            ref.read(firestoreServiceProvider).miittiUser!.userName,
             widget.activity,
             messageController.text);
       }

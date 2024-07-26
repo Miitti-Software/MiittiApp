@@ -9,4 +9,13 @@ extension LanguageExtension on Language {
         return 'Suomi';
     }
   }
+
+  String get code {
+    switch (this) {
+      case Language.en:
+        return 'en';
+      case Language.fi:
+        return 'fi';
+    }
+  }
 }

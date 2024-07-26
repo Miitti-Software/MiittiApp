@@ -5,7 +5,7 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 
 import 'package:miitti_app/functions/utils.dart';
@@ -42,7 +42,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   void initRequests() async {
     ref
-        .read(firestoreService)
+        .read(firestoreServiceProvider)
         .fetchActivitiesRequestsFrom(widget.user.uid)
         .then((value) {
       setState(() {
@@ -390,7 +390,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
           ).then((confirmed) {
             if (confirmed) {
               ref
-                  .read(firestoreService)
+                  .read(firestoreServiceProvider)
                   .reportUser('User blocked', widget.user.uid);
               afterFrame(() {
                 Navigator.of(context).pop();
@@ -414,7 +414,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   Future<void> inviteToYourActivity() async {
     List<PersonActivity> myActivities =
-        await ref.read(firestoreService).fetchAdminActivities();
+        await ref.read(firestoreServiceProvider).fetchAdminActivities();
 
     if (myActivities.isNotEmpty) {
       if (myActivities.length == 1 &&
@@ -423,12 +423,12 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
           !myActivities.first.participants.contains(widget.user.uid) &&
           !myActivities.first.requests.contains(widget.user.uid)) {
         ref
-            .read(firestoreService)
+            .read(firestoreServiceProvider)
             .inviteUserToYourActivity(
                 widget.user.uid, myActivities.first.activityUid)
             .then((value) {
-          ref.read(notificationService).sendInviteNotification(
-              ref.read(firestoreService).miittiUser!,
+          ref.read(notificationServiceProvider).sendInviteNotification(
+              ref.read(firestoreServiceProvider).miittiUser!,
               widget.user,
               myActivities.first);
           showDialog(
@@ -572,12 +572,12 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                           !activity.participants.contains(widget.user.uid) &&
                           !activity.requests.contains(widget.user.uid)) {
                         ref
-                            .read(firestoreService)
+                            .read(firestoreServiceProvider)
                             .inviteUserToYourActivity(
                                 widget.user.uid, activity.activityUid)
                             .then((value) {
-                          ref.read(notificationService).sendInviteNotification(
-                              ref.read(firestoreService).miittiUser!,
+                          ref.read(notificationServiceProvider).sendInviteNotification(
+                              ref.read(firestoreServiceProvider).miittiUser!,
                               widget.user,
                               activity);
                           afterFrame(() {
@@ -710,7 +710,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
               width: 140,
               onPressed: () async {
                 ref
-                    .read(firestoreService)
+                    .read(firestoreServiceProvider)
                     .updateUserJoiningActivity(
                         activity.activityUid, widget.user.uid, false)
                     .then((value) {
@@ -736,7 +736,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
               width: 140,
               onPressed: () async {
                 ref
-                    .read(firestoreService)
+                    .read(firestoreServiceProvider)
                     .updateUserJoiningActivity(
                         activity.activityUid, widget.user.uid, true)
                     .then((value) {
@@ -745,7 +745,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                   });
                   if (value) {
                     ref
-                        .read(notificationService)
+                        .read(notificationServiceProvider)
                         .sendAcceptedNotification(widget.user, activity);
                   }
                 });

@@ -2,7 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 
 class Session with WidgetsBindingObserver {
   final Ref ref;
@@ -22,8 +22,8 @@ class Session with WidgetsBindingObserver {
   }
 
   void initPushNotifications() {
-    ref.read(notificationService).init();
-    ref.read(notificationService).localNotiInit();
+    ref.read(notificationServiceProvider).init();
+    ref.read(notificationServiceProvider).localNotiInit();
   }
 
   void dispose() {
@@ -32,7 +32,7 @@ class Session with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    ref.read(firestoreService).updateUser({'userStatus': Timestamp.now()});
+    ref.read(firestoreServiceProvider).updateUser({'userStatus': Timestamp.now()});
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       endSession();

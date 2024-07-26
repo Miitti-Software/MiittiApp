@@ -7,7 +7,7 @@ import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/services/firestore_service.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'dart:convert';
@@ -51,9 +51,9 @@ class PushNotificationService {
     debugPrint("############################################################");
 
     //Save token to user data(needed to access other users tokens in code)
-    MiittiUser? user = ref.read(firestoreService).miittiUser;
+    MiittiUser? user = ref.read(firestoreServiceProvider).miittiUser;
     if (user != null && user.fcmToken != token) {
-      ref.read(firestoreService).updateUser({"fcmToken": token});
+      ref.read(firestoreServiceProvider).updateUser({"fcmToken": token});
     }
   }
 
@@ -157,11 +157,11 @@ class PushNotificationService {
   }
 
   Future sendRequestNotification(PersonActivity activity) async {
-    if (ref.read(firestoreService).isAnonymous) {
+    if (ref.read(firestoreServiceProvider).isAnonymous) {
       debugPrint("Cannot send request notification as anonymous user");
       return;
     }
-    FirestoreService firestore = ref.read(firestoreService);
+    FirestoreService firestore = ref.read(firestoreServiceProvider);
     MiittiUser? admin = await firestore.getUser(activity.admin);
     if (admin != null) {
       sendNotification(

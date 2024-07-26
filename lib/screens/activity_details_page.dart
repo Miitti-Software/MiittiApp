@@ -12,7 +12,7 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/firestore_service.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
@@ -200,7 +200,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                                           builder: (context) =>
                                               const AnonymousDialog());
                                     } else {
-                                      String uid = ref.read(authService).uid;
+                                      String uid = ref.read(authServiceProvider).uid;
                                       pushPage(
                                           context,
                                           uid == user.uid
@@ -323,7 +323,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
             ).then(
               (confirmed) {
                 if (confirmed) {
-                  ref.read(firestoreService).reportActivity(
+                  ref.read(firestoreServiceProvider).reportActivity(
                       widget.myActivity.activityUid, 'Activity blocked');
                   afterFrame(() {
                     Navigator.of(context).pop();
@@ -354,13 +354,13 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
   void sendActivityRequest() async {
     if (userStatus != UserStatusInActivity.none) return;
     if (isAnonymous) return;
-    FirestoreService firestore = ref.read(firestoreService);
+    FirestoreService firestore = ref.read(firestoreServiceProvider);
     firestore
         .joinOrRequestActivity(widget.myActivity.activityUid)
         .then((newStatus) {
       if (newStatus == UserStatusInActivity.requested) {
         ref
-            .read(notificationService)
+            .read(notificationServiceProvider)
             .sendRequestNotification(widget.myActivity);
         setState(() {
           userStatus = UserStatusInActivity.requested;
@@ -417,7 +417,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
 
   Future<List<MiittiUser>> fetchUsersJoinedActivity() {
     return ref
-        .read(firestoreService)
+        .read(firestoreServiceProvider)
         .fetchUsersByUids(widget.myActivity.participants.toList());
   }
 
@@ -426,7 +426,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
       isAnonymous = true;
       return UserStatusInActivity.none;
     }
-    final userId = ref.read(authService).uid;
+    final userId = ref.read(authServiceProvider).uid;
     return widget.myActivity.participants.contains(userId)
         ? UserStatusInActivity.joined
         : widget.myActivity.requests.contains(userId)

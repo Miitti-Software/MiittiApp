@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/settings.dart';
+
+import '../constants/languages.dart';
 
 // A singleton class for interfacing with the Firebase Remote Config service to enable dynamic configuration of the texts, UI and features of the app
 class RemoteConfigService {
@@ -47,10 +49,11 @@ class RemoteConfigService {
 
   // Initialize the Firebase Remote Config instance by setting defaults, config settings, fetching and activating the remote config values and setting up a listener for config updates
   Future<void> initialize() async {
+    final language = ref.read(languageProvider);
     await _setDefaults();
     await _setConfigSettings();
-    await _fetchAndActivate();
-    _setupListener();
+    await fetchAndActivate(language);
+    setupListener();
   }
 
   // Set the configuration settings for the Firebase Remote Config instance
@@ -72,29 +75,27 @@ class RemoteConfigService {
   }
 
   // Fetch and activate the remote config values from Firebase
-  Future<void> _fetchAndActivate() async {
+  Future<void> fetchAndActivate(language) async {
     await _remoteConfig.fetchAndActivate();
-    _loadConfigValues();
+    _loadConfigValues(language);
   }
 
-  // Load the config values fetched from Firebase
-void _loadConfigValues() async {
-  // Get the current language from LocalStorageService
-  final language = ref.read(localStorageService).language;
-  final languageSuffix = language.name;
+  // Load the config values fetched from Firebase corresponding to the selected language
+  void _loadConfigValues(Language language) async {
+    final languageSuffix = language.code;
 
-  for (final file in _jsonFiles) {
-    final jsonString = _remoteConfig.getString('$file\_$languageSuffix');
-    final values = json.decode(jsonString) as Map<String, dynamic>;
-    _configValues.addAll(values);
+    for (final file in _jsonFiles) {
+      final jsonString = _remoteConfig.getString('${file}_$languageSuffix');
+      final values = json.decode(jsonString) as Map<String, dynamic>;
+      _configValues.addAll(values);
+    }
+    _configController.add(_configValues);
   }
-  _configController.add(_configValues);
-}
 
   // Set up a listener for config updates in order to update the config values in real time
-  void _setupListener() {
+  void setupListener() {
     _remoteConfig.onConfigUpdated.listen((event) async {
-      await _fetchAndActivate();
+      await fetchAndActivate(ref.read(languageProvider));
     });
   }
 

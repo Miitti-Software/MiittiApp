@@ -56,6 +56,7 @@ Refactoring
 
 - The Google account to be signed in with must be separately selected each time so that people (developers) can easily switch between accounts.
 - Refactored `AuthService` sign-in methods to be parameterless to reduce dependencies, encapsulate backend logic and so enhance reusability and return boolean futures in order to shift UI logic to the widgets using them.
+- All state management including `state_providers.dart` are now under `lib/state`.
 
 ### Removed
 

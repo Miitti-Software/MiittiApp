@@ -5,11 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/routing/app_router.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
-
 import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
 import 'package:miitti_app/envs/firebase_stag_configuration.dart' as stg;
 import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
@@ -46,12 +45,12 @@ Future<void> main() async {
       break;
   }
 
-  // Initialize Firebase with the default options
+  // Initialize Firebase with the default options corresponding to the current environment
   await Firebase.initializeApp(
     options: config,
   );
 
-  // Enable Firestore Emulator for development environment -- Not working currently
+  // Enable Firestore Emulator for development environment -- Not working currently         TODO: Remove if it cannot be fixed
   // if (env == "development") {
   //   try {
   //     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
@@ -68,7 +67,7 @@ Future<void> main() async {
   PushNotificationService.listenTerminated();
 
   // Initialize the RemoteConfigService to fetch and activate the remote config values
-  await ProviderContainer().read(remoteConfigService).initialize();
+  await ProviderContainer().read(remoteConfigServiceProvider).initialize();
 
   // Activate Firebase App Check for the current environment
   await FirebaseAppCheck.instance.activate(
@@ -76,7 +75,9 @@ Future<void> main() async {
         ? AndroidProvider.playIntegrity
         : AndroidProvider.debug,
     appleProvider:
-        env == 'production' ? AppleProvider.deviceCheck : AppleProvider.debug,
+        env == 'production' 
+        ? AppleProvider.deviceCheck 
+        : AppleProvider.debug,
   );
 
   // Force the app to always run in portrait mode
@@ -99,21 +100,22 @@ class MiittiApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = AppRouter(ref).router;
+
     // Listen to the authState changes and refresh the router when the user signs in or out to trigger a redirect automatically
-    ref.listen<AsyncValue<User?>>(authState, (_, next) {
+    ref.listen<AsyncValue<User?>>(authStateProvider, (_, next) {
       router.refresh();
     });
 
     return MaterialApp.router(
       routerConfig: router,
-      // navigatorKey: navigatorKey,
+      // navigatorKey: navigatorKey,              // TODO: Remove to clean up code
       title: 'Miitti',
       theme: miittiTheme,
       debugShowCheckedModeBanner: false,
       // home: _buildAuthScreen(context),
       // routes: {
-        // '/notificationmessage': (context) =>
-            // const NotificationMessage() //
+      // '/notificationmessage': (context) =>
+      // const NotificationMessage() //
       // },
     );
   }

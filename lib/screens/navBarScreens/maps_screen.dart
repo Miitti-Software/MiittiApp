@@ -19,7 +19,7 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -118,7 +118,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
 
   void fetchActivities() async {
     List<MiittiActivity> activities =
-        await ref.read(firestoreService).fetchActivities();
+        await ref.read(firestoreServiceProvider).fetchActivities();
     if (mounted) {
       setState(() {
         _activities = activities.reversed.toList();
@@ -143,12 +143,12 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   }
 
   void fetchAd() async {
-    List<AdBanner> ad = await ref.read(firestoreService).fetchAds();
+    List<AdBanner> ad = await ref.read(firestoreServiceProvider).fetchAds();
     setState(() {
       _ads = ad;
     });
     if (_ads.isNotEmpty) {
-      ref.read(firestoreService).addAdView(_ads[0].uid);
+      ref.read(firestoreServiceProvider).addAdView(_ads[0].uid);
     }
   }
 

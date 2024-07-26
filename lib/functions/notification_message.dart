@@ -13,7 +13,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'dart:convert';
 
 
@@ -63,14 +63,14 @@ class _NotificationMessageState extends ConsumerState<NotificationMessage> {
           case ("invite"):
             debugPrint("Invite clicked ${payload["myData"]}");
             PersonActivity activity = await ref
-                .read(firestoreService)
+                .read(firestoreServiceProvider)
                 .getSingleActivity(payload["myData"]) as PersonActivity;
             return ActivityDetailsPage(myActivity: activity);
 
           case ("request"):
             debugPrint("Request clicked ${payload["myData"]}");
             MiittiUser? user =
-                await ref.read(firestoreService).getUser(payload["myData"]);
+                await ref.read(firestoreServiceProvider).getUser(payload["myData"]);
             if (user != null) {
               return UserProfileEditScreen(user: user);
             } else {
@@ -83,14 +83,14 @@ class _NotificationMessageState extends ConsumerState<NotificationMessage> {
           case ("accept"):
             debugPrint("Accept clicked ${payload["myData"]}");
             PersonActivity activity = await ref
-                .read(firestoreService)
+                .read(firestoreServiceProvider)
                 .getSingleActivity(payload["myData"]) as PersonActivity;
             return ActivityDetailsPage(myActivity: activity);
 
           case ("message"):
             debugPrint("Message clicked ${payload["myData"]}");
             MiittiActivity activity = await ref
-                .read(firestoreService)
+                .read(firestoreServiceProvider)
                 .getSingleActivity(payload["myData"]);
             if (activity is PersonActivity) {
               return ChatPage(activity: activity);

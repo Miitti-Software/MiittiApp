@@ -7,7 +7,7 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/question_answer.dart';
 import 'package:miitti_app/functions/utils.dart';
 
@@ -186,7 +186,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                         child: image == null
                             ? Image.network(
                                 ref
-                                    .read(firestoreService)
+                                    .read(firestoreServiceProvider)
                                     .miittiUser!
                                     .profilePicture,
                                 height: 400,
@@ -402,7 +402,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       favoriteActivities.length >= 3) {
                     _formKey.currentState!.save();
 
-                    final miittiUser = ref.read(firestoreService).miittiUser!;
+                    final miittiUser = ref.read(firestoreServiceProvider).miittiUser!;
                     final updatedUser = MiittiUser(
                       userName: miittiUser.userName,
                       userEmail: miittiUser.userEmail,
@@ -424,7 +424,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       userRegistrationDate: miittiUser.userRegistrationDate,
                     );
                     await ref
-                        .read(firestoreService)
+                        .read(firestoreServiceProvider)
                         .updateUserInfo(
                           updatedUser: updatedUser,
                           imageFile: image,

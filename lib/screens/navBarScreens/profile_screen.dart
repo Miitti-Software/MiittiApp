@@ -6,7 +6,7 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/activity.dart';
@@ -28,7 +28,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 10)).then((value) {
-      if (ref.read(firestoreService).isAnonymous) {
+      if (ref.read(firestoreServiceProvider).isAnonymous) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
             context: context,
@@ -37,7 +37,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         });
       } else {
         filteredActivities = ref
-            .read(firestoreService)
+            .read(firestoreServiceProvider)
             .miittiUser!
             .userFavoriteActivities
             .toList();
@@ -46,7 +46,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget getAdminButton() {
-    if (adminId.contains(ref.read(authService).uid)) {
+    if (adminId.contains(ref.read(authServiceProvider).uid)) {
       return GestureDetector(
         onTap: () {
           Navigator.of(context).push(
@@ -68,14 +68,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     bool isLoading = ref.watch(providerLoading);
-    bool anonymous = ref.read(firestoreService).isAnonymous;
+    bool anonymous = ref.read(firestoreServiceProvider).isAnonymous;
 
     if (anonymous) {
       return const AnonymousUserScreen();
     } else {
       List<String> answeredQuestions = questionOrder
           .where((question) => ref
-              .read(firestoreService)
+              .read(firestoreServiceProvider)
               .miittiUser!
               .userChoices
               .containsKey(question))
@@ -95,7 +95,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            ref.read(firestoreService).miittiUser!.userName,
+            ref.read(firestoreServiceProvider).miittiUser!.userName,
             style: const TextStyle(
               fontSize: 30,
               fontFamily: 'Sora',
@@ -108,7 +108,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => MyProfileEditForm(
-                        user: ref.read(firestoreService).miittiUser!,
+                        user: ref.read(firestoreServiceProvider).miittiUser!,
                       )));
             },
             child: const Icon(
@@ -132,7 +132,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     // Add the first question card and user details card
     String firstQuestion = answeredQuestions[0];
     String firstAnswer =
-        ref.read(firestoreService).miittiUser!.userChoices[firstQuestion]!;
+        ref.read(firestoreServiceProvider).miittiUser!.userChoices[firstQuestion]!;
     widgets.add(buildQuestionCard(firstQuestion, firstAnswer));
     widgets.add(buildUserDetailsCard());
 
@@ -141,7 +141,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       for (var i = 1; i < answeredQuestions.length; i++) {
         String question = answeredQuestions[i];
         String answer =
-            ref.read(firestoreService).miittiUser!.userChoices[question]!;
+            ref.read(firestoreServiceProvider).miittiUser!.userChoices[question]!;
         widgets.add(buildQuestionCard(question, answer));
 
         // Add activities grid after the first additional question card
@@ -170,7 +170,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Image.network(
-          ref.read(firestoreService).miittiUser!.profilePicture,
+          ref.read(firestoreServiceProvider).miittiUser!.profilePicture,
           height: 400,
           width: 400,
           fit: BoxFit.cover,
@@ -216,7 +216,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget buildUserDetailsCard() {
-    MiittiUser miittiUser = ref.read(firestoreService).miittiUser!;
+    MiittiUser miittiUser = ref.read(firestoreServiceProvider).miittiUser!;
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(

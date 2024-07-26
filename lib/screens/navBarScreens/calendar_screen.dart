@@ -8,7 +8,7 @@ import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
@@ -51,7 +51,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 10)).then((value) {
-      if (ref.read(firestoreService).isAnonymous) {
+      if (ref.read(firestoreServiceProvider).isAnonymous) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
             context: context,
@@ -66,14 +66,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   Future fetchDataFromFirebase() async {
     //This method ensures that all the data is coming successfully from Database through AuthProvider and then updates the State
-    if (ref.read(firestoreService).isAnonymous) {
+    if (ref.read(firestoreServiceProvider).isAnonymous) {
       showDialog(
           context: context, builder: (context) => const AnonymousDialog());
 
       return;
     }
 
-    final fiSe = ref.read(firestoreService);
+    final fiSe = ref.read(firestoreServiceProvider);
 
     final joinedActivities =
         await fiSe.fetchUserActivities();
@@ -174,7 +174,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 ).then((confirmed) {
                                   if (confirmed != null && confirmed) {
                                     ref
-                                        .read(firestoreService)
+                                        .read(firestoreServiceProvider)
                                         .removeActivity(activity.activityUid)
                                         .then((value) {
                                       setState(() {
@@ -206,7 +206,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 ).then((confirmed) {
                                   if (confirmed != null && confirmed) {
                                     ref
-                                        .read(firestoreService)
+                                        .read(firestoreServiceProvider)
                                         .removeUserFromActivity(
                                           activity.activityUid,
                                           isWaiting,
@@ -283,7 +283,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 height: 40,
                                 onPressed: () async {
                                   await ref
-                                      .read(firestoreService)
+                                      .read(firestoreServiceProvider)
                                       .reactToInvite(
                                           activity.activityUid, false);
 
@@ -312,7 +312,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 height: 40,
                                 onPressed: () async {
                                   bool operationCompleted = await ref
-                                      .read(firestoreService)
+                                      .read(firestoreServiceProvider)
                                       .reactToInvite(
                                           activity.activityUid, true);
                                   if (operationCompleted) {
@@ -465,7 +465,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           height: 40,
                           onPressed: () async {
                             bool operationCompleted = await ref
-                                .read(firestoreService)
+                                .read(firestoreServiceProvider)
                                 .updateUserJoiningActivity(
                                     activity.activityUid, user.uid, false);
                             if (!operationCompleted) {
@@ -493,7 +493,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           height: 40,
                           onPressed: () async {
                             bool operationCompleted = await ref
-                                .read(firestoreService)
+                                .read(firestoreServiceProvider)
                                 .updateUserJoiningActivity(
                                     activity.activityUid, user.uid, true);
                             if (operationCompleted) {
@@ -501,7 +501,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   .then((value) => buildOtherActivities());
                             } else {
                               ref
-                                  .read(notificationService)
+                                  .read(notificationServiceProvider)
                                   .sendAcceptedNotification(user, activity);
                             }
                           },
@@ -579,7 +579,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               //getting the single activity from the list
               MiittiActivity singleActivity = _myJoinedActivities[index];
 
-              String userId = ref.read(authService).uid;
+              String userId = ref.read(authServiceProvider).uid;
 
               //checking if the activity is created by the user
               bool isAdmin = singleActivity.admin == userId;
@@ -615,7 +615,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ref.read(firestoreService).isAnonymous
+    return ref.read(firestoreServiceProvider).isAnonymous
         ? const AnonymousUserScreen()
         : SafeArea(
             child: Stack(

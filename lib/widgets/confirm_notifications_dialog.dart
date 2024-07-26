@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
@@ -54,7 +54,7 @@ class ConfirmNotificationsDialog extends ConsumerWidget {
                       buttonText: 'Hyväksy ilmoitukset',
                       onPressed: () async {
                         bool granted = await ref
-                            .read(notificationService)
+                            .read(notificationServiceProvider)
                             .requestPermission(true);
                         if (granted) {
                           if (context.mounted) {

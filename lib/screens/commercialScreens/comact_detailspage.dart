@@ -13,7 +13,7 @@ import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
@@ -373,7 +373,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
     final activityUid = widget.myActivity.activityUid;
 
     await ref
-        .read(firestoreService)
+        .read(firestoreServiceProvider)
         .checkIfUserJoined(activityUid, commercial: true)
         .then((joined) {
       if (joined) {
@@ -388,11 +388,11 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
     checkIfJoined();
     if (!isAlreadyJoined) {
       await ref
-          .read(firestoreService)
+          .read(firestoreServiceProvider)
           .joinCommercialActivity(widget.myActivity.activityUid);
       setState(() {
         isAlreadyJoined = true;
-        widget.myActivity.participants.add(ref.read(authService).uid);
+        widget.myActivity.participants.add(ref.read(authServiceProvider).uid);
       });
     }
   }
@@ -434,7 +434,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
 
   void fetchUsersJoinedActivity() async {
     ref
-        .read(firestoreService)
+        .read(firestoreServiceProvider)
         .fetchUsersByUids(widget.myActivity.participants.toList())
         .then((value) => setState(() {
               participantList = value;
@@ -444,7 +444,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
 
   void fetchAdmin() async {
     ref
-        .read(firestoreService)
+        .read(firestoreServiceProvider)
         .getCommercialUser(widget.myActivity.admin)
         .then((value) => setState(() {
               company = value;

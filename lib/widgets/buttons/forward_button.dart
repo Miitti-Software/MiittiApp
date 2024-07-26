@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 
-// A button widget that is used to navigate to the next screen
+// A button widget meant for navigating to the next screen, signaling progression
 class ForwardButton extends StatelessWidget {
   final String buttonText;
   final Function() onPressed;

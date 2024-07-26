@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/services/service_providers.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
 
@@ -20,7 +20,7 @@ import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/index_page.dart';
-import 'package:miitti_app/screens/authentication/login/completeProfile/complete_profile_answerpage.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_answerpage.dart';
 
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
@@ -236,7 +236,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
   void initState() {
     super.initState();
     selectedList = questionsAboutMe;
-    _emailController = TextEditingController(text: ref.read(authService).email);
+    _emailController = TextEditingController(text: ref.read(authServiceProvider).email);
     _nameController = TextEditingController();
     _pageController = PageController();
   }
@@ -773,7 +773,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
               onSelected: (bool selected) {
                 if (!selected) {
                   ref
-                      .read(notificationService)
+                      .read(notificationServiceProvider)
                       .requestPermission(true)
                       .then((bool granted) {
                     if (granted) {
@@ -865,7 +865,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
   }
 
   void registerUser(BuildContext context, MiittiUser user) {
-    ref.read(firestoreService).saveUserDatatoFirebase(
+    ref.read(firestoreServiceProvider).saveUserDatatoFirebase(
           context: context,
           userModel: user,
           image: image,
@@ -988,7 +988,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
             ),
           );
         } else {
-          ref.read(notificationService).checkPermission().then((granted) {
+          ref.read(notificationServiceProvider).checkPermission().then((granted) {
             if (granted) {
               _pageController.nextPage(
                 duration: const Duration(milliseconds: 500),
@@ -996,7 +996,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
               );
             } else {
               ref
-                  .read(notificationService)
+                  .read(notificationServiceProvider)
                   .requestPermission(true)
                   .then((grantFixed) {
                 if (grantFixed) {
@@ -1034,7 +1034,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
 
       if (page == 9) {
         //Next page is notification page, if push notifications are already enabled, skip this page
-        ref.read(notificationService).checkPermission().then((enabled) {
+        ref.read(notificationServiceProvider).checkPermission().then((enabled) {
           if (enabled) {
             _pageController.animateToPage(
               11,
@@ -1047,7 +1047,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
               curve: Curves.linear,
             );
             ref
-                .read(notificationService)
+                .read(notificationServiceProvider)
                 .requestPermission(false)
                 .then((bool granted) {
               if (granted) {
