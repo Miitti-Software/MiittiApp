@@ -31,7 +31,7 @@ class ForwardButton extends StatelessWidget {
           ),
         ),
         minimumSize: WidgetStateProperty.all<Size>(
-          const Size(Sizes.fullContentWidth, Sizes.fullContentWidth / 7),
+          const Size(AppSizes.fullContentWidth, AppSizes.fullContentWidth / 7),
         ),
       ),
         

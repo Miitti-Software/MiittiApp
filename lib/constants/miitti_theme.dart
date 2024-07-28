@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Colors used for building the custom theme
-class Colors {
+class AppColors {
   static const Color pink = Color(0xFFE05494);
   static const Color red = Color(0xFFF36269);
   static const Color violet = Color(0xFF5615CE);
@@ -20,38 +20,38 @@ class Colors {
   );
 }
 
-class Graphics {
+class AppGraphics {
   static const String miittiLogo = 'images/miittiLogo.svg';
   static const String splashBackground = 'images/splashscreen.gif';
   static const String backgroundOverlay = 'images/background-gradient.png';
 }
 
 // Sizes used in building and shaping the app widgets
-class Sizes {
+class AppSizes {
   static const double fullContentWidth = 350;
 }
 
 // Color scheme used for building the custom theme
 final ColorScheme colorScheme = ColorScheme.fromSeed(seedColor: Colors.pink).copyWith(
-  primary: Colors.pink,
-  primaryFixed: Colors.pink,
-  onPrimary: Colors.white,
-  onPrimaryFixed: Colors.white,
+  primary: AppColors.pink,
+  primaryFixed: AppColors.pink,
+  onPrimary: AppColors.white,
+  onPrimaryFixed: AppColors.white,
 
-  secondary: Colors.red,
-  secondaryFixed: Colors.red,
-  onSecondary: Colors.white,
-  onSecondaryFixed: Colors.white,
+  secondary: AppColors.red,
+  secondaryFixed: AppColors.red,
+  onSecondary: AppColors.white,
+  onSecondaryFixed: AppColors.white,
 
-  tertiary: Colors.violet,
-  tertiaryFixed: Colors.violet,
-  onTertiary: Colors.white,
-  onTertiaryFixed: Colors.white,
+  tertiary: AppColors.violet,
+  tertiaryFixed: AppColors.violet,
+  onTertiary: AppColors.white,
+  onTertiaryFixed: AppColors.white,
 
-  surface: Colors.black,
-  onSurface: Colors.white,
+  surface: AppColors.black,
+  onSurface: AppColors.white,
 
-  error: Colors.red,
+  error: AppColors.red,
 );
 
 // Text theme used for building the custom theme
@@ -82,7 +82,7 @@ final TextTheme textTheme = TextTheme(
     color: colorScheme.onPrimary,
   ),
   titleMedium: TextStyle(         // ex activityName
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: FontWeight.w700,
     color: colorScheme.onPrimary,
   ),

@@ -17,7 +17,7 @@ class ConfigScreen extends StatelessWidget {
           SafeArea(
             child: Center(
               child: SizedBox(
-                width: Sizes.fullContentWidth,
+                width: AppSizes.fullContentWidth,
                 child: child,
               ),
             ),

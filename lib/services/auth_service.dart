@@ -1,15 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/state/service_providers.dart';
-import 'package:miitti_app/services/firestore_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// A class for interfacing with the Firebase Authentication service
+/// A class for interfacing with the Firebase Authentication service
+
+//TODO: Before publishing refactoring, delete all anonymous docs from firestore,
+    //because this will incorrectly set anonymous mode off for them, and we don't use docs for anonymous users anymore
 class AuthService {
   final FirebaseAuth _auth;
   final Ref ref;
@@ -21,7 +20,7 @@ class AuthService {
   String get email => _auth.currentUser?.email ?? "";
 
   bool get isSignedIn => _auth.currentUser != null;
-  bool isLoading = false;
+  bool isLoading = false; // TODO: refactor out in favor of future builders and the like
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
@@ -31,82 +30,57 @@ class AuthService {
       await FirebaseAuth.instance.signInWithProvider(appleProvider);
       return true;
     } catch (error) {
-      debugPrint('Got error signing with Apple $error');
+      debugPrint('Error signing in with Apple: $error');
       return false;
     }
   }
 
   Future<bool> signInWithGoogle() async {
-      try {
-        final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
-
-        if (gUser == null) return false;
-
-        final GoogleSignInAuthentication gAuth = await gUser.authentication;
-
-        // Create new credentials for user
-        final credential = GoogleAuthProvider.credential(
-          accessToken: gAuth.accessToken,
-          idToken: gAuth.idToken,
-        );
-
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        return true;
-
-      } catch (error) {
-        debugPrint('Got error signing with Google $error');
-        return false;
-      }
-    }
-
-  void afterSigning(BuildContext context) async {
     try {
-      FirestoreService db = ref.read(firestoreServiceProvider);
-      print('we here');
-      await db.checkExistingUser(uid).then((value) async {
-        if (value == true) {
-          //TODO: Before publishing refactoring, delete all anonymous docs from firestore,
-          //because this will incorrectly set anonymous mode off for them, and we don't use docs for anonymous users anymore
-          afterFrame(() => context.go('/'));
-        } else {
-          print('we further');
-          afterFrame(
-              () => context.go('/login/explore'));
-        }
-      });
+      final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+      if (gUser == null) return false;
+
+      final GoogleSignInAuthentication gAuth = await gUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: gAuth.accessToken,
+        idToken: gAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      return true;
     } catch (error) {
-      showSnackBar(context, "Kirjautumisen käsittelyssä sattui virhe: $error!",
-          AppStyle.red);
-      debugPrint('Got error after signing $error');
+      debugPrint('Error signing in with Google: $error');
+      return false;
     }
   }
 
-  Future signOut() async {
+  Future<void> signOut() async {
     SharedPreferences s = await SharedPreferences.getInstance();
     ref.read(firestoreServiceProvider).reset();
     await _auth.signOut();
-    GoogleSignIn().signOut();
-    s.clear();
+    await GoogleSignIn().signOut();
+    await s.clear();
   }
 
-  Future deleteUser() {
-    return _wait(() async {
-      // TODO: Delete all user's profile picture variants from storage
+  Future<void> deleteUser() async {
+    // TODO: Delete all user's profile picture variants from storage - whole folder corresponding to uid
+    return _performActionWithLoading(() async {
       SharedPreferences s = await SharedPreferences.getInstance();
       await signInWithGoogle();
       ref.read(firestoreServiceProvider).deleteUser();
       ref.read(firestoreServiceProvider).reset();
       await _auth.currentUser!.delete();
-      GoogleSignIn().signOut();
-      s.clear();
+      await GoogleSignIn().signOut();
+      await s.clear();
     });
   }
 
-  // Other auth-related methods
-  Future<T> _wait<T>(Function action) async {
+  Future<T> _performActionWithLoading<T>(Future<T> Function() action) async {
     isLoading = true;
-    T result = await action();
-    isLoading = false;
-    return result;
+    try {
+      return await action();
+    } finally {
+      isLoading = false;
+    }
   }
 }

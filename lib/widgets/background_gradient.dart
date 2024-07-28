@@ -11,7 +11,7 @@ class BackgroundGradient extends StatelessWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage(
-            Graphics.backgroundOverlay,
+            AppGraphics.backgroundOverlay,
           ),
           fit: BoxFit.cover,
         ),

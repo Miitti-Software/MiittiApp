@@ -35,7 +35,7 @@ class LoginIntroScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Spacer(),
-                  SvgPicture.asset(Graphics.miittiLogo),
+                  SvgPicture.asset(AppGraphics.miittiLogo),
                   const SizedBox(height: 15,),
                   Text(
                     data['slogan'],
@@ -50,7 +50,7 @@ class LoginIntroScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 15,),
                   SizedBox(
-                    width: Sizes.fullContentWidth,
+                    width: AppSizes.fullContentWidth,
                     child: DynamicRichText(
                       richTextData: (data['rich-terms-of-usage-notice'] as List).map((item) => item as Map<String, dynamic>).toList(),
                       textStyle: Theme.of(context).textTheme.labelSmall,
@@ -80,7 +80,7 @@ class LoginIntroScreen extends ConsumerWidget {
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage(
-                Graphics.splashBackground,
+                AppGraphics.splashBackground,
               ),
               fit: BoxFit.cover,
             ),
