@@ -22,6 +22,7 @@ class AppColors {
 
 class AppGraphics {
   static const String miittiLogo = 'images/miittiLogo.svg';
+  static const String googleIcon = 'images/googleIcon.svg';
   static const String splashBackground = 'images/splashscreen.gif';
   static const String backgroundOverlay = 'images/background-gradient.png';
 }

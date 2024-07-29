@@ -1,0 +1,6 @@
+{
+    "login-intro-config-stream": "An error was encountered loading remote configuration:",
+    "interrupted-login": "Login was interrupted. Please check your internet connection and try again.",
+    "login-error": "An error occurred during login:",
+    "generic-action-prompt": "Please try again later or contact support."
+}

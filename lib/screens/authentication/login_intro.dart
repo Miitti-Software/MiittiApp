@@ -7,7 +7,6 @@ import 'package:miitti_app/widgets/background_gradient.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/buttons/language_radio_buttons.dart';
 import 'package:miitti_app/widgets/dynamic_rich_text.dart';
-
 import 'package:miitti_app/state/service_providers.dart';
 
 /// The first page that a user sees when opening the app without being signed in
@@ -64,8 +63,8 @@ class LoginIntroScreen extends ConsumerWidget {
             },
             // When the data is loading, show a loading indicator
             loading: () => const Center(child: CircularProgressIndicator()),
-            // When the data is an error, show an error message
-            error: (error, stack) => Center(child: Text('An error was encountered loading remote configuration: $error \n\nPlease try again or contact support.')),
+            // When the data is an error, show an error message (Fetching the error message about failing to fetch values from remote config might be slightly suboptimal but at least it uses .get instead of the stream)
+            error: (error, stack) => Center(child: Text('${ref.read(remoteConfigServiceProvider).get<String>("login-intro-config-stream")} $error \n\n${ref.read(remoteConfigServiceProvider).get<String>("generic-action-prompt")}')),
           ),
         ],
       ),
