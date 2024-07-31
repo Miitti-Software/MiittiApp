@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 
 /// A button handling authentication with Google or Apple.
 class AuthButton extends ConsumerStatefulWidget {
@@ -71,13 +72,13 @@ class _AuthButtonState extends ConsumerState<AuthButton> {
     if (!mounted) return;
 
     try {
-      final authService = ref.read(authServiceProvider);
-      final success = await (widget.isApple ? authService.signInWithApple() : authService.signInWithGoogle());
+      final userState = ref.read(userStateProvider.notifier);
+      final success = await (widget.isApple ? userState.signIn(true) : userState.signIn(false));
 
       if (!mounted) return;
 
       if (success) {
-        final userExists = await ref.read(firestoreServiceProvider).checkExistingUser(authService.uid);
+        final userExists = await ref.read(firestoreServiceProvider).checkExistingUser(userState.uid);
         
         if (!mounted) return;
         

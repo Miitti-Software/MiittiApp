@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/functions/utils.dart';
@@ -168,7 +169,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             getSomeSpace(10),
             GestureDetector(
                 onTap: () async {
-                  await ref.read(authServiceProvider).signOut();
+                  await ref.read(userStateProvider.notifier).signOut();
                 },
                 child: createText('Kirjaudu ulos')),
             getSomeSpace(10),
@@ -192,9 +193,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               'Oletko varma, että haluat poistaa tilisi? Tämä toimenpide on peruuttamaton, ja kaikki tietosi poistetaan pysyvästi.',
                         );
                       },
-                    ).then((confirmed) => {
+                    ).then((confirmed) async => {
                       if (confirmed != null && confirmed) {
-                        ref.read(authServiceProvider).deleteUser()
+                        await ref.read(userStateProvider.notifier).deleteUser()
                       }
                     })
                   },

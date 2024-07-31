@@ -10,15 +10,15 @@ final languageProvider = StateNotifierProvider<LanguageNotifier, Language>((ref)
 });
 
 class LanguageNotifier extends StateNotifier<Language> {
-  final LocalStorageService localStorageService;
+  final LocalStorageService _localStorageService;
   static const String languageKey = 'language';
 
-  LanguageNotifier(this.localStorageService) : super(Language.en) {
+  LanguageNotifier(this._localStorageService) : super(Language.en) {
     loadLanguage();
   }
 
   Future<void> loadLanguage() async {
-    final languageStr = await localStorageService.getString(languageKey);
+    final languageStr = await _localStorageService.getString(languageKey);
     if (languageStr != null) {
       state = Language.values.firstWhere((language) => language.code == languageStr, orElse: () => Language.en);
     }
@@ -27,7 +27,7 @@ class LanguageNotifier extends StateNotifier<Language> {
   Future<void> setLanguage(Language language) async {
     if (state != language) {
       state = language;
-      await localStorageService.saveString(languageKey, language.code);
+      await _localStorageService.saveString(languageKey, language.code);
     }
   }
 }

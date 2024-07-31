@@ -8,6 +8,7 @@ import 'package:miitti_app/screens/authentication/login_screen.dart';
 import 'package:miitti_app/screens/authentication/login_intro.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 
 // A class to define the app's routing configuration and behavior
 class AppRouter {
@@ -76,14 +77,14 @@ class AppRouter {
   }
 
   String? _handleRedirect(BuildContext context, GoRouterState state) {
-    final isAuthenticated = ref.watch(authServiceProvider).isSignedIn;
+    final isAuthenticated = ref.watch(userStateProvider.notifier).isSignedIn;
 
     if (!isAuthenticated && state.matchedLocation != '/login' && state.matchedLocation != '/login/authenticate') {
       return '/login';
     }
 
     if (isAuthenticated && state.matchedLocation != '/login/explore') {
-      ref.watch(firestoreServiceProvider).checkExistingUser(ref.watch(authServiceProvider).uid);
+      ref.watch(firestoreServiceProvider).checkExistingUser(ref.watch(userStateProvider.notifier).uid);
     }
 
     return null;

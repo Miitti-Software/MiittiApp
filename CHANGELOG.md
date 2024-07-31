@@ -41,7 +41,7 @@ Refactoring
 ### Added
 
 - Firebase Remote Config for changing, modifying and rapidly experimenting with app text, UI and content without always having to release new updates in app stores
-- Language setting stored in `LocalStorageService`
+- Language setting in `settings.dart`
 - Language-based loading of Remote Config values (multi-language support)
 - A more robust routing solution using [GoRouter](https://pub.dev/packages/go_router) for deep linking and redirecting support as well as for a more uniform routing interface in code
 
@@ -55,6 +55,8 @@ Refactoring
 - The Google account to be signed in with must be separately selected each time so that people (developers) can easily switch between accounts.
 - Refactored `AuthService` sign-in methods to be parameterless to reduce dependencies, encapsulate backend logic and so enhance reusability and return boolean futures in order to shift UI logic to the widgets using them.
 - All state management including `state_providers.dart` are now under `lib/state`.
+- Refactored all user-related variables from `AuthService` and `FirebaseService` to `UserState` and `UserData` respectively in `user.dart` in order to avoid cross-dependencies
+- Refactored all screens and UI components for clarity, reduced dependencies, centralized specification and loading of content and constants as well as overall future-proofness
 
 ### Removed
 

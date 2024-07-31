@@ -55,23 +55,16 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    SharedPreferences s = await SharedPreferences.getInstance();
-    ref.read(firestoreServiceProvider).reset();
     await _auth.signOut();
     await GoogleSignIn().signOut();
-    await s.clear();
   }
 
   Future<void> deleteUser() async {
     // TODO: Delete all user's profile picture variants from storage - whole folder corresponding to uid
     return _performActionWithLoading(() async {
-      SharedPreferences s = await SharedPreferences.getInstance();
       await signInWithGoogle();
-      ref.read(firestoreServiceProvider).deleteUser();
-      ref.read(firestoreServiceProvider).reset();
       await _auth.currentUser!.delete();
       await GoogleSignIn().signOut();
-      await s.clear();
     });
   }
 
