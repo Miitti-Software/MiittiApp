@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -64,7 +65,14 @@ class LoginIntroScreen extends ConsumerWidget {
             // When the data is loading, show a loading indicator
             loading: () => const Center(child: CircularProgressIndicator()),
             // When the data is an error, show an error message (Fetching the error message about failing to fetch values from remote config might be slightly suboptimal but at least it uses .get instead of the stream)
-            error: (error, stack) => Center(child: Text('${ref.read(remoteConfigServiceProvider).get<String>("login-intro-config-stream")} $error \n\n${ref.read(remoteConfigServiceProvider).get<String>("generic-action-prompt")}')),
+            error: (error, stack) {
+              if (kDebugMode) debugPrint('Error in login intro config stream: $error');
+              return Center(
+                child: Text(
+                  '${ref.read(remoteConfigServiceProvider).get<String>("login-intro-config-stream")} ${ref.read(remoteConfigServiceProvider).get<String>("generic-error-action-prompt")}'
+                ),
+              );
+            },
           ),
         ],
       ),

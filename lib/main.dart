@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
 import 'package:miitti_app/envs/firebase_stag_configuration.dart' as stg;
 import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
+import 'package:miitti_app/state/user.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 

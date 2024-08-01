@@ -381,10 +381,11 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const ConfirmDialog(
+              return ConfirmDialog(
                 title: 'Vahvistus',
-                leftButtonText: 'Ilmianna',
                 mainText: 'Oletko varma, että haluat ilmiantaa käyttäjän?',
+                confirmButtonText: 'Ilmianna',
+                cancelButtonText: ref.watch(remoteConfigServiceProvider).get<String>('cancel-button'),
               );
             },
           ).then((confirmed) {

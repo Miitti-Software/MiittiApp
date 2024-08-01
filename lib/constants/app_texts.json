@@ -20,10 +20,19 @@
         }
     ],
 
-    "auth-title": "Hiya",
-    "auth-subtitle": "Whatsupp?",
+    "auth-title": "Hello there!",
+    "auth-subtitle": "Nice to meet you, time to upgrade your social life?",
     "auth-google": "Sign in using Google",
     "auth-apple": "Sign in using Apple ID",
     "first-auth-welcome-title": "Welcome to Miitti! 🎊",
-    "first-auth-welcome-subtitle": "Would you next like to finish your profile or take a tour of the app?"
+    "first-auth-welcome-subtitle": "Would you next like to finish your profile or take a tour of the app?",
+
+    "delete-account-button": "Delete account",
+    "delete-account-confirmation-title": "Confirmation",
+    "delete-account-confirmation-text": "Are you sure you want to delete your account? All your information will be permanently erased. This action cannot be undone.",
+    "delete-account-confirmation-button": "Delete",
+
+    "cancel-button": "Cancel",
+    "delete-button": "Delete"
+    
   }

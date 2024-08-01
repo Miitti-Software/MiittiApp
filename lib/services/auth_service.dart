@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:miitti_app/state/service_providers.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// A class for interfacing with the Firebase Authentication service
 
@@ -15,14 +13,14 @@ class AuthService {
 
   AuthService(this.ref) : _auth = FirebaseAuth.instance;
 
-  User? get currentUser => _auth.currentUser;
-  String get uid => _auth.currentUser!.uid;
-  String get email => _auth.currentUser?.email ?? "";
+  User? get currentUser => _auth.currentUser;           // TODO: Delete when redundant
+  String get uid => _auth.currentUser!.uid;             // TODO: Delete when redundant
+  String get email => _auth.currentUser?.email ?? "";   // TODO: Delete when redundant
 
-  bool get isSignedIn => _auth.currentUser != null;
+  bool get isSignedIn => _auth.currentUser != null;     // TODO: Delete when redundant
   bool isLoading = false; // TODO: refactor out in favor of future builders and the like
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges => _auth.authStateChanges();     // TODO: Move to UserState?
 
   Future<bool> signInWithApple() async {
     try {
@@ -61,19 +59,8 @@ class AuthService {
 
   Future<void> deleteUser() async {
     // TODO: Delete all user's profile picture variants from storage - whole folder corresponding to uid
-    return _performActionWithLoading(() async {
-      await signInWithGoogle();
-      await _auth.currentUser!.delete();
-      await GoogleSignIn().signOut();
-    });
-  }
-
-  Future<T> _performActionWithLoading<T>(Future<T> Function() action) async {
-    isLoading = true;
-    try {
-      return await action();
-    } finally {
-      isLoading = false;
-    }
+    await signInWithGoogle();
+    await _auth.currentUser!.delete();
+    await GoogleSignIn().signOut();
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -93,8 +94,9 @@ class _AuthButtonState extends ConsumerState<AuthButton> {
       }
     } catch (error) {
       if (!mounted) return;
+      if (kDebugMode) debugPrint('Error logging in: $error');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("${ref.read(remoteConfigServiceProvider).get<String>('login-error')} $error ${ref.read(remoteConfigServiceProvider).get<String>('generic-action-prompt')} "), backgroundColor: Theme.of(context).colorScheme.error),
+        SnackBar(content: Text("${ref.read(remoteConfigServiceProvider).get<String>('login-error')} ${ref.read(remoteConfigServiceProvider).get<String>('generic-error-action-prompt')} "), backgroundColor: Theme.of(context).colorScheme.error),
       );
     }
   }

@@ -44,11 +44,11 @@ class UserState extends StateNotifier<User?> {
     await _authService.deleteUser();
     await _firestoreService.deleteUser();
     _firestoreService.reset();
-    await prefs.clear();
-    
+    prefs.clear();
   }
 }
 
+/// A provider for interacting with the UserState class
 final userStateProvider = StateNotifierProvider<UserState, User?>((ref) {
   final authService = ref.watch(authServiceProvider);
   final firestoreService = ref.watch(firestoreServiceProvider);
@@ -56,6 +56,11 @@ final userStateProvider = StateNotifierProvider<UserState, User?>((ref) {
   return UserState(authService, firestoreService, localStorageService);
 });
 
+/// A provider that streams the current user's authentication state
+final authStateProvider = StreamProvider<User?>((ref) {
+  final authServiceInstance = ref.watch(userStateProvider.notifier);
+  return authServiceInstance.authStateChanges;
+});
 
 
 

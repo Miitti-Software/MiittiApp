@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/services/auth_service.dart';
@@ -45,11 +44,6 @@ final notificationServiceProvider = Provider<PushNotificationService>((ref) {
 });
 
 // Individual providers for more specialized use cases
-
-final authStateProvider = StreamProvider<User?>((ref) {
-  final authServiceInstance = ref.watch(authServiceProvider);
-  return authServiceInstance.authStateChanges;
-});
 
 final configStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
   final remoteConfigService = ref.watch(remoteConfigServiceProvider);

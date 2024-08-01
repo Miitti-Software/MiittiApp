@@ -314,10 +314,11 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return const ConfirmDialog(
+                return ConfirmDialog(
                   title: 'Varmistus',
-                  leftButtonText: 'Ilmianna',
                   mainText: 'Oletko varma, että haluat ilmiantaa aktiviteetin?',
+                  confirmButtonText: 'Ilmianna',
+                  cancelButtonText: ref.watch(remoteConfigServiceProvider).get<String>('cancel-button'),
                 );
               },
             ).then(

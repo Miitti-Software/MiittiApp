@@ -4,14 +4,14 @@ import 'package:miitti_app/constants/app_style.dart';
 class ConfirmDialog extends StatelessWidget {
   final String title;
   final String mainText;
-  final String leftButtonText;
-  final String rightButtonText;
+  final String cancelButtonText;
+  final String confirmButtonText;
 
   const ConfirmDialog({
     required this.title,
     required this.mainText,
-    this.leftButtonText = 'Poista',
-    this.rightButtonText = 'Peruuta',
+    required this.cancelButtonText,
+    required this.confirmButtonText,
     super.key,
   });
 
@@ -53,7 +53,7 @@ class ConfirmDialog extends StatelessWidget {
             ),
           ),
           child: Text(
-            rightButtonText,
+            confirmButtonText,
             style: const TextStyle(
               fontFamily: 'Rubik',
               fontSize: 16.0,
@@ -74,7 +74,7 @@ class ConfirmDialog extends StatelessWidget {
             ),
           ),
           child: Text(
-            leftButtonText,
+            cancelButtonText,
             style: const TextStyle(
               fontFamily: 'Rubik',
               fontSize: 16.0,

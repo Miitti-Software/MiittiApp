@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
-import 'package:miitti_app/widgets/confirmdialog.dart';
+import 'package:miitti_app/widgets/buttons/delete_account_button.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_onboard.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -182,25 +182,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   },
                   child: createText('Viimeistele profiili'),
                 ),
-                GestureDetector(
-                  onTap: () => {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const ConfirmDialog(
-                          title: 'Varmistus',
-                          mainText:
-                              'Oletko varma, että haluat poistaa tilisi? Tämä toimenpide on peruuttamaton, ja kaikki tietosi poistetaan pysyvästi.',
-                        );
-                      },
-                    ).then((confirmed) async => {
-                      if (confirmed != null && confirmed) {
-                        await ref.read(userStateProvider.notifier).deleteUser()
-                      }
-                    })
-                  },
-                  child: createText('Poista tili'),
-                ),
+                const DeleteAccountButton(),
               ],
             ),
             const SizedBox(height: 30),

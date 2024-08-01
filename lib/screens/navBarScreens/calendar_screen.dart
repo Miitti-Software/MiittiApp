@@ -165,10 +165,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return const ConfirmDialog(
+                                    return ConfirmDialog(
                                       title: 'Varmistus',
                                       mainText:
                                           'Oletko varma, että haluat poistaa?',
+                                      confirmButtonText: ref.watch(remoteConfigServiceProvider).get<String>('delete-button'),
+                                      cancelButtonText: ref.watch(remoteConfigServiceProvider).get<String>('cancel-button'),
                                     );
                                   },
                                 ).then((confirmed) {
@@ -201,6 +203,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                       mainText: isWaiting
                                           ? 'Haluatko varmasti peruuttaa liittymispyyntösi?'
                                           : 'Oletko varma, että haluat poistua miitistä?',
+                                      confirmButtonText: ref.watch(remoteConfigServiceProvider).get<String>('delete-button'),
+                                      cancelButtonText: ref.watch(remoteConfigServiceProvider).get<String>('cancel-button'),
                                     );
                                   },
                                 ).then((confirmed) {
