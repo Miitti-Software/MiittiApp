@@ -13,6 +13,7 @@ class ConfigScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          Container(color: Theme.of(context).colorScheme.surface),
           const BackgroundGradient(),
           SafeArea(
             child: Center(

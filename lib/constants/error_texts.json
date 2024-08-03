@@ -3,5 +3,7 @@
     "interrupted-login": "Login was interrupted. Please check your internet connection and try again.",
     "login-error": "An error occurred during login.",
     "generic-error-action-prompt": "Please try again later or contact support.",
-    "delete-account-error": "An error occurred during account deletion."
+    "delete-account-error": "An error occurred during account deletion.",
+    "routing-error": "Error navigating to the requested page:",
+    "error-message-action-prompt": "Please contact support with the above error message."
 }

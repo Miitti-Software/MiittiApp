@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_onboard.dart';
-import 'package:miitti_app/screens/authentication/explore_decision_screen.dart';
+import 'package:miitti_app/screens/authentication/welcome_screen.dart';
 import 'package:miitti_app/screens/authentication/login_screen.dart';
 import 'package:miitti_app/screens/authentication/login_intro.dart';
 import 'package:miitti_app/screens/index_page.dart';
@@ -55,8 +55,8 @@ class AppRouter {
         pageBuilder: _buildNoTransitionPage(const LoginScreen()),
       ),
       GoRoute(
-        path: 'explore',
-        pageBuilder: _buildNoTransitionPage(const ExploreDecisionScreen()),
+        path: 'welcome',
+        pageBuilder: _buildNoTransitionPage(const WelcomeScreen()),
       ),
       GoRoute(
         path: 'complete-profile',
@@ -83,7 +83,7 @@ class AppRouter {
       return '/login';
     }
 
-    if (isAuthenticated && state.matchedLocation != '/login/explore') {
+    if (isAuthenticated && state.matchedLocation != '/login/welcome') {
       ref.watch(firestoreServiceProvider).checkExistingUser(ref.watch(userStateProvider.notifier).uid);
     }
 
@@ -93,7 +93,7 @@ class AppRouter {
   Widget _buildErrorPage(BuildContext context, GoRouterState state) {
     return Scaffold(
       body: Center(
-        child: Text('Error navigating to the requested page: ${state.error}'),
+        child: Text('${ref.watch(remoteConfigServiceProvider).get<String>('routing-error')}\n\n${state.error}\n\n${ref.watch(remoteConfigServiceProvider).get<String>('error-message-action-prompt')}'),
       ),
     );
   }

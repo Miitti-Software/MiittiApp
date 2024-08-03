@@ -59,7 +59,7 @@ final ColorScheme colorScheme = ColorScheme.fromSeed(seedColor: Colors.pink).cop
 final TextTheme textTheme = TextTheme(
   titleLarge: TextStyle(          // ex title
     fontSize: 32,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w700,
     color: colorScheme.onPrimary,
   ),
   bodyMedium: TextStyle(          // ex body
