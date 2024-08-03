@@ -33,7 +33,13 @@ class RemoteConfigService {
   int getInt(String key) =>_remoteConfig.getInt(key);
   double getDouble(String key) =>_remoteConfig.getDouble(key);
   /// Generic getter for fetching values of any type that are defined in the json configuration files
-  T get<T>(String key) => _configValues[key] as T;
+  T get<T>(String key) {
+    try {
+      return _configValues[key] as T;
+    } catch (e) {
+      throw Exception('The key "$key" does not exist in the config values');
+    }
+  }
 
   /// Get a list of maps of rich text values with keys "text" and "url" fetched from the remote config
   List<Map<String, dynamic>> getRichText(String key) {
