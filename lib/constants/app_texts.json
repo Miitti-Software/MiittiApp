@@ -38,5 +38,15 @@
     "delete-account-confirmation-button": "Delete",
 
     "cancel-button": "Cancel",
-    "delete-button": "Delete"   
+    "delete-button": "Delete",
+    "forward-button": "Next",
+    "back-button": "Back",
+
+    "input-name-title": "Let's begin, what's your name?",
+    "input-name-placeholder": "Your first name",
+    "input-name-disclaimer": "You're unique so remember to use only your own infromation.",
+
+    "input-email-title": "Add your email address",
+    "input-email-placeholder": "example@email.com",
+    "input-email-disclaimer": "We never use your email for marketing without your permission!"
   }

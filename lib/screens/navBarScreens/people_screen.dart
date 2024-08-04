@@ -71,7 +71,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
         return snapshot.docs
             .map((doc) => MiittiUser.fromDoc(doc))
             .where((user) =>
-                user.uid != ref.read(authServiceProvider).uid && user.userName != "")
+                user.uid != ref.read(authServiceProvider).uid && user.name != "")
             .toList();
       }
       return [];
@@ -180,7 +180,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   }
 
   Widget buildUserActivitiesText(MiittiUser user) {
-    List<String> activities = user.userFavoriteActivities.toList();
+    List<String> activities = user.favoriteActivities.toList();
     int maxActivitiesToShow = 5;
     List<String> limitedActivities =
         activities.take(maxActivitiesToShow).toList();
@@ -203,7 +203,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
     return Column(
       children: [
         Text(
-          "${user.userName}, ${calculateAge(user.userBirthday)}",
+          "${user.name}, ${calculateAge(user.birthday)}",
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             fontSize: 18,

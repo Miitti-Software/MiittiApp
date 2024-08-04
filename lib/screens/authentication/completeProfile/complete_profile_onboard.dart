@@ -213,7 +213,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
   int currentAnswers = 0;
   Map<String, String> userChoices = {};
 
-  //PAGE 9 PICTURE
+  //PAGE 9 PICTURE -
   File? image;
 
   //PAGE 10 ACTIVITIES
@@ -1067,22 +1067,22 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
       }
     } else {
       MiittiUser miittiUser = MiittiUser(
-        userName: _nameController.text.trim(),
-        userEmail: _emailController.text.trim(),
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
         uid: '',
-        userPhoneNumber: '',
-        userBirthday: birthdayText!,
-        userArea: selectedCities.join(","),
-        userFavoriteActivities: favoriteActivities.toList(),
-        userChoices: userChoices,
-        userGender: selectedGender,
-        userLanguages: selectedLanguages.toList(),
+        phoneNumber: '',
+        birthday: birthdayText!,
+        locations: selectedCities.join(","),
+        favoriteActivities: favoriteActivities.toList(),
+        qaAnswers: userChoices,
+        gender: selectedGender,
+        languages: selectedLanguages.toList(),
         profilePicture: '',
         invitedActivities: [],
         lastActive: Timestamp.now(),
-        userSchool: noLifeSituation ? '' : selectedLifeOption,
+        associatedOrganization: noLifeSituation ? '' : selectedLifeOption,
         fcmToken: '',
-        userRegistrationDate: Timestamp.now(),
+        registrationDate: Timestamp.now(),
       );
       registerUser(context, miittiUser);
     }

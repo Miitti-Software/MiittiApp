@@ -51,12 +51,12 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
     super.initState();
     filteredActivities = activities.keys.toList();
     favoriteActivities =
-        updateActiviesId(widget.user.userFavoriteActivities.toSet());
+        updateActiviesId(widget.user.favoriteActivities.toSet());
 
-    selectedLanguages = widget.user.userLanguages.toSet();
-    userAreaController.text = widget.user.userArea;
-    userSchoolController.text = widget.user.userSchool;
-    userChoices = widget.user.userChoices;
+    selectedLanguages = widget.user.languages.toSet();
+    userAreaController.text = widget.user.locations;
+    userSchoolController.text = widget.user.associatedOrganization;
+    userChoices = widget.user.qaAnswers;
   }
 
   List<String> updateActiviesId(Set<String> favActivities) {
@@ -404,24 +404,24 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
 
                     final miittiUser = ref.read(firestoreServiceProvider).miittiUser!;
                     final updatedUser = MiittiUser(
-                      userName: miittiUser.userName,
-                      userEmail: miittiUser.userEmail,
+                      name: miittiUser.name,
+                      email: miittiUser.email,
                       uid: miittiUser.uid,
-                      userPhoneNumber: miittiUser.userPhoneNumber,
-                      userBirthday: miittiUser.userBirthday,
-                      userArea: userAreaController.text.trim(),
-                      userFavoriteActivities: favoriteActivities
+                      phoneNumber: miittiUser.phoneNumber,
+                      birthday: miittiUser.birthday,
+                      locations: userAreaController.text.trim(),
+                      favoriteActivities: favoriteActivities
                           .map((activity) => activity)
                           .toList(),
-                      userChoices: userChoices,
-                      userGender: miittiUser.userGender,
+                      qaAnswers: userChoices,
+                      gender: miittiUser.gender,
                       profilePicture: miittiUser.profilePicture,
-                      userLanguages: selectedLanguages.toList(),
+                      languages: selectedLanguages.toList(),
                       invitedActivities: miittiUser.invitedActivities,
                       lastActive: miittiUser.lastActive,
-                      userSchool: userSchoolController.text,
+                      associatedOrganization: userSchoolController.text,
                       fcmToken: miittiUser.fcmToken,
-                      userRegistrationDate: miittiUser.userRegistrationDate,
+                      registrationDate: miittiUser.registrationDate,
                     );
                     await ref
                         .read(firestoreServiceProvider)

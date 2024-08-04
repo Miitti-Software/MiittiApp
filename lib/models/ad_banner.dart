@@ -46,18 +46,18 @@ class AdBanner {
   int targetWeight(MiittiUser user) {
     try {
       int weight = 0;
-      int age = calculateAge(user.userBirthday);
+      int age = calculateAge(user.birthday);
       if (age < targetMinAge || age > targetMaxAge) weight += 1;
 
       for (var activity in targetActivities) {
-        if (user.userFavoriteActivities.contains(activity)) weight += 1;
+        if (user.favoriteActivities.contains(activity)) weight += 1;
       }
 
-      if (user.userGender == "Mies" && !targetMen) {
+      if (user.gender == "Mies" && !targetMen) {
         weight -= 1;
-      } else if (user.userGender == "Nainen" && !targetWomen) {
+      } else if (user.gender == "Nainen" && !targetWomen) {
         weight -= 1;
-      } else if (user.userGender == "Ei-binäärinen" && !targetNonBinary) {
+      } else if (user.gender == "Ei-binäärinen" && !targetNonBinary) {
         weight -= 1;
       }
 

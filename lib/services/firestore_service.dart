@@ -245,7 +245,7 @@ class FirestoreService {
 
         if (_miittiUser != null &&
             filterSettings.sameGender &&
-            activity.adminGender != miittiUser!.userGender) {
+            activity.adminGender != miittiUser!.gender) {
           return false;
         }
         if (!filterSettings.multiplePeople && activity.personLimit > 2) {
@@ -267,7 +267,7 @@ class FirestoreService {
         if (_miittiUser == null) {
           debugPrint("User is null");
         } else {
-          debugPrint("Checking filters of ${_miittiUser?.userName}");
+          debugPrint("Checking filters of ${_miittiUser?.name}");
           if (daysSince(activity.endTime) < -1) {
             return false;
           }
@@ -340,10 +340,10 @@ class FirestoreService {
     Query query = _firestore.collection(_usersString);
 
     if (type == 0) {
-      query = query.where('userArea', isEqualTo: miittiUser!.userArea);
+      query = query.where('userArea', isEqualTo: miittiUser!.locations);
     } else if (type == 1) {
       query = query.where('userFavoriteActivities',
-          arrayContainsAny: miittiUser!.userFavoriteActivities);
+          arrayContainsAny: miittiUser!.favoriteActivities);
     } else {
       query = query.orderBy('userRegistrationDate', descending: true);
     }
@@ -396,8 +396,8 @@ class FirestoreService {
       await uploadUserImage(ref.read(authServiceProvider).uid, image).then((value) {
         userModel.profilePicture = value;
       }).onError((error, stackTrace) {});
-      userModel.userRegistrationDate = Timestamp.now();
-      userModel.userPhoneNumber =
+      userModel.registrationDate = Timestamp.now();
+      userModel.phoneNumber =
           ref.read(authServiceProvider).currentUser?.phoneNumber ?? '';
       userModel.uid = ref.read(authServiceProvider).uid;
       _miittiUser = userModel;
@@ -617,8 +617,8 @@ class FirestoreService {
     showLoadingDialog(context);
     try {
       activityModel.admin = _miittiUser!.uid;
-      activityModel.adminAge = calculateAge(_miittiUser!.userBirthday);
-      activityModel.adminGender = _miittiUser!.userGender;
+      activityModel.adminAge = calculateAge(_miittiUser!.birthday);
+      activityModel.adminGender = _miittiUser!.gender;
       activityModel.activityUid = generateCustomId();
       activityModel.participants.add(_miittiUser!.uid);
 

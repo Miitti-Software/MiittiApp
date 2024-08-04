@@ -195,7 +195,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       Map<String, dynamic> chatMessageMap = {
         'message': messageController.text,
         'sender': ref.read(authServiceProvider).uid,
-        'senderName': ref.read(firestoreServiceProvider).miittiUser!.userName,
+        'senderName': ref.read(firestoreServiceProvider).miittiUser!.name,
         'time': DateTime.now().millisecondsSinceEpoch,
       };
       ref
@@ -209,7 +209,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         if (receiver.uid == ref.read(firestoreServiceProvider).uid) continue;
         ref.read(notificationServiceProvider).sendMessageNotification(
             receiver.fcmToken,
-            ref.read(firestoreServiceProvider).miittiUser!.userName,
+            ref.read(firestoreServiceProvider).miittiUser!.name,
             widget.activity,
             messageController.text);
       }

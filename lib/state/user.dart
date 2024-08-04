@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/models/miitti_user.dart';
@@ -67,8 +68,94 @@ final authStateProvider = StreamProvider<User?>((ref) {
 });
 
 
+/// A class to manage the current user's data
+class UserData {
+  String? uid;
+  String? email;
+  String? phoneNumber;
+  String? name;
+  String? locations;
+  String? gender;
+  String? profilePicture;
+  Timestamp? birthday;
+  List<String>? languages;
+  String? occupationalStatus;
+  String? associatedOrganization;
+  List<String>? favoriteActivities;
+  List<String>? invitedActivities;
+  Map<String, String>? qaAnswers;
+  Map<String, String>? groups;
+  String? fcmToken;
+  Timestamp? lastActive;
+  Timestamp? userRegistrationDate;
 
-class UserData extends StateNotifier<MiittiUser> {
-  UserData(super.state);
-  
+  UserData({MiittiUser? miittiUser}) {
+    if (miittiUser != null) {
+      uid = miittiUser.uid;
+      email = miittiUser.email;               // TODO: Fetch email from the authentification service - name too maybe? And everything else that is available
+      phoneNumber = miittiUser.phoneNumber;
+      name = miittiUser.name;
+      locations = miittiUser.locations;
+      gender = miittiUser.gender;
+      profilePicture = miittiUser.profilePicture;
+      birthday = miittiUser.birthday;
+      languages = miittiUser.languages;
+      occupationalStatus = miittiUser.occupationalStatus;
+      associatedOrganization = miittiUser.associatedOrganization;
+      favoriteActivities = miittiUser.favoriteActivities;
+      invitedActivities = miittiUser.invitedActivities;
+      qaAnswers = miittiUser.qaAnswers;
+      groups = miittiUser.groups;
+      fcmToken = miittiUser.fcmToken;
+      lastActive = miittiUser.lastActive;
+      userRegistrationDate = miittiUser.registrationDate;
+    }
+  }
+
+  // Getters
+  String? get getUid => uid;
+  String? get getUserEmail => email;
+  String? get getUserPhoneNumber => phoneNumber;
+  String? get getUserName => name;
+  String? get getUserArea => locations;
+  String? get getUserGender => gender;
+  String? get getProfilePicture => profilePicture;
+  Timestamp? get getUserBirthday => birthday;
+  List<String>? get getUserLanguages => languages;
+  String? get getOccupationalStatus => occupationalStatus;
+  String? get getAssociatedOrganization => associatedOrganization;
+  List<String>? get getUserFavoriteActivities => favoriteActivities;
+  List<String>? get getInvitedActivities => invitedActivities;
+  Map<String, String>? get getQaAnswers => qaAnswers;
+  Map<String, String>? get getGroups => groups;
+  String? get getFcmToken => fcmToken;
+  Timestamp? get getLastActive => lastActive;
+  Timestamp? get getUserRegistrationDate => userRegistrationDate;
+
+  // Setters
+  void setUid(String? value) => uid = value;
+  void setUserEmail(String? value) => email = value;
+  void setUserPhoneNumber(String? value) => phoneNumber = value;
+  void setUserName(String? value) => name = value;
+  void setUserArea(String? value) => locations = value;
+  void setUserGender(String? value) => gender = value;
+  void setProfilePicture(String? value) => profilePicture = value;
+  void setUserBirthday(Timestamp? value) => birthday = value;
+  void setUserLanguages(List<String>? value) => languages = value;
+  void setOccupationalStatus(String? value) => occupationalStatus = value;
+  void setAssociatedOrganization(String? value) => associatedOrganization = value;
+  void setUserFavoriteActivities(List<String>? value) => favoriteActivities = value;
+  void setInvitedActivities(List<String>? value) => invitedActivities = value;
+  void setQaAnswers(Map<String, String>? value) => qaAnswers = value;
+  void setGroups(Map<String, String>? value) => groups = value;
+  void setFcmToken(String? value) => fcmToken = value;
+  void setLastActive(Timestamp? value) => lastActive = value;
+  void setUserRegistrationDate(Timestamp? value) => userRegistrationDate = value;
+
+  // TODO: Implement a method to update the user's data in Firestore
 }
+
+final userDataProvider = Provider<UserData>((ref) {
+  final user = ref.watch(firestoreServiceProvider).miittiUser;
+  return UserData(miittiUser: user);
+});

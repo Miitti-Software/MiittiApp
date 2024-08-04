@@ -37,7 +37,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
     super.initState();
     //Initialize the list from given data
     initRequests();
-    filteredActivities = widget.user.userFavoriteActivities.toList();
+    filteredActivities = widget.user.favoriteActivities.toList();
   }
 
   void initRequests() async {
@@ -57,7 +57,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
     //final isLoading = ap.isLoading;
 
     List<String> answeredQuestions = questionOrder
-        .where((question) => widget.user.userChoices.containsKey(question))
+        .where((question) => widget.user.qaAnswers.containsKey(question))
         .toList();
 
     return Scaffold(
@@ -74,7 +74,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            widget.user.userName,
+            widget.user.name,
             style: const TextStyle(
               fontSize: 30,
               fontFamily: 'Sora',
@@ -100,7 +100,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
     // Add the first question card and user details card
     String firstQuestion = answeredQuestions[0];
-    String firstAnswer = widget.user.userChoices[firstQuestion]!;
+    String firstAnswer = widget.user.qaAnswers[firstQuestion]!;
     widgets.add(buildQuestionCard(firstQuestion, firstAnswer));
     widgets.add(buildUserDetailsCard());
 
@@ -108,7 +108,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
     if (answeredQuestions.length > 1) {
       for (var i = 1; i < answeredQuestions.length; i++) {
         String question = answeredQuestions[i];
-        String answer = widget.user.userChoices[question]!;
+        String answer = widget.user.qaAnswers[question]!;
         widgets.add(buildQuestionCard(question, answer));
 
         // Add activities grid after the first additional question card
@@ -183,10 +183,10 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
     return SizedBox(
       height: 210,
       child: PageView.builder(
-        itemCount: widget.user.userChoices.length,
+        itemCount: widget.user.qaAnswers.length,
         itemBuilder: (context, index) {
           String question = answeredQuestions[index];
-          String answer = widget.user.userChoices[question]!;
+          String answer = widget.user.qaAnswers[question]!;
           return buildQuestionCard(question, answer);
         },
       ),
@@ -247,15 +247,15 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
         ),
         child: Column(
           children: [
-            buildUserDetailTile(Icons.location_on, widget.user.userArea),
+            buildUserDetailTile(Icons.location_on, widget.user.locations),
             buildDivider(),
-            buildUserDetailTile(Icons.person, widget.user.userGender),
-            buildDivider(),
-            buildUserDetailTile(
-                Icons.cake, calculateAge(widget.user.userBirthday).toString()),
+            buildUserDetailTile(Icons.person, widget.user.gender),
             buildDivider(),
             buildUserDetailTile(
-                Icons.g_translate, widget.user.userLanguages.join(', ')),
+                Icons.cake, calculateAge(widget.user.birthday).toString()),
+            buildDivider(),
+            buildUserDetailTile(
+                Icons.g_translate, widget.user.languages.join(', ')),
             buildDivider(),
             buildUserDetailTile(Icons.next_week, 'Opiskelija'),
           ],
@@ -631,7 +631,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
               style: AppStyle.body,
             ),
             Text(
-              'Kun ${widget.user.userName} on hyväksynyt kutsun liittyvä miittisi, saat siitä push ilmoituksen',
+              'Kun ${widget.user.name} on hyväksynyt kutsun liittyvä miittisi, saat siitä push ilmoituksen',
               textAlign: TextAlign.center,
               style: AppStyle.body,
             ),
@@ -670,7 +670,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("${widget.user.userName} on pyytäny päästä miittiisi:",
+          Text("${widget.user.name} on pyytäny päästä miittiisi:",
               textAlign: TextAlign.start,
               style: const TextStyle(
                 color: Colors.white,

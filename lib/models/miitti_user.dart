@@ -1,41 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// TODO: Rename stuff in Firebase to match this (userChoices -> qaAnswers, userStatus -> lastActive, userSchool -> associatedOrganization)
+// TODO: Do a full update on Firebase to match this class
+
 class MiittiUser {
-  String userEmail;
-  String userName;
-  String userPhoneNumber;
-  Timestamp userBirthday;
-  String userArea;
-  List<String> userFavoriteActivities;
-  Map<String, String> userChoices;
-  String userGender;
-  List<String> userLanguages;
+  String email;
+  String name;
+  String phoneNumber;
+  Timestamp birthday;
+  String locations;
+  List<String> favoriteActivities;
+  Map<String, String> qaAnswers;
+  String gender;
+  List<String> languages;
   String profilePicture;
   String uid;
   List<String> invitedActivities;
   Timestamp lastActive;
-  String userSchool;
+  Map<String, String>? groups;
+  String? occupationalStatus;
+  String associatedOrganization;
   String fcmToken;
-  Timestamp userRegistrationDate;
+  Timestamp registrationDate;
 
   MiittiUser(
-      {required this.userName,
-      required this.userEmail,
+      {required this.name,
+      required this.email,
       required this.uid,
-      required this.userPhoneNumber,
-      required this.userBirthday,
-      required this.userArea,
-      required this.userFavoriteActivities,
-      required this.userChoices,
-      required this.userGender,
-      required this.userLanguages,
+      required this.phoneNumber,
+      required this.birthday,
+      required this.locations,
+      required this.favoriteActivities,
+      required this.qaAnswers,
+      required this.gender,
+      required this.languages,
       required this.profilePicture,
       required this.invitedActivities,
       required this.lastActive,
-      required this.userSchool,
+      this.groups,
+      this.occupationalStatus,        // TODO: Make mandatory
+      required this.associatedOrganization,   // TODO: Make non-mandatory
       required this.fcmToken,
-      required this.userRegistrationDate});
+      required this.registrationDate});
 
   factory MiittiUser.fromDoc(DocumentSnapshot snapshot) {
     return MiittiUser.fromMap(snapshot.data() as Map<String, dynamic>);
@@ -44,23 +51,24 @@ class MiittiUser {
   factory MiittiUser.fromMap(Map<String, dynamic> map) {
     try {
       return MiittiUser(
-        userName: map['userName'] ?? '',
-        userEmail: map['userEmail'] ?? '',
+        name: map['userName'] ?? '',
+        email: map['userEmail'] ?? '',
         uid: map['uid'] ?? '',
-        userPhoneNumber: map['userPhoneNumber'] ?? '',
-        userBirthday: resolveTimestamp(map['userBirthday']),
-        userArea: map['userArea'] ?? '',
-        userFavoriteActivities:
+        phoneNumber: map['userPhoneNumber'] ?? '',
+        birthday: resolveTimestamp(map['userBirthday']),
+        locations: map['userArea'] ?? '',
+        favoriteActivities:
             _resolveActivities(_toStringList(map['userFavoriteActivities'])),
-        userChoices: _toStringMap(map['userChoices']),
-        userGender: map['userGender'] ?? '', // Updated to single File
-        userLanguages: _toStringList(map['userLanguages']),
+        qaAnswers: _toStringMap(map['userChoices']),
+        gender: map['userGender'] ?? '', // Updated to single File
+        languages: _toStringList(map['userLanguages']),
         profilePicture: map['profilePicture'] ?? '',
         invitedActivities: _toStringList(map['invitedActivities']),
         lastActive: resolveTimestamp(map['userStatus']),
-        userSchool: map['userSchool'] ?? '',
+        occupationalStatus: map['occupationalStatus'] ?? '',
+        associatedOrganization: map['userSchool'] ?? '',
         fcmToken: map['fcmToken'] ?? '',
-        userRegistrationDate: resolveTimestamp(map['userRegistrationDate']),
+        registrationDate: resolveTimestamp(map['userRegistrationDate']),
       );
     } catch (e, s) {
       debugPrint('Error parsing user from map: $e | $s');
@@ -70,50 +78,50 @@ class MiittiUser {
 
   Map<String, dynamic> toMap() {
     return {
-      'userName': userName,
-      'userEmail': userEmail,
+      'userName': name,
+      'userEmail': email,
       'uid': uid,
-      'userPhoneNumber': userPhoneNumber,
-      'userBirthday': userBirthday,
-      'userArea': userArea,
-      'userFavoriteActivities': userFavoriteActivities.toList(),
-      'userChoices': userChoices,
-      'userGender': userGender,
-      'userLanguages': userLanguages.toList(),
+      'userPhoneNumber': phoneNumber,
+      'userBirthday': birthday,
+      'userArea': locations,
+      'userFavoriteActivities': favoriteActivities.toList(),
+      'userChoices': qaAnswers,
+      'userGender': gender,
+      'userLanguages': languages.toList(),
       'profilePicture': profilePicture,
       'invitedActivities': invitedActivities.toList(),
       'lastActive': lastActive,
-      'userSchool': userSchool,
+      'userSchool': associatedOrganization,
       'fcmToken': fcmToken,
-      'userRegistrationDate': userRegistrationDate
+      'userRegistrationDate': registrationDate
     };
   }
 
   bool updateUser(Map<String, dynamic> newData) {
     try {
-      userName = newData['userName'] ?? userName;
-      userEmail = newData['userEmail'] ?? userEmail;
-      userPhoneNumber = newData['userPhoneNumber'] ?? userPhoneNumber;
-      userBirthday = newData['userBirthday'] ?? userBirthday;
-      userArea = newData['userArea'] ?? userArea;
+      name = newData['userName'] ?? name;
+      email = newData['userEmail'] ?? email;
+      phoneNumber = newData['userPhoneNumber'] ?? phoneNumber;
+      birthday = newData['userBirthday'] ?? birthday;
+      locations = newData['userArea'] ?? locations;
       lastActive = newData['lastActive'] ?? lastActive;
-      userSchool = newData['userSchool'] ?? userSchool;
+      associatedOrganization = newData['userSchool'] ?? associatedOrganization;
       fcmToken = newData['fcmToken'] ?? fcmToken;
-      userRegistrationDate =
-          newData['userRegistrationDate'] ?? userRegistrationDate;
+      registrationDate =
+          newData['userRegistrationDate'] ?? registrationDate;
       profilePicture = newData['profilePicture'] ?? profilePicture;
-      userGender = newData['userGender'] ?? userGender;
+      gender = newData['userGender'] ?? gender;
 
       if (newData['userFavoriteActivities'] is List<dynamic>) {
-        userFavoriteActivities = _resolveActivities(
+        favoriteActivities = _resolveActivities(
             _toStringList(newData['userFavoriteActivities']));
       }
       if (newData['userChoices'] is Map<String, String>) {
-        userChoices = newData['userChoices'];
+        qaAnswers = newData['userChoices'];
       }
 
       if (newData['userLanguages'] is List<String>) {
-        userLanguages = newData['userLanguages'];
+        languages = newData['userLanguages'];
       }
 
       if (newData['invitedActivities'] is List<String>) {

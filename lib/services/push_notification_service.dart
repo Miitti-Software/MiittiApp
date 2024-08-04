@@ -150,7 +150,7 @@ class PushNotificationService {
     sendNotification(
       receiver.fcmToken,
       "Sait kutsun miittiin!",
-      "${current.userName} haluis sut mukaan miittiin: ${activity.activityTitle}",
+      "${current.name} haluis sut mukaan miittiin: ${activity.activityTitle}",
       "invite",
       activity.activityUid,
     );
@@ -167,7 +167,7 @@ class PushNotificationService {
       sendNotification(
         admin.fcmToken,
         "Pääsiskö miittiin mukaan?",
-        "${firestore.miittiUser!.userName} pyysi päästä miittiin: ${activity.activityTitle}",
+        "${firestore.miittiUser!.name} pyysi päästä miittiin: ${activity.activityTitle}",
         "request",
         firestore.miittiUser!.uid,
       );

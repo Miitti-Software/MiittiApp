@@ -436,8 +436,8 @@ class AuthProvider extends ChangeNotifier {
     showLoadingDialog(context);
     try {
       activityModel.admin = _miittiUser!.uid;
-      activityModel.adminAge = calculateAge(_miittiUser!.userBirthday);
-      activityModel.adminGender = _miittiUser!.userGender;
+      activityModel.adminAge = calculateAge(_miittiUser!.birthday);
+      activityModel.adminGender = _miittiUser!.gender;
       activityModel.activityUid = generateCustomId();
       activityModel.participants.add(_miittiUser!.uid);
 
@@ -474,7 +474,7 @@ class AuthProvider extends ChangeNotifier {
 
         if (_miittiUser != null &&
             filterSettings.sameGender &&
-            activity.adminGender != miittiUser.userGender) {
+            activity.adminGender != miittiUser.gender) {
           return false;
         }
         if (!filterSettings.multiplePeople && activity.personLimit > 2) {
@@ -496,7 +496,7 @@ class AuthProvider extends ChangeNotifier {
         if (_miittiUser == null) {
           debugPrint("User is null");
         } else {
-          debugPrint("Checking filters of ${_miittiUser?.userName}");
+          debugPrint("Checking filters of ${_miittiUser?.name}");
           if (daysSince(activity.endTime) < -1) {
             return false;
           }
@@ -946,7 +946,7 @@ class AuthProvider extends ChangeNotifier {
     MiittiUser? user = await getUser(uid);
     if (user == null) {
       return true;
-    } else if (user.userArea.isEmpty) {
+    } else if (user.locations.isEmpty) {
       return true;
     } else {
       return false;
@@ -965,8 +965,8 @@ class AuthProvider extends ChangeNotifier {
           .then((value) {
         userModel.profilePicture = value;
       }).onError((error, stackTrace) {});
-      userModel.userRegistrationDate = Timestamp.now();
-      userModel.userPhoneNumber = _firebaseAuth.currentUser!.phoneNumber ?? '';
+      userModel.registrationDate = Timestamp.now();
+      userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber ?? '';
       userModel.uid = _firebaseAuth.currentUser!.uid;
       _uid = userModel.uid;
       _miittiUser = userModel;
@@ -1253,10 +1253,10 @@ class AuthProvider extends ChangeNotifier {
     Query query = _fireStore.collection(_usersString);
 
     if (type == 0) {
-      query = query.where('userArea', isEqualTo: miittiUser.userArea);
+      query = query.where('userArea', isEqualTo: miittiUser.locations);
     } else if (type == 1) {
       query = query.where('userFavoriteActivities',
-          arrayContainsAny: miittiUser.userFavoriteActivities);
+          arrayContainsAny: miittiUser.favoriteActivities);
     } else {
       query = query.orderBy('userRegistrationDate', descending: true);
     }

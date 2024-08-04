@@ -224,7 +224,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                                 participantCount < 10 ? participantCount : 10,
                             itemBuilder: (BuildContext context, int index) {
                               MiittiUser user = participantList[index];
-                              debugPrint("$index: ${user.userName} osallistuu");
+                              debugPrint("$index: ${user.name} osallistuu");
                               return Padding(
                                 padding: const EdgeInsets.only(left: 16.0),
                                 child: GestureDetector(

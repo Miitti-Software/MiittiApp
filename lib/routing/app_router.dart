@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
-import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_onboard.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/input_email_screen.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/input_name_screen.dart';
 import 'package:miitti_app/screens/authentication/welcome_screen.dart';
 import 'package:miitti_app/screens/authentication/login_screen.dart';
 import 'package:miitti_app/screens/authentication/login_intro.dart';
@@ -59,8 +60,12 @@ class AppRouter {
         pageBuilder: _buildNoTransitionPage(const WelcomeScreen()),
       ),
       GoRoute(
-        path: 'complete-profile',
-        pageBuilder: _buildNoTransitionPage(const CompleteProfileOnboard()),
+        path: 'complete-profile/name',
+        pageBuilder: _buildNoTransitionPage(const InputNameScreen()),
+      ),
+      GoRoute(
+        path: 'complete-profile/email',
+        pageBuilder: _buildNoTransitionPage(const InputEmailScreen()),
       ),
     ];
   }
@@ -79,8 +84,12 @@ class AppRouter {
   String? _handleRedirect(BuildContext context, GoRouterState state) {
     final isAuthenticated = ref.watch(userStateProvider.notifier).isSignedIn;
 
+    if (state.matchedLocation == '/login/complete-profile') {
+      return '/login/complete-profile/name';  // First step of the profile completion process
+    }
+
     if (!isAuthenticated && state.matchedLocation != '/login' && state.matchedLocation != '/login/authenticate') {
-      return '/login';
+      return '/login';  
     }
 
     if (isAuthenticated && state.matchedLocation != '/login/welcome') {

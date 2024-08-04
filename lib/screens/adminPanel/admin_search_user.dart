@@ -28,7 +28,7 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
     setState(() {
       searchResults = _miittiUsers
           .where((user) =>
-              user.userName.toLowerCase().contains(query.toLowerCase()))
+              user.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -143,7 +143,7 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${user.userName}, ${calculateAge(user.userBirthday)}",
+                                "${user.name}, ${calculateAge(user.birthday)}",
                                 style: const TextStyle(
                                   fontFamily: 'Rubik',
                                   fontSize: 18,

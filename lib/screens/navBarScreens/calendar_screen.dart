@@ -451,7 +451,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     children: [
                       Flexible(
                         child: Text(
-                          '${user.userName} haluaa liittyä miittiisi',
+                          '${user.name} haluaa liittyä miittiisi',
                           style: const TextStyle(
                             fontFamily: 'Rubik',
                             fontSize: 13,

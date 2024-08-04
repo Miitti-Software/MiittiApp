@@ -39,7 +39,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         filteredActivities = ref
             .read(firestoreServiceProvider)
             .miittiUser!
-            .userFavoriteActivities
+            .favoriteActivities
             .toList();
       }
     });
@@ -77,7 +77,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           .where((question) => ref
               .read(firestoreServiceProvider)
               .miittiUser!
-              .userChoices
+              .qaAnswers
               .containsKey(question))
           .toList();
       return Scaffold(
@@ -95,7 +95,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            ref.read(firestoreServiceProvider).miittiUser!.userName,
+            ref.read(firestoreServiceProvider).miittiUser!.name,
             style: const TextStyle(
               fontSize: 30,
               fontFamily: 'Sora',
@@ -132,7 +132,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     // Add the first question card and user details card
     String firstQuestion = answeredQuestions[0];
     String firstAnswer =
-        ref.read(firestoreServiceProvider).miittiUser!.userChoices[firstQuestion]!;
+        ref.read(firestoreServiceProvider).miittiUser!.qaAnswers[firstQuestion]!;
     widgets.add(buildQuestionCard(firstQuestion, firstAnswer));
     widgets.add(buildUserDetailsCard());
 
@@ -141,7 +141,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       for (var i = 1; i < answeredQuestions.length; i++) {
         String question = answeredQuestions[i];
         String answer =
-            ref.read(firestoreServiceProvider).miittiUser!.userChoices[question]!;
+            ref.read(firestoreServiceProvider).miittiUser!.qaAnswers[question]!;
         widgets.add(buildQuestionCard(question, answer));
 
         // Add activities grid after the first additional question card
@@ -227,25 +227,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         horizontal: 15,
       ),
       child: Container(
-        height: miittiUser.userSchool.isNotEmpty ? 330 : 240,
+        height: miittiUser.associatedOrganization.isNotEmpty ? 330 : 240,
         margin: const EdgeInsets.only(
           left: 5,
           top: 10,
         ),
         child: Column(
           children: [
-            buildUserDetailTile(Icons.location_on, miittiUser.userArea),
+            buildUserDetailTile(Icons.location_on, miittiUser.locations),
             buildDivider(),
-            buildUserDetailTile(Icons.person, miittiUser.userGender),
-            buildDivider(),
-            buildUserDetailTile(
-                Icons.cake, calculateAge(miittiUser.userBirthday).toString()),
+            buildUserDetailTile(Icons.person, miittiUser.gender),
             buildDivider(),
             buildUserDetailTile(
-                Icons.g_translate, miittiUser.userLanguages.join(', ')),
-            miittiUser.userSchool.isNotEmpty ? buildDivider() : Container(),
-            miittiUser.userSchool.isNotEmpty
-                ? buildUserDetailTile(Icons.next_week, miittiUser.userSchool)
+                Icons.cake, calculateAge(miittiUser.birthday).toString()),
+            buildDivider(),
+            buildUserDetailTile(
+                Icons.g_translate, miittiUser.languages.join(', ')),
+            miittiUser.associatedOrganization.isNotEmpty ? buildDivider() : Container(),
+            miittiUser.associatedOrganization.isNotEmpty
+                ? buildUserDetailTile(Icons.next_week, miittiUser.associatedOrganization)
                 : Container(),
           ],
         ),
