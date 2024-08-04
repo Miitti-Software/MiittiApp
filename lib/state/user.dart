@@ -6,12 +6,17 @@ import 'package:miitti_app/services/local_storage_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/services/auth_service.dart';
 
+/// A singleton class to manage the current user's authentication state
 class UserState extends StateNotifier<User?> {
   final AuthService _authService;
   final FirestoreService _firestoreService;
   final LocalStorageService _localStorageService;
 
-  UserState(this._authService, this._firestoreService, this._localStorageService) : super(null); // Initialize state to null
+  UserState(this._authService, this._firestoreService, this._localStorageService) : super(null) {
+    _authService.authStateChanges.listen((user) {
+      state = user;
+    });
+  }
 
   User? get user => state;
   String get uid => state?.uid ?? "";
@@ -34,7 +39,6 @@ class UserState extends StateNotifier<User?> {
     _firestoreService.reset();
     await _authService.signOut();
     await prefs.clear();
-    
   }
 
   Future<void> deleteUser() async {
