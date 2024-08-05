@@ -15,7 +15,7 @@ class InputNameScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(remoteConfigServiceProvider);
     final userData = ref.watch(userDataProvider);
-    final controller = TextEditingController();
+    final controller = TextEditingController(text: userData.name);
 
     return ConfigScreen(
       child: Column(
@@ -23,7 +23,7 @@ class InputNameScreen extends ConsumerWidget {
           const Spacer(),
           Text(config.get<String>('input-name-title'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 30),
-          FilledTextField(hintText: userData.name ??= config.get<String>('input-name-placeholder'), controller: controller, onSubmit: (value) {
+          FilledTextField(hintText: config.get<String>('input-name-placeholder'), controller: controller, onSubmit: (value) {
             userData.setUserName(controller.text);
             context.push('/login/complete-profile/email');
           }),

@@ -16,7 +16,7 @@ class InputEmailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(remoteConfigServiceProvider);
     final userData = ref.watch(userDataProvider);
-    final controller = TextEditingController();
+    final controller = TextEditingController(text: userData.email);
 
     return ConfigScreen(
       child: Column(
@@ -25,7 +25,7 @@ class InputEmailScreen extends ConsumerWidget {
           Text(config.get<String>('input-email-title'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 30),
           // TODO: Add email validation
-          FilledTextField(hintText: userData.email ??= config.get<String>('input-email-placeholder'), controller: controller, onSubmit: (value) {
+          FilledTextField(hintText: config.get<String>('input-email-placeholder'), controller: controller, onSubmit: (value) {
             userData.setUserEmail(controller.text);
             context.push('/');
           }),

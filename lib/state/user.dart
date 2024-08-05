@@ -153,6 +153,8 @@ class UserData {
   void setUserRegistrationDate(Timestamp? value) => userRegistrationDate = value;
 
   // TODO: Implement a method to update the user's data in Firestore
+
+  // TODO: Implement a method to clear the class' data upon sign out / user deletion
 }
 
 final userDataProvider = Provider<UserData>((ref) {
