@@ -48,5 +48,9 @@
 
     "input-email-title": "Add your email address",
     "input-email-placeholder": "example@email.com",
-    "input-email-disclaimer": "We never use your email for marketing without your permission!"
+    "input-email-disclaimer": "We never use your email for marketing without your permission!",
+
+    "input-birthday-title": "Tell us your birthday",
+    "input-birthday-disclaimer": "We use this to calculate your age",
+    "invalid-birthday-input": "Invalid birthday. Check the formatting and make sure that the year is correct and that you are at least 18 years old."
   }

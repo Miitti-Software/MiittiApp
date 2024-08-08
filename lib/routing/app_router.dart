@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/input_birthday_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_email_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_name_screen.dart';
 import 'package:miitti_app/screens/authentication/welcome_screen.dart';
@@ -63,9 +64,13 @@ class AppRouter {
         path: 'complete-profile/name',
         pageBuilder: _buildNoTransitionPage(const InputNameScreen()),
       ),
+      // GoRoute(
+      //   path: 'complete-profile/email',
+      //   pageBuilder: _buildNoTransitionPage(const InputEmailScreen()),
+      // ),
       GoRoute(
-        path: 'complete-profile/email',
-        pageBuilder: _buildNoTransitionPage(const InputEmailScreen()),
+        path: 'complete-profile/birthday',
+        pageBuilder: _buildNoTransitionPage(const InputBirthdayScreen()),
       ),
     ];
   }

@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/routing/app_router.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
 import 'package:miitti_app/envs/firebase_stag_configuration.dart' as stg;
 import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
+import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -109,6 +112,13 @@ class MiittiApp extends ConsumerWidget {
 
     return MaterialApp.router(
       routerConfig: router,
+      locale: Locale(ref.watch(languageProvider).code),
+      supportedLocales: Language.values.map((language) => Locale(language.code)).toList(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       // navigatorKey: navigatorKey,              // TODO: Remove to clean up code
       title: 'Miitti',
       theme: miittiTheme,

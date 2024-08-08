@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### To Be Added
 
+- Finnish translations of text
 - Small and large, compressed versions of profile pictures
 - Collection and storage of relevant data
 - Use Firebase Remote Config, Performance Monitoring, Test Lab and Crashlytics
