@@ -77,7 +77,7 @@ class UserData {
   String? locations;
   String? gender;
   String? profilePicture;
-  Timestamp? birthday;
+  DateTime? birthday;
   List<String>? languages;
   String? occupationalStatus;
   String? associatedOrganization;
@@ -86,8 +86,8 @@ class UserData {
   Map<String, String>? qaAnswers;
   Map<String, String>? groups;
   String? fcmToken;
-  Timestamp? lastActive;
-  Timestamp? userRegistrationDate;
+  DateTime? lastActive;
+  DateTime? userRegistrationDate;
 
   UserData({MiittiUser? miittiUser}) {
     if (miittiUser != null) {
@@ -98,7 +98,7 @@ class UserData {
       locations = miittiUser.locations;
       gender = miittiUser.gender;
       profilePicture = miittiUser.profilePicture;
-      birthday = miittiUser.birthday;
+      birthday = miittiUser.birthday.toDate();
       languages = miittiUser.languages;
       occupationalStatus = miittiUser.occupationalStatus;
       associatedOrganization = miittiUser.associatedOrganization;
@@ -107,8 +107,8 @@ class UserData {
       qaAnswers = miittiUser.qaAnswers;
       groups = miittiUser.groups;
       fcmToken = miittiUser.fcmToken;
-      lastActive = miittiUser.lastActive;
-      userRegistrationDate = miittiUser.registrationDate;
+      lastActive = miittiUser.lastActive.toDate();
+      userRegistrationDate = miittiUser.registrationDate.toDate();
     }
   }
 
@@ -120,7 +120,7 @@ class UserData {
   String? get getUserArea => locations;
   String? get getUserGender => gender;
   String? get getProfilePicture => profilePicture;
-  Timestamp? get getUserBirthday => birthday;
+  DateTime? get getUserBirthday => birthday;
   List<String>? get getUserLanguages => languages;
   String? get getOccupationalStatus => occupationalStatus;
   String? get getAssociatedOrganization => associatedOrganization;
@@ -129,8 +129,8 @@ class UserData {
   Map<String, String>? get getQaAnswers => qaAnswers;
   Map<String, String>? get getGroups => groups;
   String? get getFcmToken => fcmToken;
-  Timestamp? get getLastActive => lastActive;
-  Timestamp? get getUserRegistrationDate => userRegistrationDate;
+  DateTime? get getLastActive => lastActive;
+  DateTime? get getUserRegistrationDate => userRegistrationDate;
 
   // Setters
   void setUid(String? value) => uid = value;
@@ -140,7 +140,7 @@ class UserData {
   void setUserArea(String? value) => locations = value;
   void setUserGender(String? value) => gender = value;
   void setProfilePicture(String? value) => profilePicture = value;
-  void setUserBirthday(Timestamp? value) => birthday = value;
+  void setUserBirthday(DateTime? value) => birthday = value;
   void setUserLanguages(List<String>? value) => languages = value;
   void setOccupationalStatus(String? value) => occupationalStatus = value;
   void setAssociatedOrganization(String? value) => associatedOrganization = value;
@@ -149,8 +149,8 @@ class UserData {
   void setQaAnswers(Map<String, String>? value) => qaAnswers = value;
   void setGroups(Map<String, String>? value) => groups = value;
   void setFcmToken(String? value) => fcmToken = value;
-  void setLastActive(Timestamp? value) => lastActive = value;
-  void setUserRegistrationDate(Timestamp? value) => userRegistrationDate = value;
+  void setLastActive(DateTime? value) => lastActive = value;
+  void setUserRegistrationDate(DateTime? value) => userRegistrationDate = value;
 
   // TODO: Implement a method to update the user's data in Firestore
 

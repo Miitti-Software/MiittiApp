@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
+import 'package:miitti_app/widgets/error_snackbar.dart';
 
 /// A button handling authentication with Google or Apple.
 class AuthButton extends ConsumerStatefulWidget {
@@ -88,15 +89,17 @@ class _AuthButtonState extends ConsumerState<AuthButton> {
         });
 
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(ref.read(remoteConfigServiceProvider).get<String>('interrupted-login')), backgroundColor: Theme.of(context).colorScheme.error),
+        ErrorSnackbar.show(
+          context,
+          ref.read(remoteConfigServiceProvider).get<String>('interrupted-login')
         );
       }
     } catch (error) {
       if (!mounted) return;
       if (kDebugMode) debugPrint('Error logging in: $error');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("${ref.read(remoteConfigServiceProvider).get<String>('login-error')} ${ref.read(remoteConfigServiceProvider).get<String>('generic-error-action-prompt')} "), backgroundColor: Theme.of(context).colorScheme.error),
+      ErrorSnackbar.show(
+        context,
+        "${ref.read(remoteConfigServiceProvider).get<String>('login-error')} ${ref.read(remoteConfigServiceProvider).get<String>('generic-error-action-prompt')}"
       );
     }
   }

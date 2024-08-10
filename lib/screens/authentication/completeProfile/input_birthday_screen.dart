@@ -3,15 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/languages.dart';
-import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
+import 'package:miitti_app/widgets/error_snackbar.dart';
 import 'package:pinput/pinput.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class InputBirthdayScreen extends ConsumerStatefulWidget {
   const InputBirthdayScreen({super.key});
@@ -24,12 +23,13 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
   bool placeholderVisible = true;
   final placeholder = 'DDMMYYYY';
   late TextEditingController controller;
-  Timestamp? birthdayText;
+  DateTime? birthday;
 
   @override
   void initState() {
     super.initState();
-    controller = TextEditingController(text: placeholder);
+    placeholderVisible = ref.read(userDataProvider).birthday == null;
+    controller = TextEditingController(text: ref.read(userDataProvider).birthday != null ? DateFormat('ddMMyyyy').format(ref.read(userDataProvider).birthday!) : placeholder);
   }
 
   @override
@@ -94,6 +94,11 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                     if (controller.text == '') {
                       controller.text = placeholder;
                       placeholderVisible = true;
+                    } else if (controller.text.length < 8) {
+                      ErrorSnackbar.show(
+                        context,
+                        config.get<String>('invalid-birthday-input'),
+                      );
                     }
                   },
                   onTap: () {
@@ -112,20 +117,15 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                   },
                   onCompleted: (String value) {
                     if (value.length == 8 && value != placeholder) {
-                      if (validateBirthdayDate(value)) {                    // TODO: Check and maybe refactor further? Bring the function here and save properly to user data
+                      if (validateBirthdayDate(value)) {                    // TODO: Check and maybe refactor further? Bring the function here and save properly to user data - Also add a tiny bit more padding all around
                         setState(() {
-                          birthdayText = Timestamp.fromDate(DateTime(
+                          birthday = DateTime(
                             int.parse(value.substring(4, 8)),
                             int.parse(value.substring(2, 4)),
                             int.parse(value.substring(0, 2)),
-                          ));
+                          );
                         });
-                      } else {
-                        showSnackBar(
-                          context,
-                          config.get<String>('invalid-birthday-input'),
-                          Theme.of(context).colorScheme.error,
-                        );
+                        userData.setUserBirthday(birthday);
                       }
                     }
                   },
@@ -139,7 +139,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                     context: context,
                     locale: Locale(language.code),
                     firstDate: DateTime(1900),
-                    lastDate: DateTime(DateTime.now().year),
+                    lastDate: DateTime.now(),
                     builder: (BuildContext context, Widget? child) {
                       return Theme(
                         data: Theme.of(context).copyWith(
@@ -184,8 +184,10 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
           ForwardButton(
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
-              userData.setUserBirthday(birthdayText);
-              context.push('/');
+              if (validateBirthdayDate(controller.text)) {
+                userData.setUserBirthday(birthday);
+                context.push('/');
+              }
             },
           ),
           const SizedBox(height: 10),
@@ -200,4 +202,51 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
       ),
     );
   }
+
+  bool validateBirthdayDate(
+    String birthday,
+  ) {
+    try {
+      DateTime today = DateTime.now();
+      DateTime minimumAge = DateTime(today.year - 18, today.month, today.day);
+      DateTime maximumAge = DateTime(today.year - 118, today.month, today.day);
+      
+      String year = birthday.substring(4, 8);
+      String month = birthday.substring(2, 4);
+      String day = birthday.substring(0, 2);
+
+      DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+      DateTime birthDate = dateFormat.parseStrict('$day/$month/$year');
+      
+      // Check that the user age is in the correct range
+      if (birthDate.isAfter(minimumAge)) {
+        ErrorSnackbar.show(
+          context,
+          ref.watch(remoteConfigServiceProvider).get<String>('invalid-birthday-too-young'),
+        );
+        return false;  // The minimum age is a hard limit
+      }
+      
+      if (birthDate.isBefore(maximumAge)) {
+        ErrorSnackbar.show(
+          context,
+          ref.watch(remoteConfigServiceProvider).get<String>('invalid-birthday-too-old'),
+        );
+        return true;  // The maximum age is more of a sanity check and therefore a soft limit
+      }
+      
+      return true;
+
+    } catch (e) {
+
+      // Handle invalid date format or out-of-range values
+      ErrorSnackbar.show(
+        context,
+        ref.watch(remoteConfigServiceProvider).get<String>('invalid-birthday-input'),
+      );
+
+      return false;
+    }
+  }
 }
+

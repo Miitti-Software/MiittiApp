@@ -52,5 +52,7 @@
 
     "input-birthday-title": "Tell us your birthday",
     "input-birthday-disclaimer": "We use this to calculate your age",
-    "invalid-birthday-input": "Invalid birthday. Check the formatting and make sure that the year is correct and that you are at least 18 years old."
+    "invalid-birthday-too-young": "You must be at least 18 years old to use Miitti App.",
+    "invalid-birthday-too-old": "Are you sure you picked the right century?",
+    "invalid-birthday-input": "Invalid birthday. Check that the formatting is correct: DD/MM/YYYY"
   }
