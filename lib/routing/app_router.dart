@@ -5,6 +5,7 @@ import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_birthday_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_email_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_gender_screen.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/input_language_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_name_screen.dart';
 import 'package:miitti_app/screens/authentication/welcome_screen.dart';
 import 'package:miitti_app/screens/authentication/login_screen.dart';
@@ -22,7 +23,7 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     refreshListenable: ValueNotifier<bool>(ref.watch(authServiceProvider).isSignedIn),
-    initialLocation: '/login/complete-profile/gender',
+    initialLocation: '/login/complete-profile/languages',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
     errorBuilder: _buildErrorPage,
@@ -76,6 +77,10 @@ class AppRouter {
       GoRoute(
         path: 'complete-profile/gender',
         pageBuilder: _buildNoTransitionPage(const InputGenderScreen()),
+      ),
+      GoRoute(
+        path: 'complete-profile/languages',
+        pageBuilder: _buildNoTransitionPage(const InputLanguagesScreen()),
       ),
     ];
   }
