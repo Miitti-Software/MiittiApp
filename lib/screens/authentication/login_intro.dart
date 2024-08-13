@@ -59,6 +59,7 @@ class LoginIntroScreen extends ConsumerWidget {
                   ),
                   const Spacer(),
                   const LanguageRadioButtons(),
+                  const SizedBox(height: AppSizes.minVerticalEdgePadding),
                 ],
               );
             },

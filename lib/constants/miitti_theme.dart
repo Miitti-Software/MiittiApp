@@ -7,10 +7,12 @@ class AppColors {
   static const Color violet = Color(0xFF5615CE);
   static const Color white = Color(0xFFFAFAFD);
   static const Color black = Color(0xFF090215);
-  static const Color lightGrey = Color(0xFFA3A1AA);
-  static const Color darkSteel = Color(0xFF211B2C);
-  static const Color darkPurple = Color(0xFF14061B);
-  static const Color lightPurple = Color(0xFF3D1634);
+  static const Color darkPink = Color(0xFF2A1026);
+
+  // static const Color lightGrey = Color(0xFFA3A1AA);
+  // static const Color darkSteel = Color(0xFF211B2C);
+  // static const Color darkPurple = Color(0xFF14061B);
+  // static const Color lightPurple = Color(0xFF3D1634);
 
   static const LinearGradient pinkGradient = LinearGradient(
     colors: [
@@ -30,6 +32,10 @@ class AppGraphics {
 // Sizes used in building and shaping the app widgets
 class AppSizes {
   static const double fullContentWidth = 350;
+  static const double minVerticalPadding = 10;
+  static const double minVerticalEdgePadding = 45;
+  static const double verticalSeparationPadding = 30;
+  static const double minVerticalDisclaimerPadding = 8;
 }
 
 // Color scheme used for building the custom theme
@@ -51,6 +57,8 @@ final ColorScheme colorScheme = ColorScheme.fromSeed(seedColor: Colors.pink).cop
 
   surface: AppColors.black,
   onSurface: AppColors.white,
+
+  surfaceContainer: AppColors.darkPink,
 
   error: AppColors.red,
 );

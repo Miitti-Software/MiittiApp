@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/languages.dart';
+import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
@@ -51,7 +52,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
           const Spacer(),
           Text(config.get<String>('input-birthday-title'),
               style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 30),
+          const SizedBox(height: AppSizes.verticalSeparationPadding),
           Row(
             children: [
               Expanded(
@@ -117,7 +118,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                   },
                   onCompleted: (String value) {
                     if (value.length == 8 && value != placeholder) {
-                      if (validateBirthdayDate(value)) {                    // TODO: Check and maybe refactor further? Bring the function here and save properly to user data - Also add a tiny bit more padding all around
+                      if (_validateBirthdayDate(value)) {
                         setState(() {
                           birthday = DateTime(
                             int.parse(value.substring(4, 8)),
@@ -177,33 +178,38 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
           Text(config.get<String>('input-birthday-disclaimer'),
               style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: 30),
+          const Spacer(),
           ForwardButton(
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
-              if (validateBirthdayDate(controller.text)) {
+              if (birthday == null) {
+                ErrorSnackbar.show(
+                  context,
+                  config.get<String>('invalid-birthday-missing'),
+                );
+              } else if (_validateBirthdayDate(controller.text)) {
                 userData.setUserBirthday(birthday);
-                context.push('/');
+                context.push('/login/complete-profile/gender');
               }
             },
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSizes.minVerticalPadding),
           BackwardButton(
             buttonText: config.get<String>('back-button'),
             onPressed: () {
               context.pop();
             },
           ),
-          const Spacer(),
+          const SizedBox(height: AppSizes.minVerticalEdgePadding),
         ],
       ),
     );
   }
 
-  bool validateBirthdayDate(
+  bool _validateBirthdayDate(
     String birthday,
   ) {
     try {

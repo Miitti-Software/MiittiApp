@@ -45,6 +45,7 @@
     "input-name-title": "Let's begin, what's your name?",
     "input-name-placeholder": "Your first name",
     "input-name-disclaimer": "You're unique so remember to use only your own infromation.",
+    "invalid-name-missing": "Please enter your name above to proceed.",
 
     "input-email-title": "Add your email address",
     "input-email-placeholder": "example@email.com",
@@ -52,7 +53,16 @@
 
     "input-birthday-title": "Tell us your birthday",
     "input-birthday-disclaimer": "We use this to calculate your age",
+    "invalid-birthday-missing": "Please enter your birthday above to proceed.",
     "invalid-birthday-too-young": "You must be at least 18 years old to use Miitti App.",
     "invalid-birthday-too-old": "Are you sure you picked the right century?",
-    "invalid-birthday-input": "Invalid birthday. Check that the formatting is correct: DD/MM/YYYY"
+    "invalid-birthday-input": "Invalid birthday. Check that the formatting is correct: DD/MM/YYYY",
+
+    "input-gender-title": "Which gender do you identify with?",
+    "input-gender-disclaimer": "Your gender does not define you but with it we are able to better recommend suitable miittis for you! This will not be visible for others.",
+    "invalid-gender-missing": "Please choose one of the options above to proceed.",
+
+    "male": "Male",
+    "female": "Female",
+    "other": "Other"
   }

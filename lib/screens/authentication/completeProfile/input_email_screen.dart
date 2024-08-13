@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
@@ -23,22 +24,22 @@ class InputEmailScreen extends ConsumerWidget {
         children: [
           const Spacer(),
           Text(config.get<String>('input-email-title'), style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 30),
+          const SizedBox(height: AppSizes.verticalSeparationPadding),
           // TODO: Add email validation
           FilledTextField(hintText: config.get<String>('input-email-placeholder'), controller: controller, onSubmit: (value) {
             userData.setUserEmail(controller.text);
             context.push('/');
           }),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
           Text(config.get<String>('input-email-disclaimer'), style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: 30),
+          const Spacer(),
           ForwardButton(buttonText: config.get<String>('forward-button'), onPressed: () { 
             userData.setUserEmail(controller.text);
             context.push('/');
           }),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSizes.minVerticalPadding),
           BackwardButton(buttonText: config.get<String>('back-button'), onPressed: () => context.pop()),
-          const Spacer(),
+          const SizedBox(height: AppSizes.verticalSeparationPadding),
         ],
       ),
     );
