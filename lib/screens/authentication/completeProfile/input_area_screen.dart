@@ -9,7 +9,7 @@ import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
-import 'package:miitti_app/widgets/custom_scrollbar.dart';
+import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 import 'package:miitti_app/widgets/error_snackbar.dart';
 
 class InputAreaScreen extends ConsumerStatefulWidget {
@@ -36,7 +36,7 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
     final String jsonString = await rootBundle.loadString('lib/constants/areas.json');
     final Map<String, dynamic> jsonMap = json.decode(jsonString);
     setState(() {
-      allAreas = jsonMap.values.cast<String>().toList()..sort();
+      allAreas = jsonMap.values.cast<String>().toList();
       filteredAreas = allAreas;
     });
   }
@@ -102,9 +102,9 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
                     margin: const EdgeInsets.only(bottom: 8, right: 10),
                     child: ListTile(
                       titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                      minVerticalPadding: 5,
+                      minVerticalPadding: 6,
                       minTileHeight: 1,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                       title: Text(area),
                       onTap: () {
                         setState(() {

@@ -13,6 +13,7 @@ class PermanentScrollbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RawScrollbar(
+      interactive: true,
       thumbVisibility: true,
       trackVisibility: true,
       minThumbLength: 40,
