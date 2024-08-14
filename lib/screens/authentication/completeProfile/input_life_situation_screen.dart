@@ -8,55 +8,30 @@ import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
-import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 import 'package:miitti_app/widgets/error_snackbar.dart';
 
-class InputAreaScreen extends ConsumerStatefulWidget {
-  const InputAreaScreen({super.key});
+class InputLifeSituationScreen extends ConsumerStatefulWidget {
+  const InputLifeSituationScreen({super.key});
 
   @override
-  _InputAreaScreenState createState() => _InputAreaScreenState();
+  _InputLifeSituationScreenState createState() => _InputLifeSituationScreenState();
 }
 
-class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
-  String? selectedArea;
-  List<Tuple2<String, String>> allAreas = [];
-  List<Tuple2<String, String>> filteredAreas = [];
-  final TextEditingController _searchController = TextEditingController();
+class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScreen> {
+  String? selectedOccupationalStatus;
+  List<Tuple2<String, String>> statusOptions = [];
 
   @override
   void initState() {
     super.initState();
-    _loadAreas();
-    selectedArea = allAreas.firstWhere(
-        (area) => area.item1 == ref.read(userDataProvider).area,
+    statusOptions = ref.read(remoteConfigServiceProvider).getTuplesList<String>('occupational_statuses');
+    selectedOccupationalStatus = statusOptions.firstWhere(
+        (occupationalStatus) => occupationalStatus.item1 == ref.read(userDataProvider).occupationalStatus,
         orElse: () => const Tuple2<String, String>("", ""),
       ).item1;
-    if (selectedArea == "") {
-      selectedArea = null;
+    if (selectedOccupationalStatus == "") {
+      selectedOccupationalStatus = null;
     }
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadAreas() async {
-    setState(() {
-      allAreas = ref.read(remoteConfigServiceProvider).getTuplesList<String>('areas');
-      filteredAreas = allAreas;
-    });
-  }
-
-  void _filterAreas(String query) {
-    setState(() {
-      filteredAreas = allAreas
-          .where((area) =>
-              area.item2.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
   }
 
   @override
@@ -68,38 +43,22 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: AppSizes.minVerticalEdgePadding),
-          Text(config.get<String>('input-area-title'),
+          const Spacer(flex: 1),
+          Text(config.get<String>('input-occupational-status-title'),
               style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
-          Text(config.get<String>('input-area-disclaimer'),
+          Text(config.get<String>('input-occupational-status-disclaimer'),
               style: Theme.of(context).textTheme.labelSmall),
           const SizedBox(height: AppSizes.verticalSeparationPadding),
-
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: config.get<String>('input-search-area'),
-              hintStyle: Theme.of(context).textTheme.labelSmall,
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-            ),
-            onChanged: _filterAreas,
-            onTapOutside: (event) => FocusScope.of(context).unfocus(),
-          ),
           
-          const SizedBox(height: AppSizes.minVerticalPadding),
-          Expanded(
-            child: PermanentScrollbar(
-              child: ListView.builder(
-                itemCount: filteredAreas.length,
-                itemBuilder: (context, index) {
-                  final area = filteredAreas[index];
-                  final isSelected = selectedArea == area.item1;
-                  return Container(
+          // TODO: extract block list builder to a separate component
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: statusOptions.length,
+            itemBuilder: (context, index) {
+              final occupationalStatus = statusOptions[index];
+              final isSelected = selectedOccupationalStatus == occupationalStatus.item1;
+              return Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                       border: isSelected
@@ -114,14 +73,14 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
                       minVerticalPadding: 6,
                       minTileHeight: 1,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                      title: Text(area.item2),
+                      title: Text(occupationalStatus.item2),
                       onTap: () {
                         setState(() {
                           if (isSelected) {
-                            selectedArea = null;
+                            selectedOccupationalStatus = null;
                           } else {
-                            selectedArea = area.item1;
-                            userData.setUserArea(selectedArea);
+                            selectedOccupationalStatus = occupationalStatus.item1;
+                            userData.setOccupationalStatus(occupationalStatus.item1);
                           }
                         });
                       },
@@ -129,18 +88,17 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
                   );
                 },
               ),
-              ),
-            ),
           
-          const SizedBox(height: AppSizes.minVerticalEdgePadding),
+          const Spacer(flex: 1),
           ForwardButton(
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
-              if (selectedArea != null) {
-                context.push('/login/complete-profile/life-situation');
+              // TODO: direct to choosing educational institution if student, else go to quiz
+              if (selectedOccupationalStatus != null) {
+                context.push('/');
               } else {
                 ErrorSnackbar.show(
-                    context, config.get<String>('invalid-area-missing'));
+                    context, config.get<String>('invalid-occupational-status-missing'));
               }
             },
           ),

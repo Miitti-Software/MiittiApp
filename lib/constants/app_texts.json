@@ -106,5 +106,9 @@
     "input-area-title": "Choose your location",
     "input-area-disclaimer": "Select the overall area where you currently reside. Miitti App is officially available only in Finland at the moment.",
     "input-search-area": "Search for locations",
-    "invalid-area-missing": "Please select at least one location above to proceed."
+    "invalid-area-missing": "Please select at least one location above to proceed.",
+
+    "input-occupational-status-title": "What is your current occupational status?",
+    "input-occupational-status-disclaimer": "This helps us to better understand your lifestyle and recommend suitable miittis for you!",
+    "invalid-occupational-status-missing": "Please choose one of the options above to proceed."
   }

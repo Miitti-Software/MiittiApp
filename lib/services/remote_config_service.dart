@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:tuple/tuple.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,10 +23,12 @@ class RemoteConfigService {
 
   // The Firebase Remote Config instance
   final FirebaseRemoteConfig _remoteConfig;
+  // A map to store the json config values
+  final Map<String, dynamic> _configFiles = {};
   // A map to store the config values
   final Map<String, dynamic> _configValues = {};
   // List of remote config json file names to be loaded as defaults and fetched from Firebase - the same file names should be present both locally and in the Firebase console
-  final List<String> _jsonFiles = ['app_texts', 'error_texts']; // TODO: 'activities', 'question_cards'
+  final List<String> _jsonFiles = ['app_texts', 'error_texts', 'areas', 'occupational_statuses']; // TODO: 'activities', 'question_cards'
 
   /// Getters for the different types of values that can be fetched from the remote config
   String getString(String key) => _remoteConfig.getString(key);
@@ -40,6 +43,19 @@ class RemoteConfigService {
       throw Exception('The key "$key" does not exist in the config values');
     }
   }
+
+  /// Generic getter for fetching lists of key-value tuples of any value type that are defined in the json configuration files.
+  /// The point is to be able to use the key values as identifiers in the app and the value as the actual value to be displayed or used in the app.
+  List<Tuple2<String, T>> getTuplesList<T>(String key) {
+    try {
+      final dynamic file = _configFiles[key];
+      print(file.entries);
+      return file.entries.map((entry) => Tuple2<String, T>(entry.key, entry.value as T)).toList().cast<Tuple2<String, T>>();
+    } catch (e) {
+      throw Exception('The key "$key" does not exist in the config files or is not a map: $e');
+    }
+  }
+  
 
   /// Get a list of maps of rich text values with keys "text" and "url" fetched from the remote config
   List<Map<String, dynamic>> getRichText(String key) {
@@ -76,6 +92,7 @@ class RemoteConfigService {
       final jsonString = await rootBundle.loadString('lib/constants/$file.json');
       final defaults = json.decode(jsonString) as Map<String, dynamic>;
       await _remoteConfig.setDefaults({file: json.encode(defaults)});
+      _configFiles[file] = defaults;
       _configValues.addAll(defaults);
     }
   }
@@ -93,6 +110,7 @@ class RemoteConfigService {
     for (final file in _jsonFiles) {
       final jsonString = _remoteConfig.getString('${file}_$languageSuffix');
       final values = json.decode(jsonString) as Map<String, dynamic>;
+      _configFiles[file] = values;
       _configValues.addAll(values);
     }
     _configController.add(_configValues);
