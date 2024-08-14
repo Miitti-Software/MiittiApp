@@ -23,6 +23,17 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
   Gender? selectedGender;
 
   @override
+  void initState() {
+    super.initState();
+    selectedGender = ref.read(userDataProvider).gender;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userData = ref.watch(userDataProvider);
     final config = ref.watch(remoteConfigServiceProvider);
@@ -45,6 +56,7 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
                 if (!selected) {
                   setState(() {
                     selectedGender = gender;
+                    userData.setUserGender(selectedGender!);
                   });
                 }
               },
@@ -55,7 +67,6 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
           const Spacer(),
           ForwardButton(buttonText: config.get<String>('forward-button'), onPressed: () {
             if (selectedGender != null) {
-              userData.setUserGender(selectedGender!);
               context.push('/login/complete-profile/languages');
             } else {
               ErrorSnackbar.show(context, config.get<String>('invalid-gender-missing'));

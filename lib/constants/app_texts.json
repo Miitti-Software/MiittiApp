@@ -101,5 +101,10 @@
     "eo": "Esperanto",
     "fse": "Finnish Sign Language",
     "swl": "Swedish Sign Language",
-    "ase": "American Sign Language"
+    "ase": "American Sign Language",
+
+    "input-area-title": "Choose your location",
+    "input-area-disclaimer": "Select the overall area where you currently reside. Miitti App is officially available only in Finland at the moment.",
+    "input-search-area": "Search for locations",
+    "invalid-area-missing": "Please select at least one location above to proceed."
   }

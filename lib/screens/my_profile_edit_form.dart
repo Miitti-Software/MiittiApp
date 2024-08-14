@@ -54,7 +54,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
         updateActiviesId(widget.user.favoriteActivities.toSet());
 
     selectedLanguages = widget.user.languages.toSet();
-    userAreaController.text = widget.user.locations;
+    userAreaController.text = widget.user.area;
     userSchoolController.text = widget.user.associatedOrganization;
     userChoices = widget.user.qaAnswers;
   }
@@ -409,7 +409,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       uid: miittiUser.uid,
                       phoneNumber: miittiUser.phoneNumber,
                       birthday: miittiUser.birthday,
-                      locations: userAreaController.text.trim(),
+                      area: userAreaController.text.trim(),
                       favoriteActivities: favoriteActivities
                           .map((activity) => activity)
                           .toList(),

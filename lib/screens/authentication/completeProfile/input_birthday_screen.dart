@@ -30,6 +30,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
   void initState() {
     super.initState();
     placeholderVisible = ref.read(userDataProvider).birthday == null;
+    birthday = ref.read(userDataProvider).birthday;
     controller = TextEditingController(text: ref.read(userDataProvider).birthday != null ? DateFormat('ddMMyyyy').format(ref.read(userDataProvider).birthday!) : placeholder);
   }
 

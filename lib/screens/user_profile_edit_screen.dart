@@ -247,7 +247,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
         ),
         child: Column(
           children: [
-            buildUserDetailTile(Icons.location_on, widget.user.locations),
+            buildUserDetailTile(Icons.location_on, widget.user.area),
             buildDivider(),
             buildUserDetailTile(Icons.person, widget.user.gender),
             buildDivider(),

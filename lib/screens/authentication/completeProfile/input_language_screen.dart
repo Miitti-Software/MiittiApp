@@ -9,9 +9,10 @@ import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
+import 'package:miitti_app/widgets/custom_scrollbar.dart';
 import 'package:miitti_app/widgets/error_snackbar.dart';
 
-/// A screen for the user to choose their gender from a list of radio buttons
+/// A screen for the user to choose their spoken languages from a side scrollable list of checkboxes
 class InputLanguagesScreen extends ConsumerStatefulWidget {
   const InputLanguagesScreen({super.key});
 
@@ -21,12 +22,24 @@ class InputLanguagesScreen extends ConsumerStatefulWidget {
 
 class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
   List<Language> selectedLanguages = [];
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    selectedLanguages = ref.read(userDataProvider).languages?.toList() ?? [];
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final userData = ref.watch(userDataProvider);
     final config = ref.watch(remoteConfigServiceProvider);
-    final ScrollController scrollController = ScrollController();
 
     return ConfigScreen(
       child: Column(
@@ -42,14 +55,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
             behavior: ScrollConfiguration.of(context).copyWith(
               physics: const ClampingScrollPhysics(),
             ),
-            child: RawScrollbar(
-              thumbVisibility: true,
-              trackVisibility: true,
-              thumbColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-              trackColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              radius: const Radius.circular(10),
-              thickness: 3,
-              trackRadius: const Radius.circular(10),
+            child: PermanentScrollbar(
               controller: scrollController,
               child: SingleChildScrollView(
                 controller: scrollController,
@@ -76,6 +82,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
                                   selectedLanguages.remove(language);
                                 } else {
                                   selectedLanguages.add(language);
+                                  userData.setUserLanguages(selectedLanguages);
                                 }
                               });
                             },
@@ -92,8 +99,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
           const Spacer(),
           ForwardButton(buttonText: config.get<String>('forward-button'), onPressed: () {
             if (selectedLanguages.isNotEmpty) {
-              userData.setUserLanguages(selectedLanguages);
-              context.push('/');
+              context.push('/login/complete-profile/area');
             } else {
               ErrorSnackbar.show(context, config.get<String>('invalid-languages-missing'));
             }

@@ -9,7 +9,7 @@ class MiittiUser {
   String name;
   String phoneNumber;
   Timestamp birthday;
-  String locations;
+  String area;
   List<String> favoriteActivities;
   Map<String, String> qaAnswers;
   String gender;
@@ -30,7 +30,7 @@ class MiittiUser {
       required this.uid,
       required this.phoneNumber,
       required this.birthday,
-      required this.locations,
+      required this.area,
       required this.favoriteActivities,
       required this.qaAnswers,
       required this.gender,
@@ -56,7 +56,7 @@ class MiittiUser {
         uid: map['uid'] ?? '',
         phoneNumber: map['userPhoneNumber'] ?? '',
         birthday: resolveTimestamp(map['userBirthday']),
-        locations: map['userArea'] ?? '',
+        area: map['userArea'] ?? '',
         favoriteActivities:
             _resolveActivities(_toStringList(map['userFavoriteActivities'])),
         qaAnswers: _toStringMap(map['userChoices']),
@@ -83,7 +83,7 @@ class MiittiUser {
       'uid': uid,
       'userPhoneNumber': phoneNumber,
       'userBirthday': birthday,
-      'userArea': locations,
+      'userArea': area,
       'userFavoriteActivities': favoriteActivities.toList(),
       'userChoices': qaAnswers,
       'userGender': gender,
@@ -103,7 +103,7 @@ class MiittiUser {
       email = newData['userEmail'] ?? email;
       phoneNumber = newData['userPhoneNumber'] ?? phoneNumber;
       birthday = newData['userBirthday'] ?? birthday;
-      locations = newData['userArea'] ?? locations;
+      area = newData['userArea'] ?? area;
       lastActive = newData['lastActive'] ?? lastActive;
       associatedOrganization = newData['userSchool'] ?? associatedOrganization;
       fcmToken = newData['fcmToken'] ?? fcmToken;

@@ -340,7 +340,7 @@ class FirestoreService {
     Query query = _firestore.collection(_usersString);
 
     if (type == 0) {
-      query = query.where('userArea', isEqualTo: miittiUser!.locations);
+      query = query.where('userArea', isEqualTo: miittiUser!.area);
     } else if (type == 1) {
       query = query.where('userFavoriteActivities',
           arrayContainsAny: miittiUser!.favoriteActivities);
