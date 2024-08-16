@@ -10,6 +10,7 @@ import 'package:miitti_app/screens/authentication/completeProfile/input_language
 import 'package:miitti_app/screens/authentication/completeProfile/input_life_situation_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_name_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_organization_screen.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/input_qa_cards.dart';
 import 'package:miitti_app/screens/authentication/welcome_screen.dart';
 import 'package:miitti_app/screens/authentication/login_screen.dart';
 import 'package:miitti_app/screens/authentication/login_intro.dart';
@@ -26,7 +27,7 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     refreshListenable: ValueNotifier<bool>(ref.watch(authServiceProvider).isSignedIn),
-    initialLocation: '/login/complete-profile/organization',
+    initialLocation: '/login/complete-profile/qa-cards',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
     errorBuilder: _buildErrorPage,
@@ -96,6 +97,10 @@ class AppRouter {
       GoRoute(
         path: 'complete-profile/organization',
         pageBuilder: _buildNoTransitionPage(const InputOrganizationScreen()),
+      ),
+      GoRoute(
+        path: 'complete-profile/qa-cards',
+        pageBuilder: _buildNoTransitionPage(const InputQACardsScreen()),
       ),
     ];
   }

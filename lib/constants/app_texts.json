@@ -115,5 +115,12 @@
     "input-organization-title": "Which organization are you affiliated with?",
     "input-organization-disclaimer": "This helps us to better understand your lifestyle and recommend suitable miittis for you!",
     "input-search-organization": "Search for organization",
-    "invalid-organization-missing": "Please choose one of the options above to proceed."
+    "invalid-organization-missing": "Please choose one of the options above to proceed.",
+
+    "input-qa-cards-title": "Let's get to know you better!",
+    "input-qa-cards-disclaimer": "Choose 1 - 10 Q&A cards to answer in order tell others more about yourself. You can always change your answers later.",
+    "invalid-qa-cards-missing": "Please choose at least one Q&A card above to proceed.",
+    "qa_category_1": "More about me",
+    "qa_category_2": "Interests",
+    "qa_category_3": "Diving deeper"
   }
