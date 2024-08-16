@@ -110,5 +110,10 @@
 
     "input-occupational-status-title": "What is your current occupational status?",
     "input-occupational-status-disclaimer": "This helps us to better understand your lifestyle and recommend suitable miittis for you!",
-    "invalid-occupational-status-missing": "Please choose one of the options above to proceed."
+    "invalid-occupational-status-missing": "Please choose one of the options above to proceed.",
+
+    "input-organization-title": "Which organization are you affiliated with?",
+    "input-organization-disclaimer": "This helps us to better understand your lifestyle and recommend suitable miittis for you!",
+    "input-search-organization": "Search for organization",
+    "invalid-organization-missing": "Please choose one of the options above to proceed."
   }

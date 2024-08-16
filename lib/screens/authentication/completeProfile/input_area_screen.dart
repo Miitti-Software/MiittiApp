@@ -121,7 +121,7 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
                             selectedArea = null;
                           } else {
                             selectedArea = area.item1;
-                            userData.setUserArea(selectedArea);
+                            userData.setArea(selectedArea);
                           }
                         });
                       },

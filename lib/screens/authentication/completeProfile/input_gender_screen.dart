@@ -56,7 +56,7 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
                 if (!selected) {
                   setState(() {
                     selectedGender = gender;
-                    userData.setUserGender(selectedGender!);
+                    userData.setGender(selectedGender!);
                   });
                 }
               },

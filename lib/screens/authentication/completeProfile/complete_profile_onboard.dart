@@ -1080,7 +1080,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         profilePicture: '',
         invitedActivities: [],
         lastActive: Timestamp.now(),
-        associatedOrganization: noLifeSituation ? '' : selectedLifeOption,
+        organization: noLifeSituation ? '' : selectedLifeOption,
         fcmToken: '',
         registrationDate: Timestamp.now(),
       );

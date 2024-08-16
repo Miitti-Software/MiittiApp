@@ -1,8 +1,8 @@
 {
-    "Student": "Student",
-    "Working": "Working",
-    "Entrepreneur": "Entrepreneur",
-    "Retired": "Retired",
-    "Stay-at-home": "Stay-at-home parent",
-    "Other": "Finding myself"
+    "student": "Student",
+    "working": "Working",
+    "entrepreneur": "Entrepreneur",
+    "retired": "Retired",
+    "stay-at-home": "Stay-at-home parent",
+    "other": "Finding myself"
 }

@@ -51,7 +51,7 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
                 hintText: config.get<String>('input-name-placeholder'),
                 controller: _controller,
                 onSubmit: (value) {
-                  userData.setUserName(_controller.text);
+                  userData.setName(_controller.text);
                   context.push('/login/complete-profile/birthday');
                 },
               ),
@@ -62,7 +62,7 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
                 buttonText: config.get<String>('forward-button'),
                 onPressed: () {
                   if (_controller.text.isNotEmpty) {
-                    userData.setUserName(_controller.text);
+                    userData.setName(_controller.text);
                     context.push('/login/complete-profile/birthday');
                   } else {
                     ErrorSnackbar.show(context, config.get<String>('invalid-name-missing'));

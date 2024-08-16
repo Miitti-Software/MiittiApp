@@ -55,7 +55,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
 
     selectedLanguages = widget.user.languages.toSet();
     userAreaController.text = widget.user.area;
-    userSchoolController.text = widget.user.associatedOrganization;
+    userSchoolController.text = widget.user.organization;
     userChoices = widget.user.qaAnswers;
   }
 
@@ -419,7 +419,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       languages: selectedLanguages.toList(),
                       invitedActivities: miittiUser.invitedActivities,
                       lastActive: miittiUser.lastActive,
-                      associatedOrganization: userSchoolController.text,
+                      organization: userSchoolController.text,
                       fcmToken: miittiUser.fcmToken,
                       registrationDate: miittiUser.registrationDate,
                     );

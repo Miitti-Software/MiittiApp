@@ -20,7 +20,7 @@ class MiittiUser {
   Timestamp lastActive;
   Map<String, String>? groups;
   String? occupationalStatus;
-  String associatedOrganization;
+  String organization;
   String fcmToken;
   Timestamp registrationDate;
 
@@ -40,7 +40,7 @@ class MiittiUser {
       required this.lastActive,
       this.groups,
       this.occupationalStatus,        // TODO: Make mandatory
-      required this.associatedOrganization,   // TODO: Make non-mandatory
+      required this.organization,   // TODO: Make non-mandatory
       required this.fcmToken,
       required this.registrationDate});
 
@@ -66,7 +66,7 @@ class MiittiUser {
         invitedActivities: _toStringList(map['invitedActivities']),
         lastActive: resolveTimestamp(map['userStatus']),
         occupationalStatus: map['occupationalStatus'] ?? '',
-        associatedOrganization: map['userSchool'] ?? '',
+        organization: map['userSchool'] ?? '',
         fcmToken: map['fcmToken'] ?? '',
         registrationDate: resolveTimestamp(map['userRegistrationDate']),
       );
@@ -91,7 +91,7 @@ class MiittiUser {
       'profilePicture': profilePicture,
       'invitedActivities': invitedActivities.toList(),
       'lastActive': lastActive,
-      'userSchool': associatedOrganization,
+      'userSchool': organization,
       'fcmToken': fcmToken,
       'userRegistrationDate': registrationDate
     };
@@ -105,7 +105,7 @@ class MiittiUser {
       birthday = newData['userBirthday'] ?? birthday;
       area = newData['userArea'] ?? area;
       lastActive = newData['lastActive'] ?? lastActive;
-      associatedOrganization = newData['userSchool'] ?? associatedOrganization;
+      organization = newData['userSchool'] ?? organization;
       fcmToken = newData['fcmToken'] ?? fcmToken;
       registrationDate =
           newData['userRegistrationDate'] ?? registrationDate;

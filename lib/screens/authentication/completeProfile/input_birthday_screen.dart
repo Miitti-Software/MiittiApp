@@ -127,7 +127,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                             int.parse(value.substring(0, 2)),
                           );
                         });
-                        userData.setUserBirthday(birthday);
+                        userData.setBirthday(birthday);
                       }
                     }
                   },
@@ -192,7 +192,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                   config.get<String>('invalid-birthday-missing'),
                 );
               } else if (_validateBirthdayDate(controller.text)) {
-                userData.setUserBirthday(birthday);
+                userData.setBirthday(birthday);
                 context.push('/login/complete-profile/gender');
               }
             },

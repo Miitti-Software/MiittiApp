@@ -51,7 +51,6 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
               style: Theme.of(context).textTheme.labelSmall),
           const SizedBox(height: AppSizes.verticalSeparationPadding),
           
-          // TODO: extract block list builder to a separate component
           ListView.builder(
             shrinkWrap: true,
             itemCount: statusOptions.length,
@@ -93,9 +92,12 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
           ForwardButton(
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
-              // TODO: direct to choosing educational institution if student, else go to quiz
               if (selectedOccupationalStatus != null) {
-                context.push('/');
+                if (selectedOccupationalStatus == "student") {
+                  context.push('/login/complete-profile/organization');
+                } else {
+                  context.push('/'); // TODO: direct to the next screen
+                }
               } else {
                 ErrorSnackbar.show(
                     context, config.get<String>('invalid-occupational-status-missing'));

@@ -82,7 +82,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
                                   selectedLanguages.remove(language);
                                 } else {
                                   selectedLanguages.add(language);
-                                  userData.setUserLanguages(selectedLanguages);
+                                  userData.setLanguages(selectedLanguages);
                                 }
                               });
                             },

@@ -27,14 +27,14 @@ class InputEmailScreen extends ConsumerWidget {
           const SizedBox(height: AppSizes.verticalSeparationPadding),
           // TODO: Add email validation
           FilledTextField(hintText: config.get<String>('input-email-placeholder'), controller: controller, onSubmit: (value) {
-            userData.setUserEmail(controller.text);
+            userData.setEmail(controller.text);
             context.push('/');
           }),
           const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
           Text(config.get<String>('input-email-disclaimer'), style: Theme.of(context).textTheme.labelSmall),
           const Spacer(),
           ForwardButton(buttonText: config.get<String>('forward-button'), onPressed: () { 
-            userData.setUserEmail(controller.text);
+            userData.setEmail(controller.text);
             context.push('/');
           }),
           const SizedBox(height: AppSizes.minVerticalPadding),
