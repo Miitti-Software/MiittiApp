@@ -1,3 +1,4 @@
+import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
     qaCards = ref.read(remoteConfigServiceProvider).getTuplesList<String>(qaCategory);
     final userData = ref.read(userDataProvider);
     answeredQACards = qaCards.where(
-      (qaCard) => userData.qaAnswers?.containsKey(qaCard.item1) ?? false
+      (qaCard) => userData.qaAnswers.containsKey(qaCard.item1)
     ).toList();
   }
 
@@ -49,28 +50,30 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
           const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
           Text(config.get<String>('input-qa-cards-disclaimer'),
               style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: AppSizes.verticalSeparationPadding),
+          const SizedBox(height: AppSizes.minVerticalPadding),
           
-          // TODO: Change this to side scrollable buttons
-          DropdownButton<String>(
-            dropdownColor: Theme.of(context).colorScheme.surface,
-            value: qaCategory,
-            items: qaCategories.map((String category) {
-              return DropdownMenuItem<String>(
-                value: category,
-                child: Text(config.get<String>(category)),
-              );
-            }).toList(),
-            onChanged: (String? value) {
-              setState(() {
-                qaCategory = value!;
-                qaCards = ref.read(remoteConfigServiceProvider).getTuplesList<String>(qaCategory);
-              });
-            },
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: qaCategories.map((String category) {
+                return ChoiceButton(
+                  text: config.get<String>(category),
+                  isSelected: qaCategory == category,
+                  onSelected: (bool selected) {
+                    if (!selected) {
+                      setState(() {
+                        qaCategory = category;
+                        qaCards = ref.read(remoteConfigServiceProvider).getTuplesList<String>(qaCategory);
+                      });
+                    }
+                  },
+                );
+              }).toList(),
+            ),
           ),
 
           // Change styling and make tapping open the answer page / dialog?
-          const SizedBox(height: AppSizes.verticalSeparationPadding),
+          const SizedBox(height: AppSizes.minVerticalPadding),
           Expanded(
             child: PermanentScrollbar(
               child: ListView.builder(
@@ -81,28 +84,32 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
                   final isSelected = answeredQACards.contains(qaCard);
                   return Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                      border: isSelected
-                          ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1)
-                          : Border.all(color: Colors.transparent, width: 1),
-                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.transparent,
+                      border: Border(
+                        bottom: isSelected 
+                        ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 1) 
+                        : BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.4), width: 1),
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 0),
                     margin: const EdgeInsets.only(bottom: 8, right: 10),
                     child: ListTile(
-                      titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                      titleTextStyle: Theme.of(context).textTheme.labelMedium,
+                      trailing: isSelected
+                        ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
+                        : null,
                       minVerticalPadding: 6,
                       minTileHeight: 1,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                       title: Text(qaCard.item2),
                       onTap: () {
                         setState(() {
                           if (isSelected) {
                             answeredQACards.remove(qaCard);
-                            userData.qaAnswers?.remove(qaCard.item1);
+                            userData.qaAnswers.remove(qaCard.item1);
                           } else {
                             answeredQACards.add(qaCard);
-                            userData.qaAnswers![qaCard.item1] = qaCard.item2;
+                            userData.qaAnswers[qaCard.item1] = qaCard.item2;
                           }
                         });
                       },

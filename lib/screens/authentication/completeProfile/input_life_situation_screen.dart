@@ -96,7 +96,7 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
                 if (selectedOccupationalStatus == "student") {
                   context.push('/login/complete-profile/organization');
                 } else {
-                  context.push('/'); // TODO: direct to the next screen
+                  context.push('/login/complete-profile/qa-cards');
                 }
               } else {
                 ErrorSnackbar.show(

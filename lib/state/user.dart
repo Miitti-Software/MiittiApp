@@ -84,7 +84,7 @@ class UserData {
   String? organization;
   List<String>? favoriteActivities;
   List<String>? invitedActivities;
-  Map<String, String>? qaAnswers;
+  Map<String, String> qaAnswers = {};
   Map<String, String>? groups;
   String? fcmToken;
   DateTime? lastActive;
@@ -147,7 +147,7 @@ class UserData {
   void setOrganization(String? value) => organization = value;
   void setFavoriteActivities(List<String>? value) => favoriteActivities = value;
   void setInvitedActivities(List<String>? value) => invitedActivities = value;
-  void setQaAnswers(Map<String, String>? value) => qaAnswers = value;
+  void setQaAnswers(Map<String, String> value) => qaAnswers = value;
   void setGroups(Map<String, String>? value) => groups = value;
   void setFcmToken(String? value) => fcmToken = value;
   void setLastActive(DateTime? value) => lastActive = value;

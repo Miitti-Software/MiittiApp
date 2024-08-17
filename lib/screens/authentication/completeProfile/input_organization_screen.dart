@@ -139,7 +139,7 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
               if (selectedOrganization != null) {
-                context.push('/');
+                context.push('/login/complete-profile/qa-cards');
               } else {
                 ErrorSnackbar.show(
                     context, config.get<String>('invalid-organization-missing'));
