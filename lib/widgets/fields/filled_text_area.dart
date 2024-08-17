@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// A text field with a filled background.
-class FilledTextField extends StatelessWidget {
+/// A text area with a filled background.
+class FilledTextArea extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final void Function(String)? onSubmit;
 
-  const FilledTextField({
+  const FilledTextArea({
     super.key,
     required this.hintText,
     required this.controller,
@@ -18,6 +18,8 @@ class FilledTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      maxLines: 5,
+      autofocus: true,
       controller: controller,
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
             color: Theme.of(context).colorScheme.onPrimary,

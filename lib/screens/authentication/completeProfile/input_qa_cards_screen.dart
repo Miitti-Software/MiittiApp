@@ -28,6 +28,10 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
   @override
   void initState() {
     super.initState();
+    _loadQACards();
+  }
+
+  void _loadQACards() {
     qaCards = ref.read(remoteConfigServiceProvider).getTuplesList<String>(qaCategory);
     final userData = ref.read(userDataProvider);
     answeredQACards = qaCards.where(
@@ -37,7 +41,6 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider);
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(
@@ -63,7 +66,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
                     if (!selected) {
                       setState(() {
                         qaCategory = category;
-                        qaCards = ref.read(remoteConfigServiceProvider).getTuplesList<String>(qaCategory);
+                        _loadQACards();
                       });
                     }
                   },
@@ -72,7 +75,6 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
             ),
           ),
 
-          // Change styling and make tapping open the answer page / dialog?
           const SizedBox(height: AppSizes.minVerticalPadding),
           Expanded(
             child: PermanentScrollbar(
@@ -102,15 +104,10 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
                       minTileHeight: 1,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                       title: Text(qaCard.item2),
-                      onTap: () {
+                      onTap: () async {
+                        await context.push('/login/complete-profile/qa-card/${qaCard.item1}');
                         setState(() {
-                          if (isSelected) {
-                            answeredQACards.remove(qaCard);
-                            userData.qaAnswers.remove(qaCard.item1);
-                          } else {
-                            answeredQACards.add(qaCard);
-                            userData.qaAnswers[qaCard.item1] = qaCard.item2;
-                          }
+                          _loadQACards();
                         });
                       },
                     ),
@@ -125,7 +122,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
               if (answeredQACards.isNotEmpty) {
-                context.push('/'); // TODO: direct to the next screen
+                context.push('/');
               } else {
                 ErrorSnackbar.show(
                     context, config.get<String>('invalid-qa-cards-missing'));

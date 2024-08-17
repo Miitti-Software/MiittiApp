@@ -49,7 +49,6 @@ class RemoteConfigService {
   List<Tuple2<String, T>> getTuplesList<T>(String key) {
     try {
       final dynamic file = _configFiles[key];
-      print(file.entries);
       return file.entries.map((entry) => Tuple2<String, T>(entry.key, entry.value as T)).toList().cast<Tuple2<String, T>>();
     } catch (e) {
       throw Exception('The key "$key" does not exist in the config files or is not a map: $e');

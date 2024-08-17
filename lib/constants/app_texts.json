@@ -41,6 +41,7 @@
     "delete-button": "Delete",
     "forward-button": "Next",
     "back-button": "Back",
+    "save-button": "Save",
 
     "input-name-title": "Let's begin, what's your name?",
     "input-name-placeholder": "Your first name",
@@ -119,8 +120,11 @@
 
     "input-qa-cards-title": "Tell us more about yourself",
     "input-qa-cards-disclaimer": "Choose 1 - 10 Q&A cards to answer in order tell others more about yourself. You can always change your answers later.",
-    "invalid-qa-cards-missing": "Please choose at least one Q&A card above to proceed.",
+    "invalid-qa-cards-missing": "Please answer to at least one Q&A card above to proceed.",
     "qa_category_1": "More about me",
     "qa_category_2": "Interests",
-    "qa_category_3": "Diving deeper"
+    "qa_category_3": "Diving deeper",
+
+    "input-qa-card-answer-placeholder": "Write here",
+    "input-qa-card-answer-disclaimer": "Submit an empty answer to delete your answer."
   }
