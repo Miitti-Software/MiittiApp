@@ -14,7 +14,7 @@ class MiittiUser {
   Map<String, String> qaAnswers;
   String gender;
   List<String> languages;
-  String profilePicture;
+  List<String> profilePictures;
   String uid;
   List<String> invitedActivities;
   Timestamp lastActive;
@@ -35,7 +35,7 @@ class MiittiUser {
       required this.qaAnswers,
       required this.gender,
       required this.languages,
-      required this.profilePicture,
+      required this.profilePictures,
       required this.invitedActivities,
       required this.lastActive,
       this.groups,
@@ -62,7 +62,7 @@ class MiittiUser {
         qaAnswers: _toStringMap(map['userChoices']),
         gender: map['userGender'] ?? '', // Updated to single File
         languages: _toStringList(map['userLanguages']),
-        profilePicture: map['profilePicture'] ?? '',
+        profilePictures: map['profilePicture'] ?? '',
         invitedActivities: _toStringList(map['invitedActivities']),
         lastActive: resolveTimestamp(map['userStatus']),
         occupationalStatus: map['occupationalStatus'] ?? '',
@@ -88,7 +88,7 @@ class MiittiUser {
       'userChoices': qaAnswers,
       'userGender': gender,
       'userLanguages': languages.toList(),
-      'profilePicture': profilePicture,
+      'profilePicture': profilePictures,
       'invitedActivities': invitedActivities.toList(),
       'lastActive': lastActive,
       'userSchool': organization,
@@ -109,7 +109,7 @@ class MiittiUser {
       fcmToken = newData['fcmToken'] ?? fcmToken;
       registrationDate =
           newData['userRegistrationDate'] ?? registrationDate;
-      profilePicture = newData['profilePicture'] ?? profilePicture;
+      profilePictures = newData['profilePicture'] ?? profilePictures;
       gender = newData['userGender'] ?? gender;
 
       if (newData['userFavoriteActivities'] is List<dynamic>) {

@@ -99,7 +99,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
           const Spacer(),
           ForwardButton(buttonText: config.get<String>('forward-button'), onPressed: () {
             if (selectedLanguages.isNotEmpty) {
-              context.push('/login/complete-profile/area');
+              context.push('/login/complete-profile/areas');
             } else {
               ErrorSnackbar.show(context, config.get<String>('invalid-languages-missing'));
             }

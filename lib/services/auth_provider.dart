@@ -963,7 +963,7 @@ class AuthProvider extends ChangeNotifier {
       showLoadingDialog(context);
       await uploadUserImage(_firebaseAuth.currentUser!.uid, image)
           .then((value) {
-        userModel.profilePicture = value;
+        userModel.profilePictures[0] = value;
       }).onError((error, stackTrace) {});
       userModel.registrationDate = Timestamp.now();
       userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber ?? '';
@@ -1140,7 +1140,7 @@ class AuthProvider extends ChangeNotifier {
       if (imageFile != null) {
         await uploadUserImage(_firebaseAuth.currentUser!.uid, imageFile)
             .then((value) {
-          updatedUser.profilePicture = value;
+          updatedUser.profilePictures[0] = value;
         });
       }
 

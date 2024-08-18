@@ -188,7 +188,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                                 ref
                                     .read(firestoreServiceProvider)
                                     .miittiUser!
-                                    .profilePicture,
+                                    .profilePictures[0],
                                 height: 400,
                                 width: 400,
                                 fit: BoxFit.cover,
@@ -415,7 +415,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                           .toList(),
                       qaAnswers: userChoices,
                       gender: miittiUser.gender,
-                      profilePicture: miittiUser.profilePicture,
+                      profilePictures: miittiUser.profilePictures,
                       languages: selectedLanguages.toList(),
                       invitedActivities: miittiUser.invitedActivities,
                       lastActive: miittiUser.lastActive,

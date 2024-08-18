@@ -122,7 +122,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
               if (answeredQACards.isNotEmpty) {
-                context.push('/');
+                context.push('/login/complete-profile/profile-picture');
               } else {
                 ErrorSnackbar.show(
                     context, config.get<String>('invalid-qa-cards-missing'));

@@ -77,7 +77,7 @@ class UserData {
   String? name;
   List<String> areas = [];
   Gender? gender;
-  String? profilePicture;
+  List<String> profilePictures = [];
   DateTime? birthday;
   List<Language>? languages;
   String? occupationalStatus;
@@ -98,7 +98,7 @@ class UserData {
       name = miittiUser.name;
       areas = miittiUser.areas;
       gender = Gender.values.byName(miittiUser.gender);
-      profilePicture = miittiUser.profilePicture;
+      profilePictures = miittiUser.profilePictures;
       birthday = miittiUser.birthday.toDate();
       languages = miittiUser.languages.map((language) => Language.values.byName(language)).toList();
       occupationalStatus = miittiUser.occupationalStatus;
@@ -118,9 +118,9 @@ class UserData {
   String? get getEmail => email;
   String? get getPhoneNumber => phoneNumber;
   String? get getName => name;
-  List<String>? get getArea => areas;
+  List<String> get getArea => areas;
   Gender? get getGender => gender;
-  String? get getProfilePicture => profilePicture;
+  List<String> get getProfilePicture => profilePictures;
   DateTime? get getBirthday => birthday;
   List<Language>? get getLanguages => languages;
   String? get getOccupationalStatus => occupationalStatus;
@@ -140,7 +140,7 @@ class UserData {
   void setName(String? value) => name = value;
   void setAreas(List<String> value) => areas = value;
   void setGender(Gender? value) => gender = value;
-  void setProfilePicture(String? value) => profilePicture = value;
+  void setProfilePicture(List<String> value) => profilePictures = value;
   void setBirthday(DateTime? value) => birthday = value;
   void setLanguages(List<Language>? value) => languages = value;
   void setOccupationalStatus(String? value) => occupationalStatus = value;

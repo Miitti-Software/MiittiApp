@@ -170,7 +170,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Image.network(
-          ref.read(firestoreServiceProvider).miittiUser!.profilePicture,
+          ref.read(firestoreServiceProvider).miittiUser!.profilePictures[0], 
           height: 400,
           width: 400,
           fit: BoxFit.cover,

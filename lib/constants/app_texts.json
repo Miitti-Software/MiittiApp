@@ -126,5 +126,12 @@
     "qa_category_3": "Diving deeper",
 
     "input-qa-card-answer-placeholder": "Write here",
-    "input-qa-card-answer-disclaimer": "Submit an empty answer to delete your answer."
+    "input-qa-card-answer-disclaimer": "Submit an empty answer to delete your answer.",
+
+    "input-profile-picture-title": "Add a profile picture",
+    "input-profile-picture-disclaimer": "This is the first thing others see about you. Choose a picture that represents you well.",
+    "input-profile-picture-placeholder": "No file chosen",
+    "input-profile-picture-gallery-button": "From gallery",
+    "input-profile-picture-camera-button": "Take a photo",
+    "invalid-profile-picture-missing": "Please choose a profile picture that clearly shows your face in order to proceed."
   }

@@ -394,7 +394,7 @@ class FirestoreService {
     try {
       showLoadingDialog(context);
       await uploadUserImage(ref.read(authServiceProvider).uid, image).then((value) {
-        userModel.profilePicture = value;
+        userModel.profilePictures[0] = value;
       }).onError((error, stackTrace) {});
       userModel.registrationDate = Timestamp.now();
       userModel.phoneNumber =
@@ -588,7 +588,7 @@ class FirestoreService {
       if (imageFile != null) {
         await uploadUserImage(ref.read(authServiceProvider).uid, imageFile)
             .then((value) {
-          updatedUser.profilePicture = value;
+          updatedUser.profilePictures[0] = value;
         });
       }
 

@@ -5,5 +5,6 @@
     "generic-error-action-prompt": "Please try again later or contact support.",
     "delete-account-error": "An error occurred during account deletion.",
     "routing-error": "Error navigating to the requested page:",
-    "error-message-action-prompt": "Please contact support with the above error message."
+    "error-message-action-prompt": "Please contact support with the above error message.",
+    "select-image-error": "An error occurred while processing the image, please try again."
 }

@@ -1077,7 +1077,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         qaAnswers: userChoices,
         gender: selectedGender,
         languages: selectedLanguages.toList(),
-        profilePicture: '',
+        profilePictures: [],
         invitedActivities: [],
         lastActive: Timestamp.now(),
         organization: noLifeSituation ? '' : selectedLifeOption,

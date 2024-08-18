@@ -30,7 +30,7 @@ void initState() {
   _loadAreas();
   final userAreas = ref.read(userDataProvider).areas;
   selectedAreas = allAreas
-      .where((area) => userAreas?.contains(area.item1) ?? false) 
+      .where((area) => userAreas.contains(area.item1)) 
       .map((area) => area.item1)
       .toList();
 }

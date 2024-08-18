@@ -10,6 +10,7 @@ import 'package:miitti_app/screens/authentication/completeProfile/input_language
 import 'package:miitti_app/screens/authentication/completeProfile/input_life_situation_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_name_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_organization_screen.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/input_profile_picture_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_qa_card_answer_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_qa_cards_screen.dart';
 import 'package:miitti_app/screens/authentication/welcome_screen.dart';
@@ -28,7 +29,7 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     refreshListenable: ValueNotifier<bool>(ref.watch(authServiceProvider).isSignedIn),
-    initialLocation: '/login/complete-profile/areas',
+    initialLocation: '/login/complete-profile/profile-picture',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
     errorBuilder: _buildErrorPage,
@@ -109,6 +110,10 @@ class AppRouter {
           final question = state.pathParameters['question']!;
           return NoTransitionPage(child: InputQACardAnswerScreen(question));
         },
+      ),
+      GoRoute(
+        path: 'complete-profile/profile-picture',
+        pageBuilder: _buildNoTransitionPage(const InputProfilePictureScreen()),
       ),
     ];
   }

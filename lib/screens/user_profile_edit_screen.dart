@@ -147,7 +147,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(15)),
             child: Image.network(
-              widget.user.profilePicture,
+              widget.user.profilePictures[0],
               height: 400,
               width: 400,
               fit: BoxFit.cover,
