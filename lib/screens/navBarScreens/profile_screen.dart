@@ -234,7 +234,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         child: Column(
           children: [
-            buildUserDetailTile(Icons.location_on, miittiUser.area),
+            buildUserDetailTile(Icons.location_on, miittiUser.areas.toString()),  // TODO: Get rid of toString()
             buildDivider(),
             buildUserDetailTile(Icons.person, miittiUser.gender),
             buildDivider(),

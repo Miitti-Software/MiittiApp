@@ -946,7 +946,7 @@ class AuthProvider extends ChangeNotifier {
     MiittiUser? user = await getUser(uid);
     if (user == null) {
       return true;
-    } else if (user.area.isEmpty) {
+    } else if (user.areas.isEmpty) {
       return true;
     } else {
       return false;
@@ -1253,7 +1253,7 @@ class AuthProvider extends ChangeNotifier {
     Query query = _fireStore.collection(_usersString);
 
     if (type == 0) {
-      query = query.where('userArea', isEqualTo: miittiUser.area);
+      query = query.where('userArea', isEqualTo: miittiUser.areas);
     } else if (type == 1) {
       query = query.where('userFavoriteActivities',
           arrayContainsAny: miittiUser.favoriteActivities);

@@ -75,7 +75,7 @@ class UserData {
   String? email;
   String? phoneNumber;
   String? name;
-  String? area;
+  List<String> areas = [];
   Gender? gender;
   String? profilePicture;
   DateTime? birthday;
@@ -96,7 +96,7 @@ class UserData {
       email = miittiUser.email;               // TODO: Fetch email from the authentification service - name too maybe? And everything else that is available
       phoneNumber = miittiUser.phoneNumber;
       name = miittiUser.name;
-      area = miittiUser.area;
+      areas = miittiUser.areas;
       gender = Gender.values.byName(miittiUser.gender);
       profilePicture = miittiUser.profilePicture;
       birthday = miittiUser.birthday.toDate();
@@ -118,7 +118,7 @@ class UserData {
   String? get getEmail => email;
   String? get getPhoneNumber => phoneNumber;
   String? get getName => name;
-  String? get getArea => area;
+  List<String>? get getArea => areas;
   Gender? get getGender => gender;
   String? get getProfilePicture => profilePicture;
   DateTime? get getBirthday => birthday;
@@ -138,7 +138,7 @@ class UserData {
   void setEmail(String? value) => email = value;
   void setPhoneNumber(String? value) => phoneNumber = value;
   void setName(String? value) => name = value;
-  void setArea(String? value) => area = value;
+  void setAreas(List<String> value) => areas = value;
   void setGender(Gender? value) => gender = value;
   void setProfilePicture(String? value) => profilePicture = value;
   void setBirthday(DateTime? value) => birthday = value;

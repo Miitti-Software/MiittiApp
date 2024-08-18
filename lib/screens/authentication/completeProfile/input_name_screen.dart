@@ -52,7 +52,6 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
                 controller: _controller,
                 onSubmit: (value) {
                   userData.setName(_controller.text);
-                  context.push('/login/complete-profile/birthday');
                 },
               ),
               const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),

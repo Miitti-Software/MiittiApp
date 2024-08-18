@@ -11,44 +11,42 @@ import 'package:miitti_app/widgets/config_screen.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 import 'package:miitti_app/widgets/error_snackbar.dart';
 
-class InputAreaScreen extends ConsumerStatefulWidget {
-  const InputAreaScreen({super.key});
+class InputAreasScreen extends ConsumerStatefulWidget {
+  const InputAreasScreen({super.key});
 
   @override
-  _InputAreaScreenState createState() => _InputAreaScreenState();
+  _InputAreasScreenState createState() => _InputAreasScreenState();
 }
 
-class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
-  String? selectedArea;
-  List<Tuple2<String, String>> allAreas = [];
-  List<Tuple2<String, String>> filteredAreas = [];
-  final TextEditingController _searchController = TextEditingController();
+class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
+List<String> selectedAreas = [];
+List<Tuple2<String, String>> allAreas = [];
+List<Tuple2<String, String>> filteredAreas = [];
+final TextEditingController _searchController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadAreas();
-    selectedArea = allAreas.firstWhere(
-        (area) => area.item1 == ref.read(userDataProvider).area,
-        orElse: () => const Tuple2<String, String>("", ""),
-      ).item1;
-    if (selectedArea == "") {
-      selectedArea = null;
-    }
-  }
+@override
+void initState() {
+  super.initState();
+  _loadAreas();
+  final userAreas = ref.read(userDataProvider).areas;
+  selectedAreas = allAreas
+      .where((area) => userAreas?.contains(area.item1) ?? false) 
+      .map((area) => area.item1)
+      .toList();
+}
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
+@override
+void dispose() {
+  _searchController.dispose();
+  super.dispose();
+}
 
-  Future<void> _loadAreas() async {
-    setState(() {
-      allAreas = ref.read(remoteConfigServiceProvider).getTuplesList<String>('areas');
-      filteredAreas = allAreas;
-    });
-  }
+Future<void> _loadAreas() async {
+  setState(() {
+    allAreas = ref.read(remoteConfigServiceProvider).getTuplesList<String>('areas');
+    filteredAreas = allAreas;
+  });
+}
 
   void _filterAreas(String query) {
     setState(() {
@@ -98,7 +96,7 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
                 itemCount: filteredAreas.length,
                 itemBuilder: (context, index) {
                   final area = filteredAreas[index];
-                  final isSelected = selectedArea == area.item1;
+                  final isSelected = selectedAreas.contains(area.item1);
                   return Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
@@ -118,10 +116,11 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
                       onTap: () {
                         setState(() {
                           if (isSelected) {
-                            selectedArea = null;
+                            selectedAreas.remove(area.item1);
+                            userData.areas.remove(area.item1);
                           } else {
-                            selectedArea = area.item1;
-                            userData.setArea(selectedArea);
+                            selectedAreas.add(area.item1);
+                            userData.areas.add(area.item1);
                           }
                         });
                       },
@@ -136,7 +135,7 @@ class _InputAreaScreenState extends ConsumerState<InputAreaScreen> {
           ForwardButton(
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
-              if (selectedArea != null) {
+              if (selectedAreas != []) {
                 context.push('/login/complete-profile/life-situation');
               } else {
                 ErrorSnackbar.show(

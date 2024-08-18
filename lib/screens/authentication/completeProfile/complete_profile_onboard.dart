@@ -1072,7 +1072,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         uid: '',
         phoneNumber: '',
         birthday: birthdayText!,
-        area: selectedCities.join(","),
+        areas: selectedCities.toList(),
         favoriteActivities: favoriteActivities.toList(),
         qaAnswers: userChoices,
         gender: selectedGender,
