@@ -55,7 +55,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
 
     selectedLanguages = widget.user.languages.toSet();
     userAreaController.text = widget.user.areas.toString();  // TODO: Get rid of toString
-    userSchoolController.text = widget.user.organization;
+    userSchoolController.text = widget.user.organization ?? '';
     userChoices = widget.user.qaAnswers;
   }
 
@@ -407,6 +407,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       name: miittiUser.name,
                       email: miittiUser.email,
                       uid: miittiUser.uid,
+                      occupationalStatus: miittiUser.occupationalStatus,
                       phoneNumber: miittiUser.phoneNumber,
                       birthday: miittiUser.birthday,
                       areas: [userAreaController.text.trim()],  // TODO: Make into an actual list

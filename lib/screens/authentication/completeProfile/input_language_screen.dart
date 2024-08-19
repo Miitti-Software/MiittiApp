@@ -27,7 +27,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
   @override
   void initState() {
     super.initState();
-    selectedLanguages = ref.read(userDataProvider).languages?.toList() ?? [];
+    selectedLanguages = ref.read(userDataProvider).languages.toList();
   }
 
   @override

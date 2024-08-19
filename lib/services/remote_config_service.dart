@@ -28,7 +28,7 @@ class RemoteConfigService {
   // A map to store the config values
   final Map<String, dynamic> _configValues = {};
   // List of remote config json file names to be loaded as defaults and fetched from Firebase - the same file names should be present both locally and in the Firebase console
-  final List<String> _jsonFiles = ['app_texts', 'error_texts', 'areas', 'occupational_statuses', 'organizations', 'qa_category_1', 'qa_category_2', 'qa_category_3']; // TODO: 'activities', 'question_cards'
+  final List<String> _jsonFiles = ['app_texts', 'error_texts', 'areas', 'occupational_statuses', 'organizations', 'qa_category_1', 'qa_category_2', 'qa_category_3', 'activities'];
 
   /// Getters for the different types of values that can be fetched from the remote config
   String getString(String key) => _remoteConfig.getString(key);
@@ -50,6 +50,16 @@ class RemoteConfigService {
     try {
       final dynamic file = _configFiles[key];
       return file.entries.map((entry) => Tuple2<String, T>(entry.key, entry.value as T)).toList().cast<Tuple2<String, T>>();
+    } catch (e) {
+      throw Exception('The key "$key" does not exist in the config files or is not a map: $e');
+    }
+  }
+
+  /// Getter for activities that returns a list of tuples with the activity id, name and emoji
+  List<Tuple2<String, Tuple2<String, String>>> getActivityTuples(String key) {
+    try {
+      final dynamic file = _configFiles[key];
+      return file.entries.map((entry) => Tuple2<String, Tuple2<String, String>>(entry.key, Tuple2<String, String>(entry.value['name'] as String, entry.value['emoji'] as String))).toList().cast<Tuple2<String, Tuple2<String, String>>>();
     } catch (e) {
       throw Exception('The key "$key" does not exist in the config files or is not a map: $e');
     }

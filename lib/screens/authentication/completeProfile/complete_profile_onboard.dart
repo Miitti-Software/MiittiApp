@@ -1071,6 +1071,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         email: _emailController.text.trim(),
         uid: '',
         phoneNumber: '',
+        occupationalStatus: '',
         birthday: birthdayText!,
         areas: selectedCities.toList(),
         favoriteActivities: favoriteActivities.toList(),

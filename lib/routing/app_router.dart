@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/input_activities_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_areas_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_birthday_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_email_screen.dart';
@@ -29,7 +30,7 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     refreshListenable: ValueNotifier<bool>(ref.watch(authServiceProvider).isSignedIn),
-    initialLocation: '/login/complete-profile/profile-picture',
+    initialLocation: '/login/complete-profile/activities',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
     errorBuilder: _buildErrorPage,
@@ -114,6 +115,10 @@ class AppRouter {
       GoRoute(
         path: 'complete-profile/profile-picture',
         pageBuilder: _buildNoTransitionPage(const InputProfilePictureScreen()),
+      ),
+      GoRoute(
+        path: 'complete-profile/activities',
+        pageBuilder: _buildNoTransitionPage(const InputActivitiesScreen()),
       ),
     ];
   }

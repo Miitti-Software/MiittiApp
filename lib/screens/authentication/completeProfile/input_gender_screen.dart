@@ -50,7 +50,7 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
 
           for (Gender gender in Gender.values)
             ChoiceButton(
-              text: config.get<String>(gender.name),
+              text: config.get<String>(gender.key),
               // Make the buttons behave like radio buttons by ensuring only one corresponding to the selected gender is selected at a time
               onSelected: (bool selected) {
                 if (!selected) {

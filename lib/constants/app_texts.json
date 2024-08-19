@@ -63,9 +63,9 @@
     "input-gender-disclaimer": "Your gender does not define you but with it we are able to better recommend suitable miittis for you! This will not be visible for others.",
     "invalid-gender-missing": "Please choose one of the options above to proceed.",
 
-    "male": "Male",
-    "female": "Female",
-    "other": "Other",
+    "male-gender": "Male",
+    "female-gender": "Female",
+    "other-gender": "Other",
 
     "input-languages-title": "Which languages do you speak?",
     "input-languages-disclaimer": "Select all that you are comfortable communicating in.",
@@ -133,5 +133,9 @@
     "input-profile-picture-placeholder": "No file chosen",
     "input-profile-picture-gallery-button": "From gallery",
     "input-profile-picture-camera-button": "Take a photo",
-    "invalid-profile-picture-missing": "Please choose a profile picture that clearly shows your face in order to proceed."
+    "invalid-profile-picture-missing": "Please choose a profile picture that clearly shows your face in order to proceed.",
+
+    "input-activities-title": "What kind of activities are you interested in?",
+    "input-activities-disclaimer": "Select all that you are interested in. This helps us to better recommend suitable miittis for you!",
+    "invalid-activities-missing": "Please select at least one activity above to proceed."
   }

@@ -1,0 +1,62 @@
+{
+    "exercise": {
+        "name": "Exercise",
+        "emoji": "👟"
+    },
+    "outdoors": {
+        "name": "Outdoors",
+        "emoji": "🌳"
+    },
+    "sports": {
+        "name": "Sports",
+        "emoji": "⚽"
+    },
+    "games": {
+        "name": "Games",
+        "emoji": "🎮"
+    },
+    "music": {
+        "name": "Music",
+        "emoji": "🎵"
+    },
+    "food": {
+        "name": "Food",
+        "emoji": "🍔"
+    },
+    "movies": {
+        "name": "Movies",
+        "emoji": "🎬"
+    },
+    "arts": {
+        "name": "Arts",
+        "emoji": "🎨"
+    },
+    "reading": {
+        "name": "Reading",
+        "emoji": "📚"
+    },
+    "travel": {
+        "name": "Travel",
+        "emoji": "✈️"
+    },
+    "technology": {
+        "name": "Technology",
+        "emoji": "📱"
+    },
+    "learning": {
+        "name": "Learning",
+        "emoji": "📖"
+    },
+    "social": {
+        "name": "Social",
+        "emoji": "👫"
+    },
+    "volunteering": {
+        "name": "Volunteering",
+        "emoji": "🤝"
+    },
+    "other-activity": {
+        "name": "Other",
+        "emoji": "❓"
+    }
+}

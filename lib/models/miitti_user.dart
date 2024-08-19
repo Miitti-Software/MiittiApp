@@ -19,8 +19,8 @@ class MiittiUser {
   List<String> invitedActivities;
   Timestamp lastActive;
   Map<String, String>? groups;
-  String? occupationalStatus;
-  String organization;
+  String occupationalStatus;
+  String? organization;
   String fcmToken;
   Timestamp registrationDate;
 
@@ -39,8 +39,8 @@ class MiittiUser {
       required this.invitedActivities,
       required this.lastActive,
       this.groups,
-      this.occupationalStatus,        // TODO: Make mandatory
-      required this.organization,   // TODO: Make non-mandatory
+      required this.occupationalStatus,
+      this.organization,
       required this.fcmToken,
       required this.registrationDate});
 

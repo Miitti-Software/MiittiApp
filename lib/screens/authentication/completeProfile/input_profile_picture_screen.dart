@@ -131,7 +131,7 @@ class _InputProfilePictureScreenState
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
               if (image != null) {
-                context.push('/');
+                context.push('/login/complete-profile/activities');
               } else {
                 ErrorSnackbar.show(
                     context, config.get<String>('invalid-profile-picture-missing'));
