@@ -127,7 +127,7 @@ Future<void> _loadActivities() async {
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
               if (favoriteActivities.isNotEmpty) {
-                context.push('/');
+                context.push('/login/complete-profile/push-notifications');
               } else {
                 ErrorSnackbar.show(
                     context, config.get<String>('invalid-activities-missing'));
