@@ -13,7 +13,6 @@ import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
 import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
 
-/// A screen for the user to choose their gender from a list of radio buttons
 class AcceptPushNotificationsScreen extends ConsumerStatefulWidget {
   const AcceptPushNotificationsScreen({super.key});
 
@@ -33,9 +32,9 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Spacer(),
-          Text(config.get<String>('input-gender-title'), style: Theme.of(context).textTheme.titleLarge),
+          Text(config.get<String>('accept-push-notifications-title'), style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
-          Text(config.get<String>('input-gender-disclaimer'), style: Theme.of(context).textTheme.labelSmall),
+          Text(config.get<String>('accept-push-notifications-disclaimer'), style: Theme.of(context).textTheme.labelSmall),
           const SizedBox(height: AppSizes.verticalSeparationPadding),
 
           ChoiceButton(
@@ -72,21 +71,21 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
                 context: context,
                 builder: (context) => ConfirmNotificationsDialog(
                   nextPage: () {
-                    context.push('/');
+                    context.push('/login/complete-profile/community-norms');
                   },
                 ),
               );
             } else {
               ref.read(notificationServiceProvider).checkPermission().then((granted) {
                 if (granted) {
-                  context.push('/');
+                  context.push('/login/complete-profile/community-norms');
                 } else {
                   ref
                       .read(notificationServiceProvider)
                       .requestPermission(true)
                       .then((grantFixed) {
                     if (grantFixed) {
-                      context.push('/');
+                      context.push('/login/complete-profile/community-norms');
                     } else {
                       afterFrame(() => showSnackBar(
                             context,

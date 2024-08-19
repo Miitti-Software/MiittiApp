@@ -28,7 +28,7 @@ class RemoteConfigService {
   // A map to store the config values
   final Map<String, dynamic> _configValues = {};
   // List of remote config json file names to be loaded as defaults and fetched from Firebase - the same file names should be present both locally and in the Firebase console
-  final List<String> _jsonFiles = ['app_texts', 'error_texts', 'areas', 'occupational_statuses', 'organizations', 'qa_category_1', 'qa_category_2', 'qa_category_3', 'activities'];
+  final List<String> _jsonFiles = ['app_texts', 'error_texts', 'areas', 'occupational_statuses', 'organizations', 'qa_category_1', 'qa_category_2', 'qa_category_3', 'activities', 'community_norms'];
 
   /// Getters for the different types of values that can be fetched from the remote config
   String getString(String key) => _remoteConfig.getString(key);

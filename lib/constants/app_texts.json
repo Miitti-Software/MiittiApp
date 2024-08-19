@@ -137,5 +137,12 @@
 
     "input-activities-title": "What kind of activities are you interested in?",
     "input-activities-disclaimer": "Select all that you are interested in. This helps us to better recommend suitable miittis for you!",
-    "invalid-activities-missing": "Please select at least one activity above to proceed."
+    "invalid-activities-missing": "Please select at least one activity above to proceed.",
+
+    "accept-push-notifications-title": "Don't miss a single miitti!",
+    "accept-push-notifications-disclaimer": "We will send you notifications about new miittis, messages and other important updates.",
+
+    "accept-norms-title": "Finally!",
+    "accept-norms-disclaimer": "Agree to the below community norms in order to proceed by reading and clicking all of them.",
+    "invalid-norms-missing": "Please agree to all the terms above to proceed."
   }

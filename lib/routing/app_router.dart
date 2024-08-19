@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
+import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_push_notifications.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_activities_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_areas_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_birthday_screen.dart';
-import 'package:miitti_app/screens/authentication/completeProfile/input_email_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_gender_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_language_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_life_situation_screen.dart';
@@ -31,7 +31,7 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     refreshListenable: ValueNotifier<bool>(ref.watch(authServiceProvider).isSignedIn),
-    initialLocation: '/login/complete-profile/push-notifications',
+    initialLocation: '/login/complete-profile/community-norms',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
     errorBuilder: _buildErrorPage,
@@ -74,10 +74,6 @@ class AppRouter {
         path: 'complete-profile/name',
         pageBuilder: _buildNoTransitionPage(const InputNameScreen()),
       ),
-      // GoRoute(
-      //   path: 'complete-profile/email',
-      //   pageBuilder: _buildNoTransitionPage(const InputEmailScreen()),
-      // ),
       GoRoute(
         path: 'complete-profile/birthday',
         pageBuilder: _buildNoTransitionPage(const InputBirthdayScreen()),
@@ -124,6 +120,10 @@ class AppRouter {
       GoRoute(
         path: 'complete-profile/push-notifications',
         pageBuilder: _buildNoTransitionPage(const AcceptPushNotificationsScreen()),
+      ),
+      GoRoute(
+        path: 'complete-profile/community-norms',
+        pageBuilder: _buildNoTransitionPage(const AcceptNormsScreen()),
       ),
     ];
   }
