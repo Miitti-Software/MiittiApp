@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
-import 'package:miitti_app/widgets/error_snackbar.dart';
+import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 
 /// A button handling authentication with Google or Apple.
 class AuthButton extends ConsumerStatefulWidget {

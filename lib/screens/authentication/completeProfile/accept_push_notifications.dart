@@ -1,17 +1,14 @@
-// TODO: Make the code nicer and more readable
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
-import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
-import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
+import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
+import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 
 class AcceptPushNotificationsScreen extends ConsumerStatefulWidget {
   const AcceptPushNotificationsScreen({super.key});
@@ -38,7 +35,7 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
           const SizedBox(height: AppSizes.verticalSeparationPadding),
 
           ChoiceButton(
-            text: "Hyväksyn push-ilmoitukset",
+            text: config.get<String>('accept-push-notifications-button'),
             onSelected: (bool selected) {
               if (!selected) {
                 ref.read(notificationServiceProvider).requestPermission(true);
@@ -51,7 +48,7 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
             isSelected: notificationsEnabled,
           ),
           ChoiceButton(
-            text: "En hyväksy",
+            text: config.get<String>('decline-push-notifications-button'),
             onSelected: (bool selected) {
               if (!selected) {
                 setState(() {
@@ -67,31 +64,41 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
           const Spacer(),
           ForwardButton(buttonText: config.get<String>('forward-button'), onPressed: () {
             if (!notificationsEnabled) {
-              showDialog(
+              BottomSheetDialog.show(
                 context: context,
-                builder: (context) => ConfirmNotificationsDialog(
-                  nextPage: () {
+                title: config.get<String>('accept-push-notifications-dialog-title'),
+                body: config.get<String>('accept-push-notifications-dialog-text'),
+                confirmText: config.get<String>('accept-push-notifications-dialog-confirm'),
+                cancelText: config.get<String>('accept-push-notifications-dialog-cancel'),
+                onConfirmPressed: () async {
+                  bool granted = await ref.read(notificationServiceProvider).requestPermission(true);
+                  if (granted && context.mounted) {
+                    context.pop();
                     context.push('/login/complete-profile/community-norms');
-                  },
-                ),
+                  } else {
+                    if (context.mounted) {
+                      ErrorSnackbar.show(context, config.get<String>('accept-push-notifications-dialog-error'));
+                      context.pop();
+                    }
+                  }
+                },
+                onCancelPressed: () {
+                  context.pop();
+                  context.push('/login/complete-profile/community-norms');
+                },
               );
             } else {
               ref.read(notificationServiceProvider).checkPermission().then((granted) {
-                if (granted) {
+                if (granted && context.mounted) {
                   context.push('/login/complete-profile/community-norms');
                 } else {
-                  ref
-                      .read(notificationServiceProvider)
-                      .requestPermission(true)
-                      .then((grantFixed) {
-                    if (grantFixed) {
+                  ref.read(notificationServiceProvider).requestPermission(true).then((grantFixed) {
+                    if (grantFixed && context.mounted) {
                       context.push('/login/complete-profile/community-norms');
                     } else {
-                      afterFrame(() => showSnackBar(
-                            context,
-                            'Hyväksy push-ilmoitukset myös laitteeltasi jatkaaksesi!',
-                            AppStyle.red,
-                          ));
+                      if (context.mounted) {
+                        ErrorSnackbar.show(context, config.get<String>('accept-push-notifications-dialog-error'));
+                      }
                     }
                   });
                 }

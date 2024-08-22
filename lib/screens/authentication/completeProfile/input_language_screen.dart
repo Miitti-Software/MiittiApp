@@ -10,7 +10,7 @@ import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
-import 'package:miitti_app/widgets/error_snackbar.dart';
+import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 
 /// A screen for the user to choose their spoken languages from a side scrollable list of checkboxes
 class InputLanguagesScreen extends ConsumerStatefulWidget {

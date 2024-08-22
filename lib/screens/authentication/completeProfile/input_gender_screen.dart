@@ -9,7 +9,7 @@ import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
-import 'package:miitti_app/widgets/error_snackbar.dart';
+import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 
 /// A screen for the user to choose their gender from a list of radio buttons
 class InputGenderScreen extends ConsumerStatefulWidget {
@@ -51,7 +51,7 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
           for (Gender gender in Gender.values)
             ChoiceButton(
               text: config.get<String>(gender.key),
-              // Make the buttons behave like radio buttons by ensuring only one corresponding to the selected gender is selected at a time
+              // Makes the buttons behave like radio buttons by ensuring only one corresponding to the selected gender is selected at a time
               onSelected: (bool selected) {
                 if (!selected) {
                   setState(() {

@@ -10,7 +10,7 @@ import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
-import 'package:miitti_app/widgets/error_snackbar.dart';
+import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 
 class InputQACardsScreen extends ConsumerStatefulWidget {
   const InputQACardsScreen({super.key});

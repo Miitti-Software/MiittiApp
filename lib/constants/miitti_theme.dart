@@ -70,6 +70,16 @@ final TextTheme textTheme = TextTheme(
     fontWeight: FontWeight.w700,
     color: colorScheme.onPrimary,
   ),
+  titleMedium: TextStyle(         // ex activityName
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
+    color: colorScheme.onPrimary,
+  ),
+  titleSmall: TextStyle(          // ex activitySubName
+    fontSize: 12,
+    fontWeight: FontWeight.w300,
+    color: colorScheme.onPrimary,
+  ),
   bodyMedium: TextStyle(          // ex body
     fontSize: 18,
     fontWeight: FontWeight.w600,
@@ -88,16 +98,6 @@ final TextTheme textTheme = TextTheme(
   labelMedium: TextStyle(         // ex question
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: colorScheme.onPrimary,
-  ),
-  titleMedium: TextStyle(         // ex activityName
-    fontSize: 18,
-    fontWeight: FontWeight.w700,
-    color: colorScheme.onPrimary,
-  ),
-  titleSmall: TextStyle(          // ex activitySubName
-    fontSize: 12,
-    fontWeight: FontWeight.w300,
     color: colorScheme.onPrimary,
   ),
 );

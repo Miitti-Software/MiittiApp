@@ -141,6 +141,13 @@
 
     "accept-push-notifications-title": "Don't miss a single miitti!",
     "accept-push-notifications-disclaimer": "We will send you notifications about new miittis, messages and other important updates.",
+    "accept-push-notifications-button": "Allow notifications",
+    "decline-push-notifications-button": "Don't allow",
+    "accept-push-notifications-dialog-title": "Are you sure?",
+    "accept-push-notifications-dialog-text": "You will not receive notifications about new miittis, messages, invitations, requests or other important updates.",
+    "accept-push-notifications-dialog-confirm": "Allow notifications",
+    "accept-push-notifications-dialog-cancel": "Not yet",
+    "accept-push-notifications-dialog-error": "You have to allow notifications from your device settings in order to receive notifications from Miitti App.",
 
     "accept-norms-title": "Finally!",
     "accept-norms-disclaimer": "Agree to the below community norms in order to proceed by reading and clicking all of them.",

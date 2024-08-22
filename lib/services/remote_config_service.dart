@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -130,6 +131,9 @@ class RemoteConfigService {
     _remoteConfig.onConfigUpdated.listen((event) async {
       await ref.watch(languageProvider.notifier).loadLanguage();
       await fetchAndActivate(ref.read(languageProvider));
+    },
+    onError: (error) {
+      debugPrint('Remote config server error: $error');
     });
   }
 
