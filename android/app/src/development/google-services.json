@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "82682289256-0an485blbmg57qbststqai1le8nvcqkj.apps.googleusercontent.com",
+          "client_id": "82682289256-arit3pns7ovnhmhpaq5mo4n0ir9j0vog.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.miittisoftwareoy.miitti_app.dev",
+            "certificate_hash": "16edc638104d1a9b6637c1b72a909be85b16a24b"
+          }
+        },
+        {
+          "client_id": "82682289256-91e07gmurt4q637hiht7slbs1c73se55.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "82682289256-0an485blbmg57qbststqai1le8nvcqkj.apps.googleusercontent.com",
+              "client_id": "82682289256-91e07gmurt4q637hiht7slbs1c73se55.apps.googleusercontent.com",
               "client_type": 3
             },
             {

@@ -31,7 +31,7 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     refreshListenable: ValueNotifier<bool>(ref.watch(authServiceProvider).isSignedIn),
-    initialLocation: '/login/complete-profile/push-notifications',
+    initialLocation: '/',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
     errorBuilder: _buildErrorPage,

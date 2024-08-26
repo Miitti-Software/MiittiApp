@@ -10,9 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### To Be Added
 
 - Finnish translations of text
+- Custom emojis and activities
 - Small and large, compressed versions of profile pictures
 - Collection and storage of relevant data
-- Use Firebase Remote Config, Performance Monitoring, Test Lab and Crashlytics
+- Use Performance Monitoring, Test Lab, App Distribution, Crashlytics and Analytics
 - Testing of most major operations such as signing in, signing up, creating and joining a miitti, viewing major pages and deleting account.
 
 ### To Be Changed

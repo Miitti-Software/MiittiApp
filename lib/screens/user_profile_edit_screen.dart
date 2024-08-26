@@ -249,7 +249,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
           children: [
             buildUserDetailTile(Icons.location_on, widget.user.areas.toString()),   // TODO: Get rid of toString
             buildDivider(),
-            buildUserDetailTile(Icons.person, widget.user.gender),
+            buildUserDetailTile(Icons.person, widget.user.gender.name),
             buildDivider(),
             buildUserDetailTile(
                 Icons.cake, calculateAge(widget.user.birthday).toString()),
@@ -503,7 +503,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
 
   String getUserStatus() {
     Duration difference =
-        DateTime.now().difference(widget.user.lastActive.toDate());
+        DateTime.now().difference(widget.user.lastActive);
 
     if (difference < const Duration(minutes: 5)) {
       return 'Paikalla';

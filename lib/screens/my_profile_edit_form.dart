@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 
@@ -39,7 +40,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
 
   File? image;
 
-  Set<String> selectedLanguages = {};
+  Set<Language> selectedLanguages = {};
 
   Map<String, String> userChoices = {};
 
@@ -53,8 +54,8 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
     favoriteActivities =
         updateActiviesId(widget.user.favoriteActivities.toSet());
 
-    selectedLanguages = widget.user.languages.toSet();
-    userAreaController.text = widget.user.areas.toString();  // TODO: Get rid of toString
+    selectedLanguages = widget.user.languages.map((lang) => Language.values.firstWhere((e) => e.name == lang)).toSet();
+    userAreaController.text = widget.user.areas.join(', ');  // Assuming areas is a list
     userSchoolController.text = widget.user.organization ?? '';
     userChoices = widget.user.qaAnswers;
   }
@@ -243,13 +244,13 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                 mainWidget: Row(
                   children: [
                     _buildLanguageButton(
-                      languages[0],
+                      Language.en,
                     ),
                     _buildLanguageButton(
-                      languages[1],
+                      Language.fi,
                     ),
                     _buildLanguageButton(
-                      languages[2],
+                      Language.sv,
                     ),
                   ],
                 ),
@@ -518,7 +519,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
   }
 
   Widget _buildLanguageButton(
-    String language,
+    Language language,
   ) {
     final bool isSelected = selectedLanguages.contains(language);
 
@@ -544,7 +545,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
         ),
         child: Center(
           child: Text(
-            language,
+            language.name,
             style: const TextStyle(
               fontSize: 40.0,
             ),

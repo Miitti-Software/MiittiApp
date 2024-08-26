@@ -236,7 +236,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           children: [
             buildUserDetailTile(Icons.location_on, miittiUser.areas.toString()),  // TODO: Get rid of toString()
             buildDivider(),
-            buildUserDetailTile(Icons.person, miittiUser.gender),
+            buildUserDetailTile(Icons.person, miittiUser.gender.name),
             buildDivider(),
             buildUserDetailTile(
                 Icons.cake, calculateAge(miittiUser.birthday).toString()),

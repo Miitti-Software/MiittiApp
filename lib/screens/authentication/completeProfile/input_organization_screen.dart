@@ -9,7 +9,6 @@ import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
-import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 
 class InputOrganizationScreen extends ConsumerStatefulWidget {
   const InputOrganizationScreen({super.key});
@@ -138,12 +137,7 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
           ForwardButton(
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
-              if (selectedOrganization != null) {
-                context.push('/login/complete-profile/qa-cards');
-              } else {
-                ErrorSnackbar.show(
-                    context, config.get<String>('invalid-organization-missing'));
-              }
+              context.push('/login/complete-profile/qa-cards');
             },
           ),
           const SizedBox(height: AppSizes.minVerticalPadding),

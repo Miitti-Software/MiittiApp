@@ -437,7 +437,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       activityModel.admin = _miittiUser!.uid;
       activityModel.adminAge = calculateAge(_miittiUser!.birthday);
-      activityModel.adminGender = _miittiUser!.gender;
+      activityModel.adminGender = _miittiUser!.gender.name;
       activityModel.activityUid = generateCustomId();
       activityModel.participants.add(_miittiUser!.uid);
 
@@ -965,7 +965,7 @@ class AuthProvider extends ChangeNotifier {
           .then((value) {
         userModel.profilePictures[0] = value;
       }).onError((error, stackTrace) {});
-      userModel.registrationDate = Timestamp.now();
+      userModel.registrationDate = DateTime.now();
       userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber ?? '';
       userModel.uid = _firebaseAuth.currentUser!.uid;
       _uid = userModel.uid;

@@ -44,7 +44,7 @@ void main() {
     final month = int.parse(birthDate[1]);
     final year = int.parse(birthDate[2]);
 
-    final timestamp = Timestamp.fromDate(DateTime(year, month, day));
+    final timestamp = DateTime(year, month, day);
 
     // Act
     final age = calculateAge(timestamp);

@@ -7,49 +7,193 @@
         "name": "Outdoors",
         "emoji": "🌳"
     },
-    "sports": {
-        "name": "Sports",
-        "emoji": "⚽"
+    "adventure": {
+        "name": "Adventure",
+        "emoji": "🚀"
     },
-    "games": {
-        "name": "Games",
+    "ball-games": {
+        "name": "Ball games",
+        "emoji": "⚽️"
+    },
+    "racket-sports": {
+        "name": "Racket sports",
+        "emoji": "🏸"
+    },
+    "gym": {
+        "name": "Gym",
+        "emoji": "🏋️"
+    },
+    "eating": {
+        "name": "Eating",
+        "emoji": "🍔"
+    },
+    "coffee": {
+        "name": "Coffee",
+        "emoji": "☕"
+    },
+    "hangout": {
+        "name": "Hangout",
+        "emoji": "💬"
+    },
+
+
+    "concert": {
+        "name": "Concert",
+        "emoji": "🎫"
+    },
+
+
+    "museum": {
+        "name": "Museum",
+        "emoji": "🏛️"
+    },
+    "theater": {
+        "name": "Theater",
+        "emoji": "🎭"
+    },
+    "cinema": {
+        "name": "Cinema",
+        "emoji": "🎥"
+    },
+    "drinks": {
+        "name": "Drinks",
+        "emoji": "🥂"
+    },
+    "board-games": {
+        "name": "Board games",
+        "emoji": "🎲"
+    },
+    "studying": {
+        "name": "Studying",
+        "emoji": "📚"
+    },
+    "traveling": {
+        "name": "Traveling",
+        "emoji": "✈️"
+    },
+    "photography": {
+        "name": "Photography",
+        "emoji": "📸"
+    },
+    "party": {
+        "name": "Party",
+        "emoji": "🥳"
+    },
+    "bar-crawl": {
+        "name": "Bar crawl",
+        "emoji": "🍻"
+    },
+    "dancing": {
+        "name": "Dancing",
+        "emoji": "💃"
+    },
+    "festival": {
+        "name": "Festival",
+        "emoji": "🎉"
+    },
+    "sauna": {
+        "name": "Sauna",
+        "emoji": "🧖"
+    },
+    "winter-sports": {
+        "name": "Winter sports",
+        "emoji": "🏂"
+    },
+    "ice-skating": {
+        "name": "Ice skating",
+        "emoji": "⛸️"
+    },
+    "roadtrip": {
+        "name": "Roadtrip",
+        "emoji": "🚘"
+    },
+    "hiking": {
+        "name": "Hiking",
+        "emoji": "🥾"
+    },
+    "climbing": {
+        "name": "Climbing",
+        "emoji": "🧗"
+    },
+    "cycling": {
+        "name": "Cycling",
+        "emoji": "🚴"
+    },
+    "running": {
+        "name": "Running",
+        "emoji": "🏃"
+    },
+    "swimming": {
+        "name": "Swimming",
+        "emoji": "🏊"
+    },
+    "gaming": {
+        "name": "Gaming",
         "emoji": "🎮"
+    },
+    "skateboarding": {
+        "name": "Skateboarding",
+        "emoji": "🛹"
+    },
+    "camping": {
+        "name": "Camping",
+        "emoji": "🏕️"
+    },
+    "playdate": {
+        "name": "Playdate",
+        "emoji": "🛝"
+    },
+    "bookclub": {
+        "name": "Book club",
+        "emoji": "📖"
+    },
+    "bowling": {
+        "name": "Bowling",
+        "emoji": "🎳"
+    },
+    "golf": {
+        "name": "Golf",
+        "emoji": "⛳"
+    },
+    "sightseeing": {
+        "name": "Sightseeing",
+        "emoji": "🏞️"
+    },
+    "crafts": {
+        "name": "Crafts",
+        "emoji": "✂️"
+    },
+    "jamming": {
+        "name": "Jamming",
+        "emoji": "🎸"
+    },
+    "shopping": {
+        "name": "Shopping",
+        "emoji": "🛍️"
+    },
+    "street-performance": {
+        "name": "Street performance",
+        "emoji": "👀"
+    },
+    "stand-up": {
+        "name": "Stand-up",
+        "emoji": "🎤"
+    },
+    "parkour": {
+        "name": "Parkour",
+        "emoji": "🤸"
+    },
+    "combat-sports": {
+        "name": "Combat sports",
+        "emoji": "🥋"
+    },
+    "water-sports": {
+        "name": "Water sports",
+        "emoji": "🏄"
     },
     "music": {
         "name": "Music",
         "emoji": "🎵"
-    },
-    "food": {
-        "name": "Food",
-        "emoji": "🍔"
-    },
-    "movies": {
-        "name": "Movies",
-        "emoji": "🎬"
-    },
-    "arts": {
-        "name": "Arts",
-        "emoji": "🎨"
-    },
-    "reading": {
-        "name": "Reading",
-        "emoji": "📚"
-    },
-    "travel": {
-        "name": "Travel",
-        "emoji": "✈️"
-    },
-    "technology": {
-        "name": "Technology",
-        "emoji": "📱"
-    },
-    "learning": {
-        "name": "Learning",
-        "emoji": "📖"
-    },
-    "social": {
-        "name": "Social",
-        "emoji": "👫"
     },
     "volunteering": {
         "name": "Volunteering",

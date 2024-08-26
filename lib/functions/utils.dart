@@ -11,7 +11,7 @@ import 'package:toggle_switch/toggle_switch.dart';
 
 import 'dart:math';
 
-enum Gender { male, female, nonBinary }
+// enum Gender { male, female, nonBinary }
 
 void afterFrame(Function() callback) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -188,18 +188,18 @@ Widget getGraphicImages(String imageName) {
   );
 }
 
-String genderToString(Gender gender) {
-  switch (gender) {
-    case Gender.male:
-      return 'Mies';
-    case Gender.female:
-      return 'Nainen';
-    case Gender.nonBinary:
-      return 'Ei-binäärinen';
-    default:
-      throw ArgumentError('Invalid gender value');
-  }
-}
+// String genderToString(Gender gender) {
+//   switch (gender) {
+//     case Gender.male:
+//       return 'Mies';
+//     case Gender.female:
+//       return 'Nainen';
+//     case Gender.nonBinary:
+//       return 'Ei-binäärinen';
+//     default:
+//       throw ArgumentError('Invalid gender value');
+//   }
+// }
 
 void pushNRemoveUntil(BuildContext context, Widget page) {
   Navigator.pushAndRemoveUntil(
@@ -223,10 +223,10 @@ void pushPage(BuildContext context, Widget page) {
   );
 }
 
-int calculateAge(Timestamp birthday) {
+int calculateAge(DateTime birthday) {
   // Parse the birth date string into a DateTime object
   DateTime today = DateTime.now();
-  DateTime birthDate = birthday.toDate();
+  DateTime birthDate = birthday;
 
   int age = today.year - birthDate.year;
 

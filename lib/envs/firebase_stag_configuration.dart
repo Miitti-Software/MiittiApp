@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '377453260995',
     projectId: 'miittiappstage',
     storageBucket: 'miittiappstage.appspot.com',
+    androidClientId: '377453260995-eqtoj53bv2s1bnk62sptb9cmlr0ga6em.apps.googleusercontent.com',
+    iosClientId: '377453260995-c3t82thsa88u8g7gd845v6n8b3vn9vq9.apps.googleusercontent.com',
     iosBundleId: 'com.miittisoftwareoy.miittiApp.stg',
   );
 

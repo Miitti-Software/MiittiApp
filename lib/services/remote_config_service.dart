@@ -133,7 +133,7 @@ class RemoteConfigService {
       await fetchAndActivate(ref.read(languageProvider));
     },
     onError: (error) {
-      debugPrint('Remote config server error: $error');
+      debugPrint('Remote config server error: $error');  // Sometimes Firebase's remote config server cannot be reached independently of the app in which case the app should continue to use the last fetched values
     });
   }
 

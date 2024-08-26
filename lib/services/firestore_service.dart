@@ -212,7 +212,7 @@ class FirestoreService {
           .collection(_usersString)
           .where('uid', whereIn: userIds)
           .get();
-      return result.docs.map((doc) => MiittiUser.fromDoc(doc)).toList();
+      return result.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
     } catch (e) {
       debugPrint("Error fetching users: $e");
       return [];
@@ -314,7 +314,7 @@ class FirestoreService {
   Future<List<MiittiUser>> fetchUsers() async {
     QuerySnapshot querySnapshot = await _getFireQuery(_usersString);
 
-    return querySnapshot.docs.map((doc) => MiittiUser.fromDoc(doc)).toList();
+    return querySnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
   }
 
   Future<List<PersonActivity>> fetchActivitiesRequestsFrom(
@@ -392,17 +392,17 @@ class FirestoreService {
     required Function onSuccess,
   }) async {
     try {
-      showLoadingDialog(context);
+      // showLoadingDialog(context);
       await uploadUserImage(ref.read(authServiceProvider).uid, image).then((value) {
         userModel.profilePictures[0] = value;
       }).onError((error, stackTrace) {});
-      userModel.registrationDate = Timestamp.now();
+      userModel.registrationDate = Timestamp.now().toDate();
       userModel.phoneNumber =
           ref.read(authServiceProvider).currentUser?.phoneNumber ?? '';
       userModel.uid = ref.read(authServiceProvider).uid;
       _miittiUser = userModel;
 
-      await _userDocRef(userModel.uid)
+      await _firestore.collection(_usersString).doc(userModel.uid)
           .set(userModel.toMap())
           .then((value) async {
         onSuccess();
@@ -415,8 +415,6 @@ class FirestoreService {
       showSnackBar(context, "Datan tallennus epäonnistui: ${e.toString()}",
           AppStyle.red);
       debugPrint("Userdata to firebase error: $e");
-    } finally {
-      Navigator.of(context).pop();
     }
   }
 
@@ -618,7 +616,7 @@ class FirestoreService {
     try {
       activityModel.admin = _miittiUser!.uid;
       activityModel.adminAge = calculateAge(_miittiUser!.birthday);
-      activityModel.adminGender = _miittiUser!.gender;
+      activityModel.adminGender = _miittiUser!.gender.name;
       activityModel.activityUid = generateCustomId();
       activityModel.participants.add(_miittiUser!.uid);
 
@@ -724,7 +722,7 @@ class FirestoreService {
     if (snapshot.exists) {
       if (exists != null) {
         try {
-          MiittiUser user = MiittiUser.fromDoc(snapshot);
+          MiittiUser user = MiittiUser.fromFirestore(snapshot);
           exists(user);
         } catch (e) {
           debugPrint('Error running function for existing user: $e');

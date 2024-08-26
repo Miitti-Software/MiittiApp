@@ -110,7 +110,7 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
 
                   // Format the date and time in the desired format or provide an empty string if null
                   String formattedDate = DateFormat('MMMM d, HH:mm')
-                      .format(user.lastActive.toDate());
+                      .format(user.lastActive);
 
                   return Container(
                     decoration: const BoxDecoration(

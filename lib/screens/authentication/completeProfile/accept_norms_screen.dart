@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +32,8 @@ class _AcceptNormsScreenState extends ConsumerState<AcceptNormsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userData = ref.read(userDataProvider);
+    final userState = ref.read(userStateProvider);
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(
@@ -85,6 +91,35 @@ class _AcceptNormsScreenState extends ConsumerState<AcceptNormsScreen> {
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
               if (Set.from(acceptedNorms).containsAll(norms)) {
+                  MiittiUser miittiUser = MiittiUser(
+                    name: userData.name!.trim(),
+                    email: userState!.email?.trim() ?? '',
+                    uid: userState.uid,
+                    phoneNumber: '',
+                    occupationalStatus: userData.occupationalStatus!,
+                    birthday: userData.birthday!,
+                    areas: userData.areas,
+                    favoriteActivities: userData.favoriteActivities,
+                    qaAnswers: userData.qaAnswers,
+                    gender: userData.gender!,
+                    languages: userData.languages,
+                    profilePictures: userData.profilePictures,
+                    invitedActivities: [],
+                    lastActive: DateTime.now(),
+                    organization: userData.organization,
+                    fcmToken: '',
+                    registrationDate: DateTime.now(),
+                  );
+                  ref.read(firestoreServiceProvider).saveUserDatatoFirebase(
+                    context: context,
+                    userModel: miittiUser,
+                    image: File(userData.profilePictures[0]),
+                    onSuccess: () {
+                      ErrorSnackbar.show(
+                        context, "well done!",
+                      );
+                    },
+                  );
                   context.push('/');
               } else {
                 ErrorSnackbar.show(

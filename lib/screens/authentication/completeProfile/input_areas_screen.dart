@@ -19,34 +19,34 @@ class InputAreasScreen extends ConsumerStatefulWidget {
 }
 
 class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
-List<String> selectedAreas = [];
-List<Tuple2<String, String>> allAreas = [];
-List<Tuple2<String, String>> filteredAreas = [];
-final TextEditingController _searchController = TextEditingController();
+  List<String> selectedAreas = [];
+  List<Tuple2<String, String>> allAreas = [];
+  List<Tuple2<String, String>> filteredAreas = [];
+  final TextEditingController _searchController = TextEditingController();
 
-@override
-void initState() {
-  super.initState();
-  _loadAreas();
-  final userAreas = ref.read(userDataProvider).areas;
-  selectedAreas = allAreas
-      .where((area) => userAreas.contains(area.item1)) 
-      .map((area) => area.item1)
-      .toList();
-}
+  @override
+  void initState() {
+    super.initState();
+    _loadAreas();
+    final userAreas = ref.read(userDataProvider).areas;
+    selectedAreas = allAreas
+        .where((area) => userAreas.contains(area.item1))
+        .map((area) => area.item1)
+        .toList();
+  }
 
-@override
-void dispose() {
-  _searchController.dispose();
-  super.dispose();
-}
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
-Future<void> _loadAreas() async {
-  setState(() {
-    allAreas = ref.read(remoteConfigServiceProvider).getTuplesList<String>('areas');
-    filteredAreas = allAreas;
-  });
-}
+  Future<void> _loadAreas() async {
+    setState(() {
+      allAreas = ref.read(remoteConfigServiceProvider).getTuplesList<String>('areas');
+      filteredAreas = allAreas;
+    });
+  }
 
   void _filterAreas(String query) {
     setState(() {
@@ -118,9 +118,12 @@ Future<void> _loadAreas() async {
                           if (isSelected) {
                             selectedAreas.remove(area.item1);
                             userData.areas.remove(area.item1);
-                          } else {
+                          } else if (selectedAreas.length < 3) {
                             selectedAreas.add(area.item1);
                             userData.areas.add(area.item1);
+                          } else {
+                            ErrorSnackbar.show(
+                                context, config.get<String>('invalid-area-too-many'));
                           }
                         });
                       },
@@ -128,14 +131,14 @@ Future<void> _loadAreas() async {
                   );
                 },
               ),
-              ),
             ),
+          ),
           
           const SizedBox(height: AppSizes.minVerticalEdgePadding),
           ForwardButton(
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
-              if (selectedAreas != []) {
+              if (selectedAreas.isNotEmpty) {
                 context.push('/login/complete-profile/life-situation');
               } else {
                 ErrorSnackbar.show(

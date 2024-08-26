@@ -85,7 +85,6 @@ class UserData {
   List<String> favoriteActivities = [];
   List<String> invitedActivities = [];
   Map<String, String> qaAnswers = {};
-  Map<String, String>? groups;
   String? fcmToken;
   DateTime? lastActive;
   DateTime? registrationDate;
@@ -97,19 +96,18 @@ class UserData {
       phoneNumber = miittiUser.phoneNumber;
       name = miittiUser.name;
       areas = miittiUser.areas;
-      gender = Gender.values.byName(miittiUser.gender);
+      gender = miittiUser.gender;
       profilePictures = miittiUser.profilePictures;
-      birthday = miittiUser.birthday.toDate();
-      languages = miittiUser.languages.map((language) => Language.values.byName(language)).toList();
+      birthday = miittiUser.birthday;
+      languages = miittiUser.languages;
       occupationalStatus = miittiUser.occupationalStatus;
       organization = miittiUser.organization;
       favoriteActivities = miittiUser.favoriteActivities;
       invitedActivities = miittiUser.invitedActivities;
       qaAnswers = miittiUser.qaAnswers;
-      groups = miittiUser.groups;
       fcmToken = miittiUser.fcmToken;
-      lastActive = miittiUser.lastActive.toDate();
-      registrationDate = miittiUser.registrationDate.toDate();
+      lastActive = miittiUser.lastActive;
+      registrationDate = miittiUser.registrationDate;
     }
   }
 
@@ -128,7 +126,6 @@ class UserData {
   List<String> get getFavoriteActivities => favoriteActivities;
   List<String> get getInvitedActivities => invitedActivities;
   Map<String, String> get getQaAnswers => qaAnswers;
-  Map<String, String>? get getGroups => groups;
   String? get getFcmToken => fcmToken;
   DateTime? get getLastActive => lastActive;
   DateTime? get getRegistrationDate => registrationDate;
@@ -148,7 +145,6 @@ class UserData {
   void setFavoriteActivities(List<String> value) => favoriteActivities = value;
   void setInvitedActivities(List<String> value) => invitedActivities = value;
   void setQaAnswers(Map<String, String> value) => qaAnswers = value;
-  void setGroups(Map<String, String>? value) => groups = value;
   void setFcmToken(String? value) => fcmToken = value;
   void setLastActive(DateTime? value) => lastActive = value;
   void setRegistrationDate(DateTime? value) => registrationDate = value;

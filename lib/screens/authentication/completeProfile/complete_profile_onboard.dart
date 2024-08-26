@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/genders.dart';
+import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
@@ -1072,18 +1074,18 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         uid: '',
         phoneNumber: '',
         occupationalStatus: '',
-        birthday: birthdayText!,
+        birthday: birthdayText!.toDate(),
         areas: selectedCities.toList(),
         favoriteActivities: favoriteActivities.toList(),
         qaAnswers: userChoices,
-        gender: selectedGender,
-        languages: selectedLanguages.toList(),
+        gender: Gender.other,
+        languages: [Language.en],
         profilePictures: [],
         invitedActivities: [],
-        lastActive: Timestamp.now(),
+        lastActive: Timestamp.now().toDate(),
         organization: noLifeSituation ? '' : selectedLifeOption,
         fcmToken: '',
-        registrationDate: Timestamp.now(),
+        registrationDate: Timestamp.now().toDate(),
       );
       registerUser(context, miittiUser);
     }
