@@ -19,6 +19,7 @@ import 'package:miitti_app/screens/authentication/welcome_screen.dart';
 import 'package:miitti_app/screens/authentication/login_screen.dart';
 import 'package:miitti_app/screens/authentication/login_intro.dart';
 import 'package:miitti_app/screens/index_page.dart';
+import 'package:miitti_app/screens/maintenance_break_screen.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 
@@ -51,6 +52,10 @@ class AppRouter {
         path: '/login',
         builder: (_, __) => const LoginIntroScreen(),
         routes: _buildLoginRoutes(),
+      ),
+      GoRoute(
+        path: '/maintenance-break', 
+        pageBuilder: _buildNoTransitionPage(const MaintenanceBreakScreen())
       ),
       // TODO: Implement ShellRoute
       // ShellRoute(
@@ -141,6 +146,11 @@ class AppRouter {
 
   String? _handleRedirect(BuildContext context, GoRouterState state) {
     final isAuthenticated = ref.watch(userStateProvider.notifier).isSignedIn;
+    final isMaintenanceBreak = ref.watch(remoteConfigServiceProvider).getBool('maintenance_break');
+
+    if (isMaintenanceBreak) {
+      return '/maintenance-break';
+    }
 
     if (state.matchedLocation == '/login/complete-profile') {
       return '/login/complete-profile/name';  // First step of the profile completion process

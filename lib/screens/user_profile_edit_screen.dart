@@ -257,7 +257,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
             buildUserDetailTile(
                 Icons.g_translate, widget.user.languages.join(', ')),
             buildDivider(),
-            buildUserDetailTile(Icons.next_week, 'Opiskelija'),
+            buildUserDetailTile(Icons.next_week, widget.user.occupationalStatus),
           ],
         ),
       ),

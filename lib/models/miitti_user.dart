@@ -45,38 +45,6 @@ class MiittiUser {
       required this.fcmToken,             // Firebase Cloud Messaging token for targeting push notifications
       });
 
-  // factory MiittiUser.fromDoc(DocumentSnapshot snapshot) {
-  //   return MiittiUser.fromMap(snapshot.data() as Map<String, dynamic>);
-  // }
-
-  // factory MiittiUser.fromMap(Map<String, dynamic> map) {
-  //   try {
-  //     return MiittiUser(
-  //       name: map['userName'] ?? '',
-  //       email: map['userEmail'] ?? '',
-  //       uid: map['uid'] ?? '',
-  //       phoneNumber: map['userPhoneNumber'] ?? '',
-  //       birthday: resolveTimestamp(map['userBirthday']).toDate(),
-  //       areas: map['userArea'] ?? '',
-  //       favoriteActivities:
-  //           _resolveActivities(_toStringList(map['userFavoriteActivities'])),
-  //       qaAnswers: _toStringMap(map['userChoices']),
-  //       gender: map['userGender'] ?? '', // Updated to single File
-  //       languages: _resolveLanguages(map['userLanguages']),
-  //       profilePictures: map['profilePicture'] ?? '',
-  //       invitedActivities: _toStringList(map['invitedActivities']),
-  //       lastActive: resolveTimestamp(map['userStatus']).toDate(),
-  //       occupationalStatus: map['occupationalStatus'] ?? '',
-  //       organization: map['userSchool'] ?? '',
-  //       fcmToken: map['fcmToken'] ?? '',
-  //       registrationDate: resolveTimestamp(map['userRegistrationDate']).toDate(),
-  //     );
-  //   } catch (e, s) {
-  //     debugPrint('Error parsing user from map: $e | $s');
-  //     rethrow;
-  //   }
-  // }
-
   // TODO: Remove this factory in favor of a more elegant one when all users have been updated to the new structure
   factory MiittiUser.fromFirestore(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
@@ -89,7 +57,7 @@ class MiittiUser {
         gender: data['gender'] != null ? Gender.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['gender'].toLowerCase()) : (data['userGender'] == 'Mies' ? Gender.male : data['userGender'] == 'Nainen' ? Gender.female : Gender.other),
         birthday: resolveTimestamp(data['birthday'] ?? data['userBirthday']).toDate(),
         languages: data['languages'] != null ? List.from(data['languages']).map((elem) => Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == elem.toLowerCase())).toList() : _resolveLanguages(List.from(data['userLanguages'])),
-        occupationalStatus: data['occupationalStatus'] ?? (['Opiskelija', 'Työelämässä', 'Yrittäjä', 'Etsimässä itseään'].contains(data['userSchool']) ? data['userSchool'] : ''),    // TODO: What to do with empty occupational statuses?
+        occupationalStatus: data['occupationalStatus'] ?? (['Opiskelija', 'Työelämässä', 'Yrittäjä', 'Etsimässä itseään'].contains(data['userSchool']) ? {'Opiskelija': 'student', 'Työelämässä': 'working', 'Yrittäjä': 'entrepreneur', 'Etsimässä itseään': 'other-occupational-status'}[data['userSchool']] : ''),    // TODO: What to do with empty occupational statuses?
         organization: data['organization'] ?? '',
         areas: data['areas'] != null ? _toStringList(data['areas']) : (data['userArea'] as String).split(',').map((e) => e.trim()).toList(),
         favoriteActivities: data['favoriteActivities'] != null ? List.from(data['favoriteActivities']) : _resolveActivities(_toStringList(data['userFavoriteActivities'])),

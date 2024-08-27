@@ -152,5 +152,7 @@
 
     "accept-norms-title": "Finally!",
     "accept-norms-disclaimer": "Agree to the below community norms in order to proceed by reading and clicking all of them.",
-    "invalid-norms-missing": "Please agree to all the terms above to proceed."
+    "invalid-norms-missing": "Please agree to all the terms above to proceed.",
+
+    "maintenance-break-text": "Miitti App is currently under maintenance. Please try again later."
   }
