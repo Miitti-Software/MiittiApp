@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
@@ -56,9 +57,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
   Widget build(BuildContext context) {
     //final isLoading = ap.isLoading;
 
-    List<String> answeredQuestions = questionOrder
-        .where((question) => widget.user.qaAnswers.containsKey(question))
-        .toList();
+    List<String> answeredQuestions = widget.user.qaAnswers.keys.toList();
 
     return Scaffold(
       appBar: buildAppBar(),
@@ -255,7 +254,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                 Icons.cake, calculateAge(widget.user.birthday).toString()),
             buildDivider(),
             buildUserDetailTile(
-                Icons.g_translate, widget.user.languages.join(', ')),
+                Icons.g_translate, widget.user.languages.map((e) => e.code).join(', ')),
             buildDivider(),
             buildUserDetailTile(Icons.next_week, widget.user.occupationalStatus),
           ],

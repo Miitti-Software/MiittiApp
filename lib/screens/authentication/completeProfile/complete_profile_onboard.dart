@@ -867,13 +867,9 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
   }
 
   void registerUser(BuildContext context, MiittiUser user) {
-    ref.read(firestoreServiceProvider).saveUserDatatoFirebase(
-          context: context,
+    ref.read(firestoreServiceProvider).saveUserData(
           userModel: user,
           image: image,
-          onSuccess: () {
-            pushNRemoveUntil(context, const IndexPage());
-          },
         );
   }
   //}

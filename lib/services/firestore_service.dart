@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/filter_settings.dart';
 import 'package:miitti_app/functions/utils.dart';
@@ -42,6 +43,81 @@ class FirestoreService {
   FirestoreService(this.ref) : _firestore = FirebaseFirestore.instance;
 
   //PUBLIC METHODS
+
+  // Future<void> saveUserData({
+  //   required BuildContext context,
+  //   required MiittiUser userModel,
+  //   required File? image,
+  //   required Function onSuccess,
+  // }) async {
+  //   try {
+  //     // showLoadingDialog(context);
+  //     await uploadUserImage(ref.read(authServiceProvider).uid, image).then((value) {
+  //       userModel.profilePictures[0] = value;
+  //     }).onError((error, stackTrace) {});
+  //     userModel.registrationDate = Timestamp.now().toDate();
+  //     userModel.phoneNumber =
+  //         ref.read(authServiceProvider).currentUser?.phoneNumber ?? '';
+  //     userModel.uid = ref.read(authServiceProvider).uid;
+  //     _miittiUser = userModel;
+
+  //     await _firestore.collection(_usersString).doc(userModel.uid)
+  //         .set(userModel.toMap())
+  //         .then((value) async {
+  //       onSuccess();
+  //     }).onError(
+  //       (error, stackTrace) {
+  //         debugPrint('Error saving user data: $error');
+  //       },
+  //     );
+  //   } catch (e) {
+  //     showSnackBar(context, "Datan tallennus epäonnistui: ${e.toString()}",
+  //         AppStyle.red);
+  //     debugPrint("Userdata to firebase error: $e");
+  //   }
+  // }
+
+
+
+  Future<bool> saveUserData({
+  required MiittiUser userModel,
+  required File? image,
+}) async {
+  try {
+    final uid = ref.read(authServiceProvider).uid;
+    final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadUserImage(uid, image);
+      userModel.profilePictures[0] = imageUrl;
+
+    userModel.registrationDate = DateTime.now();
+    _miittiUser = userModel;
+
+    await _firestore.collection(_usersString).doc(userModel.uid).set(userModel.toMap());
+    return true;
+  } catch (e) {
+    debugPrint("Error saving user data: $e");
+    return false;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   void reset() {
     _miittiUser = null;
@@ -117,6 +193,7 @@ class FirestoreService {
       return;
     }
     try {
+      await ref.read(firebaseStorageServiceProvider).deleteUserFolder(uid!);
       await _firestore.collection(_usersString).doc(uid).delete();
       _miittiUser = null;
     } catch (e) {
@@ -385,39 +462,6 @@ class FirestoreService {
     }
   }
 
-  Future<void> saveUserDatatoFirebase({
-    required BuildContext context,
-    required MiittiUser userModel,
-    required File? image,
-    required Function onSuccess,
-  }) async {
-    try {
-      // showLoadingDialog(context);
-      await uploadUserImage(ref.read(authServiceProvider).uid, image).then((value) {
-        userModel.profilePictures[0] = value;
-      }).onError((error, stackTrace) {});
-      userModel.registrationDate = Timestamp.now().toDate();
-      userModel.phoneNumber =
-          ref.read(authServiceProvider).currentUser?.phoneNumber ?? '';
-      userModel.uid = ref.read(authServiceProvider).uid;
-      _miittiUser = userModel;
-
-      await _firestore.collection(_usersString).doc(userModel.uid)
-          .set(userModel.toMap())
-          .then((value) async {
-        onSuccess();
-      }).onError(
-        (error, stackTrace) {
-          debugPrint('Error saving user data: $error');
-        },
-      );
-    } catch (e) {
-      showSnackBar(context, "Datan tallennus epäonnistui: ${e.toString()}",
-          AppStyle.red);
-      debugPrint("Userdata to firebase error: $e");
-    }
-  }
-
   Future<String> uploadUserImage(String uid, File? image) async {
     final metadata = SettableMetadata(
       contentType: 'image/jpeg',
@@ -629,7 +673,7 @@ class FirestoreService {
       });
     } catch (e) {
       showSnackBar(context, e.toString(), AppStyle.red);
-      pushNRemoveUntil(context, const IndexPage());
+      context.go('/');
     }
   }
 

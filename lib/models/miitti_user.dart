@@ -49,7 +49,7 @@ class MiittiUser {
   factory MiittiUser.fromFirestore(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
     try {
-      return MiittiUser(
+      final miittiUser = MiittiUser(
         uid: data['uid'],
         email: data['email'] ?? data['userEmail'] ?? '',
         phoneNumber: data['phoneNumber'] ?? data['userPhoneNumber'] ?? '',
@@ -68,6 +68,8 @@ class MiittiUser {
         lastActive: data['lastActive']?.toDate() ?? resolveTimestamp(data['userStatus']).toDate(),
         fcmToken: data['fcmToken'] ?? '',
       );
+      
+      return miittiUser;
     } catch (e, s) {
       debugPrint('Error parsing user from map: $e | $s');
       rethrow;

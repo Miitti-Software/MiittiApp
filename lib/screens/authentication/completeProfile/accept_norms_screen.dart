@@ -110,15 +110,9 @@ class _AcceptNormsScreenState extends ConsumerState<AcceptNormsScreen> {
                     fcmToken: '',
                     registrationDate: DateTime.now(),
                   );
-                  ref.read(firestoreServiceProvider).saveUserDatatoFirebase(
-                    context: context,
+                  ref.read(firestoreServiceProvider).saveUserData(
                     userModel: miittiUser,
                     image: File(userData.profilePictures[0]),
-                    onSuccess: () {
-                      ErrorSnackbar.show(
-                        context, "well done!",
-                      );
-                    },
                   );
                   context.push('/');
               } else {

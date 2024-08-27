@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/services/auth_service.dart';
+import 'package:miitti_app/services/firebase_storage_service.dart';
 import 'package:miitti_app/services/firestore_service.dart';
 import 'package:miitti_app/services/local_storage_service.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
@@ -32,6 +33,11 @@ final remoteConfigServiceProvider = Provider<RemoteConfigService>((ref) {
 // Provider for FirestoreService
 final firestoreServiceProvider = Provider<FirestoreService>((ref) {
   return FirestoreService(ref);
+});
+
+// Provider for FirebaseStorageService
+final firebaseStorageServiceProvider = Provider<FirebaseStorageService>((ref) {
+  return FirebaseStorageService(ref);
 });
 
 // Provider for LocalStorageService
