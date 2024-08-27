@@ -121,7 +121,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
               createPurpleBox(
                   'Sähköposti', widget.user.email, context, true),
               createPurpleBox(
-                  'Puhelinnumero', widget.user.phoneNumber, context, true),
+                  'Puhelinnumero', widget.user.phoneNumber ?? '', context, true),
               getRichText('Ollut viimeksi aktiivisena:   ', userLastOpenDate),
               const SizedBox(height: 5),
               getRichText('Profiili luotu:  ',

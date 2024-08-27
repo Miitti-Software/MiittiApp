@@ -190,7 +190,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                           },
                           child: CircleAvatar(
                             backgroundImage:
-                                NetworkImage(company!.profilePicture),
+                                NetworkImage(company?.profilePicture ?? ''),
                             backgroundColor: AppStyle.violet,
                             radius: 25,
                             child: const Align(

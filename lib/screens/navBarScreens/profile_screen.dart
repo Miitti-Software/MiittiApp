@@ -1,5 +1,7 @@
 //TODO: New UI
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -73,12 +75,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (anonymous) {
       return const AnonymousUserScreen();
     } else {
-      List<String> answeredQuestions = questionOrder
-          .where((question) => ref
-              .read(firestoreServiceProvider)
+      List<String> answeredQuestions = ref
+              .watch(firestoreServiceProvider)
               .miittiUser!
-              .qaAnswers
-              .containsKey(question))
+              .qaAnswers.keys
           .toList();
       return Scaffold(
         appBar: buildAppBar(),
@@ -242,7 +242,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 Icons.cake, calculateAge(miittiUser.birthday).toString()),
             buildDivider(),
             buildUserDetailTile(
-                Icons.g_translate, miittiUser.languages.join(', ')),
+                Icons.g_translate, miittiUser.languages.map((e) => e.name).join(', ')),
             miittiUser.organization != null ? buildDivider() : Container(),
             miittiUser.organization != null
                 ? buildUserDetailTile(Icons.next_week, miittiUser.organization!)

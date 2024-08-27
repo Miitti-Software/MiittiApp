@@ -65,7 +65,7 @@ class _InputQACardAnswerScreenState extends ConsumerState<InputQACardAnswerScree
                 buttonText: config.get<String>('save-button'),
                 onPressed: () {
                   if (_controller.text.isNotEmpty) {
-                    userData.qaAnswers[widget.question] = _controller.text;
+                    userData.qaAnswers[config.get<String>(widget.question)] = _controller.text;
                   } else {
                     userData.qaAnswers.remove(widget.question);
                   }

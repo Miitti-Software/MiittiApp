@@ -69,7 +69,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       if (snapshot.docs.isNotEmpty) {
         lastDocuments[type] = snapshot.docs.last;
         return snapshot.docs
-            .map((doc) => MiittiUser.fromDoc(doc))
+            .map((doc) => MiittiUser.fromFirestore(doc))
             .where((user) =>
                 user.uid != ref.read(authServiceProvider).uid && user.name != "")
             .toList();
@@ -99,7 +99,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
 
       setState(() {
         _filteredUsers[type].addAll(snapshot.docs
-            .map((doc) => MiittiUser.fromDoc(doc))
+            .map((doc) => MiittiUser.fromFirestore(doc))
             .where((user) => user.uid != ref.read(authServiceProvider).uid)
             .toList());
       });

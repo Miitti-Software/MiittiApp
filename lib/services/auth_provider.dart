@@ -1064,7 +1064,7 @@ class AuthProvider extends ChangeNotifier {
     _isAnonymous = s.getBool('is_anonymous') ?? true;
     if (!isAnonymous) {
       String data = s.getString('user_model') ?? '';
-      _miittiUser = MiittiUser.fromMap(jsonDecode(data));
+      _miittiUser = MiittiUser.fromFirestore(jsonDecode(data));
       _uid = _miittiUser!.uid;
     } else {
       _uid = _firebaseAuth.currentUser!.uid;
@@ -1245,7 +1245,7 @@ class AuthProvider extends ChangeNotifier {
   Future<List<MiittiUser>> fetchUsers() async {
     QuerySnapshot querySnapshot = await _getFireQuery(_usersString);
 
-    return querySnapshot.docs.map((doc) => MiittiUser.fromDoc(doc)).toList();
+    return querySnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
   }
 
   Future<QuerySnapshot> lazyFilteredUsers(int type, int batchSize,
@@ -1273,7 +1273,7 @@ class AuthProvider extends ChangeNotifier {
     if (!doc.exists) {
       return null;
     }
-    MiittiUser user = MiittiUser.fromDoc(doc);
+    MiittiUser user = MiittiUser.fromFirestore(doc);
     return user;
   }
 
@@ -1363,7 +1363,7 @@ class AuthProvider extends ChangeNotifier {
       Function notFound) async {
     DocumentSnapshot snapshot = await _getUserDoc(userId);
     if (snapshot.exists) {
-      await exists(MiittiUser.fromDoc(snapshot));
+      await exists(MiittiUser.fromFirestore(snapshot));
       return true;
     } else {
       await notFound();

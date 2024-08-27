@@ -35,7 +35,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
     qaCards = ref.read(remoteConfigServiceProvider).getTuplesList<String>(qaCategory);
     final userData = ref.read(userDataProvider);
     answeredQACards = qaCards.where(
-      (qaCard) => userData.qaAnswers.containsKey(qaCard.item1)
+      (qaCard) => userData.qaAnswers.containsKey(qaCard.item2)
     ).toList();
   }
 

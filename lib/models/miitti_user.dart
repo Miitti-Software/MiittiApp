@@ -7,98 +7,98 @@ import 'package:miitti_app/constants/languages.dart';
 // TODO: Do a full update on Firebase to match this class
 
 class MiittiUser {
+  String uid;
   String email;
+  String? phoneNumber;
   String name;
-  String phoneNumber;
+  Gender gender;
   DateTime birthday;
+  List<Language> languages;
+  String occupationalStatus;
+  String? organization;
   List<String> areas;
   List<String> favoriteActivities;
   Map<String, String> qaAnswers;
-  Gender gender;
-  List<Language> languages;
   List<String> profilePictures;
-  String uid;
   List<String> invitedActivities;   // activityInvites - is this the right place? Are these the activities the user has been invited to or the activities the user has invited others to?
-  DateTime lastActive;
-  String occupationalStatus;
-  String? organization;
-  String fcmToken;
   DateTime registrationDate;
+  DateTime lastActive;
+  String fcmToken;
 
   MiittiUser(
-      {required this.name,
+      {required this.uid,
       required this.email,
-      required this.uid,
-      required this.phoneNumber,
+      this.phoneNumber,
+      required this.name,
+      required this.gender,
       required this.birthday,
+      required this.languages,
+      required this.occupationalStatus,
+      this.organization,
       required this.areas,
       required this.favoriteActivities,
       required this.qaAnswers,
-      required this.gender,
-      required this.languages,
       required this.profilePictures,
       required this.invitedActivities,
+      required this.registrationDate,
       required this.lastActive,
-      required this.occupationalStatus,
-      this.organization,
       required this.fcmToken,             // Firebase Cloud Messaging token for targeting push notifications
-      required this.registrationDate});
+      });
 
-  factory MiittiUser.fromDoc(DocumentSnapshot snapshot) {
-    return MiittiUser.fromMap(snapshot.data() as Map<String, dynamic>);
-  }
+  // factory MiittiUser.fromDoc(DocumentSnapshot snapshot) {
+  //   return MiittiUser.fromMap(snapshot.data() as Map<String, dynamic>);
+  // }
 
-  factory MiittiUser.fromMap(Map<String, dynamic> map) {
-    try {
-      return MiittiUser(
-        name: map['userName'] ?? '',
-        email: map['userEmail'] ?? '',
-        uid: map['uid'] ?? '',
-        phoneNumber: map['userPhoneNumber'] ?? '',
-        birthday: resolveTimestamp(map['userBirthday']).toDate(),
-        areas: map['userArea'] ?? '',
-        favoriteActivities:
-            _resolveActivities(_toStringList(map['userFavoriteActivities'])),
-        qaAnswers: _toStringMap(map['userChoices']),
-        gender: map['userGender'] ?? '', // Updated to single File
-        languages: _resolveLanguages(map['userLanguages']),
-        profilePictures: map['profilePicture'] ?? '',
-        invitedActivities: _toStringList(map['invitedActivities']),
-        lastActive: resolveTimestamp(map['userStatus']).toDate(),
-        occupationalStatus: map['occupationalStatus'] ?? '',
-        organization: map['userSchool'] ?? '',
-        fcmToken: map['fcmToken'] ?? '',
-        registrationDate: resolveTimestamp(map['userRegistrationDate']).toDate(),
-      );
-    } catch (e, s) {
-      debugPrint('Error parsing user from map: $e | $s');
-      rethrow;
-    }
-  }
+  // factory MiittiUser.fromMap(Map<String, dynamic> map) {
+  //   try {
+  //     return MiittiUser(
+  //       name: map['userName'] ?? '',
+  //       email: map['userEmail'] ?? '',
+  //       uid: map['uid'] ?? '',
+  //       phoneNumber: map['userPhoneNumber'] ?? '',
+  //       birthday: resolveTimestamp(map['userBirthday']).toDate(),
+  //       areas: map['userArea'] ?? '',
+  //       favoriteActivities:
+  //           _resolveActivities(_toStringList(map['userFavoriteActivities'])),
+  //       qaAnswers: _toStringMap(map['userChoices']),
+  //       gender: map['userGender'] ?? '', // Updated to single File
+  //       languages: _resolveLanguages(map['userLanguages']),
+  //       profilePictures: map['profilePicture'] ?? '',
+  //       invitedActivities: _toStringList(map['invitedActivities']),
+  //       lastActive: resolveTimestamp(map['userStatus']).toDate(),
+  //       occupationalStatus: map['occupationalStatus'] ?? '',
+  //       organization: map['userSchool'] ?? '',
+  //       fcmToken: map['fcmToken'] ?? '',
+  //       registrationDate: resolveTimestamp(map['userRegistrationDate']).toDate(),
+  //     );
+  //   } catch (e, s) {
+  //     debugPrint('Error parsing user from map: $e | $s');
+  //     rethrow;
+  //   }
+  // }
 
-  // TODO: Remove this factory when all users have been updated to the new structure
-  // Make it load based on the datatype for testing purposes
+  // TODO: Remove this factory in favor of a more elegant one when all users have been updated to the new structure
   factory MiittiUser.fromFirestore(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
     try {
       return MiittiUser(
-        email: data['userEmail'] ?? '',
-        name: data['userName'] ?? '',
-        phoneNumber: data['userPhoneNumber'] ?? '',
-        birthday: resolveTimestamp(data['userBirthday']).toDate(),
-        areas: (data['userArea'] as String).split(',').map((e) => e.trim()).toList(),
-        favoriteActivities: _resolveActivities(_toStringList(data['userFavoriteActivities'])),
-        qaAnswers: _toStringMap(data['userChoices']) as Map<String, String>? ?? {},
-        gender: data['userGender'] == 'Mies' ? Gender.male : data['userGender'] == 'Nainen' ? Gender.female : Gender.other,
-        languages: _resolveLanguages(data['userLanguages']),
-        profilePictures: [data['profilePicture']],
-        uid: data['uid'] ?? '',
-        invitedActivities: _toStringList(data['invitedActivities']),
-        lastActive: resolveTimestamp(data['userStatus']).toDate(),
-        occupationalStatus: data['occupationalStatus'] ?? '',
-        organization: data['userSchool'] ?? '',
+        uid: data['uid'],
+        email: data['email'] ?? data['userEmail'] ?? '',
+        phoneNumber: data['phoneNumber'] ?? data['userPhoneNumber'] ?? '',
+        name: data['name'] ?? data['userName'] ?? '',
+        gender: data['gender'] != null ? Gender.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['gender'].toLowerCase()) : (data['userGender'] == 'Mies' ? Gender.male : data['userGender'] == 'Nainen' ? Gender.female : Gender.other),
+        birthday: resolveTimestamp(data['birthday'] ?? data['userBirthday']).toDate(),
+        languages: data['languages'] != null ? List.from(data['languages']).map((elem) => Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == elem.toLowerCase())).toList() : _resolveLanguages(List.from(data['userLanguages'])),
+        occupationalStatus: data['occupationalStatus'] ?? (['Opiskelija', 'Työelämässä', 'Yrittäjä', 'Etsimässä itseään'].contains(data['userSchool']) ? data['userSchool'] : ''),    // TODO: What to do with empty occupational statuses?
+        organization: data['organization'] ?? '',
+        areas: data['areas'] != null ? _toStringList(data['areas']) : (data['userArea'] as String).split(',').map((e) => e.trim()).toList(),
+        favoriteActivities: data['favoriteActivities'] != null ? List.from(data['favoriteActivities']) : _resolveActivities(_toStringList(data['userFavoriteActivities'])),
+        qaAnswers: Map.from(data['qaAnswers'] ?? data['userChoices']),
+        profilePictures: data['profilePictures'] is Iterable ? List.from(data['profilePictures']) : [data['profilePicture']],
+        invitedActivities: data['invitedActivities'] != null ? List.from(data['invitedActivities']) : [],
+        registrationDate: data['registrationDate']?.toDate() ?? resolveTimestamp(data['userRegistrationDate']).toDate(),
+        lastActive: data['lastActive']?.toDate() ?? resolveTimestamp(data['userStatus']).toDate(),
         fcmToken: data['fcmToken'] ?? '',
-        registrationDate: resolveTimestamp(data['userRegistrationDate']).toDate(),
       );
     } catch (e, s) {
       debugPrint('Error parsing user from map: $e | $s');
@@ -108,22 +108,22 @@ class MiittiUser {
 
   Map<String, dynamic> toMap() {
     return {
-      'userName': name,
-      'userEmail': email,
+      'name': name,
+      'email': email,
       'uid': uid,
-      'userPhoneNumber': phoneNumber,
-      'userBirthday': birthday,
-      'userArea': areas,
-      'userFavoriteActivities': favoriteActivities.toList(),
-      'userChoices': qaAnswers,
-      'userGender': gender.name,
-      'userLanguages': languages.toList().map((e) => e.code),
-      'profilePicture': profilePictures,
+      'phoneNumber': phoneNumber,
+      'birthday': birthday,
+      'areas': areas,
+      'favoriteActivities': favoriteActivities.toList(),
+      'qaAnswers': qaAnswers,
+      'gender': gender.name,
+      'languages': languages.toList().map((e) => e.code),
+      'profilePictures': profilePictures,
       'invitedActivities': invitedActivities.toList(),
       'lastActive': lastActive,
-      'userSchool': organization,
+      'organization': organization,
       'fcmToken': fcmToken,
-      'userRegistrationDate': registrationDate
+      'registrationDate': registrationDate
     };
   }
 
@@ -235,13 +235,23 @@ class MiittiUser {
       "🇫🇮": Language.fi,
       "🇸🇪": Language.sv,
       "🇬🇧": Language.en,
+      "Suomi": Language.fi,
+      "Englanti": Language.en,
+      "Ruotsi": Language.sv,
+      "Viro": Language.et,
+      "Venäjä": Language.ru,
+      "Arabia": Language.ar,
+      "Saksa": Language.de,
+      "Ranska": Language.fr,
+      "Espanja": Language.es,
+      "Kiina": Language.zh,
     };
 
     List<Language> output = [];
 
     for (int i = 0; i < languages.length; i++) {
       if (changed.keys.contains(languages[i])) {
-        output[i] = changed[languages[i]]!;
+        output.add(changed[languages[i]]!);
       }
     }
 
