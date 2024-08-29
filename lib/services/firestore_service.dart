@@ -44,41 +44,6 @@ class FirestoreService {
 
   //PUBLIC METHODS
 
-  // Future<void> saveUserData({
-  //   required BuildContext context,
-  //   required MiittiUser userModel,
-  //   required File? image,
-  //   required Function onSuccess,
-  // }) async {
-  //   try {
-  //     // showLoadingDialog(context);
-  //     await uploadUserImage(ref.read(authServiceProvider).uid, image).then((value) {
-  //       userModel.profilePictures[0] = value;
-  //     }).onError((error, stackTrace) {});
-  //     userModel.registrationDate = Timestamp.now().toDate();
-  //     userModel.phoneNumber =
-  //         ref.read(authServiceProvider).currentUser?.phoneNumber ?? '';
-  //     userModel.uid = ref.read(authServiceProvider).uid;
-  //     _miittiUser = userModel;
-
-  //     await _firestore.collection(_usersString).doc(userModel.uid)
-  //         .set(userModel.toMap())
-  //         .then((value) async {
-  //       onSuccess();
-  //     }).onError(
-  //       (error, stackTrace) {
-  //         debugPrint('Error saving user data: $error');
-  //       },
-  //     );
-  //   } catch (e) {
-  //     showSnackBar(context, "Datan tallennus epäonnistui: ${e.toString()}",
-  //         AppStyle.red);
-  //     debugPrint("Userdata to firebase error: $e");
-  //   }
-  // }
-
-
-
   Future<bool> saveUserData({
   required MiittiUser userModel,
   required File? image,

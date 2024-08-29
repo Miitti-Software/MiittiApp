@@ -164,6 +164,12 @@ Reading list:
 2. https://firebase.google.com/docs/projects/dev-workflows/general-best-practices
 3. https://firebase.google.com/support/guides/launch-checklist
 
+## Cloud functions
+
+Initialize by running `firebase init` and selecting Cloud Functions. Overwrite option can be used. 
+
+Make sure your local Node.js is the same as in package.json. Run `npm install` in the `functions` folder to synchronize `package.json` and `package-lock.json`. Deploy a specific cloud function with `firebase deploy --only functions:functionName`. Delete a specific function with `firebase functions:delete functionName`. 
+
 ### Authentication
 
 ### Remote Config

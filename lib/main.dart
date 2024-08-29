@@ -49,20 +49,22 @@ Future<void> main() async {
       break;
   }
 
+  // Enable Firebase Emulators for development environment
+  // if (env == "development") {
+  //   try {
+  //     await FirebaseAuth.instance.useAuthEmulator('10.0.2.2', 9099);
+  //     FirebaseFirestore.instance.useFirestoreEmulator('10.0.2.2', 8080);
+  //     await FirebaseStorage.instance.useStorageEmulator('10.0.2.2', 9199);
+  //     FirebaseFunctions.instance.useFunctionsEmulator('10.0.2.2', 5001);
+  //   } catch (e) {
+  //     debugPrint('Make sure the emulators are running by running `firebase emulators:start` \n Error connecting to Firebase emulators: $e');
+  //   }
+  // }
+
   // Initialize Firebase with the default options corresponding to the current environment
   await Firebase.initializeApp(
     options: config,
   );
-
-  // Enable Firestore Emulator for development environment -- Not working currently         TODO: Remove if it cannot be fixed
-  // if (env == "development") {
-  //   try {
-  //     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  //     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-  //   } catch (e) {
-  //     debugPrint('Make sure the emulators are running by running `firebase emulators:start` \n Error connecting to Firestore emulator: $e');
-  //   }
-  // }
 
   // Initialize Firebase Messaging via PushNotificationService
   FirebaseMessaging.onBackgroundMessage(

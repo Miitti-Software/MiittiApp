@@ -872,7 +872,6 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
           image: image,
         );
   }
-  //}
 
   void errorHandlingScreens(int page) {
     final currentPage = _pageController.page!.toInt();
