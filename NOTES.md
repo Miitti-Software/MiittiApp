@@ -168,7 +168,11 @@ Reading list:
 
 Initialize by running `firebase init` and selecting Cloud Functions. Overwrite option can be used. 
 
-Make sure your local Node.js is the same as in package.json. Run `npm install` in the `functions` folder to synchronize `package.json` and `package-lock.json`. Deploy a specific cloud function with `firebase deploy --only functions:functionName`. Delete a specific function with `firebase functions:delete functionName`. 
+Make sure your local Node.js is the same as in package.json. Run `npm install` in the `functions` folder to synchronize `package.json` and `package-lock.json`. Deploy a specific cloud function with `firebase deploy --only functions:<functionName>`. Delete a specific function with `firebase functions:delete <functionName>`. 
+
+To run Cloud Functions manually, navigate to console.cloud.google.com and open Cloud Shell. Run any deployed function (even ones that normally require triggers to run) by running the command `gcloud functions call <functionName> --region=<functionRegion>` and supply data to it with the `--data` flag as in the example below: `gcloud functions call generateThumbnail  --data '{"data": {"name": "userImages/6r3QhGLOpuMBsMtaWguPlSEvnNP2/profilePicture.jpg", "contentType": "image/jpeg", "bucket": "gs://miittiappdev.appspot.com"}}' --region=europe-west1`.'
+
+If you get `ERROR: (gcloud.functions.call) You do not currently have an active account selected.`, run `gcloud auth login` and follow the instructions. 
 
 ### Authentication
 
