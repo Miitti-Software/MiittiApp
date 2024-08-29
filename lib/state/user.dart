@@ -41,6 +41,7 @@ class UserState extends StateNotifier<User?> {
     final prefs = _localStorageService;
     _firestoreService.reset();
     await _authService.signOut();
+    _userData.clear();
     await prefs.clear();
   }
 

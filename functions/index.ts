@@ -4,6 +4,7 @@ import {onObjectFinalized, StorageEvent} from "firebase-functions/v2/storage";
 // import {onDocumentDeleted} from "firebase-functions/v2/firestore";
 // import {initializeApp} from "firebase-admin/app";
 import {getStorage} from "firebase-admin/storage";
+import { onRequest } from "firebase-functions/v2/https";
 // import {getMessaging} from "firebase-admin/messaging";
 import * as admin from 'firebase-admin';
 import sharp from "sharp";
@@ -98,8 +99,7 @@ exports.generateThumbnail = onObjectFinalized(
   }
 );
 
-import { onRequest } from "firebase-functions/v2/https";
-
+// Batch process all images in the bucket by compressing and generating thumbnails
 export const batchProcessImages = onRequest(async (req, res) => {
   const bucket = admin.storage().bucket();
   
@@ -182,6 +182,52 @@ export const batchProcessImages = onRequest(async (req, res) => {
     res.status(500).send('An error occurred during batch processing.');
   }
 });
+
+interface FileApiResponse {
+  prefixes?: string[];
+}
+
+// Delete images in orphaned folders that are no longer associated with any user in firestore users collection
+export const cleanupOrphanedFolders = onRequest(async (req, res) => {
+  const firestore = admin.firestore();
+  const storage = admin.storage();
+  const bucket = storage.bucket(); // assumes default bucket, you can specify a bucket name if needed
+
+  try {
+    // Get all user IDs from Firestore
+    const usersSnapshot = await firestore.collection('users').get();
+    const validUserIds = new Set(usersSnapshot.docs.map((doc) => doc.id));
+    console.log(`Valid user ids found: ${[...validUserIds]}`);
+
+    // List all "folders" in the storage bucket under "userImages/"
+    const [_, __, response] = await bucket.getFiles({ prefix: 'userImages/', delimiter: '/' });
+    const fileApiResponse = response as FileApiResponse;
+    const folderPrefixes: string[] = fileApiResponse.prefixes || [];
+    console.log(`Found folder prefixes: ${folderPrefixes}`);
+
+    for (const folderPrefix of folderPrefixes) {
+      // Extract the folder ID (user ID)
+      const folderId = folderPrefix.replace('userImages/', '').replace('/', '');
+      console.log(`Checking folder with ID: ${folderId} from prefix: ${folderPrefix}`);
+
+      if (folderId && !validUserIds.has(folderId)) {
+        console.log(`Deleting orphaned folder: ${folderPrefix}`);
+        
+        // Delete all files in the folder
+        const [folderFiles] = await bucket.getFiles({ prefix: folderPrefix });
+        await Promise.all(folderFiles.map((file) => file.delete()));
+        
+        console.log(`Deleted all files in ${folderPrefix}`);
+      }
+    }
+
+    res.status(200).send('Cleanup of orphaned folders completed successfully.');
+  } catch (error) {
+    console.error('Error in cleanup process:', error);
+    res.status(500).send('An error occurred during the cleanup process.');
+  }
+});
+
 
 // exports.sendNotificationTo = onCall({region}, async (data: CallableRequest<NotificationData>) => {
 //     const notification = {
