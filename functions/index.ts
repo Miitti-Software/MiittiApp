@@ -69,7 +69,10 @@ exports.generateThumbnail = onObjectFinalized(
       console.log("Image downloaded locally to", tempFilePath);
 
       // Generate a thumbnail using sharp
-      await sharp(tempFilePath).resize(200, 200).toFile(tempThumbFilePath);
+      await sharp(tempFilePath)
+        .resize({ width: 150, height: 150, fit: "outside" })
+        .jpeg({ quality: 75 })
+        .toFile(tempThumbFilePath);
       console.log("Thumbnail created at", tempThumbFilePath);
 
       // Upload the thumbnail back to Cloud Storage

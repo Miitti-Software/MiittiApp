@@ -12,7 +12,7 @@
   },
   "compileOnSave": true,
   "include": [
-    "src",
+    ".",
     "**/*.js"
   ]
 }

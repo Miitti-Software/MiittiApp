@@ -42,6 +42,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
+    final userData = ref.watch(userDataProvider);
 
     return ConfigScreen(
       child: Column(
@@ -121,7 +122,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
           ForwardButton(
             buttonText: config.get<String>('forward-button'),
             onPressed: () {
-              if (answeredQACards.isNotEmpty) {
+              if (userData.qaAnswers.isNotEmpty) {
                 context.push('/login/complete-profile/profile-picture');
               } else {
                 ErrorSnackbar.show(

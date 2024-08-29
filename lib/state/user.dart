@@ -13,8 +13,9 @@ class UserState extends StateNotifier<User?> {
   final AuthService _authService;
   final FirestoreService _firestoreService;
   final LocalStorageService _localStorageService;
+  final UserData _userData;
 
-  UserState(this._authService, this._firestoreService, this._localStorageService) : super(null) {
+  UserState(this._authService, this._firestoreService, this._localStorageService, this._userData) : super(null) {
     _authService.authStateChanges.listen((user) {
       state = user;
     });
@@ -50,6 +51,7 @@ class UserState extends StateNotifier<User?> {
     await _authService.deleteUser();
     await _firestoreService.deleteUser();
     _firestoreService.reset();
+    _userData.clear();
     prefs.clear();
   }
 }
@@ -59,7 +61,8 @@ final userStateProvider = StateNotifierProvider<UserState, User?>((ref) {
   final authService = ref.watch(authServiceProvider);
   final firestoreService = ref.watch(firestoreServiceProvider);
   final localStorageService = ref.watch(localStorageServiceProvider);
-  return UserState(authService, firestoreService, localStorageService);
+  final userData = ref.watch(userDataProvider);
+  return UserState(authService, firestoreService, localStorageService, userData);
 });
 
 /// A provider that streams the current user's authentication state
@@ -152,6 +155,25 @@ class UserData {
   // TODO: Implement a method to update the user's data in Firestore
 
   // TODO: Implement a method to clear the class' data upon sign out / user deletion
+  void clear() {
+    uid = null;
+    email = null;
+    phoneNumber = null;
+    name = null;
+    gender = null;
+    birthday = null;
+    languages = [];
+    occupationalStatus = null;
+    organization = null;
+    areas = [];
+    favoriteActivities = [];
+    qaAnswers = {};
+    profilePictures = [];
+    invitedActivities = [];
+    registrationDate = null;
+    lastActive = null;
+    fcmToken = null;
+  }
 }
 
 final userDataProvider = Provider<UserData>((ref) {
