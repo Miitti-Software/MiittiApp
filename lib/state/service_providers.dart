@@ -58,6 +58,5 @@ final configStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
 
 final providerLoading = Provider<bool>((ref) {
   final db = ref.watch(firestoreServiceProvider);
-  final auth = ref.watch(authServiceProvider);
-  return db.isLoading || auth.isLoading;
+  return db.isLoading;
 });

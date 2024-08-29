@@ -13,6 +13,7 @@ import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/firestore_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
@@ -200,7 +201,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                                           builder: (context) =>
                                               const AnonymousDialog());
                                     } else {
-                                      String uid = ref.read(authServiceProvider).uid;
+                                      String uid = ref.read(userStateProvider.notifier).data.uid!;
                                       pushPage(
                                           context,
                                           uid == user.uid
@@ -427,7 +428,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
       isAnonymous = true;
       return UserStatusInActivity.none;
     }
-    final userId = ref.read(authServiceProvider).uid;
+    final userId = ref.read(userStateProvider.notifier).data.uid;
     return widget.myActivity.participants.contains(userId)
         ? UserStatusInActivity.joined
         : widget.myActivity.requests.contains(userId)

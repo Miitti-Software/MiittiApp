@@ -29,9 +29,9 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
   @override
   void initState() {
     super.initState();
-    placeholderVisible = ref.read(userDataProvider).birthday == null;
-    birthday = ref.read(userDataProvider).birthday;
-    controller = TextEditingController(text: ref.read(userDataProvider).birthday != null ? DateFormat('ddMMyyyy').format(ref.read(userDataProvider).birthday!) : placeholder);
+    placeholderVisible = ref.read(userStateProvider.notifier).data.birthday == null;
+    birthday = ref.read(userStateProvider.notifier).data.birthday;
+    controller = TextEditingController(text: ref.read(userStateProvider.notifier).data.birthday != null ? DateFormat('ddMMyyyy').format(ref.read(userStateProvider.notifier).data.birthday!) : placeholder);
   }
 
   @override
@@ -43,7 +43,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final userData = ref.watch(userDataProvider);
+    final userData = ref.watch(userStateProvider.notifier).data;
     final language = ref.watch(languageProvider);
 
     return ConfigScreen(

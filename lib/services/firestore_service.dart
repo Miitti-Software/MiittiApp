@@ -19,6 +19,7 @@ import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/report.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
 import '../screens/activity_details_page.dart';
@@ -49,8 +50,8 @@ class FirestoreService {
   required File? image,
 }) async {
   try {
-    final uid = ref.read(authServiceProvider).uid;
-    final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadUserImage(uid, image);
+    final uid = ref.read(userStateProvider.notifier).uid;
+    final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadUserImage(uid!, image);
       userModel.profilePictures[0] = imageUrl;
 
     userModel.registrationDate = DateTime.now();
@@ -158,7 +159,6 @@ class FirestoreService {
       return;
     }
     try {
-      await ref.read(firebaseStorageServiceProvider).deleteUserFolder(uid!);
       await _firestore.collection(_usersString).doc(uid).delete();
       _miittiUser = null;
     } catch (e) {
@@ -593,7 +593,7 @@ class FirestoreService {
         showLoadingDialog(context);
       }
       if (imageFile != null) {
-        await uploadUserImage(ref.read(authServiceProvider).uid, imageFile)
+        await uploadUserImage(ref.read(userStateProvider.notifier).uid!, imageFile)
             .then((value) {
           updatedUser.profilePictures[0] = value;
         });

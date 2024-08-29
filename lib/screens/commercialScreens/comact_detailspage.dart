@@ -15,6 +15,7 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
+import 'package:miitti_app/state/user.dart';
 
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
@@ -392,7 +393,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
           .joinCommercialActivity(widget.myActivity.activityUid);
       setState(() {
         isAlreadyJoined = true;
-        widget.myActivity.participants.add(ref.read(authServiceProvider).uid);
+        widget.myActivity.participants.add(ref.read(userStateProvider.notifier).data.uid!);
       });
     }
   }

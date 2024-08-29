@@ -11,6 +11,7 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/genders.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/confirm_notifications_dialog.dart';
 
@@ -21,7 +22,6 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
-import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/complete_profile_answerpage.dart';
 
 import 'package:miitti_app/functions/utils.dart';
@@ -238,7 +238,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
   void initState() {
     super.initState();
     selectedList = questionsAboutMe;
-    _emailController = TextEditingController(text: ref.read(authServiceProvider).email);
+    _emailController = TextEditingController(text: ref.read(userStateProvider.notifier).data.email);
     _nameController = TextEditingController();
     _pageController = PageController();
   }

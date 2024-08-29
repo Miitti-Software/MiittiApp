@@ -7,6 +7,7 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/message_tile.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/safe_scaffold.dart';
@@ -175,7 +176,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     message: snapshot.data.docs[index]['message'],
                     sender: snapshot.data.docs[index]['sender'],
                     senderName: snapshot.data.docs[index]['senderName'],
-                    sentByMe: ref.read(authServiceProvider).uid ==
+                    sentByMe: ref.read(userStateProvider.notifier).data.uid ==
                         snapshot.data.docs[index]['sender'],
                     time: DateFormat('HH:mm').format(
                       DateTime.fromMillisecondsSinceEpoch(
@@ -194,7 +195,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
         'message': messageController.text,
-        'sender': ref.read(authServiceProvider).uid,
+        'sender': ref.read(userStateProvider.notifier).data.uid,
         'senderName': ref.read(firestoreServiceProvider).miittiUser!.name,
         'time': DateTime.now().millisecondsSinceEpoch,
       };

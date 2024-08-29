@@ -31,7 +31,7 @@ class AppRouter {
 
   late final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
-    refreshListenable: ValueNotifier<bool>(ref.watch(authServiceProvider).isSignedIn),
+    refreshListenable: ValueNotifier<bool>(ref.watch(userStateProvider.notifier).isSignedIn),
     initialLocation: '/',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
@@ -161,7 +161,7 @@ class AppRouter {
     }
 
     if (isAuthenticated && state.matchedLocation != '/login/welcome') {
-      ref.watch(firestoreServiceProvider).checkExistingUser(ref.watch(userStateProvider.notifier).uid);
+      ref.watch(firestoreServiceProvider).checkExistingUser(ref.watch(userStateProvider.notifier).uid!);
     }
 
     return null;

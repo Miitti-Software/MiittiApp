@@ -26,7 +26,7 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
     super.initState();
     statusOptions = ref.read(remoteConfigServiceProvider).getTuplesList<String>('occupational_statuses');
     selectedOccupationalStatus = statusOptions.firstWhere(
-        (occupationalStatus) => occupationalStatus.item1 == ref.read(userDataProvider).occupationalStatus,
+        (occupationalStatus) => occupationalStatus.item1 == ref.read(userStateProvider.notifier).data.occupationalStatus,
         orElse: () => const Tuple2<String, String>("", ""),
       ).item1;
     if (selectedOccupationalStatus == "") {
@@ -36,7 +36,7 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider);
+    final userData = ref.watch(userStateProvider.notifier).data;
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(

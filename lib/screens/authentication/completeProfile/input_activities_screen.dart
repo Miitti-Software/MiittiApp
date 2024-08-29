@@ -27,7 +27,7 @@ List<Tuple2<String, Tuple2<String, String>>> allActivities = [];
 void initState() {
   super.initState();
   _loadActivities();
-  favoriteActivities = ref.read(userDataProvider).favoriteActivities.toSet();
+  favoriteActivities = ref.read(userStateProvider.notifier).data.favoriteActivities.toSet();
 }
 
 @override
@@ -43,7 +43,7 @@ Future<void> _loadActivities() async {
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider);
+    final userData = ref.watch(userStateProvider.notifier).data;
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(

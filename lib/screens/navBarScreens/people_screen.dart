@@ -11,6 +11,7 @@ import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 
@@ -71,7 +72,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
         return snapshot.docs
             .map((doc) => MiittiUser.fromFirestore(doc))
             .where((user) =>
-                user.uid != ref.read(authServiceProvider).uid && user.name != "")
+                user.uid != ref.read(userStateProvider.notifier).data.uid && user.name != "")
             .toList();
       }
       return [];
@@ -100,7 +101,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       setState(() {
         _filteredUsers[type].addAll(snapshot.docs
             .map((doc) => MiittiUser.fromFirestore(doc))
-            .where((user) => user.uid != ref.read(authServiceProvider).uid)
+            .where((user) => user.uid != ref.read(userStateProvider.notifier).data.uid)
             .toList());
       });
     } else {

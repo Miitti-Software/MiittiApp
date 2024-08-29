@@ -27,7 +27,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
   @override
   void initState() {
     super.initState();
-    selectedLanguages = ref.read(userDataProvider).languages.toList();
+    selectedLanguages = ref.read(userStateProvider.notifier).data.languages.toList();
   }
 
   @override
@@ -38,7 +38,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider);
+    final userData = ref.watch(userStateProvider.notifier).data;
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(

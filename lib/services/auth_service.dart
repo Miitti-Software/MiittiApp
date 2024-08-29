@@ -13,13 +13,6 @@ class AuthService {
 
   AuthService(this.ref) : _auth = FirebaseAuth.instance;
 
-  User? get currentUser => _auth.currentUser;           // TODO: Delete when redundant
-  String get uid => _auth.currentUser!.uid;             // TODO: Delete when redundant
-  String get email => _auth.currentUser?.email ?? "";   // TODO: Delete when redundant
-
-  bool get isSignedIn => _auth.currentUser != null;     // TODO: Delete when redundant
-  bool isLoading = false; // TODO: refactor out in favor of future builders and the like
-
   Stream<User?> get authStateChanges => _auth.authStateChanges();     // TODO: Move to UserState?
 
   Future<bool> signInWithApple() async {

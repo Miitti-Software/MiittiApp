@@ -24,7 +24,7 @@ class _InputQACardAnswerScreenState extends ConsumerState<InputQACardAnswerScree
   @override
   void initState() {
     super.initState();
-    final userData = ref.read(userDataProvider);
+    final userData = ref.read(userStateProvider.notifier).data;
     _controller = TextEditingController(text: userData.qaAnswers[widget.question] ?? '');
   }
 
@@ -39,7 +39,7 @@ class _InputQACardAnswerScreenState extends ConsumerState<InputQACardAnswerScree
     return Consumer(
       builder: (context, ref, child) {
         final config = ref.watch(remoteConfigServiceProvider);
-        final userData = ref.watch(userDataProvider);
+        final userData = ref.watch(userStateProvider.notifier).data;
 
         return ConfigScreen(
           child: Column(

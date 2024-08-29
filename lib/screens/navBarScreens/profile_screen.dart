@@ -9,6 +9,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/activity.dart';
@@ -48,7 +49,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget getAdminButton() {
-    if (adminId.contains(ref.read(authServiceProvider).uid)) {
+    if (adminId.contains(ref.read(userStateProvider.notifier).data.uid)) {
       return GestureDetector(
         onTap: () {
           Navigator.of(context).push(

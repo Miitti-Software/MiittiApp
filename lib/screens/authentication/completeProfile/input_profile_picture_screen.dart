@@ -26,7 +26,7 @@ class _InputProfilePictureScreenState
   @override
   void initState() {
     super.initState();
-    final userData = ref.read(userDataProvider);
+    final userData = ref.read(userStateProvider.notifier).data;
     if (userData.profilePictures.isNotEmpty) {
       image = File(userData.profilePictures[0]);
     }
@@ -156,7 +156,7 @@ class _InputProfilePictureScreenState
       if (pickedImage != null) {
         setState(() {
           image = File(pickedImage.path);
-          ref.watch(userDataProvider).profilePictures = [image!.path];  // Currently only one profile picture is used although multiple are supported in the future
+          ref.watch(userStateProvider.notifier).data.profilePictures = [image!.path];  // Currently only one profile picture is used although multiple are supported in the future
         });
       }
     } catch (e) {

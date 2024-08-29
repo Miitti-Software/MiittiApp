@@ -28,7 +28,7 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
     super.initState();
     _loadOrganizations();
     selectedOrganization = allOrganizations.firstWhere(
-        (Organization) => Organization.item1 == ref.read(userDataProvider).organization,
+        (Organization) => Organization.item1 == ref.read(userStateProvider.notifier).data.organization,
         orElse: () => const Tuple2<String, String>("", ""),
       ).item1;
     if (selectedOrganization == "") {
@@ -61,7 +61,7 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider);
+    final userData = ref.watch(userStateProvider.notifier).data;
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(

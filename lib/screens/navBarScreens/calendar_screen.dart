@@ -9,6 +9,7 @@ import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
@@ -583,7 +584,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               //getting the single activity from the list
               MiittiActivity singleActivity = _myJoinedActivities[index];
 
-              String userId = ref.read(authServiceProvider).uid;
+              String userId = ref.read(userStateProvider.notifier).data.uid!;
 
               //checking if the activity is created by the user
               bool isAdmin = singleActivity.admin == userId;

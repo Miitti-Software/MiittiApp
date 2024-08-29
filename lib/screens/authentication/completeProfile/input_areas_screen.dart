@@ -28,7 +28,7 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
   void initState() {
     super.initState();
     _loadAreas();
-    final userAreas = ref.read(userDataProvider).areas;
+    final userAreas = ref.read(userStateProvider.notifier).data.areas;
     selectedAreas = allAreas
         .where((area) => userAreas.contains(area.item1))
         .map((area) => area.item1)
@@ -59,7 +59,7 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider);
+    final userData = ref.watch(userStateProvider.notifier).data;
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(

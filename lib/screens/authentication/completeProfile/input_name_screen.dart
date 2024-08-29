@@ -24,7 +24,7 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
   void initState() {
     super.initState();
     // Initialize the controller with the user's name
-    final userData = ref.read(userDataProvider);
+    final userData = ref.read(userStateProvider.notifier).data;
     _controller = TextEditingController(text: userData.name);
   }
 
@@ -39,7 +39,7 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
     return Consumer(
       builder: (context, ref, child) {
         final config = ref.watch(remoteConfigServiceProvider);
-        final userData = ref.watch(userDataProvider);
+        final userData = ref.watch(userStateProvider.notifier).data;
 
         return ConfigScreen(
           child: Column(

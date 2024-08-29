@@ -33,7 +33,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
 
   void _loadQACards() {
     qaCards = ref.read(remoteConfigServiceProvider).getTuplesList<String>(qaCategory);
-    final userData = ref.read(userDataProvider);
+    final userData = ref.read(userStateProvider.notifier).data;
     answeredQACards = qaCards.where(
       (qaCard) => userData.qaAnswers.containsKey(qaCard.item2)
     ).toList();
@@ -42,7 +42,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final userData = ref.watch(userDataProvider);
+    final userData = ref.watch(userStateProvider.notifier).data;
 
     return ConfigScreen(
       child: Column(
