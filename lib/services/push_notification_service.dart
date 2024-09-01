@@ -10,6 +10,7 @@ import 'package:miitti_app/services/firestore_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:miitti_app/state/user.dart';
 import 'dart:convert';
 
 import 'package:permission_handler/permission_handler.dart';
@@ -51,7 +52,7 @@ class PushNotificationService {
     debugPrint("############################################################");
 
     //Save token to user data(needed to access other users tokens in code)
-    MiittiUser? user = ref.read(firestoreServiceProvider).miittiUser;
+    MiittiUser? user = ref.read(userStateProvider.notifier).data.toMiittiUser();
     if (user != null && user.fcmToken != token) {
       ref.read(firestoreServiceProvider).updateUser({"fcmToken": token});
     }
@@ -157,19 +158,20 @@ class PushNotificationService {
   }
 
   Future sendRequestNotification(PersonActivity activity) async {
-    if (ref.read(firestoreServiceProvider).isAnonymous) {
+    if (ref.read(userStateProvider.notifier).isAnonymous) {
       debugPrint("Cannot send request notification as anonymous user");
       return;
     }
     FirestoreService firestore = ref.read(firestoreServiceProvider);
+    UserState user = ref.read(userStateProvider.notifier);
     MiittiUser? admin = await firestore.getUser(activity.admin);
     if (admin != null) {
       sendNotification(
         admin.fcmToken,
         "Pääsiskö miittiin mukaan?",
-        "${firestore.miittiUser!.name} pyysi päästä miittiin: ${activity.activityTitle}",
+        "${user.data.name} pyysi päästä miittiin: ${activity.activityTitle}",
         "request",
-        firestore.miittiUser!.uid,
+        user.data.uid!,
       );
     } else {
       debugPrint("Couldn't find admin to send request notification to.");

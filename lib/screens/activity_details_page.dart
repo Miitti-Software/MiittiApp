@@ -357,6 +357,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
     if (userStatus != UserStatusInActivity.none) return;
     if (isAnonymous) return;
     FirestoreService firestore = ref.read(firestoreServiceProvider);
+    String uid = ref.read(userStateProvider.notifier).uid!;
     firestore
         .joinOrRequestActivity(widget.myActivity.activityUid)
         .then((newStatus) {
@@ -366,12 +367,12 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
             .sendRequestNotification(widget.myActivity);
         setState(() {
           userStatus = UserStatusInActivity.requested;
-          widget.myActivity.requests.add(firestore.miittiUser!.uid);
+          widget.myActivity.requests.add(uid);
         });
       } else if (newStatus == UserStatusInActivity.joined) {
         setState(() {
           userStatus = UserStatusInActivity.joined;
-          widget.myActivity.participants.add(firestore.miittiUser!.uid);
+          widget.myActivity.participants.add(uid);
         });
       }
     });

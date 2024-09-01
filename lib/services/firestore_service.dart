@@ -33,6 +33,7 @@ class FirestoreService {
   final FirebaseFirestore _firestore;
   final Ref ref;
 
+  // TODO: Delete when redundant
   MiittiUser? _miittiUser;
   MiittiUser? get miittiUser => _miittiUser;
   bool get isAnonymous => _miittiUser == null;
@@ -43,28 +44,28 @@ class FirestoreService {
 
   FirestoreService(this.ref) : _firestore = FirebaseFirestore.instance;
 
-  //PUBLIC METHODS
-
-  Future<bool> saveUserData({
-  required MiittiUser userModel,
-  required File? image,
-}) async {
-  try {
-    final uid = ref.read(userStateProvider.notifier).uid;
-    final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadUserImage(uid!, image);
+  Future<bool> saveUserData({required MiittiUser userModel, required File? image}) async {
+    try {
+      final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadProfilePicture(userModel.uid, image);
       userModel.profilePictures[0] = imageUrl;
-
-    userModel.registrationDate = DateTime.now();
-    _miittiUser = userModel;
-
-    await _firestore.collection(_usersString).doc(userModel.uid).set(userModel.toMap());
-    return true;
-  } catch (e) {
-    debugPrint("Error saving user data: $e");
-    return false;
+      await _firestore.collection(_usersString).doc(userModel.uid).set(userModel.toMap());
+      _miittiUser = userModel; // TODO: Delete when redundant
+      return true;
+    } catch (e) {
+      debugPrint("Error saving user data: $e");
+      return false;
+    }
   }
-}
-
+  
+Future<MiittiUser?> loadUserData(String userId) async {
+    DocumentSnapshot snapshot = await _firestore.collection(_usersString).doc(userId).get();
+    if (snapshot.exists) {
+      _miittiUser = MiittiUser.fromFirestore(snapshot); // TODO: Delete when redundant
+      return MiittiUser.fromFirestore(snapshot);
+    } else {
+      return null;
+    }
+  }
 
 
 

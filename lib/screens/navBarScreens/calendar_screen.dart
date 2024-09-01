@@ -52,7 +52,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 10)).then((value) {
-      if (ref.read(firestoreServiceProvider).isAnonymous) {
+      if (ref.read(userStateProvider.notifier).isAnonymous) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
             context: context,
@@ -67,7 +67,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   Future fetchDataFromFirebase() async {
     //This method ensures that all the data is coming successfully from Database through AuthProvider and then updates the State
-    if (ref.read(firestoreServiceProvider).isAnonymous) {
+    if (ref.read(userStateProvider.notifier).isAnonymous) {
       showDialog(
           context: context, builder: (context) => const AnonymousDialog());
 
@@ -620,7 +620,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ref.read(firestoreServiceProvider).isAnonymous
+    return ref.read(userStateProvider.notifier).isAnonymous
         ? const AnonymousUserScreen()
         : SafeArea(
             child: Stack(

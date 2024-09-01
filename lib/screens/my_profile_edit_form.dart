@@ -9,6 +9,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/question_answer.dart';
 import 'package:miitti_app/functions/utils.dart';
 
@@ -186,10 +187,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                             const BorderRadius.all(Radius.circular(20)),
                         child: image == null
                             ? Image.network(
-                                ref
-                                    .read(firestoreServiceProvider)
-                                    .miittiUser!
-                                    .profilePictures[0],
+                                ref.read(userStateProvider.notifier).data.profilePictures[0],
                                 height: 400,
                                 width: 400,
                                 fit: BoxFit.cover,
@@ -403,7 +401,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       favoriteActivities.length >= 3) {
                     _formKey.currentState!.save();
 
-                    final miittiUser = ref.read(firestoreServiceProvider).miittiUser!;
+                    final miittiUser = ref.read(userStateProvider.notifier).data.toMiittiUser();
                     final updatedUser = MiittiUser(
                       name: miittiUser.name,
                       email: miittiUser.email,

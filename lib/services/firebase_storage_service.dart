@@ -2,13 +2,16 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// A service class to manage Firebase Storage operations
 class FirebaseStorageService {
   final Ref ref;
   final FirebaseStorage _firebaseStorage;
 
   FirebaseStorageService(this.ref) : _firebaseStorage = FirebaseStorage.instance;
 
-  Future<String> uploadUserImage(String uid, File? image) async {
+  /// Uploads a profile picture to Firebase Storage and returns the download URL.
+  /// The image is stored in a folder corresponding to the user ID under 'userImages' with the name 'profilePicture.jpg'.
+  Future<String> uploadProfilePicture(String uid, File? image) async {
     final metadata = SettableMetadata(
       contentType: 'image/jpeg',
       customMetadata: {'picked-file-path': image!.path},
@@ -29,6 +32,7 @@ class FirebaseStorageService {
     }
   }
 
+  /// Deletes all of the user's images associated with the given user ID.
   Future<void> deleteUserFolder(String uid) async {
     String folderPath = 'userImages/$uid';
 

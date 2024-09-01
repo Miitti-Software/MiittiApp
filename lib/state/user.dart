@@ -17,11 +17,16 @@ class UserState extends StateNotifier<User?> {
   final FirestoreService _firestoreService;
   final LocalStorageService _localStorageService;
   final FirebaseStorageService _firebaseStorageService;
-  final UserData _userData;
+  UserData _userData = UserData();
 
-  UserState(this._authService, this._firestoreService, this._localStorageService, this._firebaseStorageService, this._userData) : super(null) {
-    _authService.authStateChanges.listen((user) {
+  UserState(this._authService, this._firestoreService, this._localStorageService, this._firebaseStorageService) : super(null) {
+    _authService.authStateChanges.listen((user) async {
       state = user;
+      if (user != null) {
+        _userData = UserData(miittiUser: await _firestoreService.loadUserData(user.uid));
+      } else {
+        _userData = UserData();
+      }
     });
   }
 
@@ -30,6 +35,7 @@ class UserState extends StateNotifier<User?> {
   String? get email => state?.email;
   bool get isSignedIn => state != null;
   UserData get data => _userData;
+  bool get isAnonymous => _userData.registrationDate == null;
 
   Stream<User?> get authStateChanges => _authService.authStateChanges;
 
@@ -37,6 +43,7 @@ class UserState extends StateNotifier<User?> {
     final result = apple ? await _authService.signInWithApple() : await _authService.signInWithGoogle();
     if (result) {
       state = await _authService.authStateChanges.first;
+      _userData = UserData(miittiUser: await _firestoreService.loadUserData(uid!));
     }
     return result;
   }
@@ -65,6 +72,7 @@ class UserState extends StateNotifier<User?> {
         userModel: miittiUser,
         image: File(data.profilePictures[0]),
       );
+      _userData = UserData(miittiUser: miittiUser);
     }
   }
 
@@ -93,9 +101,7 @@ final userStateProvider = StateNotifierProvider<UserState, User?>((ref) {
   final firestoreService = ref.watch(firestoreServiceProvider);
   final localStorageService = ref.watch(localStorageServiceProvider);
   final firebaseStorageService = ref.read(firebaseStorageServiceProvider);
-  // final userData = ref.watch(userDataProvider);
-  final userData = UserData(miittiUser: firestoreService.miittiUser);
-  return UserState(authService, firestoreService, localStorageService, firebaseStorageService, userData);
+  return UserState(authService, firestoreService, localStorageService, firebaseStorageService);
 });
 
 /// A provider that streams the current user's authentication state
@@ -103,7 +109,6 @@ final authStateProvider = StreamProvider<User?>((ref) {
   final authServiceInstance = ref.watch(userStateProvider.notifier);
   return authServiceInstance.authStateChanges;
 });
-
 
 /// A class to manage the current user's data
 class UserData {
@@ -128,7 +133,7 @@ class UserData {
   UserData({MiittiUser? miittiUser}) {
     if (miittiUser != null) {
       uid = miittiUser.uid;
-      email = miittiUser.email;               // TODO: Fetch email from the authentification service - name too maybe? And everything else that is available
+      email = miittiUser.email;
       phoneNumber = miittiUser.phoneNumber;
       name = miittiUser.name;
       gender = miittiUser.gender;
@@ -185,9 +190,27 @@ class UserData {
   void setLastActive(DateTime? value) => lastActive = value;
   void setFcmToken(String? value) => fcmToken = value;
 
-  // TODO: Implement a method to update the user's data in Firestore
-
-  // TODO: Implement a method to clear the class' data upon sign out / user deletion
+  MiittiUser toMiittiUser() {
+    return MiittiUser(
+      uid: uid!,
+      email: email!.trim(),
+      name: name!.trim(),
+      gender: gender!,
+      birthday: birthday!,
+      languages: languages,
+      occupationalStatus: occupationalStatus!,
+      organization: organization,
+      areas: areas,
+      favoriteActivities: favoriteActivities,
+      qaAnswers: qaAnswers,
+      profilePictures: profilePictures,
+      invitedActivities: invitedActivities,
+      registrationDate: registrationDate!,
+      lastActive: lastActive!,
+      fcmToken: fcmToken!,
+    );
+  }
+  
   void clear() {
     uid = null;
     email = null;
@@ -208,8 +231,3 @@ class UserData {
     fcmToken = null;
   }
 }
-
-// final userDataProvider = Provider<UserData>((ref) {
-//   final user = ref.watch(firestoreServiceProvider).miittiUser;
-//   return UserData(miittiUser: user);
-// });

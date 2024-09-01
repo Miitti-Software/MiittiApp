@@ -7,6 +7,7 @@ import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
 
 import 'package:miitti_app/functions/utils.dart';
@@ -428,7 +429,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                 widget.user.uid, myActivities.first.activityUid)
             .then((value) {
           ref.read(notificationServiceProvider).sendInviteNotification(
-              ref.read(firestoreServiceProvider).miittiUser!,
+              ref.read(userStateProvider.notifier).data.toMiittiUser(),
               widget.user,
               myActivities.first);
           showDialog(
@@ -577,7 +578,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                                 widget.user.uid, activity.activityUid)
                             .then((value) {
                           ref.read(notificationServiceProvider).sendInviteNotification(
-                              ref.read(firestoreServiceProvider).miittiUser!,
+                              ref.read(userStateProvider.notifier).data.toMiittiUser(),
                               widget.user,
                               activity);
                           afterFrame(() {

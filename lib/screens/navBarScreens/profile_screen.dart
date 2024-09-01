@@ -1,7 +1,5 @@
 //TODO: New UI
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -31,7 +29,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 10)).then((value) {
-      if (ref.read(firestoreServiceProvider).isAnonymous) {
+      if (ref.read(userStateProvider.notifier).isAnonymous) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
             context: context,
@@ -40,8 +38,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         });
       } else {
         filteredActivities = ref
-            .read(firestoreServiceProvider)
-            .miittiUser!
+            .read(userStateProvider.notifier)
+            .data
             .favoriteActivities
             .toList();
       }
@@ -71,14 +69,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     bool isLoading = ref.watch(providerLoading);
-    bool anonymous = ref.read(firestoreServiceProvider).isAnonymous;
+    bool anonymous = ref.read(userStateProvider.notifier).isAnonymous;
 
     if (anonymous) {
       return const AnonymousUserScreen();
     } else {
       List<String> answeredQuestions = ref
-              .watch(firestoreServiceProvider)
-              .miittiUser!
+              .watch(userStateProvider.notifier)
+              .data
               .qaAnswers.keys
           .toList();
       return Scaffold(
@@ -96,7 +94,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            ref.read(firestoreServiceProvider).miittiUser!.name,
+            ref.read(userStateProvider.notifier).data.name!,
             style: const TextStyle(
               fontSize: 30,
               fontFamily: 'Sora',
@@ -109,7 +107,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => MyProfileEditForm(
-                        user: ref.read(firestoreServiceProvider).miittiUser!,
+                        user: ref.read(userStateProvider.notifier).data.toMiittiUser(),
                       )));
             },
             child: const Icon(
@@ -133,7 +131,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     // Add the first question card and user details card
     String firstQuestion = answeredQuestions[0];
     String firstAnswer =
-        ref.read(firestoreServiceProvider).miittiUser!.qaAnswers[firstQuestion]!;
+        ref.read(userStateProvider.notifier).data.qaAnswers[firstQuestion]!;
     widgets.add(buildQuestionCard(firstQuestion, firstAnswer));
     widgets.add(buildUserDetailsCard());
 
@@ -142,7 +140,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       for (var i = 1; i < answeredQuestions.length; i++) {
         String question = answeredQuestions[i];
         String answer =
-            ref.read(firestoreServiceProvider).miittiUser!.qaAnswers[question]!;
+            ref.read(userStateProvider.notifier).data.qaAnswers[question]!;
         widgets.add(buildQuestionCard(question, answer));
 
         // Add activities grid after the first additional question card
@@ -171,7 +169,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Image.network(
-          ref.read(firestoreServiceProvider).miittiUser!.profilePictures[0], 
+          ref.read(userStateProvider.notifier).data.profilePictures[0], 
           height: 400,
           width: 400,
           fit: BoxFit.cover,
@@ -217,7 +215,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget buildUserDetailsCard() {
-    MiittiUser miittiUser = ref.read(firestoreServiceProvider).miittiUser!;
+    MiittiUser miittiUser = ref.read(userStateProvider.notifier).data.toMiittiUser();
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(

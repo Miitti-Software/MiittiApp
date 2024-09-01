@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Finnish translations of text
 - Custom emojis and activities
-- Small and large, compressed versions of profile pictures
 - Collection and storage of relevant data
 - Use Performance Monitoring, Test Lab, App Distribution, Crashlytics and Analytics
 - Testing of most major operations such as signing in, signing up, creating and joining a miitti, viewing major pages and deleting account.
@@ -19,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### To Be Changed
 
 - Modernize the UI of all screens
+- Make sure people who have originally signed up with mobile numbers retain access to their accounts
 - Simplify `MiittiUser` class and modify Firestore database accordingly
 - Refactor UI components to use `miitti_theme.dart`
 - Rename strings role-wise instead of content-wise
@@ -46,6 +46,7 @@ Refactoring
 - Language setting in `settings.dart`
 - Language-based loading of Remote Config values (multi-language support)
 - A more robust routing solution using [GoRouter](https://pub.dev/packages/go_router) for deep linking and redirecting support as well as for a more uniform routing interface in code
+- Profile pictures are compressed and smaller thumbnails are created for each new one
 
 ### Fixed
 

@@ -6,6 +6,7 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
 
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 
@@ -64,7 +65,7 @@ class IndexPageState extends ConsumerState<IndexPage> {
               width: 60,
               child: getFloatingButton(
                 onPressed: () async {
-                  if (ref.read(firestoreServiceProvider).isAnonymous) {
+                  if (ref.read(userStateProvider.notifier).isAnonymous) {
                     showDialog(
                         context: context,
                         builder: (context) => const AnonymousDialog());

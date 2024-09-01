@@ -74,6 +74,10 @@ class AppRouter {
       GoRoute(
         path: 'welcome',
         pageBuilder: _buildNoTransitionPage(const WelcomeScreen()),
+        // onExit: (context, state) {
+        //   context.go('/');
+        //   return true;
+        // },
       ),
       GoRoute(
         path: 'complete-profile/name',
@@ -145,7 +149,7 @@ class AppRouter {
   }
 
   String? _handleRedirect(BuildContext context, GoRouterState state) {
-    final isAuthenticated = ref.watch(userStateProvider.notifier).isSignedIn;
+    final userState = ref.watch(userStateProvider.notifier);
     final isMaintenanceBreak = ref.watch(remoteConfigServiceProvider).getBool('maintenance_break');
 
     if (isMaintenanceBreak) {
@@ -156,12 +160,15 @@ class AppRouter {
       return '/login/complete-profile/name';  // First step of the profile completion process
     }
 
-    if (!isAuthenticated && state.matchedLocation != '/login' && state.matchedLocation != '/login/authenticate') {
+    if (!userState.isSignedIn && state.matchedLocation != '/login' && state.matchedLocation != '/login/authenticate') {
       return '/login';  
     }
 
-    if (isAuthenticated && state.matchedLocation != '/login/welcome') {
-      ref.watch(firestoreServiceProvider).checkExistingUser(ref.watch(userStateProvider.notifier).uid!);
+    // TODO: Add redirection to /login/welcome if user is signed in but profile is incomplete
+
+    // TODO: Remove when redundant
+    if (userState.isSignedIn && state.matchedLocation != '/login/welcome') {
+      ref.watch(firestoreServiceProvider).checkExistingUser(userState.uid!);
     }
 
     return null;
