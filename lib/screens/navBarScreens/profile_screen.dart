@@ -6,6 +6,7 @@ import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
 import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
@@ -108,6 +109,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => MyProfileEditForm(
                         user: ref.read(userStateProvider.notifier).data.toMiittiUser(),
+                      )));
+            },
+            child: const Icon(
+              Icons.edit_document,
+              size: 30,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 20),
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => SettingsScreen(
                       )));
             },
             child: const Icon(

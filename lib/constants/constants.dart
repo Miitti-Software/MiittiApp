@@ -162,6 +162,9 @@ const List<String> adminId = [
   'cyn5uJdDskdwGaZDvmNtztfxsRm2',
   'TI4jAfRnjnUWM46zwsL4pYUrF3Z2',
   'sGCB8PQbluYD8iD5xMx0bdwTrVE2',
+  'p6K0iS7nozZwkYmEoPKfz0sEUY42',
+  'hIbI9DC8lgRW9HZoiTnmp4qdJRs2',
+  'g16HaIuSYhSlqXWgVPsGpNWDp4j2'
 ];
 
 const String mapboxAccess =
