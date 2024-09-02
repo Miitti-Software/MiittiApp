@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
@@ -120,9 +121,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(width: 20),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => SettingsScreen(
-                      )));
+              context.go('/profile/settings');
             },
             child: const Icon(
               Icons.settings,

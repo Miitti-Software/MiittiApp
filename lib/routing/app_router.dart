@@ -25,6 +25,7 @@ import 'package:miitti_app/screens/navBarScreens/calendar_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/maps_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
+import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
 import 'package:miitti_app/screens/navigation_shell_scaffold.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
@@ -146,6 +147,12 @@ class AppRouter {
           GoRoute(
             path: '/profile',
             pageBuilder: _buildNoTransitionPage(const ProfileScreen()),
+            routes: [
+              GoRoute(
+                path: 'settings',
+                pageBuilder: _buildNoTransitionPage(const SettingsScreen()),
+              ),
+            ]
           ),
         ],
     );
