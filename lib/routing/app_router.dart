@@ -22,7 +22,7 @@ import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/maintenance_break_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/calendar_screen.dart';
-import 'package:miitti_app/screens/navBarScreens/maps_screen.dart';
+import 'package:miitti_app/screens/navBarScreens/map_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
@@ -110,7 +110,7 @@ class AppRouter {
         routes: [
           GoRoute(
             path: '/map',
-            pageBuilder: _buildNoTransitionPage(const MapsScreen()),
+            pageBuilder: _buildNoTransitionPage(const MapScreen()),
           ),
         ],
     );

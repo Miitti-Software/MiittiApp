@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/genders.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/miitti_user.dart';
@@ -19,7 +20,10 @@ class UserState extends StateNotifier<User?> {
   final FirebaseStorageService _firebaseStorageService;
   UserData _userData = UserData();
 
-  UserState(this._authService, this._firestoreService, this._localStorageService, this._firebaseStorageService) : super(null) {
+  static UserState? _instance;
+
+  UserState._internal(this._authService, this._firestoreService, this._localStorageService, this._firebaseStorageService) : super(null) {
+    state = _authService.currentUser;
     _authService.authStateChanges.listen((user) async {
       state = user;
       if (user != null) {
@@ -30,6 +34,11 @@ class UserState extends StateNotifier<User?> {
     });
   }
 
+  static UserState getInstance(AuthService authService, FirestoreService firestoreService, LocalStorageService localStorageService, FirebaseStorageService firebaseStorageService) {
+    _instance ??= UserState._internal(authService, firestoreService, localStorageService, firebaseStorageService);
+    return _instance!;
+  }
+
   User? get user => state;
   String? get uid => state?.uid;
   String? get email => state?.email;
@@ -38,6 +47,15 @@ class UserState extends StateNotifier<User?> {
   bool get isAnonymous => _userData.registrationDate == null;
 
   Stream<User?> get authStateChanges => _authService.authStateChanges;
+
+  Future<void> initialize() async {
+    if (isSignedIn) {
+      _userData = UserData(miittiUser: await _firestoreService.loadUserData(uid!));
+    } else {
+      _userData = UserData();
+      return;
+    }
+  }
 
   Future<bool> signIn(apple) async {
     final result = apple ? await _authService.signInWithApple() : await _authService.signInWithGoogle();
@@ -101,7 +119,7 @@ final userStateProvider = StateNotifierProvider<UserState, User?>((ref) {
   final firestoreService = ref.watch(firestoreServiceProvider);
   final localStorageService = ref.watch(localStorageServiceProvider);
   final firebaseStorageService = ref.read(firebaseStorageServiceProvider);
-  return UserState(authService, firestoreService, localStorageService, firebaseStorageService);
+  return UserState.getInstance(authService, firestoreService, localStorageService, firebaseStorageService);
 });
 
 /// A provider that streams the current user's authentication state
@@ -127,7 +145,8 @@ class UserData {
   List<String> profilePictures = [];
   List<String> invitedActivities = [];
   DateTime? registrationDate;
-  DateTime? lastActive;
+  LatLng? latestLocation;               
+  DateTime? lastActive;                 // Keep latest location and lastActive in sync whenever possible
   String? fcmToken;
 
   UserData({MiittiUser? miittiUser}) {
@@ -168,6 +187,7 @@ class UserData {
   List<String> get getProfilePicture => profilePictures;
   List<String> get getInvitedActivities => invitedActivities;
   DateTime? get getRegistrationDate => registrationDate;
+  LatLng? get getLatestLocation => latestLocation;
   DateTime? get getLastActive => lastActive;
   String? get getFcmToken => fcmToken;
 
@@ -187,6 +207,7 @@ class UserData {
   void setProfilePicture(List<String> value) => profilePictures = value;
   void setInvitedActivities(List<String> value) => invitedActivities = value;
   void setRegistrationDate(DateTime? value) => registrationDate = value;
+  void setLatestLocation(LatLng? value) => latestLocation = value;
   void setLastActive(DateTime? value) => lastActive = value;
   void setFcmToken(String? value) => fcmToken = value;
 
@@ -227,6 +248,7 @@ class UserData {
     profilePictures = [];
     invitedActivities = [];
     registrationDate = null;
+    latestLocation = null;
     lastActive = null;
     fcmToken = null;
   }

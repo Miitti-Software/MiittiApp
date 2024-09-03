@@ -43,7 +43,7 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
 
   Future<void> _loadAreas() async {
     setState(() {
-      allAreas = ref.read(remoteConfigServiceProvider).getTuplesList<String>('areas');
+      allAreas = ref.read(remoteConfigServiceProvider).getTuplesList<Map<String, dynamic>>('areas').map((e) => Tuple2(e.item1, e.item2['name'] as String)).toList();
       filteredAreas = allAreas;
     });
   }

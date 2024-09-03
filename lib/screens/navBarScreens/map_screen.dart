@@ -20,24 +20,25 @@ import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/person_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
-class MapsScreen extends ConsumerStatefulWidget {
-  const MapsScreen({super.key});
+class MapScreen extends ConsumerStatefulWidget {
+  const MapScreen({super.key});
 
   @override
-  ConsumerState<MapsScreen> createState() => _MapsScreenState();
+  ConsumerState<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapsScreenState extends ConsumerState<MapsScreen> {
+class _MapScreenState extends ConsumerState<MapScreen> {
   final Location _location = Location();
 
   List<MiittiActivity> _activities = [];
   List<AdBanner> _ads = [];
 
-  LatLng myPosition = const LatLng(60.1699, 24.9325);     // TODO: Move to global riverpod state and make home city or last location from local data into the default 
+  late LatLng initialLocation;
 
   SuperclusterMutableController clusterController =
       SuperclusterMutableController();
@@ -55,6 +56,17 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeUserData();
+  }
+
+  void _initializeUserData() {
+    final userData = ref.read(userStateProvider.notifier).data;
+    final config = ref.read(remoteConfigServiceProvider);
+    final latitude = userData.areas.isNotEmpty ? config.get<Map<String, dynamic>>(userData.areas[0])['latitude'] as double : 60.1699;
+    final longitude = userData.areas.isNotEmpty ? config.get<Map<String, dynamic>>(userData.areas[0])['longitude'] as double : 24.9325;
+    setState(() {
+      initialLocation = userData.latestLocation ?? LatLng(latitude, longitude);
+    });
   }
 
   @override
@@ -98,7 +110,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
 
       if (mounted) {
         setState(() {
-          myPosition = currentLatLng;
+          initialLocation = currentLatLng;
         });
       }
     }
@@ -339,7 +351,7 @@ class _MapsScreenState extends ConsumerState<MapsScreen> {
               options: MapOptions(
                   keepAlive: true,
                   backgroundColor: AppStyle.black,
-                  initialCenter: myPosition,
+                  initialCenter: initialLocation,
                   initialZoom: 13.0,
                   interactionOptions: const InteractionOptions(
                       flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),

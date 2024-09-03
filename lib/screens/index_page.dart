@@ -12,7 +12,7 @@ import 'package:miitti_app/widgets/other_widgets.dart';
 
 import 'navBarScreens/calendar_screen.dart';
 import 'navBarScreens/settings_screen.dart';
-import 'navBarScreens/maps_screen.dart';
+import 'navBarScreens/map_screen.dart';
 import 'navBarScreens/people_screen.dart';
 import 'navBarScreens/profile_screen.dart';
 
@@ -34,7 +34,7 @@ class IndexPageState extends ConsumerState<IndexPage> {
   // List of screen widgets
   static const List<Widget> _pages = <Widget>[
     CalendarScreen(),
-    MapsScreen(),
+    MapScreen(),
     PeopleScreen(),
     ProfileScreen(),
     SettingsScreen(),

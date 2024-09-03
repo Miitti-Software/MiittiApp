@@ -13,8 +13,9 @@ class AuthService {
 
   AuthService(this.ref) : _auth = FirebaseAuth.instance;
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges();     // TODO: Move to UserState?
-
+  User? get currentUser => _auth.currentUser;
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  
   Future<bool> signInWithApple() async {
     try {
       final appleProvider = AppleAuthProvider();

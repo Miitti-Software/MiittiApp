@@ -32,12 +32,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     super.initState();
     Future.delayed(const Duration(milliseconds: 10)).then((value) {
       if (ref.read(userStateProvider.notifier).isAnonymous) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showDialog(
-            context: context,
-            builder: (context) => const AnonymousDialog(),
-          );
-        });
+        // WidgetsBinding.instance.addPostFrameCallback((_) {
+        //   showDialog(
+        //     context: context,
+        //     builder: (context) => const AnonymousDialog(),
+        //   );
+        // });
+        context.go('/profile/settings');
       } else {
         filteredActivities = ref
             .read(userStateProvider.notifier)
