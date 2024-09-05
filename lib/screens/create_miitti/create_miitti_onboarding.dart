@@ -10,9 +10,10 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/constants/genders.dart';
 import 'package:miitti_app/models/commercial_spot.dart';
 import 'package:miitti_app/models/onboarding_part.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -667,29 +668,32 @@ class _CreateMiittiOnboardingState
       );
     } else {
       //Register miitti
-      PersonActivity activity = PersonActivity(
-        activityTitle: titleController.text.trim(),
-        activityDescription: subTitleController.text.trim(),
-        activityCategory: favoriteActivity,
-        admin: '',
-        activityUid: '',
-        activityLong: markerCoordinates!.longitude,
-        activityLati: markerCoordinates!.latitude,
-        activityAdress: activityCity,
-        activityTime: activityTime,
-        isMoneyRequired: !isActivityFree,
-        personLimit: activityParticipantsCount.round(),
-        participants: {},
-        requests: {},
-        adminGender: '',
-        adminAge: 0,
-        timeDecidedLater: isActivityTimeUndefined,
+      UserCreatedActivity activity = UserCreatedActivity(
+        id: '',
+        title: titleController.text.trim(),
+        description: subTitleController.text.trim(),
+        category: favoriteActivity,
+        longitude: markerCoordinates!.longitude,
+        latitude: markerCoordinates!.latitude,
+        address: activityCity,
+        creator: '',
+        creationTime: DateTime.now(),
+        startTime: activityTime.toDate(),
+        endTime: null,
+        paid: !isActivityFree,
+        maxParticipants: activityParticipantsCount.round(),
+        participants: [],
+        requests: [],
+        creatorLanguages: [],
+        creatorGender: Gender.other,
+        creatorAge: 0,
+        participantLocations: {},
       );
       saveMiittiToFirebase(activity);
     }
   }
 
-  Future<void> saveMiittiToFirebase(PersonActivity personActivity) async {
+  Future<void> saveMiittiToFirebase(UserCreatedActivity personActivity) async {
     await ref.read(firestoreServiceProvider).saveMiittiActivityDataToFirebase(
           context: context,
           activityModel: personActivity,

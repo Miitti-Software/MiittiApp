@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/services/firestore_service.dart';
@@ -147,29 +147,29 @@ class PushNotificationService {
   }
 
   void sendInviteNotification(
-      MiittiUser current, MiittiUser receiver, PersonActivity activity) async {
+      MiittiUser current, MiittiUser receiver, UserCreatedActivity activity) async {
     sendNotification(
       receiver.fcmToken,
       "Sait kutsun miittiin!",
-      "${current.name} haluis sut mukaan miittiin: ${activity.activityTitle}",
+      "${current.name} haluis sut mukaan miittiin: ${activity.title}",
       "invite",
-      activity.activityUid,
+      activity.id,
     );
   }
 
-  Future sendRequestNotification(PersonActivity activity) async {
+  Future sendRequestNotification(UserCreatedActivity activity) async {
     if (ref.read(userStateProvider.notifier).isAnonymous) {
       debugPrint("Cannot send request notification as anonymous user");
       return;
     }
     FirestoreService firestore = ref.read(firestoreServiceProvider);
     UserState user = ref.read(userStateProvider.notifier);
-    MiittiUser? admin = await firestore.getUser(activity.admin);
+    MiittiUser? admin = await firestore.getUser(activity.creator);
     if (admin != null) {
       sendNotification(
         admin.fcmToken,
         "Pääsiskö miittiin mukaan?",
-        "${user.data.name} pyysi päästä miittiin: ${activity.activityTitle}",
+        "${user.data.name} pyysi päästä miittiin: ${activity.title}",
         "request",
         user.data.uid!,
       );
@@ -183,9 +183,9 @@ class PushNotificationService {
     sendNotification(
       receiver.fcmToken,
       "Tervetuloa miittiin!",
-      "Sut hyväksyttiin miittiin: ${activity.activityTitle}",
+      "Sut hyväksyttiin miittiin: ${activity.title}",
       "accept",
-      activity.activityUid,
+      activity.id,
     );
   }
 
@@ -213,10 +213,10 @@ class PushNotificationService {
       MiittiActivity activity, String message) async {
     sendNotification(
       receiverToken,
-      "Uusi viesti miitissä ${activity.activityTitle}",
+      "Uusi viesti miitissä ${activity.title}",
       "$senderName: $message",
       "message",
-      activity.activityUid,
+      activity.id,
     );
   }
 }

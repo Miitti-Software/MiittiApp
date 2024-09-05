@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
@@ -19,7 +19,7 @@ import 'package:intl/intl.dart'; // Add this line for the DateFormat class
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({required this.activity, super.key});
 
-  final PersonActivity activity;
+  final UserCreatedActivity activity;
 
   @override
   ConsumerState<ChatPage> createState() => _ChatPageState();
@@ -50,11 +50,11 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   getChat() async {
     await ref
         .read(firestoreServiceProvider)
-        .getChats(widget.activity.activityUid)
+        .getChats(widget.activity.id)
         .then((value) {
       setState(() {
         chats = value;
-        admin = widget.activity.admin;
+        admin = widget.activity.creator;
       });
     });
   }
@@ -96,7 +96,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               ),
               Expanded(
                 child: Text(
-                  widget.activity.activityTitle,
+                  widget.activity.title,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -110,7 +110,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               SizedBox(
                 height: 75,
                 child: Image.asset(
-                  'images/${widget.activity.activityCategory.toLowerCase()}.png',
+                  'images/${widget.activity.category.toLowerCase()}.png',
                 ),
               ),
             ],
@@ -201,7 +201,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       };
       ref
           .read(firestoreServiceProvider)
-          .sendMessage(widget.activity.activityUid, chatMessageMap);
+          .sendMessage(widget.activity.id, chatMessageMap);
 
       var receivers = await ref
           .read(firestoreServiceProvider)

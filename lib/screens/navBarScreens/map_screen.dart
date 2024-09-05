@@ -9,7 +9,6 @@ import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 //import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
@@ -17,11 +16,13 @@ import 'package:miitti_app/models/ad_banner.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
+import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
@@ -33,12 +34,10 @@ class MapScreen extends ConsumerStatefulWidget {
 }
 
 class _MapScreenState extends ConsumerState<MapScreen> {
-  final Location _location = Location();
+  late LatLng location;
 
   List<MiittiActivity> _activities = [];
   List<AdBanner> _ads = [];
-
-  late LatLng initialLocation;
 
   SuperclusterMutableController clusterController =
       SuperclusterMutableController();
@@ -65,7 +64,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final latitude = userData.areas.isNotEmpty ? config.get<Map<String, dynamic>>(userData.areas[0])['latitude'] as double : 60.1699;
     final longitude = userData.areas.isNotEmpty ? config.get<Map<String, dynamic>>(userData.areas[0])['longitude'] as double : 24.9325;
     setState(() {
-      initialLocation = userData.latestLocation ?? LatLng(latitude, longitude);
+      location = userData.latestLocation ?? LatLng(latitude, longitude);
     });
   }
 
@@ -82,37 +81,34 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   void initializeLocationAndSave() async {
-    bool? serviceEnabled;
-    PermissionStatus? permissionGranted;
+    final locationPermission = ref.read(locationPermissionProvider.notifier);
+    bool serviceEnabled = locationPermission.serviceEnabled;
+    bool permissionGranted = ref.watch(locationPermissionProvider);
 
-    serviceEnabled = await _location.serviceEnabled();
     if (!serviceEnabled) {
-      serviceEnabled = await _location.requestService();
+      serviceEnabled = await locationPermission.requestLocationService();
       if (!serviceEnabled) {
-        //Show user a red dialog about opening the service
+        if (mounted) {
+          ErrorSnackbar.show(context, 'Sijaintipalvelut eivät ole käytössä: service not enabled');
+        }
       }
     }
 
-    permissionGranted = await _location.hasPermission();
-    if (permissionGranted != PermissionStatus.granted) {
-      permissionGranted = await _location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        //Show user a red dialog about opening the  location
+    if (!permissionGranted) {
+      permissionGranted = await locationPermission.requestLocationPermission();
+      if (!permissionGranted) {
+        if (mounted) {
+          ErrorSnackbar.show(context, 'Sijaintipalvelut eivät ole käytössä: permission not granted');
+        }
       }
     }
 
-    // Get the current user location
-    if (permissionGranted == PermissionStatus.granted ||
-        permissionGranted == PermissionStatus.grantedLimited) {
-      LocationData locationData = await _location.getLocation();
-      LatLng currentLatLng =
-          LatLng(locationData.latitude!, locationData.longitude!);
+    await ref.read(userStateProvider.notifier).updateLocation();
 
-      if (mounted) {
-        setState(() {
-          initialLocation = currentLatLng;
-        });
-      }
+    if (mounted) {
+      setState(() {
+        location = ref.read(userStateProvider.notifier).data.latestLocation!;
+      });
     }
 
     /*myCameraPosition = CameraPosition(
@@ -144,7 +140,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     return Marker(
       width: 100.0,
       height: 100.0,
-      point: LatLng(activity.activityLati, activity.activityLong),
+      point: LatLng(activity.latitude, activity.longitude),
       child: GestureDetector(
         onTap: () {
           goToActivityDetailsPage(activity);
@@ -257,7 +253,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => activity is PersonActivity
+        builder: (context) => activity is UserCreatedActivity
             ? ActivityDetailsPage(
                 myActivity: activity,
               )
@@ -351,7 +347,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               options: MapOptions(
                   keepAlive: true,
                   backgroundColor: AppStyle.black,
-                  initialCenter: initialLocation,
+                  initialCenter: location,
                   initialZoom: 13.0,
                   interactionOptions: const InteractionOptions(
                       flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
@@ -430,7 +426,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     _ads.isNotEmpty && index > 1 ? index - 1 : index;
 
                 MiittiActivity activity = _activities[activityIndex];
-                String activityAddress = activity.activityAdress;
+                String activityAddress = activity.address;
 
                 List<String> addressParts = activityAddress.split(',');
                 String cityName = addressParts[0].trim();
@@ -463,7 +459,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                               children: [
                                 Flexible(
                                   child: Text(
-                                    activity.activityTitle,
+                                    activity.title,
                                     overflow: TextOverflow.ellipsis,
                                     style: AppStyle.activityName,
                                   ),
@@ -476,7 +472,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                                     ),
                                     gapW5,
                                     Text(
-                                      activity.timeString,
+                                      activity.startTime!.toLocal().toString(),
                                       style: AppStyle.activitySubName,
                                     ),
                                     gapW10,
@@ -506,7 +502,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                                     ),
                                     gapW5,
                                     Text(
-                                      activity.isMoneyRequired
+                                      activity.paid
                                           ? 'Pääsymaksu'
                                           : 'Maksuton',
                                       textAlign: TextAlign.center,
@@ -519,7 +515,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                                     ),
                                     gapW5,
                                     Text(
-                                      '$participants/${activity.personLimit} osallistujaa',
+                                      '$participants/${activity.maxParticipants} osallistujaa',
                                       style: AppStyle.activitySubName,
                                     ),
                                   ],

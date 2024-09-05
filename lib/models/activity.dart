@@ -52,10 +52,10 @@ class Activity {
                   backgroundColor: AppStyle.violet,
                   radius: 37,
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(activity.activityPhoto),
+                    backgroundImage: NetworkImage(activity.bannerImage),
                     radius: 34,
                     onBackgroundImageError: (exception, stackTrace) => AssetImage(
-                        'images/${solveActivityId(activity.activityCategory)}.png'),
+                        'images/${solveActivityId(activity.category)}.png'),
                   ),
                 ),
                 const Positioned(
@@ -81,7 +81,7 @@ class Activity {
             ),
           )
         : Image.asset(
-            'images/${solveActivityId(activity.activityCategory)}.png',
+            'images/${solveActivityId(activity.category)}.png',
             height: 100,
             errorBuilder: (cpntext, error, stacktrace) =>
                 Image.asset('images/adventure.png'),

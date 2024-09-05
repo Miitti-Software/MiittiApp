@@ -52,7 +52,6 @@ class AuthService {
   }
 
   Future<void> deleteUser() async {
-    // TODO: Delete all user's profile picture variants from storage - whole folder corresponding to uid
     await signInWithGoogle();
     await _auth.currentUser!.delete();
     await GoogleSignIn().signOut();

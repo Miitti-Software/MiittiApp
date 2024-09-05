@@ -1,59 +1,51 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
-import 'package:miitti_app/functions/utils.dart';
 
 class CommercialActivity extends MiittiActivity {
-  Timestamp startTime;
-  Timestamp endTime;
   String linkTitle;
   String hyperlink;
-  String activityPhoto;
-
-  @override
-  String get timeString {
-    return "${timestampToString(startTime)} - ${timestampToString(endTime, justClock: startTime.toDate().day == endTime.toDate().day)}";
-  }
+  String bannerImage;
 
   CommercialActivity({
-    required super.activityTitle,
-    required super.activityDescription,
-    required super.activityCategory,
-    required super.admin,
-    required super.activityUid,
-    required super.activityLong,
-    required super.activityLati,
-    required super.activityAdress,
-    required this.startTime,
-    required this.endTime,
-    required super.isMoneyRequired,
-    required super.personLimit,
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.category,
+    required super.longitude,
+    required super.latitude,
+    required super.address,
+    required super.creator,
+    required super.creationTime,
+    required super.startTime,
+    required super.endTime,
+    required super.paid,
+    required super.maxParticipants,
     required super.participants,
-    required this.hyperlink,
     required this.linkTitle,
-    required this.activityPhoto,
+    required this.hyperlink,
+    required this.bannerImage,
   });
 
-  static CommercialActivity fromDoc(DocumentSnapshot snapshot) {
-    return fromMap(snapshot.data() as Map<String, dynamic>);
-  }
-
-  static CommercialActivity fromMap(Map<String, dynamic> map) {
+  factory CommercialActivity.fromFirestore(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
     return CommercialActivity(
-        activityTitle: map['activityTitle'],
-        activityDescription: map['activityDescription'],
-        activityCategory: map['activityCategory'],
-        admin: map['admin'],
-        activityUid: map['activityUid'],
-        activityLong: map['activityLong'],
-        activityLati: map['activityLati'],
-        activityAdress: map['activityAdress'],
-        startTime: map['startTime'] ?? Timestamp.now(),
-        endTime: map['endTime'] ?? Timestamp.now(),
-        isMoneyRequired: map['isMoneyRequired'],
-        personLimit: map['personLimit'],
-        participants: Set<String>.from(map['participants'] ?? []),
-        hyperlink: map['hyperLink'],
-        linkTitle: map['linkTitle'],
-        activityPhoto: map['activityPhoto']);
+      id: snapshot.id,
+      title: data['title'],
+      description: data['description'],
+      category: data['category'],
+      longitude: data['longitude'],
+      latitude: data['latitude'],
+      address: data['address'],
+      creator: data['creator'],
+      creationTime: data['creationTime'],
+      startTime: data['startTime'],
+      endTime: data['endTime'],
+      paid: data['paid'],
+      maxParticipants: data['maxParticipants'],
+      participants: List<String>.from(data['participants']),
+      linkTitle: data['linkTitle'],
+      hyperlink: data['hyperlink'],
+      bannerImage: data['bannerImage'],
+    );
   }
 }

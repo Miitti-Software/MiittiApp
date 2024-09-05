@@ -1,3 +1,4 @@
+import 'package:location/location.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/services/local_storage_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -29,5 +30,56 @@ class LanguageNotifier extends StateNotifier<Language> {
       state = language;
       await _localStorageService.saveString(languageKey, language.code);
     }
+  }
+}
+
+final locationPermissionProvider = StateNotifierProvider<LocationPermissionNotifier, bool>((ref) {
+  return LocationPermissionNotifier();
+});
+
+class LocationPermissionNotifier extends StateNotifier<bool> {
+  final Location _liveLocation = Location();
+  bool serviceEnabled = false;
+  PermissionStatus permissionGranted = PermissionStatus.denied;
+
+  LocationPermissionNotifier() : super(false) {
+    setLocationPermission();
+  }
+  
+  void setLocationPermission() async {
+    serviceEnabled = await _liveLocation.serviceEnabled();
+    permissionGranted = await _liveLocation.hasPermission();
+    if (permissionGranted == PermissionStatus.granted || permissionGranted == PermissionStatus.grantedLimited) {
+      state = true;
+    } else {
+      state = false;
+    }
+  }
+
+  Future<bool> requestLocationService() async {
+    serviceEnabled = await _liveLocation.serviceEnabled();
+    if (serviceEnabled == true) {
+      return true;
+    }
+    serviceEnabled = await _liveLocation.requestService();
+    if (serviceEnabled == true) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> requestLocationPermission() async {
+    serviceEnabled = await _liveLocation.serviceEnabled();
+    if (state == true) {
+      return true;
+    }
+    if (permissionGranted != PermissionStatus.granted && permissionGranted != PermissionStatus.grantedLimited) {
+      permissionGranted = await _liveLocation.requestPermission();
+    }
+    if (permissionGranted == PermissionStatus.granted || permissionGranted == PermissionStatus.grantedLimited) {
+      state = true;
+      return true;
+    }
+    return false;
   }
 }

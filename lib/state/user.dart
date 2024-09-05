@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 import 'package:miitti_app/constants/genders.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/miitti_user.dart';
@@ -11,6 +13,7 @@ import 'package:miitti_app/services/firestore_service.dart';
 import 'package:miitti_app/services/local_storage_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/services/auth_service.dart';
+import 'package:miitti_app/state/settings.dart';
 
 /// A singleton class to manage the current user's authentication state
 class UserState extends StateNotifier<User?> {
@@ -18,11 +21,13 @@ class UserState extends StateNotifier<User?> {
   final FirestoreService _firestoreService;
   final LocalStorageService _localStorageService;
   final FirebaseStorageService _firebaseStorageService;
+  final LocationPermissionNotifier locationPermissionNotifier;
   UserData _userData = UserData();
+  final Location _liveLocation = Location();
 
   static UserState? _instance;
 
-  UserState._internal(this._authService, this._firestoreService, this._localStorageService, this._firebaseStorageService) : super(null) {
+  UserState._internal(this._authService, this._firestoreService, this._localStorageService, this._firebaseStorageService, this.locationPermissionNotifier) : super(null) {
     state = _authService.currentUser;
     _authService.authStateChanges.listen((user) async {
       state = user;
@@ -34,8 +39,8 @@ class UserState extends StateNotifier<User?> {
     });
   }
 
-  static UserState getInstance(AuthService authService, FirestoreService firestoreService, LocalStorageService localStorageService, FirebaseStorageService firebaseStorageService) {
-    _instance ??= UserState._internal(authService, firestoreService, localStorageService, firebaseStorageService);
+  static UserState getInstance(AuthService authService, FirestoreService firestoreService, LocalStorageService localStorageService, FirebaseStorageService firebaseStorageService, LocationPermissionNotifier locationPermissionNotifier) {
+    _instance ??= UserState._internal(authService, firestoreService, localStorageService, firebaseStorageService, locationPermissionNotifier);
     return _instance!;
   }
 
@@ -94,12 +99,33 @@ class UserState extends StateNotifier<User?> {
     }
   }
 
+  Future<void> updateLocation() async {
+    if (isSignedIn && locationPermissionNotifier.state) {
+      try {
+        LocationData locationData = await _liveLocation.getLocation();
+        if (locationData.latitude != null && locationData.longitude != null) {
+          _userData.latestLocation = LatLng(locationData.latitude!, locationData.longitude!);
+        }
+      } catch (e) {
+        debugPrint('Error updating location: $e');
+      }
+    }
+  }
+
   Future<void> signOut() async {
+    print('Signing out');
     state = null;
+    print(DateTime.now());
+    print('State set to null');
     _firestoreService.reset();
+    print('Firestore reset');
     await _authService.signOut();
+    print('Signed out');
+    print(DateTime.now()); 
     _userData.clear();
+    print('User data cleared');
     await _localStorageService.clear();
+    print('Local storage cleared');
   }
 
   Future<void> deleteUser() async {
@@ -118,8 +144,9 @@ final userStateProvider = StateNotifierProvider<UserState, User?>((ref) {
   final authService = ref.watch(authServiceProvider);
   final firestoreService = ref.watch(firestoreServiceProvider);
   final localStorageService = ref.watch(localStorageServiceProvider);
-  final firebaseStorageService = ref.read(firebaseStorageServiceProvider);
-  return UserState.getInstance(authService, firestoreService, localStorageService, firebaseStorageService);
+  final firebaseStorageService = ref.watch(firebaseStorageServiceProvider);
+  final locationPermissionNotifier = ref.watch(locationPermissionProvider.notifier);
+  return UserState.getInstance(authService, firestoreService, localStorageService, firebaseStorageService, locationPermissionNotifier);
 });
 
 /// A provider that streams the current user's authentication state

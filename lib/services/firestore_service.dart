@@ -15,7 +15,7 @@ import 'package:miitti_app/models/commercial_spot.dart';
 import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/report.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -42,7 +42,9 @@ class FirestoreService {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  FirestoreService(this.ref) : _firestore = FirebaseFirestore.instance;
+  FirestoreService(this.ref) : _firestore = FirebaseFirestore.instance{
+    _firestore.settings = const Settings(persistenceEnabled: true);
+  }
 
   Future<bool> saveUserData({required MiittiUser userModel, required File? image}) async {
     try {
@@ -278,24 +280,23 @@ Future<MiittiUser?> loadUserData(String userId) async {
       QuerySnapshot querySnapshot = await _getFireQuery(_activitiesString);
 
       List<MiittiActivity> activities = querySnapshot.docs
-          .map((doc) => PersonActivity.fromDoc(doc))
+          .map((doc) => UserCreatedActivity.fromFirestore(doc))
           .where((activity) {
-        if (daysSince(activity.activityTime) <
-            (activity.timeDecidedLater ? -30 : -7)) {
-          removeActivity(activity.activityUid);
+        if (daysSince(Timestamp.fromDate(activity.startTime!)) < (activity.startTime == null ? -30 : -7)) {
+          removeActivity(activity.id);
           return false;
         }
 
         if (_miittiUser != null &&
             filterSettings.sameGender &&
-            activity.adminGender != miittiUser!.gender) {
+            activity.creatorGender != miittiUser!.gender) {
           return false;
         }
-        if (!filterSettings.multiplePeople && activity.personLimit > 2) {
+        if (!filterSettings.multiplePeople && activity.maxParticipants > 2) {
           return false;
         }
-        if (activity.adminAge < filterSettings.minAge ||
-            activity.adminAge > filterSettings.maxAge) {
+        if (activity.creatorAge < filterSettings.minAge ||
+            activity.creatorAge > filterSettings.maxAge) {
           return false;
         }
 
@@ -305,13 +306,13 @@ Future<MiittiUser?> loadUserData(String userId) async {
       QuerySnapshot commercialQuery = await _getFireQuery(_comactString);
 
       List<MiittiActivity> comActivities = commercialQuery.docs
-          .map((doc) => CommercialActivity.fromDoc(doc))
+          .map((doc) => CommercialActivity.fromFirestore(doc))
           .where((activity) {
         if (_miittiUser == null) {
           debugPrint("User is null");
         } else {
           debugPrint("Checking filters of ${_miittiUser?.name}");
-          if (daysSince(activity.endTime) < -1) {
+          if (daysSince(Timestamp.fromDate(activity.endTime!)) < -1) {
             return false;
           }
         }
@@ -336,15 +337,15 @@ Future<MiittiUser?> loadUserData(String userId) async {
     }
   }
 
-  Future<List<PersonActivity>> fetchReportedActivities() async {
+  Future<List<UserCreatedActivity>> fetchReportedActivities() async {
     try {
       QuerySnapshot querySnapshot = await _getFireQuery('reportedActivities');
 
-      List<PersonActivity> list = [];
+      List<UserCreatedActivity> list = [];
 
       for (QueryDocumentSnapshot report in querySnapshot.docs) {
         DocumentSnapshot doc = await _getActivityDoc(report.id);
-        list.add(PersonActivity.fromMap(doc.data() as Map<String, dynamic>));
+        list.add(UserCreatedActivity.fromFirestore(doc));
       }
 
       return list;
@@ -360,7 +361,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
     return querySnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
   }
 
-  Future<List<PersonActivity>> fetchActivitiesRequestsFrom(
+  Future<List<UserCreatedActivity>> fetchActivitiesRequestsFrom(
       String userId) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -369,8 +370,8 @@ Future<MiittiUser?> loadUserData(String userId) async {
           .where('requests', arrayContains: userId)
           .get();
 
-      List<PersonActivity> activities =
-          querySnapshot.docs.map((doc) => PersonActivity.fromDoc(doc)).toList();
+      List<UserCreatedActivity> activities =
+          querySnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
       return activities;
     } catch (e) {
       debugPrint('Error fetching admin activities: $e');
@@ -522,19 +523,19 @@ Future<MiittiUser?> loadUserData(String userId) async {
       QuerySnapshot requestSnapshot =
           await _queryWhereContains(_activitiesString, "requests", uid!);
 
-      List<PersonActivity> personActivities = [];
+      List<UserCreatedActivity> personActivities = [];
       List<CommercialActivity> commercialActivities = [];
 
       for (var doc in querySnapshot.docs) {
-        personActivities.add(PersonActivity.fromDoc(doc));
+        personActivities.add(UserCreatedActivity.fromFirestore(doc));
       }
 
       for (var doc in commercialSnapshot.docs) {
-        commercialActivities.add(CommercialActivity.fromDoc(doc));
+        commercialActivities.add(CommercialActivity.fromFirestore(doc));
       }
 
       for (var doc in requestSnapshot.docs) {
-        personActivities.add(PersonActivity.fromDoc(doc));
+        personActivities.add(UserCreatedActivity.fromFirestore(doc));
       }
 
       if (miittiUser!.invitedActivities.isNotEmpty) {
@@ -542,8 +543,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
           DocumentSnapshot activitySnapshot = await _getActivityDoc(activityId);
 
           if (activitySnapshot.exists) {
-            PersonActivity activity = PersonActivity.fromMap(
-                activitySnapshot.data() as Map<String, dynamic>);
+            UserCreatedActivity activity = UserCreatedActivity.fromFirestore(activitySnapshot);
             personActivities.add(activity);
           }
         }
@@ -563,12 +563,12 @@ Future<MiittiUser?> loadUserData(String userId) async {
       QuerySnapshot querySnapshot =
           await _queryWhereEquals(_activitiesString, 'admin', uid!);
 
-      List<PersonActivity> activities =
-          querySnapshot.docs.map((doc) => PersonActivity.fromDoc(doc)).toList();
+      List<UserCreatedActivity> activities =
+          querySnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
 
       List<Map<String, dynamic>> usersAndActivityIds = [];
 
-      for (PersonActivity activity in activities) {
+      for (UserCreatedActivity activity in activities) {
         List<MiittiUser> users =
             await fetchUsersByUids(activity.requests.toList());
         usersAndActivityIds.addAll(users.map((user) => {
@@ -620,17 +620,17 @@ Future<MiittiUser?> loadUserData(String userId) async {
 
   Future<void> saveMiittiActivityDataToFirebase({
     required BuildContext context,
-    required PersonActivity activityModel,
+    required UserCreatedActivity activityModel,
   }) async {
     showLoadingDialog(context);
     try {
-      activityModel.admin = _miittiUser!.uid;
-      activityModel.adminAge = calculateAge(_miittiUser!.birthday);
-      activityModel.adminGender = _miittiUser!.gender.name;
-      activityModel.activityUid = generateCustomId();
+      activityModel.creator = _miittiUser!.uid;
+      activityModel.creatorAge = calculateAge(_miittiUser!.birthday);
+      activityModel.creatorGender = _miittiUser!.gender;
+      activityModel.id = generateCustomId();
       activityModel.participants.add(_miittiUser!.uid);
 
-      await _activityDocRef(activityModel.activityUid)
+      await _activityDocRef(activityModel.id)
           .set(activityModel.toMap())
           .then((value) {
         showSnackBar(context, 'Miittisi on luotu onnistuneesti!', Colors.green);
@@ -639,7 +639,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
       });
     } catch (e) {
       showSnackBar(context, e.toString(), AppStyle.red);
-      context.go('/');
+      context.go('/map');
     }
   }
 
@@ -675,8 +675,8 @@ Future<MiittiUser?> loadUserData(String userId) async {
 
     if (snapshot.exists) {
       final activity = commercial
-          ? CommercialActivity.fromDoc(snapshot)
-          : PersonActivity.fromDoc(snapshot);
+          ? CommercialActivity.fromFirestore(snapshot)
+          : UserCreatedActivity.fromFirestore(snapshot);
       return activity.participants.contains(uid);
     }
 
@@ -747,13 +747,13 @@ Future<MiittiUser?> loadUserData(String userId) async {
     }
   }
 
-  Future<List<PersonActivity>> fetchAdminActivities() async {
+  Future<List<UserCreatedActivity>> fetchAdminActivities() async {
     try {
       QuerySnapshot querySnapshot =
           await _queryWhereEquals(_activitiesString, 'admin', uid!);
 
-      List<PersonActivity> activities =
-          querySnapshot.docs.map((doc) => PersonActivity.fromDoc(doc)).toList();
+      List<UserCreatedActivity> activities =
+          querySnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
 
       return activities;
     } catch (e) {
@@ -811,18 +811,18 @@ Future<MiittiUser?> loadUserData(String userId) async {
 
   Future<MiittiActivity> _personalOrCommercial(
       String activityId,
-      Function(PersonActivity activity) isPersonal,
+      Function(UserCreatedActivity activity) isPersonal,
       Function(CommercialActivity comActivity) isCommercial) async {
     DocumentSnapshot snapshot = await _getActivityDoc(activityId);
     if (snapshot.exists) {
-      PersonActivity activity = PersonActivity.fromDoc(snapshot);
+      UserCreatedActivity activity = UserCreatedActivity.fromFirestore(snapshot);
       isPersonal(activity);
       return activity;
     } else {
       debugPrint("is commercial");
       DocumentSnapshot comSnapshot = await _comActivityDocRef(activityId).get();
       CommercialActivity commercialActivity =
-          CommercialActivity.fromDoc(comSnapshot);
+          CommercialActivity.fromFirestore(comSnapshot);
       isCommercial(commercialActivity);
       return commercialActivity;
     }

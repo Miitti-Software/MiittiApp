@@ -8,7 +8,7 @@ import 'package:miitti_app/screens/commercialScreens/comchat_page.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
@@ -62,9 +62,9 @@ class _NotificationMessageState extends ConsumerState<NotificationMessage> {
         switch (payload["type"]) {
           case ("invite"):
             debugPrint("Invite clicked ${payload["myData"]}");
-            PersonActivity activity = await ref
+            UserCreatedActivity activity = await ref
                 .read(firestoreServiceProvider)
-                .getSingleActivity(payload["myData"]) as PersonActivity;
+                .getSingleActivity(payload["myData"]) as UserCreatedActivity;
             return ActivityDetailsPage(myActivity: activity);
 
           case ("request"):
@@ -82,9 +82,9 @@ class _NotificationMessageState extends ConsumerState<NotificationMessage> {
 
           case ("accept"):
             debugPrint("Accept clicked ${payload["myData"]}");
-            PersonActivity activity = await ref
+            UserCreatedActivity activity = await ref
                 .read(firestoreServiceProvider)
-                .getSingleActivity(payload["myData"]) as PersonActivity;
+                .getSingleActivity(payload["myData"]) as UserCreatedActivity;
             return ActivityDetailsPage(myActivity: activity);
 
           case ("message"):
@@ -92,7 +92,7 @@ class _NotificationMessageState extends ConsumerState<NotificationMessage> {
             MiittiActivity activity = await ref
                 .read(firestoreServiceProvider)
                 .getSingleActivity(payload["myData"]);
-            if (activity is PersonActivity) {
+            if (activity is UserCreatedActivity) {
               return ChatPage(activity: activity);
             } else {
               return ComChatPage(activity: activity as CommercialActivity);

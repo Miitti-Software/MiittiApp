@@ -63,8 +63,8 @@ class LoginIntroScreen extends ConsumerWidget {
                 ],
               );
             },
-            // When the data is loading, show a loading indicator
-            loading: () => const Center(child: CircularProgressIndicator()),
+            // When the data is loading, show a loading indicator                                     TODO: Gets stuck upon signing out if hot restarting the app when signed in and then signing out
+            loading: () { return const Center(child: CircularProgressIndicator()); },
             // When the data is an error, show an error message (Fetching the error message about failing to fetch values from remote config might be slightly suboptimal but at least it uses .get instead of the stream)
             error: (error, stack) {
               if (kDebugMode) debugPrint('Error in login intro config stream: $error');

@@ -55,8 +55,8 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
     fetchAdmin();
     fetchUsersJoinedActivity();
     myCameraPosition = LatLng(
-      widget.myActivity.activityLati,
-      widget.myActivity.activityLong,
+      widget.myActivity.latitude,
+      widget.myActivity.longitude,
     );
   }
 
@@ -158,17 +158,17 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                           radius: 37,
                           child: CircleAvatar(
                             backgroundImage:
-                                NetworkImage(widget.myActivity.activityPhoto),
+                                NetworkImage(widget.myActivity.bannerImage),
                             radius: 34,
                             onBackgroundImageError: (exception, stackTrace) =>
                                 AssetImage(
-                                    'images/${Activity.solveActivityId(widget.myActivity.activityCategory)}.png'),
+                                    'images/${Activity.solveActivityId(widget.myActivity.category)}.png'),
                           ),
                         ),
                       ),
                       Flexible(
                         child: Text(
-                          widget.myActivity.activityTitle,
+                          widget.myActivity.title,
                           style: AppStyle.title,
                         ),
                       ),
@@ -256,7 +256,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                       padding: const EdgeInsets.all(8.0),
                       child: SingleChildScrollView(
                         child: Text(
-                          widget.myActivity.activityDescription,
+                          widget.myActivity.description,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontFamily: 'Rubik',
@@ -311,7 +311,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                         color: AppStyle.lightPurple,
                       ),
                       Text(
-                        '  $participantCount/${widget.myActivity.personLimit} osallistujaa',
+                        '  $participantCount/${widget.myActivity.maxParticipants} osallistujaa',
                         style: AppStyle.body,
                       ),
                       const SizedBox(
@@ -322,7 +322,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                         color: AppStyle.lightPurple,
                       ),
                       Text(
-                        widget.myActivity.activityAdress,
+                        widget.myActivity.address,
                         style: AppStyle.body,
                       ),
                     ],
@@ -335,7 +335,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                         color: AppStyle.lightPurple,
                       ),
                       Text(
-                        widget.myActivity.isMoneyRequired
+                        widget.myActivity.paid
                             ? 'Pääsymaksu'
                             : 'Maksuton',
                         style: AppStyle.body,
@@ -348,7 +348,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
                         color: AppStyle.lightPurple,
                       ),
                       Text(
-                        widget.myActivity.timeString,
+                        widget.myActivity.startTime.toString(),
                         style: AppStyle.body,
                       ),
                     ],
@@ -371,7 +371,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
   void checkIfJoined() async {
     if (isAlreadyJoined) return;
 
-    final activityUid = widget.myActivity.activityUid;
+    final activityUid = widget.myActivity.id;
 
     await ref
         .read(firestoreServiceProvider)
@@ -390,7 +390,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
     if (!isAlreadyJoined) {
       await ref
           .read(firestoreServiceProvider)
-          .joinCommercialActivity(widget.myActivity.activityUid);
+          .joinCommercialActivity(widget.myActivity.id);
       setState(() {
         isAlreadyJoined = true;
         widget.myActivity.participants.add(ref.read(userStateProvider.notifier).data.uid!);
@@ -406,7 +406,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
       height: 50,
       onPressed: () {
         if (!isAlreadyJoined &&
-            participantCount < widget.myActivity.personLimit) {
+            participantCount < widget.myActivity.maxParticipants) {
           joinActivity();
         } else if (isAlreadyJoined) {
           Navigator.push(
@@ -446,7 +446,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
   void fetchAdmin() async {
     ref
         .read(firestoreServiceProvider)
-        .getCommercialUser(widget.myActivity.admin)
+        .getCommercialUser(widget.myActivity.creator)
         .then((value) => setState(() {
               company = value;
             }));
@@ -455,7 +455,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
   String getButtonText() {
     return isAlreadyJoined
         ? 'Siirry infokanavalle'
-        : (participantCount < widget.myActivity.personLimit)
+        : (participantCount < widget.myActivity.maxParticipants)
             ? 'Osallistun'
             : 'Täynnä';
   }

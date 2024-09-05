@@ -13,7 +13,7 @@ import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
@@ -106,7 +106,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     int index,
     bool isInvited,
   ) {
-    String activityAddress = activity.activityAdress;
+    String activityAddress = activity.address;
 
     List<String> addressParts = activityAddress.split(',');
     String cityName = addressParts[0].trim();
@@ -130,7 +130,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => activity is PersonActivity
+                  builder: (context) => activity is UserCreatedActivity
                       ? ActivityDetailsPage(
                           myActivity: activity,
                         )
@@ -154,7 +154,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       //Activity Title
                       Flexible(
                         child: Text(
-                          activity.activityTitle,
+                          activity.title,
                           overflow: TextOverflow.ellipsis,
                           style: AppStyle.title,
                         ),
@@ -178,7 +178,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   if (confirmed != null && confirmed) {
                                     ref
                                         .read(firestoreServiceProvider)
-                                        .removeActivity(activity.activityUid)
+                                        .removeActivity(activity.id)
                                         .then((value) {
                                       setState(() {
                                         fetchDataFromFirebase();
@@ -213,7 +213,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                     ref
                                         .read(firestoreServiceProvider)
                                         .removeUserFromActivity(
-                                          activity.activityUid,
+                                          activity.id,
                                           isWaiting,
                                         );
                                     setState(() {
@@ -258,7 +258,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             const SizedBox(width: 4),
                             Flexible(
                               child: Text(
-                                activity.timeString,
+                                activity.startTime.toString(),
                                 overflow: TextOverflow.ellipsis,
                                 style: AppStyle.body,
                               ),
@@ -290,7 +290,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   await ref
                                       .read(firestoreServiceProvider)
                                       .reactToInvite(
-                                          activity.activityUid, false);
+                                          activity.id, false);
 
                                   _myJoinedActivities.removeAt(index);
                                   fetchDataFromFirebase().then(
@@ -319,7 +319,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   bool operationCompleted = await ref
                                       .read(firestoreServiceProvider)
                                       .reactToInvite(
-                                          activity.activityUid, true);
+                                          activity.id, true);
                                   if (operationCompleted) {
                                     fetchDataFromFirebase().then(
                                         (value) => buildJoinedActivities());
@@ -350,7 +350,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          activity is PersonActivity
+                                          activity is UserCreatedActivity
                                               ? ChatPage(
                                                   activity: activity,
                                                 )
@@ -385,7 +385,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   Widget buildUserItem(Map<String, dynamic> userData, int index) {
     final MiittiUser user = userData['user'];
-    final PersonActivity activity = userData['activity'];
+    final UserCreatedActivity activity = userData['activity'];
     return Container(
       height: 150,
       margin: const EdgeInsets.all(10.0),
@@ -435,7 +435,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                     )));
                       },
                       child: Text(
-                        activity.activityTitle,
+                        activity.title,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 19,
@@ -472,7 +472,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             bool operationCompleted = await ref
                                 .read(firestoreServiceProvider)
                                 .updateUserJoiningActivity(
-                                    activity.activityUid, user.uid, false);
+                                    activity.id, user.uid, false);
                             if (!operationCompleted) {
                               _otherRequests.removeAt(index);
                               fetchDataFromFirebase().then((value) {
@@ -500,7 +500,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             bool operationCompleted = await ref
                                 .read(firestoreServiceProvider)
                                 .updateUserJoiningActivity(
-                                    activity.activityUid, user.uid, true);
+                                    activity.id, user.uid, true);
                             if (operationCompleted) {
                               fetchDataFromFirebase()
                                   .then((value) => buildOtherActivities());
@@ -587,15 +587,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               String userId = ref.read(userStateProvider.notifier).data.uid!;
 
               //checking if the activity is created by the user
-              bool isAdmin = singleActivity.admin == userId;
+              bool isAdmin = singleActivity.creator == userId;
 
               //checking if the user is in the activity's request list
-              bool isWaiting = singleActivity is PersonActivity
+              bool isWaiting = singleActivity is UserCreatedActivity
                   ? singleActivity.requests.contains(userId)
                   : false;
 
               //checking if the user has been invited into other activities
-              bool isInvited = singleActivity is PersonActivity
+              bool isInvited = singleActivity is UserCreatedActivity
                   ? !singleActivity.requests.contains(userId) &&
                       !singleActivity.participants.contains(userId)
                   : false;

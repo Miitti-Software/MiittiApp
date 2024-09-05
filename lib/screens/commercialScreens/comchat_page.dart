@@ -49,11 +49,11 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
   getChat() async {
     await ref
         .read(firestoreServiceProvider)
-        .getChats(widget.activity.activityUid)
+        .getChats(widget.activity.id)
         .then((value) {
       setState(() {
         chats = value;
-        admin = widget.activity.admin;
+        admin = widget.activity.creator;
       });
     });
   }
@@ -89,7 +89,7 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
               ),
               Expanded(
                 child: Text(
-                  widget.activity.activityTitle,
+                  widget.activity.title,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -185,7 +185,7 @@ class _ChatPageState extends ConsumerState<ComChatPage> {
       };
       ref
           .read(firestoreServiceProvider)
-          .sendMessage(widget.activity.activityUid, chatMessageMap);
+          .sendMessage(widget.activity.id, chatMessageMap);
 
       var receivers = await ref
           .read(firestoreServiceProvider)

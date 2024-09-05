@@ -9,7 +9,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/firestore_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -34,7 +34,7 @@ class ActivityDetailsPage extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final PersonActivity myActivity;
+  final UserCreatedActivity myActivity;
 
   @override
   ConsumerState<ActivityDetailsPage> createState() =>
@@ -63,8 +63,8 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
     });
 
     myCameraPosition = LatLng(
-      widget.myActivity.activityLati,
-      widget.myActivity.activityLong,
+      widget.myActivity.latitude,
+      widget.myActivity.longitude,
     );
   }
 
@@ -167,12 +167,12 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                   Row(
                     children: [
                       Image.asset(
-                        'images/${Activity.solveActivityId(widget.myActivity.activityCategory)}.png',
+                        'images/${Activity.solveActivityId(widget.myActivity.category)}.png',
                         height: 90,
                       ),
                       Flexible(
                         child: Text(
-                          widget.myActivity.activityTitle,
+                          widget.myActivity.title,
                           style: AppStyle.title,
                         ),
                       ),
@@ -231,7 +231,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      widget.myActivity.activityDescription,
+                      widget.myActivity.description,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontFamily: 'Rubik',
@@ -251,7 +251,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                         color: AppStyle.lightPurple,
                       ),
                       Text(
-                        '  $participantCount/${widget.myActivity.personLimit} osallistujaa',
+                        '  $participantCount/${widget.myActivity.maxParticipants} osallistujaa',
                         style: AppStyle.body,
                       ),
                       const SizedBox(
@@ -262,7 +262,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                         color: AppStyle.lightPurple,
                       ),
                       Text(
-                        widget.myActivity.activityAdress,
+                        widget.myActivity.address,
                         style: AppStyle.body,
                       ),
                     ],
@@ -275,7 +275,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                         color: AppStyle.lightPurple,
                       ),
                       Text(
-                        widget.myActivity.isMoneyRequired
+                        widget.myActivity.paid
                             ? 'Pääsymaksu'
                             : 'Maksuton',
                         style: AppStyle.body,
@@ -288,7 +288,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                         color: AppStyle.lightPurple,
                       ),
                       Text(
-                        widget.myActivity.timeString,
+                        widget.myActivity.startTime.toString(),
                         style: AppStyle.body,
                       ),
                     ],
@@ -326,7 +326,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
               (confirmed) {
                 if (confirmed) {
                   ref.read(firestoreServiceProvider).reportActivity(
-                      widget.myActivity.activityUid, 'Activity blocked');
+                      widget.myActivity.id, 'Activity blocked');
                   afterFrame(() {
                     Navigator.of(context).pop();
                     showSnackBar(context, "Aktiviteetti ilmiannettu",
@@ -359,7 +359,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
     FirestoreService firestore = ref.read(firestoreServiceProvider);
     String uid = ref.read(userStateProvider.notifier).uid!;
     firestore
-        .joinOrRequestActivity(widget.myActivity.activityUid)
+        .joinOrRequestActivity(widget.myActivity.id)
         .then((newStatus) {
       if (newStatus == UserStatusInActivity.requested) {
         ref
@@ -385,7 +385,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
       height: 50,
       onPressed: () {
         if (userStatus == UserStatusInActivity.none &&
-            participantCount < widget.myActivity.personLimit) {
+            participantCount < widget.myActivity.maxParticipants) {
           if (isAnonymous) {
             showDialog(
                 context: context,
@@ -443,7 +443,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
     } else if (userStatus == UserStatusInActivity.joined) {
       return 'Siirry keskusteluun';
     } else {
-      return participantCount < widget.myActivity.personLimit
+      return participantCount < widget.myActivity.maxParticipants
           ? 'Osallistun'
           : 'Täynnä';
     }

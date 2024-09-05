@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/languages.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -32,7 +32,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
   Color miittiColor = const Color.fromRGBO(255, 136, 27, 1);
 
   List<String> filteredActivities = [];
-  List<PersonActivity> userRequests = [];
+  List<UserCreatedActivity> userRequests = [];
 
   @override
   void initState() {
@@ -414,19 +414,19 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
   }
 
   Future<void> inviteToYourActivity() async {
-    List<PersonActivity> myActivities =
+    List<UserCreatedActivity> myActivities =
         await ref.read(firestoreServiceProvider).fetchAdminActivities();
 
     if (myActivities.isNotEmpty) {
       if (myActivities.length == 1 &&
           myActivities.first.participants.length <
-              myActivities.first.personLimit &&
+              myActivities.first.maxParticipants &&
           !myActivities.first.participants.contains(widget.user.uid) &&
           !myActivities.first.requests.contains(widget.user.uid)) {
         ref
             .read(firestoreServiceProvider)
             .inviteUserToYourActivity(
-                widget.user.uid, myActivities.first.activityUid)
+                widget.user.uid, myActivities.first.id)
             .then((value) {
           ref.read(notificationServiceProvider).sendInviteNotification(
               ref.read(userStateProvider.notifier).data.toMiittiUser(),
@@ -520,7 +520,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
     }
   }
 
-  Widget createSelectBetweenActivitesDialog(List<PersonActivity> myActivities) {
+  Widget createSelectBetweenActivitesDialog(List<UserCreatedActivity> myActivities) {
     return AlertDialog(
       backgroundColor: AppStyle.black,
       shape: RoundedRectangleBorder(
@@ -546,13 +546,13 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
               child: ListView.builder(
                 itemCount: myActivities.length,
                 itemBuilder: (context, index) {
-                  PersonActivity activity = myActivities[index];
+                  UserCreatedActivity activity = myActivities[index];
                   return ListTile(
                     leading: Image.asset(
-                      'images/${activity.activityCategory.toLowerCase()}.png',
+                      'images/${activity.category.toLowerCase()}.png',
                     ),
                     subtitle: Text(
-                      activity.activityDescription,
+                      activity.description,
                       style: const TextStyle(
                         fontFamily: 'Rubik',
                         overflow: TextOverflow.ellipsis,
@@ -560,7 +560,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                       ),
                     ),
                     title: Text(
-                      activity.activityTitle,
+                      activity.title,
                       style: const TextStyle(
                         fontFamily: 'Rubik',
                         fontSize: 19,
@@ -569,13 +569,13 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                       ),
                     ),
                     onTap: () {
-                      if (activity.participants.length < activity.personLimit &&
+                      if (activity.participants.length < activity.maxParticipants &&
                           !activity.participants.contains(widget.user.uid) &&
                           !activity.requests.contains(widget.user.uid)) {
                         ref
                             .read(firestoreServiceProvider)
                             .inviteUserToYourActivity(
-                                widget.user.uid, activity.activityUid)
+                                widget.user.uid, activity.id)
                             .then((value) {
                           ref.read(notificationServiceProvider).sendInviteNotification(
                               ref.read(userStateProvider.notifier).data.toMiittiUser(),
@@ -686,13 +686,13 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
     );
   }
 
-  Widget requestItem(PersonActivity activity) {
+  Widget requestItem(UserCreatedActivity activity) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20.0),
         Text(
-            "${activities[activity.activityCategory]?.emojiData} ${activity.activityTitle}",
+            "${activities[activity.category]?.emojiData} ${activity.title}",
             textAlign: TextAlign.start,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -713,7 +713,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                 ref
                     .read(firestoreServiceProvider)
                     .updateUserJoiningActivity(
-                        activity.activityUid, widget.user.uid, false)
+                        activity.id, widget.user.uid, false)
                     .then((value) {
                   setState(() {
                     initRequests();
@@ -739,7 +739,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                 ref
                     .read(firestoreServiceProvider)
                     .updateUserJoiningActivity(
-                        activity.activityUid, widget.user.uid, true)
+                        activity.id, widget.user.uid, true)
                     .then((value) {
                   setState(() {
                     initRequests();

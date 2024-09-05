@@ -4,7 +4,7 @@ import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
-import 'package:miitti_app/models/person_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/functions/utils.dart';
@@ -127,7 +127,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                   MiittiActivity activity = _miittiActivities[index];
 
                   List<String> addressParts =
-                      activity.activityAdress.split(',');
+                      activity.address.split(',');
                   String cityName = addressParts[0].trim();
 
                   return Container(
@@ -149,7 +149,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                             children: [
                               Flexible(
                                 child: Text(
-                                  activity.activityTitle,
+                                  activity.title,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppStyle.title,
                                 ),
@@ -163,7 +163,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                                   const SizedBox(width: 4),
                                   Flexible(
                                     child: Text(
-                                      activity.timeString,
+                                      activity.startTime.toString(),
                                       overflow: TextOverflow.ellipsis,
                                       style: AppStyle.body,
                                     ),
@@ -192,7 +192,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => activity
-                                                    is PersonActivity
+                                                    is UserCreatedActivity
                                                 ? ActivityDetailsPage(
                                                     myActivity: activity,
                                                   )
@@ -206,7 +206,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
                                   getListTileButton(
                                     AppStyle.red,
                                     'Poista miitti',
-                                    () => removeActivity(activity.activityUid),
+                                    () => removeActivity(activity.id),
                                   ),
                                 ],
                               ),
