@@ -20,6 +20,18 @@ class LocalStorageService {
     return prefs.getString(key);
   }
 
+  /// Save a double value to local storage.
+  Future<void> saveDouble(String key, double value) async {
+    final prefs = await _localStorage;
+    await prefs.setDouble(key, value);
+  }
+
+  /// Get a double value from local storage.
+  Future<double?> getDouble(String key) async {
+    final prefs = await _localStorage;
+    return prefs.getDouble(key);
+  }
+
   /// Clear all values from local storage.
   Future<void> clear() async {
     final prefs = await _localStorage;

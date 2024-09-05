@@ -32,7 +32,9 @@ class UserState extends StateNotifier<User?> {
     _authService.authStateChanges.listen((user) async {
       state = user;
       if (user != null) {
-        _userData = UserData(miittiUser: await _firestoreService.loadUserData(user.uid));
+        final miittiUser = await _firestoreService.loadUserData(uid!);
+        final latestLocation = await getLocationFromStorage();
+        _userData = UserData(miittiUser: miittiUser, latestestLocation: latestLocation);
       } else {
         _userData = UserData();
       }
@@ -55,7 +57,9 @@ class UserState extends StateNotifier<User?> {
 
   Future<void> initialize() async {
     if (isSignedIn) {
-      _userData = UserData(miittiUser: await _firestoreService.loadUserData(uid!));
+      final miittiUser = await _firestoreService.loadUserData(uid!);
+      final latestLocation = await getLocationFromStorage();
+      _userData = UserData(miittiUser: miittiUser, latestestLocation: latestLocation);
     } else {
       _userData = UserData();
       return;
@@ -66,7 +70,7 @@ class UserState extends StateNotifier<User?> {
     final result = apple ? await _authService.signInWithApple() : await _authService.signInWithGoogle();
     if (result) {
       state = await _authService.authStateChanges.first;
-      _userData = UserData(miittiUser: await _firestoreService.loadUserData(uid!));
+      _userData = UserData(miittiUser: await _firestoreService.loadUserData(uid!), latestestLocation: await getLocationFromStorage());
     }
     return result;
   }
@@ -105,10 +109,29 @@ class UserState extends StateNotifier<User?> {
         LocationData locationData = await _liveLocation.getLocation();
         if (locationData.latitude != null && locationData.longitude != null) {
           _userData.latestLocation = LatLng(locationData.latitude!, locationData.longitude!);
+          _localStorageService.saveDouble('latestLatitude', locationData.latitude!);
+          _localStorageService.saveDouble('latestLongitude', locationData.longitude!);
         }
       } catch (e) {
         debugPrint('Error updating location: $e');
       }
+    }
+  }
+
+  Future<LatLng?> getLocationFromStorage() async {
+    if (isSignedIn) {
+      double? latitude = await _localStorageService.getDouble('latestLatitude');
+      double? longitude = await _localStorageService.getDouble('latestLongitude');
+      if (latitude != null && longitude != null) {
+        return LatLng(latitude, longitude);
+      }
+    }
+    return null;
+  }
+
+  Future<void> updateLastActive() async {
+    if (isSignedIn) {
+      _userData.lastActive = DateTime.now();
     }
   }
 
@@ -168,7 +191,7 @@ class UserData {
   DateTime? lastActive;                 // Keep latest location and lastActive in sync whenever possible
   String? fcmToken;
 
-  UserData({MiittiUser? miittiUser}) {
+  UserData({MiittiUser? miittiUser, LatLng? latestestLocation}) {
     if (miittiUser != null) {
       uid = miittiUser.uid;
       email = miittiUser.email;
@@ -185,6 +208,7 @@ class UserData {
       profilePicture = miittiUser.profilePicture;
       invitedActivities = miittiUser.invitedActivities;
       registrationDate = miittiUser.registrationDate;
+      latestLocation = latestestLocation;
       lastActive = miittiUser.lastActive;
       fcmToken = miittiUser.fcmToken;
     }

@@ -42,14 +42,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   SuperclusterMutableController clusterController =
       SuperclusterMutableController();
 
-  /*CameraPosition myCameraPosition = CameraPosition(
-    target: LatLng(60.1699, 24.9325),
-    zoom: 12,
-    bearing: 0,
-  );*/
-
-  //late MapboxMapController controller;
-
   int showOnMap = 0;
 
   @override
@@ -161,95 +153,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
-  /*static Future<void> addGeojsonCluster(
-    MapboxMapController controller,
-    List<MiittiActivity> myActivities,
-  ) async {
-    final List<Map<String, dynamic>> features = myActivities.map((activity) {
-      return {
-        "type": "Feature",
-        "properties": {
-          "id": activity.activityUid,
-          'activityCategory':
-              'images/${Activity.solveActivityId(activity.activityCategory)}.png',
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            activity.activityLong,
-            activity.activityLati,
-            0.0,
-          ],
-        }
-      };
-    }).toList();
-
-    final Map<String, dynamic> geoJson = {
-      "type": "FeatureCollection",
-      "crs": {
-        "type": "name",
-        "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}
-      },
-      "features": features,
-    };
-
-    await controller.addSource(
-      "activities",
-      GeojsonSourceProperties(
-        data: geoJson,
-        cluster: true,
-      ),
-    );
-
-    await controller.addSymbolLayer(
-      "activities",
-      'activities-symbols',
-      SymbolLayerProperties(
-        iconImage: [
-          Expressions.caseExpression,
-          [
-            Expressions.boolean,
-            [Expressions.has, 'point_count'],
-            false
-          ],
-          'images/circlebackground.png',
-          [Expressions.get, 'activityCategory'],
-        ],
-        iconSize: [
-          Expressions.caseExpression,
-          [
-            Expressions.boolean,
-            [Expressions.has, 'point_count'],
-            false
-          ],
-          0.85.r,
-          0.8.r,
-        ],
-        iconAllowOverlap: true,
-        symbolSortKey: 10.0,
-      ),
-    );
-
-    await controller.addSymbolLayer(
-      "activities",
-      "activities-count",
-      SymbolLayerProperties(
-        textField: [Expressions.get, 'point_count_abbreviated'],
-        textColor: '#FFFFFF',
-        textFont: ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-        textSize: [
-          Expressions.step,
-          [Expressions.get, 'point_count'],
-          22.sp,
-          5,
-          24.sp,
-          10,
-          26.sp
-        ],
-      ),
-    );
-  }*/
-
   goToActivityDetailsPage(MiittiActivity activity) {
     Navigator.push(
       context,
@@ -263,46 +166,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-  /* void _onFeatureTapped({required LatLng coordinates}) {
-    double zoomLevel = controller.cameraPosition!.zoom;
-    int places = getPlaces(zoomLevel);
-
-    double roundedLatitude =
-        double.parse(coordinates.latitude.toStringAsFixed(places));
-    double roundedLong =
-        double.parse(coordinates.longitude.toStringAsFixed(places));
-
-    for (MiittiActivity activity in _activities) {
-      double roundedActivityLatitude =
-          double.parse(activity.activityLati.toStringAsFixed(places));
-      double roundedActivityLong =
-          double.parse(activity.activityLong.toStringAsFixed(places));
-
-      if (roundedActivityLatitude == roundedLatitude &&
-          roundedActivityLong == roundedLong) {
-        if (!isAnonymous) {
-          goToActivityDetailsPage(activity);
-        } else {
-          showSnackBar(
-              context,
-              'Et ole vielä viimeistellyt profiiliasi, joten\n et voi käyttää vielä sovelluksen kaikkia ominaisuuksia.',
-              ConstantStyles.orange);
-        }
-      }
-    }
-  }
-
-  _onMapCreated(MapboxMapController controller) {
-    this.controller = controller;
-    controller.onFeatureTapped.add(
-        (id, point, coordinates) => _onFeatureTapped(coordinates: coordinates));
-  }*/
-
-  //Commenting this to merge
-
   @override
   Widget build(BuildContext context) {
-    // final configStreamAsyncValue = ref.watch(configStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
+    final configStreamAsyncValue = ref.watch(configStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
     return Stack(
       children: [
         showOnMap == 1 ? showOnList() : showMap(),
@@ -567,4 +433,144 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final cacheDirectory = await getTemporaryDirectory();
     return cacheDirectory.path;
   }
+
+
+
+
+
+  /*CameraPosition myCameraPosition = CameraPosition(
+    target: LatLng(60.1699, 24.9325),
+    zoom: 12,
+    bearing: 0,
+  );*/
+
+  //late MapboxMapController controller;
+
+
+  /*static Future<void> addGeojsonCluster(
+    MapboxMapController controller,
+    List<MiittiActivity> myActivities,
+  ) async {
+    final List<Map<String, dynamic>> features = myActivities.map((activity) {
+      return {
+        "type": "Feature",
+        "properties": {
+          "id": activity.activityUid,
+          'activityCategory':
+              'images/${Activity.solveActivityId(activity.activityCategory)}.png',
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            activity.activityLong,
+            activity.activityLati,
+            0.0,
+          ],
+        }
+      };
+    }).toList();
+
+    final Map<String, dynamic> geoJson = {
+      "type": "FeatureCollection",
+      "crs": {
+        "type": "name",
+        "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}
+      },
+      "features": features,
+    };
+
+    await controller.addSource(
+      "activities",
+      GeojsonSourceProperties(
+        data: geoJson,
+        cluster: true,
+      ),
+    );
+
+    await controller.addSymbolLayer(
+      "activities",
+      'activities-symbols',
+      SymbolLayerProperties(
+        iconImage: [
+          Expressions.caseExpression,
+          [
+            Expressions.boolean,
+            [Expressions.has, 'point_count'],
+            false
+          ],
+          'images/circlebackground.png',
+          [Expressions.get, 'activityCategory'],
+        ],
+        iconSize: [
+          Expressions.caseExpression,
+          [
+            Expressions.boolean,
+            [Expressions.has, 'point_count'],
+            false
+          ],
+          0.85.r,
+          0.8.r,
+        ],
+        iconAllowOverlap: true,
+        symbolSortKey: 10.0,
+      ),
+    );
+
+    await controller.addSymbolLayer(
+      "activities",
+      "activities-count",
+      SymbolLayerProperties(
+        textField: [Expressions.get, 'point_count_abbreviated'],
+        textColor: '#FFFFFF',
+        textFont: ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        textSize: [
+          Expressions.step,
+          [Expressions.get, 'point_count'],
+          22.sp,
+          5,
+          24.sp,
+          10,
+          26.sp
+        ],
+      ),
+    );
+  }*/
+
+
+  /* void _onFeatureTapped({required LatLng coordinates}) {
+    double zoomLevel = controller.cameraPosition!.zoom;
+    int places = getPlaces(zoomLevel);
+
+    double roundedLatitude =
+        double.parse(coordinates.latitude.toStringAsFixed(places));
+    double roundedLong =
+        double.parse(coordinates.longitude.toStringAsFixed(places));
+
+    for (MiittiActivity activity in _activities) {
+      double roundedActivityLatitude =
+          double.parse(activity.activityLati.toStringAsFixed(places));
+      double roundedActivityLong =
+          double.parse(activity.activityLong.toStringAsFixed(places));
+
+      if (roundedActivityLatitude == roundedLatitude &&
+          roundedActivityLong == roundedLong) {
+        if (!isAnonymous) {
+          goToActivityDetailsPage(activity);
+        } else {
+          showSnackBar(
+              context,
+              'Et ole vielä viimeistellyt profiiliasi, joten\n et voi käyttää vielä sovelluksen kaikkia ominaisuuksia.',
+              ConstantStyles.orange);
+        }
+      }
+    }
+  }
+
+  _onMapCreated(MapboxMapController controller) {
+    this.controller = controller;
+    controller.onFeatureTapped.add(
+        (id, point, coordinates) => _onFeatureTapped(coordinates: coordinates));
+  }*/
+
+  //Commenting this to merge
 }
