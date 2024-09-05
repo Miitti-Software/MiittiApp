@@ -212,7 +212,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                                   },
                                   child: CircleAvatar(
                                     backgroundImage:
-                                        NetworkImage(user.profilePictures[0]),
+                                        NetworkImage(user.profilePicture),
                                     backgroundColor: AppStyle.violet,
                                     radius: 25,
                                   ),

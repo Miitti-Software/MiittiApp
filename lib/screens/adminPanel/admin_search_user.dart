@@ -131,7 +131,7 @@ class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
                             bottomRight: Radius.circular(20),
                           ),
                           child: Image.network(
-                            user.profilePictures[0],
+                            user.profilePicture,
                             fit: BoxFit.cover,
                             height: 100,
                             width: 100,

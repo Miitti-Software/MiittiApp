@@ -85,7 +85,7 @@ class UserState extends StateNotifier<User?> {
         areas: data.areas,
         favoriteActivities: data.favoriteActivities,
         qaAnswers: data.qaAnswers,
-        profilePictures: data.profilePictures,
+        profilePicture: data.profilePicture!,
         invitedActivities: [],
         registrationDate: DateTime.now(),
         lastActive: DateTime.now(),
@@ -93,7 +93,7 @@ class UserState extends StateNotifier<User?> {
       );
       _firestoreService.saveUserData(
         userModel: miittiUser,
-        image: File(data.profilePictures[0]),
+        image: File(data.profilePicture!),
       );
       _userData = UserData(miittiUser: miittiUser);
     }
@@ -113,19 +113,11 @@ class UserState extends StateNotifier<User?> {
   }
 
   Future<void> signOut() async {
-    print('Signing out');
     state = null;
-    print(DateTime.now());
-    print('State set to null');
     _firestoreService.reset();
-    print('Firestore reset');
     await _authService.signOut();
-    print('Signed out');
-    print(DateTime.now()); 
     _userData.clear();
-    print('User data cleared');
     await _localStorageService.clear();
-    print('Local storage cleared');
   }
 
   Future<void> deleteUser() async {
@@ -169,7 +161,7 @@ class UserData {
   List<String> areas = [];
   List<String> favoriteActivities = [];
   Map<String, String> qaAnswers = {};
-  List<String> profilePictures = [];
+  String? profilePicture;
   List<String> invitedActivities = [];
   DateTime? registrationDate;
   LatLng? latestLocation;               
@@ -190,7 +182,7 @@ class UserData {
       areas = miittiUser.areas;
       favoriteActivities = miittiUser.favoriteActivities;
       qaAnswers = miittiUser.qaAnswers;
-      profilePictures = miittiUser.profilePictures;
+      profilePicture = miittiUser.profilePicture;
       invitedActivities = miittiUser.invitedActivities;
       registrationDate = miittiUser.registrationDate;
       lastActive = miittiUser.lastActive;
@@ -211,7 +203,7 @@ class UserData {
   List<String> get getArea => areas;
   List<String> get getFavoriteActivities => favoriteActivities;
   Map<String, String> get getQaAnswers => qaAnswers;
-  List<String> get getProfilePicture => profilePictures;
+  String? get getProfilePicture => profilePicture;
   List<String> get getInvitedActivities => invitedActivities;
   DateTime? get getRegistrationDate => registrationDate;
   LatLng? get getLatestLocation => latestLocation;
@@ -231,7 +223,7 @@ class UserData {
   void setAreas(List<String> value) => areas = value;
   void setFavoriteActivities(List<String> value) => favoriteActivities = value;
   void setQaAnswers(Map<String, String> value) => qaAnswers = value;
-  void setProfilePicture(List<String> value) => profilePictures = value;
+  void setProfilePicture(String value) => profilePicture = value;
   void setInvitedActivities(List<String> value) => invitedActivities = value;
   void setRegistrationDate(DateTime? value) => registrationDate = value;
   void setLatestLocation(LatLng? value) => latestLocation = value;
@@ -251,7 +243,7 @@ class UserData {
       areas: areas,
       favoriteActivities: favoriteActivities,
       qaAnswers: qaAnswers,
-      profilePictures: profilePictures,
+      profilePicture: profilePicture!,
       invitedActivities: invitedActivities,
       registrationDate: registrationDate!,
       lastActive: lastActive!,
@@ -272,7 +264,7 @@ class UserData {
     areas = [];
     favoriteActivities = [];
     qaAnswers = {};
-    profilePictures = [];
+    profilePicture = null;
     invitedActivities = [];
     registrationDate = null;
     latestLocation = null;

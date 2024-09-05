@@ -110,10 +110,7 @@ class MiittiApp extends ConsumerWidget {
 
     // Listen to the authState changes and refresh the router when the user signs in or out to trigger a redirect automatically
     ref.listen<AsyncValue<User?>>(authStateProvider, (_, next) {
-      print('yahoo');
       router.refresh();
-      print('yahoo2');
-      print(DateTime.now());
     });
 
     return MaterialApp.router(

@@ -19,7 +19,7 @@ class MiittiUser {
   List<String> areas;
   List<String> favoriteActivities;
   Map<String, String> qaAnswers;
-  List<String> profilePictures;
+  String profilePicture;
   List<String> invitedActivities;   // activityInvites - is this the right place? Are these the activities the user has been invited to or the activities the user has invited others to?
   DateTime registrationDate;
   DateTime lastActive;
@@ -38,7 +38,7 @@ class MiittiUser {
       required this.areas,
       required this.favoriteActivities,
       required this.qaAnswers,
-      required this.profilePictures,
+      required this.profilePicture,
       required this.invitedActivities,
       required this.registrationDate,
       required this.lastActive,
@@ -62,7 +62,7 @@ class MiittiUser {
         areas: data['areas'] != null ? _toStringList(data['areas']) : (data['userArea'] as String).split(',').map((e) => e.trim()).toList(),
         favoriteActivities: data['favoriteActivities'] != null ? List.from(data['favoriteActivities']) : _resolveActivities(_toStringList(data['userFavoriteActivities'])),
         qaAnswers: Map.from(data['qaAnswers'] ?? data['userChoices']),
-        profilePictures: data['profilePictures'] is Iterable ? List.from(data['profilePictures']) : [data['profilePicture']],
+        profilePicture: data['profilePicture'],
         invitedActivities: data['invitedActivities'] != null ? List.from(data['invitedActivities']) : [],
         registrationDate: data['registrationDate']?.toDate() ?? resolveTimestamp(data['userRegistrationDate']).toDate(),
         lastActive: data['lastActive']?.toDate() ?? resolveTimestamp(data['userStatus']).toDate(),
@@ -88,7 +88,7 @@ class MiittiUser {
       'qaAnswers': qaAnswers,
       'gender': gender.name,
       'languages': languages.map((e) => e.code),
-      'profilePictures': profilePictures,
+      'profilePicture': profilePicture,
       'invitedActivities': invitedActivities,
       'lastActive': lastActive,
       'organization': organization,
@@ -109,7 +109,7 @@ class MiittiUser {
       fcmToken = newData['fcmToken'] ?? fcmToken;
       registrationDate =
           newData['userRegistrationDate'] ?? registrationDate;
-      profilePictures = newData['profilePicture'] ?? profilePictures;
+      profilePicture = newData['profilePicture'] ?? profilePicture;
       gender = newData['userGender'] ?? gender;
 
       if (newData['userFavoriteActivities'] is List<dynamic>) {

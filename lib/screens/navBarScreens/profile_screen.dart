@@ -183,7 +183,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Image.network(
-          ref.read(userStateProvider.notifier).data.profilePictures[0], 
+          ref.read(userStateProvider.notifier).data.profilePicture!, 
           height: 400,
           width: 400,
           fit: BoxFit.cover,

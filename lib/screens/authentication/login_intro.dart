@@ -17,7 +17,7 @@ class LoginIntroScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the stream provider
-    final configStreamAsyncValue = ref.watch(configStreamProvider);
+    final configStreamAsyncValue = ref.watch(configStreamProvider); 
 
     return Scaffold(
       body: Stack(
@@ -25,7 +25,7 @@ class LoginIntroScreen extends ConsumerWidget {
           _gifBackground(context),
 
           // Handle the different states of the stream
-          configStreamAsyncValue.when(
+          configStreamAsyncValue.when(                                // TODO: Works as intended when opening the app while not signed in but gets stuck loading when signing out after a hot refresh if configStreamProvider is not called in MapScreen
             
             // When the data is loaded, build the UI with the data
             data: (data) {
@@ -63,7 +63,7 @@ class LoginIntroScreen extends ConsumerWidget {
                 ],
               );
             },
-            // When the data is loading, show a loading indicator                                     TODO: Gets stuck upon signing out if hot restarting the app when signed in and then signing out
+            // When the data is loading, show a loading indicator
             loading: () { return const Center(child: CircularProgressIndicator()); },
             // When the data is an error, show an error message (Fetching the error message about failing to fetch values from remote config might be slightly suboptimal but at least it uses .get instead of the stream)
             error: (error, stack) {

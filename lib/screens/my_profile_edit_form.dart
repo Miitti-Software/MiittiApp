@@ -187,7 +187,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                             const BorderRadius.all(Radius.circular(20)),
                         child: image == null
                             ? Image.network(
-                                ref.read(userStateProvider.notifier).data.profilePictures[0],
+                                ref.read(userStateProvider.notifier).data.profilePicture!,
                                 height: 400,
                                 width: 400,
                                 fit: BoxFit.cover,
@@ -415,7 +415,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                           .toList(),
                       qaAnswers: userChoices,
                       gender: miittiUser.gender,
-                      profilePictures: miittiUser.profilePictures,
+                      profilePicture: miittiUser.profilePicture,
                       languages: selectedLanguages.toList(),
                       invitedActivities: miittiUser.invitedActivities,
                       lastActive: miittiUser.lastActive,

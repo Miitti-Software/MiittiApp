@@ -49,7 +49,7 @@ class FirestoreService {
   Future<bool> saveUserData({required MiittiUser userModel, required File? image}) async {
     try {
       final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadProfilePicture(userModel.uid, image);
-      userModel.profilePictures[0] = imageUrl;
+      userModel.profilePicture = imageUrl;
       await _firestore.collection(_usersString).doc(userModel.uid).set(userModel.toMap());
       _miittiUser = userModel; // TODO: Delete when redundant
       return true;
@@ -596,7 +596,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
       if (imageFile != null) {
         await uploadUserImage(ref.read(userStateProvider.notifier).uid!, imageFile)
             .then((value) {
-          updatedUser.profilePictures[0] = value;
+          updatedUser.profilePicture = value;
         });
       }
 

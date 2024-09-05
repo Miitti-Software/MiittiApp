@@ -166,7 +166,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
             child: CircleAvatar(
               backgroundColor: Colors.white,
               radius: 45,
-              backgroundImage: CachedNetworkImageProvider(user.profilePictures[0],
+              backgroundImage: CachedNetworkImageProvider(user.profilePicture,
                   maxHeight: 120, maxWidth: 120, scale: 0.5),
             ),
           ),

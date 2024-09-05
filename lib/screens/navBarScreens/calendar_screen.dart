@@ -409,7 +409,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               padding: const EdgeInsets.all(8.0),
               child: ClipOval(
                 child: Image.network(
-                  user.profilePictures[0],
+                  user.profilePicture,
                   height: 100,
                   width: 100,
                   fit: BoxFit.cover,

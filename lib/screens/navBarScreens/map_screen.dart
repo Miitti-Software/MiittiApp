@@ -81,6 +81,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   void initializeLocationAndSave() async {
+    final config = ref.read(remoteConfigServiceProvider);
     final locationPermission = ref.read(locationPermissionProvider.notifier);
     bool serviceEnabled = locationPermission.serviceEnabled;
     bool permissionGranted = ref.watch(locationPermissionProvider);
@@ -89,7 +90,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       serviceEnabled = await locationPermission.requestLocationService();
       if (!serviceEnabled) {
         if (mounted) {
-          ErrorSnackbar.show(context, 'Sijaintipalvelut eivät ole käytössä: service not enabled');
+          ErrorSnackbar.show(context, config.get<String>('location-service-disabled'));
         }
       }
     }
@@ -98,7 +99,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       permissionGranted = await locationPermission.requestLocationPermission();
       if (!permissionGranted) {
         if (mounted) {
-          ErrorSnackbar.show(context, 'Sijaintipalvelut eivät ole käytössä: permission not granted');
+          ErrorSnackbar.show(context, config.get<String>('location-permission-denied'));
         }
       }
     }
@@ -301,6 +302,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // final configStreamAsyncValue = ref.watch(configStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
     return Stack(
       children: [
         showOnMap == 1 ? showOnList() : showMap(),
