@@ -32,6 +32,42 @@ class LocalStorageService {
     return prefs.getDouble(key);
   }
 
+  /// Save a boolean value to local storage.
+  Future<void> saveBool(String key, bool value) async {
+    final prefs = await _localStorage;
+    await prefs.setBool(key, value);
+  }
+
+  /// Get a boolean value from local storage.
+  Future<bool?> getBool(String key) async {
+    final prefs = await _localStorage;
+    return prefs.getBool(key);
+  }
+
+  /// Save an integer value to local storage.
+  Future<void> saveInt(String key, int value) async {
+    final prefs = await _localStorage;
+    await prefs.setInt(key, value);
+  }
+
+  /// Get an integer value from local storage.
+  Future<int?> getInt(String key) async {
+    final prefs = await _localStorage;
+    return prefs.getInt(key);
+  }
+
+  /// Save a list of strings to local storage.
+  Future<void> saveStringList(String key, List<String> value) async {
+    final prefs = await _localStorage;
+    await prefs.setStringList(key, value);
+  }
+
+  /// Get a list of strings from local storage.
+  Future<List<String>?> getStringList(String key) async {
+    final prefs = await _localStorage;
+    return prefs.getStringList(key);
+  }
+
   /// Clear all values from local storage.
   Future<void> clear() async {
     final prefs = await _localStorage;

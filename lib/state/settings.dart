@@ -83,3 +83,4 @@ class LocationPermissionNotifier extends StateNotifier<bool> {
     return false;
   }
 }
+

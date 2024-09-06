@@ -11,8 +11,8 @@ class FilterSettings {
     this.sameGender = false,
     this.multiplePeople = true,
     this.minAge = 18,
-    this.maxAge = 60,
-    this.distance = 50,
+    this.maxAge = 100,
+    this.distance = 5000,
   });
 
   // To save these settings

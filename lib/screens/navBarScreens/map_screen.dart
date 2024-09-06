@@ -39,8 +39,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   List<MiittiActivity> _activities = [];
   List<AdBanner> _ads = [];
 
-  SuperclusterMutableController clusterController =
-      SuperclusterMutableController();
+  SuperclusterMutableController clusterController = SuperclusterMutableController();
 
   int showOnMap = 0;
 
@@ -48,6 +47,18 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   void initState() {
     super.initState();
     _initializeUserData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    updateLiveLocation();
+    fetchActivities();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void _initializeUserData() {
@@ -60,19 +71,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    initializeLocationAndSave();
-    fetchActivities();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void initializeLocationAndSave() async {
+  void updateLiveLocation() async {
     final config = ref.read(remoteConfigServiceProvider);
     final locationPermission = ref.read(locationPermissionProvider.notifier);
     bool serviceEnabled = locationPermission.serviceEnabled;
@@ -119,13 +118,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   void fetchActivities() async {
     List<MiittiActivity> activities =
-        await ref.read(firestoreServiceProvider).fetchActivities();
+        await ref.read(firestoreServiceProvider).fetchFilteredActivities();
     if (mounted) {
       setState(() {
         _activities = activities.reversed.toList();
       });
       clusterController.addAll(_activities.map(activityMarker).toList());
-      //addGeojsonCluster(controller, _activities);
+      // addGeojsonCluster(controller, _activities);
     }
   }
 

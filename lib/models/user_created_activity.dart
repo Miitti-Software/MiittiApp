@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/genders.dart';
+import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 
 class UserCreatedActivity extends MiittiActivity {
   Map<String, LatLng> participantLocations;
   List<String> requests;
-  List<String> creatorLanguages;
+  List<Language> creatorLanguages;
   Gender creatorGender;
   int creatorAge;
 
@@ -43,17 +44,17 @@ class UserCreatedActivity extends MiittiActivity {
       latitude: data['latitude'],
       address: data['address'],
       creator: data['creator'],
-      creationTime: data['creationTime'],
-      startTime: data['startTime'],
-      endTime: data['endTime'],
+      creationTime: data['creationTime'].toDate(),
+      startTime: data['startTime']?.toDate(),
+      endTime: data['endTime']?.toDate(),
       paid: data['paid'],
       maxParticipants: data['maxParticipants'],
       participants: List<String>.from(data['participants']),
       requests: List<String>.from(data['requests']),
-      creatorLanguages: List<String>.from(data['creatorLanguages']),
+      creatorLanguages: List.from(data['creatorLanguages']).map((elem) => Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == elem.toLowerCase())).toList(),
       creatorGender: Gender.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['creatorGender'].toLowerCase()),
       creatorAge: data['creatorAge'],
-      participantLocations: data['participantLocations'],
+      participantLocations: (data['participantLocations'] as Map<String, dynamic>).map((key, value) => MapEntry(key, LatLng(value['latitude'], value['longitude']))),
     );
   }
 
@@ -77,7 +78,7 @@ class UserCreatedActivity extends MiittiActivity {
       'creatorLanguages': creatorLanguages,
       'creatorGender': creatorGender.name,
       'creatorAge': creatorAge,
-      'participantLocations': participantLocations,
+      'participantLocations': participantLocations.map((key, value) => MapEntry(key, {'latitude': value.latitude, 'longitude': value.longitude})),
     };
   }
 }
