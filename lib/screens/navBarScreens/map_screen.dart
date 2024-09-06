@@ -21,6 +21,7 @@ import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
+import 'package:miitti_app/widgets/activity_marker.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -117,17 +118,17 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   void fetchActivities() async {
-    List<MiittiActivity> activities =
-        await ref.read(firestoreServiceProvider).fetchFilteredActivities();
+    List<MiittiActivity> activities = await ref.read(firestoreServiceProvider).fetchFilteredActivities();
     if (mounted) {
       setState(() {
-        _activities = activities.reversed.toList();
+        _activities = activities.toList();
       });
       clusterController.addAll(_activities.map(activityMarker).toList());
       // addGeojsonCluster(controller, _activities);
     }
   }
 
+  // Refactor into ActivityMarker class
   Marker activityMarker(MiittiActivity activity) {
     return Marker(
       width: 100.0,
@@ -135,9 +136,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       point: LatLng(activity.latitude, activity.longitude),
       child: GestureDetector(
         onTap: () {
+          // TODO: Switch to GoRouter
           goToActivityDetailsPage(activity);
         },
-        child: Activity.getSymbol(activity),
+        child: ActivityMarker(activity: activity),
       ),
     );
   }
@@ -152,6 +154,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
+  // TODO: Delete when redundant
   goToActivityDetailsPage(MiittiActivity activity) {
     Navigator.push(
       context,

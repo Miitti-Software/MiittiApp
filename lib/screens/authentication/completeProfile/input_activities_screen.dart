@@ -37,7 +37,7 @@ void dispose() {
 
 Future<void> _loadActivities() async {
   setState(() {
-    allActivities = ref.read(remoteConfigServiceProvider).getActivityTuples('activities');
+    allActivities = ref.read(remoteConfigServiceProvider).getActivityTuples();
   });
 }
 

@@ -57,12 +57,12 @@ class RemoteConfigService {
   }
 
   /// Getter for activities that returns a list of tuples with the activity id, name and emoji
-  List<Tuple2<String, Tuple2<String, String>>> getActivityTuples(String key) {
+  List<Tuple2<String, Tuple2<String, String>>> getActivityTuples() {
     try {
-      final dynamic file = _configFiles[key];
+      final dynamic file = _configFiles['activities'];
       return file.entries.map((entry) => Tuple2<String, Tuple2<String, String>>(entry.key, Tuple2<String, String>(entry.value['name'] as String, entry.value['emoji'] as String))).toList().cast<Tuple2<String, Tuple2<String, String>>>();
     } catch (e) {
-      throw Exception('The key "$key" does not exist in the config files or is not a map: $e');
+      throw Exception('Error fetching activities: $e');
     }
   }
   
