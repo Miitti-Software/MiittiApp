@@ -354,7 +354,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                                     ),
                                     gapW5,
                                     Text(
-                                      activity.startTime!.toLocal().toString(),
+                                      activity.startTime != null ? activity.startTime!.toLocal().toString() : 'To be determined',
                                       style: AppStyle.activitySubName,
                                     ),
                                     gapW10,
