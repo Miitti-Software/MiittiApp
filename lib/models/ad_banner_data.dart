@@ -1,92 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:miitti_app/constants/app_style.dart';
-import 'package:miitti_app/models/miitti_user.dart';
-import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/constants/languages.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AdBanner {
-  String uid;
+class AdBannerData {
+  String id;
   String image;
-  String link;
-  Set<String> targetActivities;
-  int targetMinAge;
-  int targetMaxAge;
-  bool targetMen;
-  bool targetWomen;
-  bool targetNonBinary;
+  String hyperlink;
+  int clicks;
+  int views;
+  List<String>? targetActivities;
+  List<String>? targetLocations;
+  List<String>? targetOccupationalStatuses;
+  List<Language>? targetLanguages;
+  int? targetMinAge;
+  int? targetMaxAge;
+  bool? targetMen;
+  bool? targetWomen;
 
-  AdBanner({
+  AdBannerData({
+    required this.id,
     required this.image,
-    required this.link,
-    required this.targetActivities,
-    required this.targetMinAge,
-    required this.targetMaxAge,
-    required this.targetMen,
-    required this.targetWomen,
-    required this.targetNonBinary,
-    required this.uid,
+    required this.hyperlink,
+    required this.clicks,
+    required this.views,
+    this.targetActivities,
+    this.targetLocations,
+    this.targetOccupationalStatuses,
+    this.targetLanguages,
+    this.targetMinAge,
+    this.targetMaxAge,
+    this.targetMen,
+    this.targetWomen,
   });
 
-  factory AdBanner.fromMap(Map<String, dynamic> map) {
-    return AdBanner(
-      uid: map['uid'] ?? '',
-      image: map['image'] ?? '',
-      link: map['link'] ?? '',
-      targetActivities: (map['targetActivities'] as List<dynamic>? ?? [])
-          .cast<String>()
-          .toSet(),
-      targetMinAge: map['targetMinAge'] ?? 18,
-      targetMaxAge: map['targetMaxAge'] ?? 80,
-      targetMen: map['targetMen'] ?? true,
-      targetWomen: map['targetWomen'] ?? true,
-      targetNonBinary: map['targetNonBinary'] ?? true,
+  factory AdBannerData.fromFirestore(Map<String, dynamic> data) {
+    return AdBannerData(
+      id: data['id'] ?? '',
+      image: data['image'] ?? '',
+      hyperlink: data['hyperlink'] ?? '',
+      clicks: data['clicks'] ?? 0,
+      views: data['views'] ?? 0,
+      targetActivities: data['targetActivities'] ?? [],
+      targetLocations: data['targetLocations'] ?? [],
+      targetOccupationalStatuses: data['targetOccupationalStatuses'] ?? [],
+      targetLanguages: data['targetLanguages'] != null ? List.from(data['targetLanguages']).map((elem) => Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == elem.toLowerCase())).toList() : [],
+      targetMinAge: data['targetMinAge'] ?? 18,
+      targetMaxAge: data['targetMaxAge'] ?? 100,
+      targetMen: data['targetMen'] ?? true,
+      targetWomen: data['targetWomen'] ?? true,
     );
-  }
-
-  int targetWeight(MiittiUser user) {
-    try {
-      int weight = 0;
-      int age = calculateAge(user.birthday);
-      if (age < targetMinAge || age > targetMaxAge) weight += 1;
-
-      for (var activity in targetActivities) {
-        if (user.favoriteActivities.contains(activity)) weight += 1;
-      }
-
-      if (user.gender == "Mies" && !targetMen) {
-        weight -= 1;
-      } else if (user.gender == "Nainen" && !targetWomen) {
-        weight -= 1;
-      } else if (user.gender == "Ei-binäärinen" && !targetNonBinary) {
-        weight -= 1;
-      }
-
-      return weight;
-    } catch (e) {
-      debugPrint("Error targeting ad: $e");
-      return 0;
-    }
-  }
-
-  /*bool targetCommon(MiittiUser user, MiittiUser another) {
-    return targetUser(user) && targetUser(another);
-  }*/
-
-  static List<AdBanner> sortBanners(List<AdBanner> banners, MiittiUser? user) {
-    banners.shuffle();
-    if (user != null) {
-      banners
-          .sort((a, b) => b.targetWeight(user).compareTo(a.targetWeight(user)));
-    }
-
-    return banners;
   }
 
   GestureDetector getWidget(BuildContext context) {
     try {
       return GestureDetector(
         onTap: () async {
-          await launchUrl(Uri.parse(link));
+          await launchUrl(Uri.parse(hyperlink));
         },
         child: Card(
           shape: const RoundedRectangleBorder(

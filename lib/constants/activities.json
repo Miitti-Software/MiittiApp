@@ -199,6 +199,22 @@
         "name": "Volunteering",
         "emoji": "🤝"
     },
+    "language-exchange": {
+        "name": "Language exchange",
+        "emoji": "🌐"
+    },
+    "help": {
+        "name": "Help request",
+        "emoji": "🙋‍♂️"
+    },
+    "building": {
+        "name": "Building",
+        "emoji": "🛠️"
+    },
+    "coworking": {
+        "name": "Coworking",
+        "emoji": "👨‍💻"
+    },
     "other-activity": {
         "name": "Other",
         "emoji": "❓"

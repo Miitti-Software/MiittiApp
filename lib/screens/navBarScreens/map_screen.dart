@@ -12,7 +12,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 //import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
-import 'package:miitti_app/models/ad_banner.dart';
+import 'package:miitti_app/models/ad_banner_data.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
@@ -21,7 +21,9 @@ import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
-import 'package:miitti_app/widgets/activity_marker.dart';
+import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
+import 'package:miitti_app/widgets/data_containers/ad_banner.dart';
+import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -38,7 +40,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   late LatLng location;
 
   List<MiittiActivity> _activities = [];
-  List<AdBanner> _ads = [];
+  List<AdBannerData> _ads = [];
 
   SuperclusterMutableController clusterController = SuperclusterMutableController();
 
@@ -128,7 +130,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
-  // Refactor into ActivityMarker class
   Marker activityMarker(MiittiActivity activity) {
     return Marker(
       width: 100.0,
@@ -137,20 +138,20 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       child: GestureDetector(
         onTap: () {
           // TODO: Switch to GoRouter
-          goToActivityDetailsPage(activity);
+          goToActivityDetailsPage(activity);  // TODO: Refactor
         },
-        child: ActivityMarker(activity: activity),
+        child: activity is CommercialActivity ? CommercialActivityMarker(activity: activity) : ActivityMarker(activity: activity),
       ),
     );
   }
 
   void fetchAd() async {
-    List<AdBanner> ad = await ref.read(firestoreServiceProvider).fetchAds();
+    List<AdBannerData> ads = await ref.read(firestoreServiceProvider).fetchAdBanners();
     setState(() {
-      _ads = ad;
+      _ads = ads;
     });
     if (_ads.isNotEmpty) {
-      ref.read(firestoreServiceProvider).addAdView(_ads[0].uid);
+      ref.read(firestoreServiceProvider).addAdView(_ads[0].id); // TODO: Do something smarter
     }
   }
 
@@ -289,8 +290,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             itemCount: _activities.length + (_ads.isNotEmpty ? 1 : 0),
             itemBuilder: (BuildContext context, int index) {
               if (index == 1 && _ads.isNotEmpty) {
-                return _ads[0]
-                    .getWidget(context); // Display ad widget at index 1
+                return AdBanner(adBannerData: _ads[0]);
               } else {
                 int activityIndex =
                     _ads.isNotEmpty && index > 1 ? index - 1 : index;

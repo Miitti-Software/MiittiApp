@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // Colors used for building the custom theme
 class AppColors {
   static const Color pink = Color(0xFFE05494);
+  static const Color orange = Color(0xFFF27547);
   static const Color red = Color(0xFFF36269);
   static const Color violet = Color(0xFF5615CE);
   static const Color white = Color(0xFFFAFAFD);
@@ -39,14 +40,14 @@ class AppSizes {
 }
 
 // Color scheme used for building the custom theme
-final ColorScheme colorScheme = ColorScheme.fromSeed(seedColor: Colors.pink).copyWith(
+final ColorScheme colorScheme = ColorScheme.fromSeed(seedColor: AppColors.pink).copyWith(
   primary: AppColors.pink,
   primaryFixed: AppColors.pink,
   onPrimary: AppColors.white,
   onPrimaryFixed: AppColors.white,
 
-  secondary: AppColors.red,
-  secondaryFixed: AppColors.red,
+  secondary: AppColors.orange,
+  secondaryFixed: AppColors.orange,
   onSecondary: AppColors.white,
   onSecondaryFixed: AppColors.white,
 

@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
-import 'package:miitti_app/models/ad_banner.dart';
+import 'package:miitti_app/models/ad_banner_data.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/commercial_spot.dart';
 import 'package:miitti_app/models/commercial_user.dart';
@@ -29,6 +29,7 @@ class FirestoreService {
   static const String _usersCollection = 'users';
   static const String _activitiesCollection = 'activities';
   static const String _commercialActivitiesCollection = 'commercialActivities';
+  static const String _adBannersCollection = 'adBanners';
 
   final FirebaseFirestore _firestore;
   final Ref ref;
@@ -111,6 +112,25 @@ Future<MiittiUser?> loadUserData(String userId) async {
       return list;
     } catch (e) {
       debugPrint('Error fetching activities: $e');
+      return [];
+    }
+  }
+
+  Future<List<AdBannerData>> fetchAdBanners() async {
+    try {
+      // Banner ads could be fetched according to the activities filter settings as well
+      // Add queries when needed
+      QuerySnapshot querySnapshot = await _firestore.collection(_adBannersCollection).get();
+
+      List<AdBannerData> list = querySnapshot.docs
+          .map((doc) => AdBannerData.fromFirestore(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      list.shuffle();
+      return list;
+
+    } catch (e) {
+      debugPrint("Error fetching ads $e");
       return [];
     }
   }
@@ -472,25 +492,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
     }
   }
 
-  Future<List<AdBanner>> fetchAds() async {
-    try {
-      QuerySnapshot querySnapshot = await _getFireQuery('adBanners');
-
-      List<AdBanner> list = querySnapshot.docs
-          .map((doc) => AdBanner.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
-
-      if (_miittiUser != null) {
-        return AdBanner.sortBanners(list, miittiUser);
-      } else {
-        list.shuffle();
-        return list;
-      }
-    } catch (e) {
-      debugPrint("Error fetching ads $e");
-      return [];
-    }
-  }
+  
 
   void addAdView(String adUid) async {
     try {
