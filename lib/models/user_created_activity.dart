@@ -6,6 +6,7 @@ import 'package:miitti_app/models/miitti_activity.dart';
 
 class UserCreatedActivity extends MiittiActivity {
   Map<String, LatLng> participantLocations;
+  Map<String, String> participantImages;
   List<String> requests;
   List<Language> creatorLanguages;
   Gender creatorGender;
@@ -30,8 +31,11 @@ class UserCreatedActivity extends MiittiActivity {
     required this.creatorLanguages,
     required this.creatorGender,
     required this.creatorAge,
+    required this.participantImages,
     required this.participantLocations,
   });
+
+  // TODO: Consolidate images, locations etc to participants map
 
   factory UserCreatedActivity.fromFirestore(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
@@ -55,6 +59,7 @@ class UserCreatedActivity extends MiittiActivity {
       creatorGender: Gender.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['creatorGender'].toLowerCase()),
       creatorAge: data['creatorAge'],
       participantLocations: (data['participantLocations'] as Map<String, dynamic>).map((key, value) => MapEntry(key, LatLng(value['latitude'], value['longitude']))),
+      participantImages: Map<String, String>.from(data['participantImages']),
     );
   }
 

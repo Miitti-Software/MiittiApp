@@ -8,6 +8,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 //import 'package:mapbox_gl/mapbox_gl.dart';
@@ -25,6 +26,8 @@ import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 import 'package:miitti_app/widgets/data_containers/ad_banner.dart';
 import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
+import 'package:miitti_app/widgets/overlays/activity_bottom_sheet.dart';
+import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -38,6 +41,7 @@ class MapScreen extends ConsumerStatefulWidget {
 
 class _MapScreenState extends ConsumerState<MapScreen> {
   late LatLng location;
+  double zoom = 13.0;
 
   List<MiittiActivity> _activities = [];
   List<AdBannerData> _ads = [];
@@ -140,12 +144,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           // TODO: Switch to GoRouter
           goToActivityDetailsPage(activity);  // TODO: Refactor
         },
-        child: activity is CommercialActivity ? CommercialActivityMarker(activity: activity) : ActivityMarker(activity: activity),
+        child: activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
       ),
     );
   }
 
-  void fetchAd() async {
+  void fetchAds() async {
     List<AdBannerData> ads = await ref.read(firestoreServiceProvider).fetchAdBanners();
     setState(() {
       _ads = ads;
@@ -157,16 +161,24 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   // TODO: Delete when redundant
   goToActivityDetailsPage(MiittiActivity activity) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => activity is UserCreatedActivity
-            ? ActivityDetailsPage(
-                myActivity: activity,
-              )
-            : ComActDetailsPage(myActivity: activity as CommercialActivity),
-      ),
+    setState(() {
+      location = LatLng(activity.latitude- 0.001, activity.longitude);
+      zoom = 17.0;
+    });
+    ActivityBottomSheet.show(
+      context: context,
+      activity: activity as UserCreatedActivity,
     );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => activity is UserCreatedActivity
+    //         ? ActivityDetailsPage(
+    //             myActivity: activity,
+    //           )
+    //         : ComActDetailsPage(myActivity: activity as CommercialActivity),
+    //   ),
+    // );
   }
 
   @override
@@ -193,7 +205,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   setState(() {
                     showOnMap = index!;
                     if (index == 1) {
-                      fetchAd();
+                      fetchAds();
                     }
                   });
                 },
@@ -219,7 +231,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   keepAlive: true,
                   backgroundColor: AppStyle.black,
                   initialCenter: location,
-                  initialZoom: 13.0,
+                  initialZoom: zoom,
                   interactionOptions: const InteractionOptions(
                       flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
                   minZoom: 5.0,

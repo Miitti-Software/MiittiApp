@@ -28,6 +28,7 @@ class RemoteConfigService {
   final Map<String, dynamic> _configFiles = {};
   // A map to store the config values
   final Map<String, dynamic> _configValues = {};
+  get configValues => _configValues;
   // List of remote config json file names to be loaded as defaults and fetched from Firebase - the same file names should be present both locally and in the Firebase console
   final List<String> _jsonFiles = ['app_texts', 'error_texts', 'areas', 'occupational_statuses', 'organizations', 'qa_category_1', 'qa_category_2', 'qa_category_3', 'activities', 'community_norms'];
 
@@ -65,7 +66,15 @@ class RemoteConfigService {
       throw Exception('Error fetching activities: $e');
     }
   }
-  
+
+  Tuple2<String, String> getActivityTuple(String key) {
+    try {
+      final dynamic file = _configFiles['activities'];
+      return Tuple2<String, String>(file[key]['name'] as String, file[key]['emoji'] as String);
+    } catch (e) {
+      throw Exception('Error fetching activity: $e');
+    }
+  }
 
   /// Get a list of maps of rich text values with keys "text" and "url" fetched from the remote config
   List<Map<String, dynamic>> getRichText(String key) {

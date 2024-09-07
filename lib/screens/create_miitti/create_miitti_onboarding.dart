@@ -687,6 +687,7 @@ class _CreateMiittiOnboardingState
         creatorLanguages: [],
         creatorGender: Gender.other,
         creatorAge: 0,
+        participantImages: {},
         participantLocations: {},
       );
       saveMiittiToFirebase(activity);

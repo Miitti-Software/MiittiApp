@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
-import 'package:miitti_app/widgets/buttons/custom_button.dart';
+import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/widgets/buttons/forward_button.dart';
 
 class BottomSheetDialog {
   static void show({
@@ -48,14 +49,13 @@ class BottomSheetDialog {
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 const SizedBox(height: AppSizes.verticalSeparationPadding),
-                MyButton(
+                ForwardButton(
                   buttonText: confirmText,
                   onPressed: onConfirmPressed,
                 ),
                 const SizedBox(height: AppSizes.minVerticalPadding),
-                MyButton(
+                BackwardButton(
                   buttonText: cancelText,
-                  isWhiteButton: true,
                   onPressed: onCancelPressed,
                 ),
                 const SizedBox(height: AppSizes.minVerticalPadding),

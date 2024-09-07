@@ -155,5 +155,11 @@
     "invalid-norms-missing": "Please agree to all the terms above to proceed.",
 
     "maintenance-break-text": "Miitti App is currently under maintenance. Please try again later.",
-    "ad-banner-text": "Sponsored"
+
+    "ad-banner-text": "Sponsored",
+
+    "activity-text-between-date-and-time": "at",
+    "activity-missing-start-time": "To be determined",
+    "activity-paid": "Paid",
+    "activity-free": "Free"
   }

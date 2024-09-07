@@ -11,7 +11,7 @@ class ActivityMarker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final activityEmoji = config.getActivityTuples().firstWhere((tuple) => tuple.item1 == activity.category).item2.item2;
+    final activityEmoji = config.getActivityTuple(activity.category).item2;
 
     return Center(
           child: CircleAvatar(
