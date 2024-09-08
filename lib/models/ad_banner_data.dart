@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/languages.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AdBannerData {
   String id;
@@ -50,70 +47,5 @@ class AdBannerData {
       targetMen: data['targetMen'] ?? true,
       targetWomen: data['targetWomen'] ?? true,
     );
-  }
-
-  GestureDetector getWidget(BuildContext context) {
-    try {
-      return GestureDetector(
-        onTap: () async {
-          await launchUrl(Uri.parse(hyperlink));
-        },
-        child: Card(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          margin: const EdgeInsets.all(10.0),
-          child: Container(
-            width: 400,
-            decoration: const BoxDecoration(
-              color: AppStyle.black,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  child: Image.network(
-                    image,
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    height: 28,
-                    width: 100,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppStyle.pink.withOpacity(0.8),
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10)),
-                    ),
-                    child: const Text(
-                      "Sponsoroitu",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontFamily: 'Rubik',
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint("Failed getting banner: $e");
-      return GestureDetector(
-        onTap: () {},
-        child: Container(
-          height: 0,
-        ),
-      );
-    }
   }
 }
