@@ -10,6 +10,7 @@ import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
@@ -166,8 +167,10 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
             child: CircleAvatar(
               backgroundColor: Colors.white,
               radius: 45,
-              backgroundImage: CachedNetworkImageProvider(user.profilePicture.replaceAll('profilePicture', 'thumb_profilePicture'),
-                  maxHeight: 150, maxWidth: 150, scale: 1),
+              backgroundImage: CachedNetworkImageProvider(
+                  user.profilePicture.replaceAll('profilePicture', 'thumb_profilePicture'),
+                  cacheManager: CustomCacheManager().instance,
+                ),
             ),
           ),
           _buildUserInfo(user),

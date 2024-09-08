@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/ad_banner_data.dart';
+import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -20,7 +21,10 @@ class AdBanner extends ConsumerWidget {
   });
 
   Future<Size> _getImageSize(String imageUrl) async {
-    final image = CachedNetworkImageProvider(imageUrl);
+    final image = CachedNetworkImageProvider(
+      imageUrl,
+      cacheManager: CustomCacheManager().instance,
+    );
     final completer = Completer<ui.Image>();
     image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener((info, _) => completer.complete(info.image))

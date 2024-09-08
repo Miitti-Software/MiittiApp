@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:miitti_app/services/cache_manager_service.dart';
 
 // TODO: Add navigation to individual items from images and to a list from stack
 
@@ -41,7 +42,10 @@ class HorizontalImageShortlist extends StatelessWidget {
         border: Border.all(color: Colors.white, width: 1),
       ),
       child: CircleAvatar(
-        backgroundImage: CachedNetworkImageProvider(imageUrl),
+        backgroundImage: CachedNetworkImageProvider(
+          imageUrl,
+          cacheManager: CustomCacheManager().instance,
+          ),
         radius: 20,
       ),
     );
@@ -72,7 +76,10 @@ class HorizontalImageShortlist extends StatelessWidget {
           border: Border.all(color: Colors.white, width: 1),
         ),
         child: CircleAvatar(
-          backgroundImage: CachedNetworkImageProvider(imageUrl),
+          backgroundImage: CachedNetworkImageProvider(
+            imageUrl,
+            cacheManager: CustomCacheManager().instance,
+            ),
           radius: 20,
         ),
       ),
@@ -92,7 +99,10 @@ class HorizontalImageShortlist extends StatelessWidget {
               border: Border.all(color: Colors.white, width: 1),
             ),
             child: CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(imageUrls[4]),
+              backgroundImage: CachedNetworkImageProvider(
+                imageUrls[4],
+                cacheManager: CustomCacheManager().instance,
+                ),
               radius: 20,
             ),
           ),

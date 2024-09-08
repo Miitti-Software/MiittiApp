@@ -116,6 +116,9 @@ class AppRouter {
           GoRoute(
             path: '/',
             pageBuilder: _buildNoTransitionPage(const MapScreen()),
+            routes: [
+              // TODO: Activity details route
+            ],
           ),
         ],
     );
