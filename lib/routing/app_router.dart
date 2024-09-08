@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
+import 'package:miitti_app/main.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_push_notifications.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_activities_screen.dart';
@@ -19,7 +20,6 @@ import 'package:miitti_app/screens/authentication/welcome_screen.dart';
 import 'package:miitti_app/screens/authentication/login_screen.dart';
 import 'package:miitti_app/screens/authentication/login_intro.dart';
 import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
-import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/screens/maintenance_break_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/calendar_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/map_screen.dart';
@@ -29,10 +29,13 @@ import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
 import 'package:miitti_app/screens/navigation_shell_scaffold.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
+import 'package:miitti_app/screens/update_screen.dart';
 
 // A class to define the app's routing configuration and behavior
 class AppRouter {
   final WidgetRef ref;
+  String previousRoute = '/';
+  bool hasRedirectedToSoftUpdate = false;
 
   AppRouter(this.ref);
 
@@ -47,7 +50,7 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: true,
     refreshListenable: ValueNotifier<bool>(ref.watch(userStateProvider.notifier).isSignedIn),
-    initialLocation: '/map',
+    initialLocation: '/',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
     errorBuilder: _buildErrorPage,
@@ -55,12 +58,6 @@ class AppRouter {
 
   List<RouteBase> _buildRoutes() {
     return [
-      // TODO: Delete when redundant
-      GoRoute(
-        path: '/',
-        parentNavigatorKey: _rootNavigatorKey,
-        pageBuilder: _buildNoTransitionPage(const IndexPage()),
-      ),
       GoRoute(
         path: '/notificationmessage',
         parentNavigatorKey: _rootNavigatorKey,
@@ -76,6 +73,14 @@ class AppRouter {
         path: '/maintenance-break', 
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const MaintenanceBreakScreen())
+      ),
+      GoRoute(
+        path: '/update/:force',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final forceUpdate = state.pathParameters['force']! == 'true';
+          return UpdateScreen(forceUpdate, previousRoute);
+        },
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => NavigationShellScaffold(
@@ -109,7 +114,7 @@ class AppRouter {
       navigatorKey: _mapNavigatorKey,
         routes: [
           GoRoute(
-            path: '/map',
+            path: '/',
             pageBuilder: _buildNoTransitionPage(const MapScreen()),
           ),
         ],
@@ -259,9 +264,33 @@ class AppRouter {
   String? _handleRedirect(BuildContext context, GoRouterState state) {
     final userState = ref.watch(userStateProvider.notifier);
     final isMaintenanceBreak = ref.watch(remoteConfigServiceProvider).getBool('maintenance_break');
+    final currentAppVersion = parseVersionNumber(appVersion);  // The current app version defined in main.dart
+    final latestAppVersion = parseVersionNumber(ref.watch(remoteConfigServiceProvider).getString('latest_app_version'));
+    final forceUpdateVersion = parseVersionNumber(ref.watch(remoteConfigServiceProvider).getString('force_update_version'));
 
     if (isMaintenanceBreak) {
+      if (state.matchedLocation != '/maintenance-break') {
+        previousRoute = state.matchedLocation;
+      }
       return '/maintenance-break';
+    }
+
+    if (state.matchedLocation == '/maintenance-break' && !isMaintenanceBreak) {
+      return previousRoute;
+    }
+
+    if (currentAppVersion < forceUpdateVersion) {
+      return '/update/true';
+    }
+
+    if (state.matchedLocation == '/update/true') {
+      return previousRoute;
+    }
+
+    if (!hasRedirectedToSoftUpdate && currentAppVersion < latestAppVersion && state.matchedLocation == '/') {
+      previousRoute = state.matchedLocation;
+      hasRedirectedToSoftUpdate = true;
+      return '/update/false';
     }
 
     if (state.matchedLocation == '/login/complete-profile') {
@@ -288,5 +317,11 @@ class AppRouter {
         child: Text('${ref.watch(remoteConfigServiceProvider).get<String>('routing-error')}\n\n${state.error}\n\n${ref.watch(remoteConfigServiceProvider).get<String>('error-message-action-prompt')}'),
       ),
     );
+  }
+
+  int parseVersionNumber(String version) {
+    List versionCells = version.split('.');
+    versionCells = versionCells.map((i) => int.parse(i)).toList();
+    return versionCells[0] * 100000000 + versionCells[1] * 10000 + versionCells[2];
   }
 }

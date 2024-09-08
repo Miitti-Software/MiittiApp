@@ -17,6 +17,8 @@ import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
 
+const appVersion = '2.0.0'; // App version number - TODO: Update this for each new release
+
 final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
@@ -109,8 +111,17 @@ class MiittiApp extends ConsumerWidget {
     final router = AppRouter(ref).router;
 
     // Listen to the authState changes and refresh the router when the user signs in or out to trigger a redirect automatically
-    ref.listen<AsyncValue<User?>>(authStateProvider, (_, next) {
-      router.refresh();
+    ref.listen<AsyncValue<User?>>(authStateProvider, (previous, next) {
+      if (previous?.value != null) {
+        router.refresh();
+      }
+    });
+
+    // Listen to the remoteConfig changes and refresh the router when the remote config values change to update the UI
+    ref.listen<AsyncValue<Map<String, dynamic>>>(remoteConfigServiceStreamProvider, (previous, next) {
+      if (previous?.value != null) {
+        router.refresh();
+      }
     });
 
     return MaterialApp.router(
@@ -122,15 +133,9 @@ class MiittiApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      // navigatorKey: navigatorKey,              // TODO: Remove to clean up code
       title: 'Miitti',
       theme: miittiTheme,
       debugShowCheckedModeBanner: false,
-      // home: _buildAuthScreen(context),
-      // routes: {
-      // '/notificationmessage': (context) =>
-      // const NotificationMessage() //
-      // },
     );
   }
 }

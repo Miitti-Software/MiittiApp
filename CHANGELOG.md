@@ -78,6 +78,7 @@ Added development, staging and production environments to enable risk-free offli
 - Android app flavors for different build configurations to facilitate different environments.
 - Different Firebase configuration files in `envs` corresponding to the development, staging and production environments.
 - `google-services.json` files corresponding to above configurations.
+- `UpdateScreen` and `MaintenanceBreakScreen` to encourage or force updates or to even fully lock down the app for temporary backend maintenance
 
 ## [1.5.5] - 2024-06-27
 

@@ -210,3 +210,7 @@ https://pub.dev/packages/go_router
 https://medium.com/@vimehraa29/flutter-go-router-the-crucial-guide-41dc615045bb
 
 https://stackoverflow.com/questions/75233117/how-can-you-change-url-in-the-web-browser-without-named-routes
+
+## Publishing
+
+Make sure to keep appVersion in `main.dart` up to date!

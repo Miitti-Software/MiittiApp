@@ -154,7 +154,17 @@
     "accept-norms-disclaimer": "Agree to the below community norms in order to proceed by reading and clicking all of them.",
     "invalid-norms-missing": "Please agree to all the terms above to proceed.",
 
-    "maintenance-break-text": "Miitti App is currently under maintenance. Please try again later.",
+    "update-recommended-title": "Update available",
+    "update-recommended-text": "We recommend you update to the latest version of Miitti App for the best experience.",
+    "update-required-title": "Update required",
+    "update-required-text": "You must update to the latest version of Miitti App to continue using the app.",
+    "update-button": "Update",
+    "update-skip-button": "Skip for now",
+    "update-play-store-link": "https://play.google.com/store/apps/details?id=com.miittisoftwareoy.miitti_app",
+    "update-app-store-link": "https://apps.apple.com/fi/app/miitti-app/id6451346402?l=fi",
+
+    "maintenance-break-title": "Miitti App is currently under maintenance.",
+    "maintenance-break-text": "We apologize for the inconvenience. Please try again later.",
 
     "ad-banner-text": "Sponsored",
 

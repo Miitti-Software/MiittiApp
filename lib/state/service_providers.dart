@@ -30,6 +30,12 @@ final remoteConfigServiceProvider = Provider<RemoteConfigService>((ref) {
   return service;
 });
 
+// Provider for RemoteConfigService stream
+final remoteConfigServiceStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
+  final remoteConfigServiceInstance = ref.watch(remoteConfigServiceProvider);
+  return remoteConfigServiceInstance.configStream;
+});
+
 // Provider for FirestoreService
 final firestoreServiceProvider = Provider<FirestoreService>((ref) {
   return FirestoreService(ref);
