@@ -152,11 +152,11 @@ class _InputProfilePictureScreenState
   Future<File?> selectImage(BuildContext context, {required bool isCamera}) async {
     try {
       final XFile? pickedImage =
-          await ImagePicker().pickImage(source: isCamera ? ImageSource.camera : ImageSource.gallery, maxHeight: 1024, maxWidth: 1024, imageQuality: 50);
+          await ImagePicker().pickImage(source: isCamera ? ImageSource.camera : ImageSource.gallery, maxHeight: 1024, maxWidth: 1024, imageQuality: 60);
       if (pickedImage != null) {
         setState(() {
           image = File(pickedImage.path);
-          ref.watch(userStateProvider.notifier).data.profilePicture = image!.path;  // Currently only one profile picture is used although multiple are supported in the future
+          ref.watch(userStateProvider.notifier).data.profilePicture = image!.path;
         });
       }
     } catch (e) {

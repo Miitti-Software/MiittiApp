@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
-import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_push_notifications.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_activities_screen.dart';

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 // TODO: Add navigation to individual items from images and to a list from stack
@@ -40,7 +41,7 @@ class HorizontalImageShortlist extends StatelessWidget {
         border: Border.all(color: Colors.white, width: 1),
       ),
       child: CircleAvatar(
-        backgroundImage: NetworkImage(imageUrl),
+        backgroundImage: CachedNetworkImageProvider(imageUrl),
         radius: 20,
       ),
     );
@@ -71,7 +72,7 @@ class HorizontalImageShortlist extends StatelessWidget {
           border: Border.all(color: Colors.white, width: 1),
         ),
         child: CircleAvatar(
-          backgroundImage: NetworkImage(imageUrl),
+          backgroundImage: CachedNetworkImageProvider(imageUrl),
           radius: 20,
         ),
       ),
@@ -91,7 +92,7 @@ class HorizontalImageShortlist extends StatelessWidget {
               border: Border.all(color: Colors.white, width: 1),
             ),
             child: CircleAvatar(
-              backgroundImage: NetworkImage(imageUrls[4]),
+              backgroundImage: CachedNetworkImageProvider(imageUrls[4]),
               radius: 20,
             ),
           ),

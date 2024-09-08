@@ -215,7 +215,7 @@ class _ActivityBottomSheetContentState extends ConsumerState<ActivityBottomSheet
                 ),
               ),
               const SizedBox(height: AppSizes.minVerticalPadding),
-              HorizontalImageShortlist(imageUrls: participants.values.map((e) => e['profilePicture'] as String).toList()),
+              HorizontalImageShortlist(imageUrls: participants.values.map((e) => e['profilePicture'].replaceAll('profilePicture', 'thumb_profilePicture') as String).toList()),
               const SizedBox(height: AppSizes.minVerticalPadding * 1.4),
               Flexible(
                 child: ConstrainedBox(
