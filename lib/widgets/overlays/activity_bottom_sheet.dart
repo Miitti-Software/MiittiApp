@@ -44,8 +44,7 @@ class ActivityBottomSheetContent extends ConsumerStatefulWidget {
 }
 
 class _ActivityBottomSheetContentState extends ConsumerState<ActivityBottomSheetContent> {
-  List<String> participants = [];
-  Map<String, String> participantImages = {};
+  Map<String, Map<String, dynamic>> participants = {};
   String category = '';
   String title = '';
   String description = '';
@@ -61,7 +60,6 @@ class _ActivityBottomSheetContentState extends ConsumerState<ActivityBottomSheet
   void initState() {
     super.initState();
     participants = widget.activity.participants;
-    participantImages = widget.activity.participantImages;
     category = widget.activity.category;
     title = widget.activity.title;
     description = widget.activity.description;
@@ -95,123 +93,129 @@ class _ActivityBottomSheetContentState extends ConsumerState<ActivityBottomSheet
                 endIndent: 100,
               ),
               const SizedBox(height: AppSizes.minVerticalEdgePadding),
-              Row(
-                children: [
-                  Text(
-                    config.getActivityTuple(category).item2,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      title,
+              SelectionArea(
+                child: Row(
+                  children: [
+                    Text(
+                      config.getActivityTuple(category).item2,
                       style: Theme.of(context).textTheme.titleMedium,
-                      softWrap: true,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: GestureDetector(
-                      onTap: () async {
-                        setState(() {
-                          linkCreated = true;
-                        });
-                        await Clipboard.setData(ClipboardData(text: GoRouter.of(context).toString()));    // TODO: Implement deep linking
-                        ScaffoldMessenger.of(context).showSnackBar(                                       // TODO: Use Flutter toast?
-                          const SnackBar(content: Text('Route copied to clipboard!')),
-                        );
-                        await Future.delayed(const Duration(milliseconds: 500));
-                      },
-                      child: AnimatedRotation(
-                        turns: linkCreated ? 0.5 : 0,
-                        duration: const Duration(milliseconds: 500),
-                        child: CircleAvatar(
-                          backgroundColor: linkCreated ? Theme.of(context).colorScheme.primary.withOpacity(0.2) : Theme.of(context).colorScheme.primary,
-                          child: Icon(
-                            Icons.link,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        softWrap: true,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: GestureDetector(
+                        onTap: () async {
+                          setState(() {
+                            linkCreated = true;
+                          });
+                          await Clipboard.setData(ClipboardData(text: GoRouter.of(context).toString()));    // TODO: Implement deep linking
+                          ScaffoldMessenger.of(context).showSnackBar(                                       // TODO: Use Flutter toast?
+                            const SnackBar(content: Text('Route copied to clipboard!')),
+                          );
+                          await Future.delayed(const Duration(milliseconds: 500));
+                        },
+                        child: AnimatedRotation(
+                          turns: linkCreated ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 500),
+                          child: CircleAvatar(
+                            backgroundColor: linkCreated ? Theme.of(context).colorScheme.primary.withOpacity(0.2) : Theme.of(context).colorScheme.primary,
+                            child: Icon(
+                              Icons.link,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+              SelectionArea(
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              startTime != null
+                                  ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(widget.activity.startTime!.toLocal())
+                                  : config.get<String>('activity-missing-start-time'),
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSizes.minVerticalPadding),
+                        Row(
+                          children: [
+                            Icon(
+                              paid ? Icons.attach_money_rounded : Icons.money_off_rounded,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              paid ? config.get<String>('activity-paid') : config.get<String>('activity-free'),
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],)
+                        
+                      ],
+                    ),
+                    const SizedBox(width: 20),
+                    SelectionArea(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.calendar_today,
-                            color: Theme.of(context).colorScheme.primary,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                address,
+                                style: Theme.of(context).textTheme.labelMedium,
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            startTime != null
-                                ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(widget.activity.startTime!.toLocal())
-                                : config.get<String>('activity-missing-start-time'),
-                            style: Theme.of(context).textTheme.labelMedium,
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.group_outlined,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$currentParticipants / $maxParticipants',
+                                style: Theme.of(context).textTheme.labelMedium,
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppSizes.minVerticalPadding),
-                      Row(
-                        children: [
-                          Icon(
-                            paid ? Icons.attach_money_rounded : Icons.money_off_rounded,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            paid ? config.get<String>('activity-paid') : config.get<String>('activity-free'),
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                        ],)
-                      
-                    ],
-                  ),
-                  const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            address,
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.group_outlined,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '$currentParticipants / $maxParticipants',
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: AppSizes.minVerticalPadding),
-              HorizontalImageShortlist(imageUrls: participantImages.values.toList()),
+              HorizontalImageShortlist(imageUrls: participants.values.map((e) => e['profilePicture'] as String).toList()),
               const SizedBox(height: AppSizes.minVerticalPadding * 1.4),
               Flexible(
                 child: ConstrainedBox(
@@ -221,9 +225,11 @@ class _ActivityBottomSheetContentState extends ConsumerState<ActivityBottomSheet
                   child: PermanentScrollbar(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.only(right: 4),
-                      child: Text(
-                        description,
-                        style: Theme.of(context).textTheme.labelMedium,
+                      child: SelectionArea(
+                        child: Text(
+                          description,
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
                       ),
                     ),
                   ),

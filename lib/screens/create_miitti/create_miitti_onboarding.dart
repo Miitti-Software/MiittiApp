@@ -682,13 +682,11 @@ class _CreateMiittiOnboardingState
         endTime: null,
         paid: !isActivityFree,
         maxParticipants: activityParticipantsCount.round(),
-        participants: [],
+        participants: {},
         requests: [],
         creatorLanguages: [],
         creatorGender: Gender.other,
         creatorAge: 0,
-        participantImages: {},
-        participantLocations: {},
       );
       saveMiittiToFirebase(activity);
     }

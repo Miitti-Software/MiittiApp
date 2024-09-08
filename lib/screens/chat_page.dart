@@ -205,7 +205,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
       var receivers = await ref
           .read(firestoreServiceProvider)
-          .fetchUsersByUids(widget.activity.participants.toList());
+          .fetchUsersByUids(widget.activity.participants.keys.toList());
       for (MiittiUser receiver in receivers) {
         if (receiver.uid == ref.read(firestoreServiceProvider).uid) continue;
         ref.read(notificationServiceProvider).sendMessageNotification(

@@ -12,7 +12,7 @@ abstract class MiittiActivity {
   DateTime? endTime;
   bool paid;
   int maxParticipants;
-  List<String> participants;
+  Map<String, Map<String, dynamic>> participants;
 
   MiittiActivity({
     required this.id,

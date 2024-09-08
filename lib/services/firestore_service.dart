@@ -620,7 +620,10 @@ Future<MiittiUser?> loadUserData(String userId) async {
       activityModel.creatorAge = calculateAge(_miittiUser!.birthday);
       activityModel.creatorGender = _miittiUser!.gender;
       activityModel.id = generateCustomId();
-      activityModel.participants.add(_miittiUser!.uid);
+      activityModel.participants[_miittiUser!.uid] = {
+        'name': _miittiUser!.name,
+        'image': _miittiUser!.profilePicture,
+      };
 
       await _activityDocRef(activityModel.id)
           .set(activityModel.toMap())
@@ -669,7 +672,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
       final activity = commercial
           ? CommercialActivity.fromFirestore(snapshot)
           : UserCreatedActivity.fromFirestore(snapshot);
-      return activity.participants.contains(uid);
+      return activity.participants.keys.contains(uid);
     }
 
     return false;

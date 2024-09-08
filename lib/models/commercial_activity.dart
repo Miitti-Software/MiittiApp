@@ -42,7 +42,10 @@ class CommercialActivity extends MiittiActivity {
       endTime: data['endTime'],
       paid: data['paid'],
       maxParticipants: data['maxParticipants'],
-      participants: List<String>.from(data['participants']),
+      participants: (data['participants'] as Map<String, dynamic>).map((key, value) => MapEntry(key, {
+        'name': value['name'],
+        'profilePicture': value['profilePicture'],
+      })),
       linkTitle: data['linkTitle'],
       hyperlink: data['hyperlink'],
       bannerImage: data['bannerImage'],

@@ -5,8 +5,6 @@ import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 
 class UserCreatedActivity extends MiittiActivity {
-  Map<String, LatLng> participantLocations;
-  Map<String, String> participantImages;
   List<String> requests;
   List<Language> creatorLanguages;
   Gender creatorGender;
@@ -31,11 +29,7 @@ class UserCreatedActivity extends MiittiActivity {
     required this.creatorLanguages,
     required this.creatorGender,
     required this.creatorAge,
-    required this.participantImages,
-    required this.participantLocations,
   });
-
-  // TODO: Consolidate images, locations etc to participants map
 
   factory UserCreatedActivity.fromFirestore(DocumentSnapshot snapshot) {
     final data = snapshot.data() as Map<String, dynamic>;
@@ -53,13 +47,15 @@ class UserCreatedActivity extends MiittiActivity {
       endTime: data['endTime']?.toDate(),
       paid: data['paid'],
       maxParticipants: data['maxParticipants'],
-      participants: List<String>.from(data['participants']),
+      participants: (data['participants'] as Map<String, dynamic>).map((key, value) => MapEntry(key, {
+        'name': value['name'],
+        'profilePicture': value['profilePicture'],
+        'location': value['location'] != null ? LatLng(value['location']['latitude'], value['location']['longitude']) : null,
+      })),
       requests: List<String>.from(data['requests']),
       creatorLanguages: List.from(data['creatorLanguages']).map((elem) => Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == elem.toLowerCase())).toList(),
       creatorGender: Gender.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['creatorGender'].toLowerCase()),
       creatorAge: data['creatorAge'],
-      participantLocations: (data['participantLocations'] as Map<String, dynamic>).map((key, value) => MapEntry(key, LatLng(value['latitude'], value['longitude']))),
-      participantImages: Map<String, String>.from(data['participantImages']),
     );
   }
 
@@ -78,12 +74,18 @@ class UserCreatedActivity extends MiittiActivity {
       'endTime': endTime,
       'paid': paid,
       'maxParticipants': maxParticipants,
-      'participants': participants,
+      'participants': participants.map((key, value) => MapEntry(key, {
+        'name': value['name'],
+        'image': value['image'],
+        'location': value['location'] != null ? {
+          'latitude': (value['location'] as LatLng).latitude,
+          'longitude': (value['location'] as LatLng).longitude,
+        } : null,
+      })),
       'requests': requests,
-      'creatorLanguages': creatorLanguages,
+      'creatorLanguages': creatorLanguages.map((e) => e.toString().split('.').last).toList(),
       'creatorGender': creatorGender.name,
       'creatorAge': creatorAge,
-      'participantLocations': participantLocations.map((key, value) => MapEntry(key, {'latitude': value.latitude, 'longitude': value.longitude})),
     };
   }
 }

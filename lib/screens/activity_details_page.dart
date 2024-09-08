@@ -357,6 +357,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
     if (userStatus != UserStatusInActivity.none) return;
     if (isAnonymous) return;
     FirestoreService firestore = ref.read(firestoreServiceProvider);
+    final userData = ref.read(userStateProvider.notifier).data;
     String uid = ref.read(userStateProvider.notifier).uid!;
     firestore
         .joinOrRequestActivity(widget.myActivity.id)
@@ -372,7 +373,10 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
       } else if (newStatus == UserStatusInActivity.joined) {
         setState(() {
           userStatus = UserStatusInActivity.joined;
-          widget.myActivity.participants.add(uid);
+          widget.myActivity.participants[uid] = {
+            'name': userData.name,
+            'profilePicture': userData.profilePicture,
+          };
         });
       }
     });
@@ -421,7 +425,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
   Future<List<MiittiUser>> fetchUsersJoinedActivity() {
     return ref
         .read(firestoreServiceProvider)
-        .fetchUsersByUids(widget.myActivity.participants.toList());
+        .fetchUsersByUids(widget.myActivity.participants.keys.toList());
   }
 
   UserStatusInActivity getStatusInActivity() {
@@ -430,7 +434,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
       return UserStatusInActivity.none;
     }
     final userId = ref.read(userStateProvider.notifier).data.uid;
-    return widget.myActivity.participants.contains(userId)
+    return widget.myActivity.participants.keys.contains(userId)
         ? UserStatusInActivity.joined
         : widget.myActivity.requests.contains(userId)
             ? UserStatusInActivity.requested

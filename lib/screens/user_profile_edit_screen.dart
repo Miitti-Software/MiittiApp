@@ -421,7 +421,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
       if (myActivities.length == 1 &&
           myActivities.first.participants.length <
               myActivities.first.maxParticipants &&
-          !myActivities.first.participants.contains(widget.user.uid) &&
+          !myActivities.first.participants.keys.contains(widget.user.uid) &&
           !myActivities.first.requests.contains(widget.user.uid)) {
         ref
             .read(firestoreServiceProvider)
@@ -570,7 +570,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                     ),
                     onTap: () {
                       if (activity.participants.length < activity.maxParticipants &&
-                          !activity.participants.contains(widget.user.uid) &&
+                          !activity.participants.keys.contains(widget.user.uid) &&
                           !activity.requests.contains(widget.user.uid)) {
                         ref
                             .read(firestoreServiceProvider)

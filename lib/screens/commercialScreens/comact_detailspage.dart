@@ -386,6 +386,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
   }
 
   void joinActivity() async {
+    final user = ref.read(userStateProvider.notifier).data;
     checkIfJoined();
     if (!isAlreadyJoined) {
       await ref
@@ -393,7 +394,10 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
           .joinCommercialActivity(widget.myActivity.id);
       setState(() {
         isAlreadyJoined = true;
-        widget.myActivity.participants.add(ref.read(userStateProvider.notifier).data.uid!);
+        widget.myActivity.participants[user.uid!] = {
+          'name': user.name,
+          'profilePicture': user.profilePicture,
+        };
       });
     }
   }
@@ -436,7 +440,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
   void fetchUsersJoinedActivity() async {
     ref
         .read(firestoreServiceProvider)
-        .fetchUsersByUids(widget.myActivity.participants.toList())
+        .fetchUsersByUids(widget.myActivity.participants.keys.toList())
         .then((value) => setState(() {
               participantList = value;
               participantCount = value.length;
