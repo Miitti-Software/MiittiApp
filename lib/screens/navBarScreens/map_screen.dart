@@ -165,10 +165,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       location = LatLng(activity.latitude- 0.001, activity.longitude);
       zoom = 17.0;
     });
-    ActivityBottomSheet.show(
-      context: context,
-      activity: activity as UserCreatedActivity,
-    );
+    context.go('/activity/${activity.id}', extra: activity);
+    // ActivityBottomSheet.show(
+    //   context: context,
+    //   activity: activity as UserCreatedActivity,
+    // );
     // Navigator.push(
     //   context,
     //   MaterialPageRoute(

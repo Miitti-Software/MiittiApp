@@ -31,10 +31,9 @@ class UserCreatedActivity extends MiittiActivity {
     required this.creatorAge,
   });
 
-  factory UserCreatedActivity.fromFirestore(DocumentSnapshot snapshot) {
-    final data = snapshot.data() as Map<String, dynamic>;
+  factory UserCreatedActivity.fromMap(Map<String, dynamic> data) {
     return UserCreatedActivity(
-      id: snapshot.id,
+      id: data['id'],
       title: data['title'],
       description: data['description'],
       category: data['category'],
@@ -57,6 +56,11 @@ class UserCreatedActivity extends MiittiActivity {
       creatorGender: Gender.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['creatorGender'].toLowerCase()),
       creatorAge: data['creatorAge'],
     );
+  }
+
+  factory UserCreatedActivity.fromFirestore(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return UserCreatedActivity.fromMap(data);
   }
 
   Map<String, dynamic> toMap() {

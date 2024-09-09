@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/routing/modal_page.dart';
+import 'package:miitti_app/widgets/data_containers/activity_details.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_push_notifications.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/input_activities_screen.dart';
@@ -48,7 +52,7 @@ class AppRouter {
 
   late final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
     refreshListenable: ValueNotifier<bool>(ref.watch(userStateProvider.notifier).isSignedIn),
     initialLocation: '/',
     routes: _buildRoutes(),
@@ -117,7 +121,15 @@ class AppRouter {
             path: '/',
             pageBuilder: _buildNoTransitionPage(const MapScreen()),
             routes: [
-              // TODO: Activity details route
+              GoRoute(
+                parentNavigatorKey: _rootNavigatorKey,
+                path: 'activity/:id',
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  final id = state.pathParameters['id'];
+                  final activity = state.extra as UserCreatedActivity;
+                  return ModalPage<void>(child: ActivityDetails(activity: activity));
+                },
+              ),
             ],
           ),
         ],
