@@ -97,7 +97,7 @@ class _ActivityBottomSheetState extends ConsumerState<ActivityDetails> {
                           setState(() {
                             linkCreated = true;
                           });
-                          await Clipboard.setData(ClipboardData(text: GoRouter.of(context).toString()));    // TODO: Implement deep linking
+                          await Clipboard.setData(ClipboardData(text: 'https://miittiappdev.web.app/activity/${widget.activity.id}'));    // TODO: Implement deep linking
                           ScaffoldMessenger.of(context).showSnackBar(                                       // TODO: Use Flutter toast?
                             const SnackBar(content: Text('Route copied to clipboard!')),
                           );
@@ -224,7 +224,7 @@ class _ActivityBottomSheetState extends ConsumerState<ActivityDetails> {
               const SizedBox(height: AppSizes.minVerticalPadding),
               BackwardButton(
                 buttonText: 'Back',
-                onPressed: () {}        // TODO: Implement going back
+                onPressed: () { context.pop(); }        // TODO: Implement going back
               ),
               const SizedBox(height: AppSizes.minVerticalEdgePadding),
             ],
@@ -234,3 +234,9 @@ class _ActivityBottomSheetState extends ConsumerState<ActivityDetails> {
     );
   }
 }
+
+// TODO: Add reporting button
+
+// TODO: What happens when creator is deleted?
+
+// TODO: When are activities no longer shown? If endTime is in the past? endTime is by default 1 hour after startTime

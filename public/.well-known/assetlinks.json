@@ -1,0 +1,38 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.miittisoftwareoy.miitti_app.dev",
+      "sha256_cert_fingerprints": [
+        "92:5C:03:FB:0D:52:B0:8E:A8:F1:D0:E4:01:B0:32:59:0A:8B:9A:C0:5F:49:AE:59:CA:5D:66:5D:4F:E2:1F:47"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.miittisoftwareoy.miitti_app.stg",
+      "sha256_cert_fingerprints": [
+        "92:5C:03:FB:0D:52:B0:8E:A8:F1:D0:E4:01:B0:32:59:0A:8B:9A:C0:5F:49:AE:59:CA:5D:66:5D:4F:E2:1F:47"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.miittisoftwareoy.miitti_app",
+      "sha256_cert_fingerprints": [
+        "92:5C:03:FB:0D:52:B0:8E:A8:F1:D0:E4:01:B0:32:59:0A:8B:9A:C0:5F:49:AE:59:CA:5D:66:5D:4F:E2:1F:47"
+      ]
+    }
+  }
+]

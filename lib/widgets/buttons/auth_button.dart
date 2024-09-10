@@ -85,7 +85,7 @@ class _AuthButtonState extends ConsumerState<AuthButton> {
         if (!mounted) return;
         
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          context.go(userExists ? '/map' : '/login/welcome');
+          context.go(userExists ? '/' : '/login/welcome');
         });
 
       } else {

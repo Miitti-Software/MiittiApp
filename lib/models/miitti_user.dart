@@ -14,7 +14,7 @@ class MiittiUser {
   Gender gender;
   DateTime birthday;
   List<Language> languages;
-  String occupationalStatus;
+  String occupationalStatus;  // make into list
   String? organization;
   List<String> areas;
   List<String> favoriteActivities;
@@ -24,6 +24,8 @@ class MiittiUser {
   DateTime registrationDate;
   DateTime lastActive;
   String fcmToken;
+
+  // Add marketing preferences here
 
   MiittiUser(
       {required this.uid,

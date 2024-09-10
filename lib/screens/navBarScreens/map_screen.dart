@@ -26,7 +26,6 @@ import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 import 'package:miitti_app/widgets/data_containers/ad_banner.dart';
 import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/widgets/overlays/activity_bottom_sheet.dart';
 import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:path_provider/path_provider.dart';

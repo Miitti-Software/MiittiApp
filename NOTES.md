@@ -211,6 +211,73 @@ https://medium.com/@vimehraa29/flutter-go-router-the-crucial-guide-41dc615045bb
 
 https://stackoverflow.com/questions/75233117/how-can-you-change-url-in-the-web-browser-without-named-routes
 
+## Firebase hosting and deep links
+
+Deep links setup guide for Android: https://docs.flutter.dev/cookbook/navigation/set-up-app-links 
+Deep links setup guide for iOS: https://docs.flutter.dev/cookbook/navigation/set-up-universal-links
+
+Webflow does not support uploading `assetlinks.json` to `/.well-known/` and therefore the miitti.app domain cannot be used without hosting a reverse proxy (up to 30€ / month). However, a firebase project domain can be used instead.
+
+To do this, set up firebase hosting: https://firebase.google.com/docs/hosting/quickstart and add the `assetlinks.json` and apple variant via `firebase deploy --only hosting`. Be careful, running `firebase deploy` wiped out the entire Remote Config configureation for some reason. Also make sure that `AndroidManifest.xml` contains the correct android:host.
+
+When using DevTools validator, it attempts to access a route of the form `/c:/rest-of-the-link`, which fails claiming that you're trying to access a non flutter project. Change the path to `C:/rest-of-the-link` and it should work: https://github.com/flutter/devtools/issues/7747.
+
+Add headers to `firebase.json` under hosting so that the link is correctly processed and deploy to hosting: 
+
+```
+"hosting": {
+    "public": "public",
+    "headers": [
+      {
+        "source": "/.well-known/*",
+        "headers": [
+          {"key": "Content-Type", "value": "application/json"}
+        ]
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+```
+
+
 ## Publishing
 
 Make sure to keep appVersion in `main.dart` up to date!
+
+
+
+
+
+
+
+
+
+
+
+## Miscellaneous
+
+This can be used to continue from where one left off in the sign up process in combination with LocalStorageService
+
+```
+
+...
+
+if (firstRedirect && userState.isAnonymous && userState.data.gender != null) {
+    firstRedirect = false;
+    return '/login/complete-profile/gender';
+}
+
+if (firstRedirect && userState.isAnonymous && userState.data.birthday != null) {
+    firstRedirect = false;
+    return '/login/complete-profile/birthday';
+}
+
+if (firstRedirect && userState.isAnonymous && userState.data.name != null) {
+    firstRedirect = false;
+    return '/login/complete-profile/name';
+}
+```

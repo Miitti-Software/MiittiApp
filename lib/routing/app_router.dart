@@ -39,7 +39,7 @@ import 'package:miitti_app/screens/update_screen.dart';
 class AppRouter {
   final WidgetRef ref;
   String previousRoute = '/';
-  bool hasRedirectedToSoftUpdate = false;
+  bool firstRedirect = true;
 
   AppRouter(this.ref);
 
@@ -302,13 +302,14 @@ class AppRouter {
       return previousRoute;
     }
 
-    if (!hasRedirectedToSoftUpdate && currentAppVersion < latestAppVersion && state.matchedLocation == '/') {
+    if (firstRedirect && currentAppVersion < latestAppVersion && state.matchedLocation == '/') {
       previousRoute = state.matchedLocation;
-      hasRedirectedToSoftUpdate = true;
+      firstRedirect = false;
       return '/update/false';
     }
 
     if (state.matchedLocation == '/login/complete-profile') {
+      firstRedirect = false;
       return '/login/complete-profile/name';  // First step of the profile completion process
     }
 

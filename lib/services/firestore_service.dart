@@ -634,7 +634,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
       });
     } catch (e) {
       showSnackBar(context, e.toString(), AppStyle.red);
-      context.go('/map');
+      context.go('/');
     }
   }
 

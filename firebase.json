@@ -82,5 +82,21 @@
   },
   "remoteconfig": {
     "template": "remoteconfig.template.json"
+  },
+  "hosting": {
+    "public": "public",
+    "headers": [
+      {
+        "source": "/.well-known/*",
+        "headers": [
+          {"key": "Content-Type", "value": "application/json"}
+        ]
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
   }
 }

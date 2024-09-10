@@ -88,7 +88,7 @@ class _AcceptNormsScreenState extends ConsumerState<AcceptNormsScreen> {
             onPressed: () {
               if (Set.from(acceptedNorms).containsAll(norms)) {
                   userState.createUser();
-                  context.push('/map');
+                  context.push('/');
               } else {
                 ErrorSnackbar.show(
                     context, config.get<String>('invalid-norms-missing'));
