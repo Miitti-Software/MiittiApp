@@ -44,7 +44,10 @@ class FirestoreService {
   bool get isLoading => _isLoading;
 
   FirestoreService(this.ref) : _firestore = FirebaseFirestore.instance{
-    _firestore.settings = const Settings(persistenceEnabled: true);
+    _firestore.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: 100 * 1024 * 1024, // 500 MB
+    );
   }
 
   Future<bool> saveUserData({required MiittiUser userModel, required File? image}) async {
@@ -70,6 +73,50 @@ Future<MiittiUser?> loadUserData(String userId) async {
     }
   }
 
+  Future<void> deleteUser(String uid) async {
+    try {
+      final participantQuery = _firestore.collection(_activitiesCollection).where('participants', arrayContains: uid);
+      final requestQuery = _firestore.collection(_activitiesCollection).where('requests', arrayContains: uid);
+      final creatorQuery = _firestore.collection(_activitiesCollection).where('creator', isEqualTo: uid);
+
+      final commercialParticipantQuery = _firestore.collection(_commercialActivitiesCollection).where('participants', arrayContains: uid);
+
+      // Delete the deleted user from participants list in activities where they are a participant
+      for (DocumentSnapshot doc in (await participantQuery.get()).docs) {
+        final activity = UserCreatedActivity.fromFirestore(doc);
+        await doc.reference.update(activity.removeParticipant(uid));
+      }
+
+      // Delete the deleted user from requests list in activities where they requested to join
+      for (DocumentSnapshot doc in (await requestQuery.get()).docs) {
+        final activity = UserCreatedActivity.fromFirestore(doc);
+        await doc.reference.update(activity.removeRequest(uid));
+      }
+
+      // Archive activities where the deleted user is the creator and where there are no participants by setting their endTime to now
+      for (DocumentSnapshot doc in (await creatorQuery.get()).docs) {
+        final activity = UserCreatedActivity.fromFirestore(doc);
+        activity.removeParticipant(uid);
+        activity.endTime = DateTime.now();
+        await doc.reference.update(activity.toMap());
+      }
+
+      // Delete the deleted user from participants list in commercial activities where they are a participant
+      for (DocumentSnapshot doc in (await commercialParticipantQuery.get()).docs) {
+        final commercialActivity = CommercialActivity.fromFirestore(doc);
+        await doc.reference.update(commercialActivity.removeParticipant(uid));
+      }
+
+      await _firestore.collection(_usersCollection).doc(uid).delete();
+      _miittiUser = null; // TODO: Delete when redundant
+
+    } catch (e) {
+      debugPrint('Got an error deleting user $e');
+    }
+  }
+
+
+  // TODO: Fetch only once upon app startup and set up a listener for changes
   Future<List<MiittiActivity>> fetchFilteredActivities() async {
     try {
       final userState = ref.read(userStateProvider.notifier);
@@ -77,10 +124,13 @@ Future<MiittiUser?> loadUserData(String userId) async {
       final filterSettings = ref.read(activitiesFilterSettingsProvider);
 
       Query query = _firestore.collection(_activitiesCollection)
-        .where('maxParticipants', isLessThanOrEqualTo: filterSettings.maxParticipants)
-        .where('maxParticipants', isGreaterThanOrEqualTo: filterSettings.minParticipants)
+        .where(Filter.or(
+          Filter('endTime', isNull: true),
+          Filter('endTime', isGreaterThanOrEqualTo: DateTime.now())))
         .where('creatorAge', isGreaterThanOrEqualTo: filterSettings.minAge)
-        .where('creatorAge', isLessThanOrEqualTo: filterSettings.maxAge);
+        .where('creatorAge', isLessThanOrEqualTo: filterSettings.maxAge)
+        .where('maxParticipants', isLessThanOrEqualTo: filterSettings.maxParticipants)
+        .where('maxParticipants', isGreaterThanOrEqualTo: filterSettings.minParticipants);
 
       if (filterSettings.categories.isNotEmpty) {
         query = query.where('category', whereIn: filterSettings.categories);
@@ -134,6 +184,8 @@ Future<MiittiUser?> loadUserData(String userId) async {
       return [];
     }
   }
+
+
 
 
 
@@ -220,19 +272,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
     }
   }
 
-  Future<void> deleteUser({String? uid}) async {
-    uid ??= this.uid;
-    if (isAnonymous) {
-      debugPrint("Cannot delete anonymous user");
-      return;
-    }
-    try {
-      await _firestore.collection(_usersCollection).doc(uid).delete();
-      _miittiUser = null;
-    } catch (e) {
-      debugPrint('Got an error deleting user $e');
-    }
-  }
+  
 
   Future<UserStatusInActivity> joinOrRequestActivity(String activityId) async {
     if (isAnonymous) {
@@ -619,22 +659,29 @@ Future<MiittiUser?> loadUserData(String userId) async {
       activityModel.creator = _miittiUser!.uid;
       activityModel.creatorAge = calculateAge(_miittiUser!.birthday);
       activityModel.creatorGender = _miittiUser!.gender;
+      activityModel.creatorLanguages = _miittiUser!.languages;
       activityModel.id = generateCustomId();
-      activityModel.participants[_miittiUser!.uid] = {
-        'name': _miittiUser!.name,
-        'image': _miittiUser!.profilePicture,
-      };
+      // activityModel.participants = [_miittiUser!.uid];
+      activityModel.addParticipant(_miittiUser!.uid, _miittiUser!);
+      // activityModel.participantsInfo[_miittiUser!.uid] = {
+      //   'name': _miittiUser!.name,
+      //   'profilePicture': _miittiUser!.profilePicture,
+      // };
 
       await _activityDocRef(activityModel.id)
           .set(activityModel.toMap())
           .then((value) {
         showSnackBar(context, 'Miittisi on luotu onnistuneesti!', Colors.green);
 
-        pushNRemoveUntil(context, const IndexPage());
+        if (context.mounted) {
+          context.go('/');
+        }
       });
     } catch (e) {
       showSnackBar(context, e.toString(), AppStyle.red);
-      context.go('/');
+      if (context.mounted) {
+        context.go('/');
+      }
     }
   }
 
@@ -672,7 +719,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
       final activity = commercial
           ? CommercialActivity.fromFirestore(snapshot)
           : UserCreatedActivity.fromFirestore(snapshot);
-      return activity.participants.keys.contains(uid);
+      return activity.participantsInfo.keys.contains(uid);
     }
 
     return false;

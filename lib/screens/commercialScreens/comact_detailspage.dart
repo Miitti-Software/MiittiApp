@@ -394,7 +394,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
           .joinCommercialActivity(widget.myActivity.id);
       setState(() {
         isAlreadyJoined = true;
-        widget.myActivity.participants[user.uid!] = {
+        widget.myActivity.participantsInfo[user.uid!] = {
           'name': user.name,
           'profilePicture': user.profilePicture,
         };
@@ -440,7 +440,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
   void fetchUsersJoinedActivity() async {
     ref
         .read(firestoreServiceProvider)
-        .fetchUsersByUids(widget.myActivity.participants.keys.toList())
+        .fetchUsersByUids(widget.myActivity.participantsInfo.keys.toList())
         .then((value) => setState(() {
               participantList = value;
               participantCount = value.length;

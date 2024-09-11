@@ -9,7 +9,6 @@ import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
 import 'package:miitti_app/widgets/fields/filled_textfield.dart';
 
-// TODO: How is the scenario where the user is signed in with one email and then tries to sign in with another email handled?
 class InputEmailScreen extends ConsumerWidget {
   const InputEmailScreen({super.key});
 

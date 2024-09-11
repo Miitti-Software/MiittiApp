@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 
 class CommercialActivity extends MiittiActivity {
   String linkTitle;
@@ -21,6 +22,7 @@ class CommercialActivity extends MiittiActivity {
     required super.paid,
     required super.maxParticipants,
     required super.participants,
+    required super.participantsInfo,
     required this.linkTitle,
     required this.hyperlink,
     required this.bannerImage,
@@ -42,7 +44,8 @@ class CommercialActivity extends MiittiActivity {
       endTime: data['endTime'],
       paid: data['paid'],
       maxParticipants: data['maxParticipants'],
-      participants: (data['participants'] as Map<String, dynamic>).map((key, value) => MapEntry(key, {
+      participants: List<String>.from(data['participants']),
+      participantsInfo: (data['participantsInfo'] as Map<String, dynamic>).map((key, value) => MapEntry(key, {
         'name': value['name'],
         'profilePicture': value['profilePicture'],
       })),
@@ -50,5 +53,32 @@ class CommercialActivity extends MiittiActivity {
       hyperlink: data['hyperlink'],
       bannerImage: data['bannerImage'],
     );
+  }
+
+  Map<String, dynamic> addParticipant(String userId, MiittiUser userInfo) {
+    participants.add(userId);
+    participantsInfo[userId] = {
+      'name': userInfo.name,
+      'profilePicture': userInfo.profilePicture,
+    };
+    return {
+      'participants': participants,
+      'participantsInfo': participantsInfo.map((key, value) => MapEntry(key, {
+        'name': value['name'],
+        'profilePicture': value['profilePicture'],
+      })),
+    };
+  }
+
+  Map<String, dynamic> removeParticipant(String userId) {
+    participants.remove(userId);
+    participantsInfo.remove(userId);
+    return {
+      'participants': participants,
+      'participantsInfo': participantsInfo.map((key, value) => MapEntry(key, {
+        'name': value['name'],
+        'profilePicture': value['profilePicture'],
+      })),
+    };
   }
 }

@@ -125,9 +125,8 @@ class AppRouter {
                 parentNavigatorKey: _rootNavigatorKey,
                 path: 'activity/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
-                  final id = state.pathParameters['id'];
-                  final activity = state.extra as UserCreatedActivity;
-                  return ModalPage<void>(child: ActivityDetails(activity: activity));
+                  final id = state.pathParameters['id'] as String;
+                  return ModalPage<void>(child: ActivityDetails(activityId: id));
                 },
               ),
             ],

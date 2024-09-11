@@ -597,7 +597,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               //checking if the user has been invited into other activities
               bool isInvited = singleActivity is UserCreatedActivity
                   ? !singleActivity.requests.contains(userId) &&
-                      !singleActivity.participants.keys.contains(userId)
+                      !singleActivity.participantsInfo.keys.contains(userId)
                   : false;
 
               return buildActivityItem(

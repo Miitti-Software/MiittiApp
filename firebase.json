@@ -93,6 +93,13 @@
         ]
       }
     ],
+    "redirects": [
+      {
+        "source": "**",
+        "destination": "https://www.miitti.app/",
+        "type": 301
+      }
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",

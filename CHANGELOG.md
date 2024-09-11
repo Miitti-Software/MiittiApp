@@ -47,6 +47,7 @@ Refactoring
 - Language-based loading of Remote Config values (multi-language support)
 - A more robust routing solution using [GoRouter](https://pub.dev/packages/go_router) for deep linking and redirecting support as well as for a more uniform routing interface in code
 - Profile pictures are compressed and smaller thumbnails are created for each new one
+- Deep links to activities
 
 ### Fixed
 
@@ -61,6 +62,9 @@ Refactoring
 - Refactored all user-related variables from `AuthService` and `FirebaseService` to `UserState` and `UserData` respectively in `user.dart` in order to avoid cross-dependencies.
 - Refactored all screens and UI components for clarity, reduced dependencies, centralized specification and loading of content and constants as well as overall future-proofness.
 - Refactored `CompleteProfileOnboard` into multiple separate screens, each interacting with `UserData`, which is saved to Firestore as a `MiittiUser` upon completion of the profile. Fixes back navigation and information persistence along with making it significantly easier to maintain the pages in the future. 
+- Anonymous profiles can be deleted as well
+- Deleting a profile removes the profile from all requests, participant lists and -infos as well as immediately archives the miittis created by them
+- Added activity `endTime` as a query condition to filter out past miittis but keep them in firestore
 
 ### Removed
 

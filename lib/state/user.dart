@@ -144,13 +144,21 @@ class UserState extends StateNotifier<User?> {
   }
 
   Future<void> deleteUser() async {
-    await _firebaseStorageService.deleteUserFolder(uid!);
-    await _authService.deleteUser();
-    await _firestoreService.deleteUser();
-    _firestoreService.reset();
-    _userData.clear();
-    _localStorageService.clear();
-    state = null;
+    if (!isAnonymous) {
+      await _firebaseStorageService.deleteUserFolder(data.uid!);
+      await _firestoreService.deleteUser(data.uid!);
+      await _authService.deleteUser();
+      _firestoreService.reset();
+      _userData.clear();
+      await _localStorageService.clear();
+      state = null;
+    } else {
+      await _authService.deleteUser();
+      _firestoreService.reset();
+      _userData.clear();
+      _localStorageService.clear();
+      state = null;
+    }
   }
 }
 

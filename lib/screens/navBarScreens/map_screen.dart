@@ -31,6 +31,9 @@ import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
+
+// TODO: Cache the map tiles
+// TODO: Cache the loaded activities and access the cached ones with activity details
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
 
@@ -39,7 +42,7 @@ class MapScreen extends ConsumerStatefulWidget {
 }
 
 class _MapScreenState extends ConsumerState<MapScreen> {
-  late LatLng location;
+  late LatLng location;   // TODO: Move to global state
   double zoom = 13.0;
 
   List<MiittiActivity> _activities = [];
@@ -161,25 +164,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   // TODO: Delete when redundant
   goToActivityDetailsPage(MiittiActivity activity) {
     setState(() {
-      location = LatLng(activity.latitude- 0.001, activity.longitude);
+      location = LatLng(activity.latitude- 0.001, activity.longitude);    // TODO: Make this work with deep links as well
       zoom = 17.0;
     });
-    context.go('/activity/${activity.id}', extra: activity);
-    // ActivityBottomSheet.show(
-    //   context: context,
-    //   activity: activity as UserCreatedActivity,
-    // );
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => activity is UserCreatedActivity
-    //         ? ActivityDetailsPage(
-    //             myActivity: activity,
-    //           )
-    //         : ComActDetailsPage(myActivity: activity as CommercialActivity),
-    //   ),
-    // );
+    // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
+    context.go('/activity/${activity.id}');
   }
+
+  // TODO: Don't let the user create an activity from the map screen if they are not signed in
+  // TODO: Do let the user see commercial activity details from the map screen
 
   @override
   Widget build(BuildContext context) {
@@ -313,9 +306,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 List<String> addressParts = activityAddress.split(',');
                 String cityName = addressParts[0].trim();
 
-                int participants = activity.participants.isEmpty
+                int participants = activity.participantsInfo.isEmpty
                     ? 0
-                    : activity.participants.length;
+                    : activity.participantsInfo.length;
 
                 return InkWell(
                   onTap: () => goToActivityDetailsPage(activity),
