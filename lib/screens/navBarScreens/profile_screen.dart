@@ -242,7 +242,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         horizontal: 15,
       ),
       child: Container(
-        height: miittiUser.organization != null ? 330 : 240,
+        height: miittiUser.organizations != null ? 330 : 240,
         margin: const EdgeInsets.only(
           left: 5,
           top: 10,
@@ -258,9 +258,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             buildDivider(),
             buildUserDetailTile(
                 Icons.g_translate, miittiUser.languages.map((e) => e.name).join(', ')),
-            miittiUser.organization != null ? buildDivider() : Container(),
-            miittiUser.organization != null
-                ? buildUserDetailTile(Icons.next_week, miittiUser.organization!)
+            miittiUser.organizations.isNotEmpty ? buildDivider() : Container(),
+            miittiUser.organizations.isNotEmpty
+                ? buildUserDetailTile(Icons.next_week, miittiUser.organizations[0])
                 : Container(),
           ],
         ),

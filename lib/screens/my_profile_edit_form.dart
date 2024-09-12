@@ -57,7 +57,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
 
     selectedLanguages = widget.user.languages.map((lang) => Language.values.firstWhere((e) => e.name == lang)).toSet();
     userAreaController.text = widget.user.areas.join(', ');  // Assuming areas is a list
-    userSchoolController.text = widget.user.organization ?? '';
+    userSchoolController.text = (widget.user.organizations != null ? (widget.user.organizations!.isNotEmpty ? widget.user.organizations![0] : '') : '');
     userChoices = widget.user.qaAnswers;
   }
 
@@ -406,7 +406,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       name: miittiUser.name,
                       email: miittiUser.email,
                       uid: miittiUser.uid,
-                      occupationalStatus: miittiUser.occupationalStatus,
+                      occupationalStatuses: miittiUser.occupationalStatuses,
                       phoneNumber: miittiUser.phoneNumber,
                       birthday: miittiUser.birthday,
                       areas: [userAreaController.text.trim()],  // TODO: Make into an actual list
@@ -419,7 +419,8 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       languages: selectedLanguages.toList(),
                       invitedActivities: miittiUser.invitedActivities,
                       lastActive: miittiUser.lastActive,
-                      organization: userSchoolController.text,
+                      organizations: [userSchoolController.text],
+                      representedOrganizations: [],
                       fcmToken: miittiUser.fcmToken,
                       registrationDate: miittiUser.registrationDate,
                     );

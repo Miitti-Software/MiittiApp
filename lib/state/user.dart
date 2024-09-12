@@ -84,8 +84,9 @@ class UserState extends StateNotifier<User?> {
         gender: data.gender!,
         birthday: data.birthday!,
         languages: data.languages,
-        occupationalStatus: data.occupationalStatus!,
-        organization: data.organization,
+        occupationalStatuses: data.occupationalStatuses,
+        organizations: data.organizations,
+        representedOrganizations: [],
         areas: data.areas,
         favoriteActivities: data.favoriteActivities,
         qaAnswers: data.qaAnswers,
@@ -187,8 +188,9 @@ class UserData {
   Gender? gender;
   DateTime? birthday;
   List<Language> languages = [];
-  String? occupationalStatus;
-  String? organization;
+  List<String> occupationalStatuses = [];
+  List<String> organizations = [];
+  List<String> representedOrganizations = [];
   List<String> areas = [];
   List<String> favoriteActivities = [];
   Map<String, String> qaAnswers = {};
@@ -208,8 +210,9 @@ class UserData {
       gender = miittiUser.gender;
       birthday = miittiUser.birthday;
       languages = miittiUser.languages;
-      occupationalStatus = miittiUser.occupationalStatus;
-      organization = miittiUser.organization;
+      occupationalStatuses = miittiUser.occupationalStatuses;
+      organizations = miittiUser.organizations ?? [];
+      representedOrganizations = miittiUser.representedOrganizations ?? [];
       areas = miittiUser.areas;
       favoriteActivities = miittiUser.favoriteActivities;
       qaAnswers = miittiUser.qaAnswers;
@@ -230,8 +233,9 @@ class UserData {
   Gender? get getGender => gender;
   DateTime? get getBirthday => birthday;
   List<Language> get getLanguages => languages;
-  String? get getOccupationalStatus => occupationalStatus;
-  String? get getOrganization => organization;
+  List<String>? get getOccupationalStatus => occupationalStatuses;
+  List<String>? get getrepresentedOrganizations => representedOrganizations;
+  List<String>? get getOrganization => organizations;
   List<String> get getArea => areas;
   List<String> get getFavoriteActivities => favoriteActivities;
   Map<String, String> get getQaAnswers => qaAnswers;
@@ -250,8 +254,9 @@ class UserData {
   void setGender(Gender? value) => gender = value;
   void setBirthday(DateTime? value) => birthday = value;
   void setLanguages(List<Language> value) => languages = value;
-  void setOccupationalStatus(String? value) => occupationalStatus = value;
-  void setOrganization(String? value) => organization = value;
+  void setOccupationalStatus(List<String> value) => occupationalStatuses = value;
+  void setOrganization(List<String> value) => organizations = value;
+  void setRepresentedOrganizations(List<String> value) => representedOrganizations = value;
   void setAreas(List<String> value) => areas = value;
   void setFavoriteActivities(List<String> value) => favoriteActivities = value;
   void setQaAnswers(Map<String, String> value) => qaAnswers = value;
@@ -270,8 +275,9 @@ class UserData {
       gender: gender!,
       birthday: birthday!,
       languages: languages,
-      occupationalStatus: occupationalStatus!,
-      organization: organization,
+      occupationalStatuses: occupationalStatuses!,
+      organizations: organizations,
+      representedOrganizations: representedOrganizations,
       areas: areas,
       favoriteActivities: favoriteActivities,
       qaAnswers: qaAnswers,
@@ -291,8 +297,9 @@ class UserData {
     gender = null;
     birthday = null;
     languages = [];
-    occupationalStatus = null;
-    organization = null;
+    occupationalStatuses = [];
+    organizations = [];
+    representedOrganizations = [];
     areas = [];
     favoriteActivities = [];
     qaAnswers = {};
