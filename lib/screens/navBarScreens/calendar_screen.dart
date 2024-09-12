@@ -178,7 +178,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                   if (confirmed != null && confirmed) {
                                     ref
                                         .read(firestoreServiceProvider)
-                                        .removeActivity(activity.id)
+                                        .deleteActivity(activity.id)
                                         .then((value) {
                                       setState(() {
                                         fetchDataFromFirebase();

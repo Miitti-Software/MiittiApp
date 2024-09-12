@@ -362,14 +362,14 @@ class _CreateMiittiOnboardingState
               getCustomTextFormField(
                 controller: titleController,
                 hintText: 'Miittisi ytimekäs otsikko',
-                maxLength: 30,
+                maxLength: 100,
                 maxLines: 1,
               ),
               gapH20,
               getCustomTextFormField(
                 controller: subTitleController,
                 hintText: 'Mitä muuta haluaisit kertoa miitistä?',
-                maxLength: 150,
+                maxLength: 5000,
                 maxLines: 4,
               ),
               gapH20,

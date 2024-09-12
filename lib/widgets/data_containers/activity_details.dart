@@ -3,12 +3,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/widgets/buttons/deep_link_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/horizontal_image_shortlist.dart';
+import 'package:miitti_app/widgets/overlays/report_bottom_sheet.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -34,6 +36,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
+    final userState = ref.watch(userStateProvider.notifier);
 
     return FutureBuilder<UserCreatedActivity>(
       future: fetchActivityDetails(widget.activityId),
@@ -209,7 +212,47 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                       context.pop();
                     }, // TODO: Implement going back
                   ),
-                  const SizedBox(height: AppSizes.minVerticalEdgePadding),
+                  const SizedBox(height: AppSizes.minVerticalPadding),
+                  TextButton(
+                    onPressed: () {
+                      if (activity.creator == userState.uid) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: Theme.of(context).colorScheme.surface,
+                              title: Text(config.get<String>('delete-activity-confirm-title')),
+                              content: Text(config.get<String>('delete-activity-confirm-text')),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    context.pop();
+                                  },
+                                  child: Text(config.get<String>('cancel-button')),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    ref.read(firestoreServiceProvider).deleteActivity(activity.id);
+                                    context.pop();
+                                    context.pop();
+                                  },
+                                  child: Text(config.get<String>('delete-button')),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        ReportBottomSheet.show(
+                          context: context,
+                          isActivity: true,
+                          id: widget.activityId,
+                        );
+                      }
+                    },
+                    child: Text(activity.creator == userState.uid ? config.get<String>('delete-activity-button') : config.get<String>('report-activity-button')),
+                  ),
+                  const SizedBox(height: AppSizes.minVerticalPadding),
                 ],
               ),
             ),
@@ -222,7 +265,3 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
 
 
 // TODO: Add reporting button
-
-// TODO: What happens when creator is deleted?
-
-// TODO: When are activities no longer shown? If endTime is in the past? endTime is by default 1 hour after startTime

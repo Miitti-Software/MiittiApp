@@ -166,6 +166,14 @@ Future<MiittiUser?> loadUserData(String userId) async {
     }
   }
 
+  Future<void> deleteActivity(String activityId) async {
+    try {
+      await _firestore.collection(_activitiesCollection).doc(activityId).delete();
+    } catch (e) {
+      debugPrint('Error while removing activity: $e');
+    }
+  }
+
   Future<List<AdBannerData>> fetchAdBanners() async {
     try {
       // Banner ads could be fetched according to the activities filter settings as well
@@ -185,8 +193,63 @@ Future<MiittiUser?> loadUserData(String userId) async {
     }
   }
 
+  Future<void> reportActivity(String activityId, List<String> reasons, String comments) async {
 
+    try {
+      DocumentReference doc = _firestore.collection('reportedActivities').doc(activityId);
+      await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot documentSnapshot = await transaction.get(doc);
 
+        if (documentSnapshot.exists) {
+          transaction.update(doc, {
+            'comments': FieldValue.arrayUnion([comments]),
+            'reasons': FieldValue.arrayUnion(reasons),
+            'numberOfReports': FieldValue.increment(1),
+          });
+        } else {
+          final activity = UserCreatedActivity.fromFirestore(await _firestore.collection(_activitiesCollection).doc(activityId).get());
+          transaction.set(doc, {
+            'activityId': activityId,
+            'comments': [comments],
+            'reasons': reasons,
+            'numberOfReports': 1,
+
+            'activity': activity.toMap(),
+          });
+        }
+      });
+    } catch (e) {
+      debugPrint("Reporting failed: $e");
+    }
+  }
+
+  Future<void> reportUser(String reportedId, List<String> reasons, String comments) async {
+    try {
+      DocumentReference doc = _firestore.collection('reportedUsers').doc(reportedId);
+      await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot documentSnapshot = await transaction.get(doc);
+
+        if (documentSnapshot.exists) {
+          transaction.update(doc, {
+            'comments': FieldValue.arrayUnion([comments]),
+            'reasons': FieldValue.arrayUnion(reasons),
+            'numberOfReports': FieldValue.increment(1),
+          });
+        } else {
+          final user = MiittiUser.fromFirestore(await _firestore.collection('users').doc(reportedId).get());
+          transaction.set(doc, {
+            'reportedId': reportedId,
+            'comments': [comments],
+            'reasons': reasons,
+            'numberOfReports': 1,
+            'user': user.toMap(),
+          });
+        }
+      });
+    } catch (e) {
+      debugPrint("Reporting failed: $e");
+    }
+  }
 
 
 
@@ -241,38 +304,6 @@ Future<MiittiUser?> loadUserData(String userId) async {
       debugPrint('$s');
     }
   }
-
-  void reportActivity(String activity, String message) async {
-    if (isAnonymous) {
-      debugPrint("Anonymous user cannot report activity");
-      return;
-    }
-
-    try {
-      DocumentReference docRef =
-          _firestore.collection('reportedActivities').doc(activity);
-      await _firestore.runTransaction((transaction) async {
-        DocumentSnapshot documentSnapshot = await transaction.get(docRef);
-
-        if (documentSnapshot.exists) {
-          transaction.update(docRef, {
-            'reasons': FieldValue.arrayUnion(["$uid: $message"]),
-          });
-        } else {
-          transaction.set(docRef, {
-            'reportedId': activity,
-            'reasons': ["$uid: $message"],
-            'isUser': false,
-          });
-        }
-      });
-    } catch (e) {
-      debugPrint("Reporting failed: $e");
-      updateUser({'lastActivity': activity});
-    }
-  }
-
-  
 
   Future<UserStatusInActivity> joinOrRequestActivity(String activityId) async {
     if (isAnonymous) {
@@ -375,16 +406,6 @@ Future<MiittiUser?> loadUserData(String userId) async {
     activity = await _personalOrCommercial(activityId, (a) {}, (comA) {});
 
     return activity;
-  }
-
-  
-
-  Future<void> removeActivity(String activityId) async {
-    try {
-      await _firestore.collection(_activitiesCollection).doc(activityId).delete();
-    } catch (e) {
-      debugPrint('Error while removing activity: $e');
-    }
   }
 
   Future<List<UserCreatedActivity>> fetchReportedActivities() async {
@@ -735,37 +756,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
         .snapshots();
   }
 
-  Future<void> reportUser(String message, String reportedId) async {
-    try {
-      _isLoading = true;
-
-      String senderId = uid!;
-
-      DocumentSnapshot documentSnapshot =
-          await _firestore.collection('reportedUsers').doc(reportedId).get();
-
-      Report report;
-      if (documentSnapshot.exists) {
-        report = Report.fromMap(
-            documentSnapshot.data() as Map<String, dynamic>, true);
-        report.reasons.add("$senderId: $message");
-      } else {
-        report = Report(
-          reportedId: reportedId,
-          reasons: ["$senderId: $message"],
-          isUser: true,
-        );
-      }
-      await _firestore
-          .collection('reportedUsers')
-          .doc(reportedId)
-          .set(report.toMap());
-    } catch (e) {
-      debugPrint("Reporting failed: $e");
-    } finally {
-      _isLoading = false;
-    }
-  }
+  
 
   //PRIVATE UTILS
 

@@ -392,7 +392,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
             if (confirmed) {
               ref
                   .read(firestoreServiceProvider)
-                  .reportUser('User blocked', widget.user.uid);
+                  .reportUser(widget.user.uid, ['Filler reasons'], 'Filler comments');
               afterFrame(() {
                 Navigator.of(context).pop();
                 showSnackBar(

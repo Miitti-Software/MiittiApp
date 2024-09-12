@@ -171,5 +171,23 @@
     "activity-text-between-date-and-time": "at",
     "activity-missing-start-time": "To be determined",
     "activity-paid": "Paid",
-    "activity-free": "Free"
+    "activity-free": "Free",
+
+    "report-activity-title": "Report activity",
+    "report-activity-reason-title": "Reason",
+    "report-activity-textfield-title": "Comments",
+    "report-activity-textfield-placeholder": "",
+    "report-activity-button": "Report activity",
+    "report-activity-disclaimer": "Reporting is entirely anonymous and cannot be traced back to you. In case of ongoing illegal activity, call 112.",
+
+    "report-profile-title": "Report profile",
+    "report-profile-reason-title": "Reason",
+    "report-profile-textfield-title": "Comments",
+    "report-profile-textfield-placeholder": "",
+    "report-profile-button": "Report profile",
+    "report-profile-disclaimer": "Reporting is entirely anonymous and cannot be traced back to you.",
+
+    "delete-activity-button": "Delete activity",
+    "delete-activity-confirm-title": "Confirm delete",
+    "delete-activity-confirm-text": "Are you sure you want to delete this activity? This action cannot be undone."
   }

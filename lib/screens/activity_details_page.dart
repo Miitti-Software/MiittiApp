@@ -326,7 +326,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
               (confirmed) {
                 if (confirmed) {
                   ref.read(firestoreServiceProvider).reportActivity(
-                      widget.myActivity.id, 'Activity blocked');
+                      widget.myActivity.id, [], 'Activity blocked');
                   afterFrame(() {
                     Navigator.of(context).pop();
                     showSnackBar(context, "Aktiviteetti ilmiannettu",

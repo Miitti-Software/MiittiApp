@@ -66,7 +66,7 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
   }
 
   Future<void> removeActivity(String activityId) async {
-    await ref.read(firestoreServiceProvider).removeActivity(activityId);
+    await ref.read(firestoreServiceProvider).deleteActivity(activityId);
     showAllMiitit == 0 ? getAllTheActivities() : getReportedActivities();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showSnackBar(
