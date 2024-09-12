@@ -1,5 +1,6 @@
 //TODO: New UI
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -182,11 +183,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
-        child: Image.network(
-          ref.read(userStateProvider.notifier).data.profilePicture!, 
+        child: CachedNetworkImage(
+          imageUrl: ref.read(userStateProvider.notifier).data.profilePicture!, 
           height: 400,
           width: 400,
           fit: BoxFit.cover,
+          fadeInDuration: const Duration(milliseconds: 50),
         ),
       ),
     );

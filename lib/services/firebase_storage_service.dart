@@ -1,16 +1,15 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 
-/// A service class to manage Firebase Storage operations
 class FirebaseStorageService {
   final Ref ref;
   final FirebaseStorage _firebaseStorage;
 
   FirebaseStorageService(this.ref) : _firebaseStorage = FirebaseStorage.instance;
 
-  /// Uploads a profile picture to Firebase Storage and returns the download URL.
-  /// The image is stored in a folder corresponding to the user ID under 'userImages' with the name 'profilePicture.jpg'.
   Future<String> uploadProfilePicture(String uid, File? image) async {
     final metadata = SettableMetadata(
       contentType: 'image/jpeg',
@@ -18,18 +17,41 @@ class FirebaseStorageService {
     );
 
     String filePath = 'userImages/$uid/profilePicture.jpg';
+    String thumbnailPath = 'userImages/$uid/thumb_profilePicture.jpg';
+    
     try {
-      final UploadTask uploadTask;
+      // Process and upload the main image
+      File mainImage = await _compressAndResizeImage(image, 1024, 50);
       Reference ref = _firebaseStorage.ref(filePath);
+      await ref.putFile(mainImage, metadata);
+      String imageUrl = await ref.getDownloadURL();
 
-      uploadTask = ref.putData(await image.readAsBytes(), metadata);
-
-      String imageUrl = await (await uploadTask).ref.getDownloadURL();
+      // Process and upload the thumbnail
+      File thumbnail = await _compressAndResizeImage(image, 150, 50);
+      Reference thumbRef = _firebaseStorage.ref(thumbnailPath);
+      await thumbRef.putFile(thumbnail, metadata);
 
       return imageUrl;
     } catch (error) {
       throw Exception("Upload failed: $error");
     }
+  }
+
+  Future<File> _compressAndResizeImage(File? image, int maxDimension, int quality) async {
+    final tempDir = await getTemporaryDirectory();
+    final tempPath = tempDir.path;
+    final targetPath = '$tempPath${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    var result = await FlutterImageCompress.compressAndGetFile(
+      image!.absolute.path,
+      targetPath,
+      minWidth: maxDimension,
+      minHeight: maxDimension,
+      quality: quality,
+      format: CompressFormat.jpeg,
+    );
+
+    return File(result!.path);
   }
 
   /// Deletes all of the user's images associated with the given user ID.
