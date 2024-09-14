@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Miitti App</string>
+	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -49,14 +49,10 @@
 	<string>862736860065-7g0fii784drvgurf66karpuo8nfnol91.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<!--
-	<key>MGLMapboxAccessToken</key>
-	<string>sk.eyJ1IjoibWlpdHRpYXBwIiwiYSI6ImNsaTFqdTJxZzAyMzgzbG1scnFkaXBzdmoifQ.qzMDjlrnbE_uWsoZyyS8ng</string>
-	-->
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Salli sijainti aktiviteettien lähellä löytämiseksi ja luomiseksi.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Pääsy kameraan profiilikuvan lataamista varten.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Salli sijainti aktiviteettien lähellä löytämiseksi ja luomiseksi.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Pääsy kuviisi profiilikuvan lataamista varten.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

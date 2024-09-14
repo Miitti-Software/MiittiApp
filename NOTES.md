@@ -281,3 +281,21 @@ if (firstRedirect && userState.isAnonymous && userState.data.name != null) {
     return '/login/complete-profile/name';
 }
 ```
+
+## Running on iOS
+
+General instructions: https://docs.flutter.dev/deployment/ios
+
+Make sure to install/update homebrew to the latest version and use it to install cocoabeans. Make sure `Podfile` file has a high enough ios version for your plugins. This might have to be accessed and edited via terminal as I at least could not find it otherwise: for example, `nano Podfile` in `flutter-project/ios`. Finally, disable `ENABLE_USER_SCRIPT_SANDBOX` by settin it to `no`. 
+
+https://stackoverflow.com/questions/78705216/error-running-pod-install-while-running-flutter-app-on-ios-simulator-after-set
+
+https://stackoverflow.com/questions/77561631/please-specify-higher-minimum-deployment-target-dependency
+
+https://github.com/flutter/flutter/issues/32400
+
+https://stackoverflow.com/questions/76590131/error-while-build-ios-app-in-xcode-sandbox-rsync-samba-13105-deny1-file-w
+
+https://stackoverflow.com/questions/71359062/iproxy-cannot-be-opened-because-the-developer-cannot-be-verified
+
+https://ahmedyusuf.medium.com/setup-flavors-in-ios-flutter-with-different-firebase-config-43c4c4823e6b
