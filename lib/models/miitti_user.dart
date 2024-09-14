@@ -14,8 +14,9 @@ class MiittiUser {
   Gender gender;
   DateTime birthday;
   List<Language> languages;
-  String occupationalStatus;  // make into list
-  String? organization;
+  List<String> occupationalStatuses;  // make into list
+  List<String> organizations;
+  List<String> representedOrganizations;
   List<String> areas;
   List<String> favoriteActivities;
   Map<String, String> qaAnswers;
@@ -35,8 +36,9 @@ class MiittiUser {
       required this.gender,
       required this.birthday,
       required this.languages,
-      required this.occupationalStatus,
-      this.organization,
+      required this.occupationalStatuses,
+      required this.organizations,
+      required this.representedOrganizations,
       required this.areas,
       required this.favoriteActivities,
       required this.qaAnswers,
@@ -59,8 +61,9 @@ class MiittiUser {
         gender: data['gender'] != null ? Gender.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['gender'].toLowerCase()) : (data['userGender'] == 'Mies' ? Gender.male : data['userGender'] == 'Nainen' ? Gender.female : Gender.other),
         birthday: resolveTimestamp(data['birthday'] ?? data['userBirthday']).toDate(),
         languages: data['languages'] != null ? List.from(data['languages']).map((elem) => Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == elem.toLowerCase())).toList() : _resolveLanguages(List.from(data['userLanguages'])),
-        occupationalStatus: data['occupationalStatus'] ?? (['Opiskelija', 'Työelämässä', 'Yrittäjä', 'Etsimässä itseään'].contains(data['userSchool']) ? {'Opiskelija': 'student', 'Työelämässä': 'working', 'Yrittäjä': 'entrepreneur', 'Etsimässä itseään': 'other-occupational-status'}[data['userSchool']] : ''),    // TODO: What to do with empty occupational statuses?
-        organization: data['organization'] ?? '',
+        occupationalStatuses: data['occupationalStatuses'] != null ? List.from(data['occupationalStatuses']) : (['Opiskelija', 'Työelämässä', 'Yrittäjä', 'Etsimässä itseään'].contains(data['userSchool']) ? [{'Opiskelija': 'student', 'Työelämässä': 'working', 'Yrittäjä': 'entrepreneur', 'Etsimässä itseään': 'other-occupational-status'}[data['userSchool']]!] : []),    // TODO: What to do with empty occupational statuses?
+        organizations: data['organization'] != null ? List<String>.from(data['organization']) : [],
+        representedOrganizations: data['representedOrganizations'] != null ? List<String>.from(data['representedOrganizations']) : [],
         areas: data['areas'] != null ? _toStringList(data['areas']) : (data['userArea'] as String).split(',').map((e) => e.trim()).toList(),
         favoriteActivities: data['favoriteActivities'] != null ? List.from(data['favoriteActivities']) : _resolveActivities(_toStringList(data['userFavoriteActivities'])),
         qaAnswers: Map.from(data['qaAnswers'] ?? data['userChoices']),
@@ -80,22 +83,24 @@ class MiittiUser {
 
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
-      'email': email,
       'uid': uid,
+      'email': email,
       'phoneNumber': phoneNumber,
+      'name': name,
+      'gender': gender.name,
       'birthday': birthday,
+      'languages': languages.map((e) => e.code),
+      'occupationalStatuses': occupationalStatuses,
+      'organizations': organizations,
+      'representedOrganizations': representedOrganizations,
       'areas': areas,
       'favoriteActivities': favoriteActivities,
       'qaAnswers': qaAnswers,
-      'gender': gender.name,
-      'languages': languages.map((e) => e.code),
       'profilePicture': profilePicture,
       'invitedActivities': invitedActivities,
+      'registrationDate': registrationDate,
       'lastActive': lastActive,
-      'organization': organization,
       'fcmToken': fcmToken,
-      'registrationDate': registrationDate
     };
   }
 
@@ -107,7 +112,7 @@ class MiittiUser {
       birthday = newData['userBirthday'] ?? birthday;
       areas = newData['userArea'] ?? areas;
       lastActive = newData['lastActive'] ?? lastActive;
-      organization = newData['userSchool'] ?? organization;
+      organizations = newData['userSchool'] ?? organizations;
       fcmToken = newData['fcmToken'] ?? fcmToken;
       registrationDate =
           newData['userRegistrationDate'] ?? registrationDate;

@@ -1068,7 +1068,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         email: _emailController.text.trim(),
         uid: '',
         phoneNumber: '',
-        occupationalStatus: '',
+        occupationalStatuses: [],
         birthday: birthdayText!.toDate(),
         areas: selectedCities.toList(),
         favoriteActivities: favoriteActivities.toList(),
@@ -1078,7 +1078,8 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         profilePicture: '',
         invitedActivities: [],
         lastActive: Timestamp.now().toDate(),
-        organization: noLifeSituation ? '' : selectedLifeOption,
+        organizations: noLifeSituation ? [] : [selectedLifeOption],
+        representedOrganizations: [],
         fcmToken: '',
         registrationDate: Timestamp.now().toDate(),
       );

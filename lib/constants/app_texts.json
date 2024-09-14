@@ -112,6 +112,7 @@
 
     "input-occupational-status-title": "What is your current occupational status?",
     "input-occupational-status-disclaimer": "This helps us to better understand your lifestyle and recommend suitable miittis for you!",
+    "invalid-occupational-status-too-many": "You can only select up to 3 options.",
     "invalid-occupational-status-missing": "Please choose one of the options above to proceed.",
 
     "input-organization-title": "Which organization are you affiliated with?",

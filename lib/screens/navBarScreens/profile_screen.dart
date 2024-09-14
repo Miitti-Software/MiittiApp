@@ -1,5 +1,6 @@
 //TODO: New UI
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -182,11 +183,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
-        child: Image.network(
-          ref.read(userStateProvider.notifier).data.profilePicture!, 
+        child: CachedNetworkImage(
+          imageUrl: ref.read(userStateProvider.notifier).data.profilePicture!, 
           height: 400,
           width: 400,
           fit: BoxFit.cover,
+          fadeInDuration: const Duration(milliseconds: 50),
         ),
       ),
     );
@@ -240,7 +242,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         horizontal: 15,
       ),
       child: Container(
-        height: miittiUser.organization != null ? 330 : 240,
+        height: miittiUser.organizations != null ? 330 : 240,
         margin: const EdgeInsets.only(
           left: 5,
           top: 10,
@@ -256,9 +258,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             buildDivider(),
             buildUserDetailTile(
                 Icons.g_translate, miittiUser.languages.map((e) => e.name).join(', ')),
-            miittiUser.organization != null ? buildDivider() : Container(),
-            miittiUser.organization != null
-                ? buildUserDetailTile(Icons.next_week, miittiUser.organization!)
+            miittiUser.organizations.isNotEmpty ? buildDivider() : Container(),
+            miittiUser.organizations.isNotEmpty
+                ? buildUserDetailTile(Icons.next_week, miittiUser.organizations[0])
                 : Container(),
           ],
         ),

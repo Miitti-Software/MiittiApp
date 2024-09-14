@@ -262,6 +262,3 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
     );
   }
 }
-
-
-// TODO: Add reporting button
