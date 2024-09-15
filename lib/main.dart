@@ -17,7 +17,7 @@ import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
 
-const appVersion = '2.0.0'; // App version number - TODO: Update this for each new release
+const appVersion = '2.0.0'; // App version number - TODO: Update this here as well as in pubspec.yaml for each new release
 
 final navigatorKey = GlobalKey<NavigatorState>();
 

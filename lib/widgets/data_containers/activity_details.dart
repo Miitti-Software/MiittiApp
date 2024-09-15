@@ -26,8 +26,10 @@ class ActivityDetails extends ConsumerStatefulWidget {
   ConsumerState<ActivityDetails> createState() => _ActivityDetailsState();
 }
 
-// TODO: Use Firestore Service Provider
 class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
+  final ScrollController titleScrollController = ScrollController();
+  final ScrollController descriptionScrollController = ScrollController();
+
   Future<UserCreatedActivity> fetchActivityDetails(String activityId) async {
     final doc = await FirebaseFirestore.instance.collection('activities').doc(activityId).get();
     return UserCreatedActivity.fromFirestore(doc);
@@ -79,7 +81,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     indent: 100,
                     endIndent: 100,
                   ),
-                  const SizedBox(height: AppSizes.minVerticalEdgePadding),
+                  const SizedBox(height: AppSizes.verticalSeparationPadding),
                   SelectionArea(
                     child: Row(
                       children: [
@@ -88,11 +90,20 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: Theme.of(context).textTheme.titleMedium,
-                            softWrap: true,
+                        Flexible(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: Theme.of(context).textTheme.titleMedium!.fontSize! * 3.5,
+                            ),
+                            child: SingleChildScrollView(
+                                controller: titleScrollController,
+                                scrollDirection: Axis.vertical,
+                                child: Text(
+                                  title,
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                  softWrap: true,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -188,7 +199,9 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         maxHeight: 250,
                       ),
                       child: PermanentScrollbar(
+                        controller: descriptionScrollController,
                         child: SingleChildScrollView(
+                          controller: descriptionScrollController,
                           padding: const EdgeInsets.only(right: 8),
                           child: SelectionArea(
                             child: Text(
