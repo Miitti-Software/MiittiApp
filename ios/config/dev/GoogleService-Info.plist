@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>862736860065-7g0fii784drvgurf66karpuo8nfnol91.apps.googleusercontent.com</string>
+	<string>82682289256-d3lb47ujpluicf2qujoel9fc5lncbpn5.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.862736860065-7g0fii784drvgurf66karpuo8nfnol91</string>
+	<string>com.googleusercontent.apps.82682289256-d3lb47ujpluicf2qujoel9fc5lncbpn5</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>862736860065-mrjn3dlvjei9o58p7a9sp3oneu2cta15.apps.googleusercontent.com</string>
+	<string>82682289256-arit3pns7ovnhmhpaq5mo4n0ir9j0vog.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBfls9dTRli9x3kRxzWH9rgW8qqkF51fKE</string>
+	<string>AIzaSyDpeQuf8IaR7RYkwI2WnOD_zmCQlkuW0SY</string>
 	<key>GCM_SENDER_ID</key>
-	<string>862736860065</string>
+	<string>82682289256</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.miittisoftwareoy.miittiApp</string>
+	<string>com.miittisoftwareoy.miittiApp.dev</string>
 	<key>PROJECT_ID</key>
-	<string>miittiapp-8182e</string>
+	<string>miittiappdev</string>
 	<key>STORAGE_BUCKET</key>
-	<string>miittiapp-8182e.appspot.com</string>
+	<string>miittiappdev.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:862736860065:ios:a48026634ada06717701e0</string>
+	<string>1:82682289256:ios:4a0550a73f7caa77c0afdd</string>
 </dict>
 </plist>
