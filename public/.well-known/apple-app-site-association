@@ -1,0 +1,27 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "7RSL8GQ2T4.com.miittisoftwareoy.miittiApp",
+          "7RSL8GQ2T4.com.miittisoftwareoy.miittiApp.dev"
+        ],
+        "paths": [
+          "*"
+        ],
+        "components": [
+          {
+            "/": "/*"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "7RSL8GQ2T4.com.miittisoftwareoy.miittiApp",
+      "7RSL8GQ2T4.com.miittisoftwareoy.miittiApp.dev"
+    ]
+  }
+}

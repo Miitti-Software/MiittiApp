@@ -9,6 +9,7 @@ class CommercialSpot {
   String address;
   String image;
   String admin;
+  // TODO: Add categories
 
   CommercialSpot({
     required this.lati,
