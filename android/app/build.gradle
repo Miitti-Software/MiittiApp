@@ -118,17 +118,8 @@ android {
         debug {
             // Use the production keystore only for the production flavor debug builds
             matchingFallbacks = ['debug', 'release']
-            signingConfig signingConfigs.production // Ensure productionDebug uses the production keystore
+            signingConfig signingConfigs.production // Uncomment this line to use the production keystore for all debug builds
             minifyEnabled true // Disable shrinking for debug builds
-        }
-    }
-
-    applicationVariants.all { variant ->
-        if (variant.buildType.name == "debug" && variant.flavorName == "production") {
-            variant.outputs.all { output ->
-                println "Using production keystore for ${variant.name}"
-                println "Keystore: ${variant.signingConfig?.storeFile}"
-            }
         }
     }
 }
@@ -141,5 +132,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10"
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.browser:browser:1.5.0"
-
 }

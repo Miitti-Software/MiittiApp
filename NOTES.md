@@ -321,3 +321,5 @@ https://stackoverflow.com/questions/76590131/error-while-build-ios-app-in-xcode-
 https://stackoverflow.com/questions/71359062/iproxy-cannot-be-opened-because-the-developer-cannot-be-verified
 
 https://ahmedyusuf.medium.com/setup-flavors-in-ios-flutter-with-different-firebase-config-43c4c4823e6b
+
+Run with `flutter run --flavor Prod`
