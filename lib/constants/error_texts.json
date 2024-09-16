@@ -8,5 +8,7 @@
     "error-message-action-prompt": "Please contact support with the above error message.",
     "select-image-error": "An error occurred while processing the image, please try again.",
     "location-service-disabled": "Error fetching location. Make sure that location services are enabled on your device in order to use location-based features.",
-    "location-service-denied": "Error fetching location. Make sure to allow location services in order to use location-based features."
+    "location-service-denied": "Error fetching location. Make sure to allow location services in order to use location-based features.",
+    "activity-fetch-error": "The activity has passed or no longer exists.",
+    "activity-fetch-missing-data": "The activity has passed or no longer exists."
 }

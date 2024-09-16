@@ -46,9 +46,65 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+            child: Container(
+              height: 250,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.error,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  Divider(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    thickness: 2.0,
+                    indent: 100,
+                    endIndent: 100,
+                  ),
+                  const Spacer(),
+                  Text(config.get<String>('activity-fetch-error'), style: Theme.of(context).textTheme.bodyMedium),
+                  IconButton(
+                    onPressed: () => context.go('/'), 
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  const Spacer(),
+                ],
+              )
+            ),
+          );
         } else if (!snapshot.hasData) {
-          return const Center(child: Text('Activity not found'));
+          return Center(
+            child: Container(
+              height: 250,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.error,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  Divider(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    thickness: 2.0,
+                    indent: 100,
+                    endIndent: 100,
+                  ),
+                  const Spacer(),
+                  Text(config.get<String>('activity-fetch-missing-data'), style: Theme.of(context).textTheme.bodyMedium),
+                  IconButton(
+                    onPressed: () => context.go('/'), 
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  const Spacer(),
+                ],
+              )
+            ),
+          );
         }
 
         final activity = snapshot.data!;
@@ -90,7 +146,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(width: 8),
-                        Flexible(
+                        Expanded(
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxHeight: Theme.of(context).textTheme.titleMedium!.fontSize! * 3.5,

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
-import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/routing/modal_page.dart';
 import 'package:miitti_app/widgets/data_containers/activity_details.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
