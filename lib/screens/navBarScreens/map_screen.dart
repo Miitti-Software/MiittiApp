@@ -104,9 +104,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       }
     }
 
-    await ref.read(userStateProvider.notifier).updateLocation();
+    final liveLocation = await ref.read(userStateProvider.notifier).updateLocation();
 
-    if (mounted) {
+    if (mounted && liveLocation) {
       setState(() {
         location = ref.read(userStateProvider.notifier).data.latestLocation!;
       });

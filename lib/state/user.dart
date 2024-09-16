@@ -104,7 +104,7 @@ class UserState extends StateNotifier<User?> {
     }
   }
 
-  Future<void> updateLocation() async {
+  Future<bool> updateLocation() async {
     if (isSignedIn && locationPermissionNotifier.state) {
       try {
         LocationData locationData = await _liveLocation.getLocation();
@@ -112,11 +112,13 @@ class UserState extends StateNotifier<User?> {
           _userData.latestLocation = LatLng(locationData.latitude!, locationData.longitude!);
           _localStorageService.saveDouble('latestLatitude', locationData.latitude!);
           _localStorageService.saveDouble('latestLongitude', locationData.longitude!);
+          return true;
         }
       } catch (e) {
         debugPrint('Error updating location: $e');
       }
     }
+    return false;
   }
 
   Future<LatLng?> getLocationFromStorage() async {

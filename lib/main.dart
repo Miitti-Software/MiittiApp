@@ -46,8 +46,10 @@ Future<void> main() async {
       config = firebaseProd;
       break;
     case "development":
-    default:
       config = firebaseDev;
+      break;
+    default:
+      config = firebaseProd;
       break;
   }
 

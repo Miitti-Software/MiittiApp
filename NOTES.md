@@ -114,7 +114,7 @@ Connects to the MiittiApp Firebase project with real user data, where accidents 
 
 Run it via `production` configuration in Run and Debug after adding a launch configuration as shown below.
 
-Run `flutterfire.bat configure --project=miittiapp-8182e --platforms=android,ios --android-package-name=com.miittisoftwareoy.miitti_app --ios-bundle-id=com.miittisoftwareoy.miittiApp --out=lib/envs/firebase_prod_configuration.dart` to update options or reconfigure and download the associated `google-services.json` to `android/app/src/production` from the Firebase Android app.
+Run `flutterfire.bat configure --project=miitti-app --platforms=android,ios --android-package-name=com.miittisoftwareoy.miitti_app --ios-bundle-id=com.miittisoftwareoy.miittiApp --out=lib/envs/firebase_prod_configuration.dart` to update options or reconfigure and download the associated `google-services.json` to `android/app/src/production` from the Firebase Android app.
 
 
 To create launch configurations for each environment in VS Code, which can be chosen and run on the Run and Debug page, copy and paste the following into `.vscode/launch.json`:
@@ -252,9 +252,31 @@ Make sure to keep appVersion in `main.dart` up to date!
 
 
 
+## Android App Signing for flavors and release
+
+Create a keystore:
+
+```
+keytool -genkey -v -keystore $env:USERPROFILE\upload-keystore.jks `
+        -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 `
+        -alias upload
+```
+
+Access keystore: `keytool -list -v  -keystore C:\Users\Miro\production-keystore.jks` + optionally `-alias production-keystore`
+
+Clear gradle cache: `./gradlew clean`
+
+Check the used signing fingerprints: `keytool -printcert -jarfile app-production-debug.apk` (must be in miitti_app/build/app/outputs/apk/production/debug or nearby depending on the file)
 
 
+`upload-key.properties` of the form:
 
+```
+keyAlias=alias
+keyPassword=password
+storeFile=C:\\Users\\User\\miitti-upload-keystore.jks
+storePassword=password
+```
 
 
 
