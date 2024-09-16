@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -40,6 +42,14 @@
 				<string>com.googleusercontent.apps.862736860065-7g0fii784drvgurf66karpuo8nfnol91</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.82682289256-d3lb47ujpluicf2qujoel9fc5lncbpn5</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>31</string>
@@ -50,11 +60,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Pääsy kameraan profiilikuvan lataamista varten.</string>
+	<string>Access to camera is needed for taking a profile picture.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Salli sijainti aktiviteettien lähellä löytämiseksi ja luomiseksi.</string>
+	<string>Allow location to discover activities near you and use other map-based features.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Pääsy kuviisi profiilikuvan lataamista varten.</string>
+	<string>Access to photos is need for loading a profile picture.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
