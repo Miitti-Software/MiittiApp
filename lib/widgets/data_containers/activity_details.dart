@@ -109,7 +109,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         const SizedBox(width: 8),
                         Align(
                           alignment: Alignment.topRight,
-                          child: DeepLinkButton(route: 'https://miittiappdev.web.app/activity/${activity.id}'),
+                          child: DeepLinkButton(route: 'https://miitti-app.web.app/activity/${activity.id}'),
                         ),
                       ],
                     ),
