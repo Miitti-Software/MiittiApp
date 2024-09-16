@@ -1,6 +1,7 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -82,11 +83,11 @@ Future<void> main() async {
 
   // Activate Firebase App Check for the current environment
   await FirebaseAppCheck.instance.activate(
-    androidProvider: env == 'production'
+    androidProvider: env == 'production' && !kDebugMode
         ? AndroidProvider.playIntegrity
         : AndroidProvider.debug,
     appleProvider:
-        env == 'production' 
+        env == 'production' && !kDebugMode
         ? AppleProvider.deviceCheck 
         : AppleProvider.debug,
   );
