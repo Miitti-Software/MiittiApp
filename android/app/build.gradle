@@ -25,10 +25,21 @@ if (flutterVersionName == null) {
 }
 
 def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
+def keystoreProductionProperties = new Properties()
+
+def keystorePropertiesFile = rootProject.file('upload-key.properties')
+def keystoreProductionPropertiesFile = rootProject.file('production-key.properties')
+
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
+
+if (keystoreProductionPropertiesFile.exists()) {
+    keystoreProductionProperties.load(new FileInputStream(keystoreProductionPropertiesFile))
+}
+
+println("keystoreProperties: " + keystoreProperties)
+println("keystoreProductionProperties: " + keystoreProductionProperties)
 
 android {
     namespace "com.miittisoftwareoy.miitti_app"
@@ -59,6 +70,7 @@ android {
         multiDexEnabled true
 
     }
+
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -66,24 +78,18 @@ android {
             storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
             storePassword keystoreProperties['storePassword']
         }
-    }
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
 
-        debug {
-            signingConfig signingConfigs.debug
-            minifyEnabled true
+        production {
+            keyAlias keystoreProductionProperties['keyAlias']
+            keyPassword keystoreProductionProperties['keyPassword']
+            storeFile keystoreProductionProperties['storeFile'] ? file(keystoreProductionProperties['storeFile']) : null
+            storePassword keystoreProductionProperties['storePassword']
         }
     }
 
-    // Flavors to create different compile-time configurations of the app for the development, staging and production environments. 
-    // Enables you to have multiple versions of the app on your phone simultaneously a development preview, a testing build and the actual currently published app with different names and icons.
     flavorDimensions 'default'
 
     productFlavors {
-        
         production {
             dimension 'default'
             resValue "string", "app_name", "Miitti"
@@ -101,6 +107,28 @@ android {
             applicationIdSuffix '.stg'
             versionNameSuffix '.stg'
             resValue "string", "app_name", "Miitti TEST"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release // Ensure productionRelease uses the release keystore
+        }
+
+        debug {
+            // Use the production keystore only for the production flavor debug builds
+            matchingFallbacks = ['debug', 'release']
+            signingConfig signingConfigs.production // Ensure productionDebug uses the production keystore
+            minifyEnabled true // Disable shrinking for debug builds
+        }
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "debug" && variant.flavorName == "production") {
+            variant.outputs.all { output ->
+                println "Using production keystore for ${variant.name}"
+                println "Keystore: ${variant.signingConfig?.storeFile}"
+            }
         }
     }
 }

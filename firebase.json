@@ -24,17 +24,17 @@
     "platforms": {
       "android": {
         "default": {
-          "projectId": "miittiappstage",
-          "appId": "1:377453260995:android:96c8db20dbb3c1a3a63276",
+          "projectId": "miitti-app",
+          "appId": "1:261026197907:android:09668553c4cfb03265f866",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "dart": {
         "lib/envs/firebase_prod_configuration.dart": {
-          "projectId": "miittiapp-8182e",
+          "projectId": "miitti-app",
           "configurations": {
-            "android": "1:862736860065:android:b72d4d172bb2edeb7701e0",
-            "ios": "1:862736860065:ios:a48026634ada06717701e0"
+            "android": "1:261026197907:android:09668553c4cfb03265f866",
+            "ios": "1:261026197907:ios:6ebb8041e71b845a65f866"
           }
         },
         "lib/envs/firebase_dev_configuration.dart": {
@@ -80,26 +80,9 @@
   "storage": {
     "rules": "storage.rules"
   },
-  "remoteconfig": {
-    "template": "remoteconfig.template.json"
-  },
+  "remoteconfig": {},
   "hosting": {
     "public": "public",
-    "headers": [
-      {
-        "source": "/.well-known/*",
-        "headers": [
-          {"key": "Content-Type", "value": "application/json"}
-        ]
-      }
-    ],
-    "redirects": [
-      {
-        "source": "**",
-        "destination": "https://www.miitti.app/",
-        "type": 301
-      }
-    ],
     "ignore": [
       "firebase.json",
       "**/.*",
