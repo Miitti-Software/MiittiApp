@@ -8,7 +8,7 @@ import 'package:miitti_app/constants/languages.dart';
 
 class MiittiUser {
   String uid;
-  String email;
+  String email;         // Make optional
   String? phoneNumber;
   String name;
   Gender gender;
