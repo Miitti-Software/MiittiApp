@@ -52,8 +52,21 @@ class AuthService {
   }
 
   Future<void> deleteUser() async {
-    await signInWithGoogle();
-    await _auth.currentUser!.delete();
-    await GoogleSignIn().signOut();
+    try {
+      List<UserInfo> providerData = _auth.currentUser!.providerData;
+      
+      for (var provider in providerData) {
+        if (provider.providerId == 'google.com') {
+          await signInWithGoogle();
+          await _auth.currentUser!.delete();
+          await GoogleSignIn().signOut();
+        } else if (provider.providerId == 'apple.com') {
+          await signInWithApple();
+          await _auth.currentUser!.delete();
+        }
+      }
+    } catch (error) {
+      debugPrint('Error deleting user: $error');
+    }
   }
 }
