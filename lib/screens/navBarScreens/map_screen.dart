@@ -62,7 +62,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     updateLiveLocation();
-    fetchActivities();
   }
 
   @override
@@ -125,16 +124,16 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }*/
   }
 
-  void fetchActivities() async {
-    List<MiittiActivity> activities = await ref.read(firestoreServiceProvider).fetchFilteredActivities();
-    if (mounted) {
-      setState(() {
-        _activities = activities.toList();
-      });
-      clusterController.addAll(_activities.map(activityMarker).toList());
-      // addGeojsonCluster(controller, _activities);
-    }
-  }
+  // void fetchActivities() async {
+  //   List<MiittiActivity> activities = await ref.read(firestoreServiceProvider).fetchFilteredActivities();
+  //   if (mounted) {
+  //     setState(() {
+  //       _activities = activities.toList();
+  //     });
+  //     clusterController.addAll(_activities.map(activityMarker).toList());
+  //     // addGeojsonCluster(controller, _activities);
+  //   }
+  // }
 
   Marker activityMarker(MiittiActivity activity) {
     return Marker(
@@ -177,9 +176,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final configStreamAsyncValue = ref.watch(configStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
+    final activitiesStream = ref.watch(activitiesStreamProvider);
+
     return Stack(
       children: [
-        showOnMap == 1 ? showOnList() : showMap(),
+        showOnMap == 1 ? showOnList() : showMap(activitiesStream),
         //top switch
         SafeArea(
           child: Align(
@@ -210,26 +211,30 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-  Widget showMap() {
-    return FutureBuilder(
-        future: getPath(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          return FlutterMap(
+  Widget showMap(AsyncValue<List<MiittiActivity>> activitiesStream) {
+    return activitiesStream.when(
+      data: (activities) {
+        return FutureBuilder(
+          future: getPath(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+            return FlutterMap(
               options: MapOptions(
-                  keepAlive: true,
-                  backgroundColor: AppStyle.black,
-                  initialCenter: location,
-                  initialZoom: zoom,
-                  interactionOptions: const InteractionOptions(
-                      flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
-                  minZoom: 5.0,
-                  maxZoom: 18.0,
-                  onMapReady: () {}),
+                keepAlive: true,
+                backgroundColor: AppStyle.black,
+                initialCenter: location,
+                initialZoom: zoom,
+                interactionOptions: const InteractionOptions(
+                  flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+                ),
+                minZoom: 5.0,
+                maxZoom: 18.0,
+                onMapReady: () {},
+              ),
               children: [
                 TileLayer(
                   urlTemplate:
@@ -238,45 +243,52 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     'accessToken': mapboxAccess,
                   },
                   tileProvider: CachedTileProvider(
-                      store: HiveCacheStore(
-                    snapshot.data.toString(),
-                  )),
+                    store: HiveCacheStore(
+                      snapshot.data.toString(),
+                    ),
+                  ),
                 ),
                 SuperclusterLayer.mutable(
-                    controller: clusterController,
-                    initialMarkers: _activities.map(activityMarker).toList(),
-                    onMarkerTap: (marker) {
-                      Widget child = marker.child;
-                      if (child is GestureDetector) {
-                        child.onTap!();
-                      }
-                      //(marker.child as GestureDetector).onTap!();
-                    },
-                    clusterWidgetSize: const Size(100.0, 100.0),
-                    maxClusterRadius: 205,
-                    builder: (context, position, markerCount,
-                            extraClusterData) =>
-                        Center(
-                          child: Stack(alignment: Alignment.center, children: [
-                            Image.asset(
-                              "images/circlebackground.png",
-                            ),
-                            Positioned(
-                              top: 20,
-                              child: Text("$markerCount",
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 32,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.normal,
-                                    fontFamily: "Rubik",
-                                  )),
-                            )
-                          ]),
+                  controller: clusterController,
+                  initialMarkers: activities.map(activityMarker).toList(),
+                  onMarkerTap: (marker) {
+                    Widget child = marker.child;
+                    if (child is GestureDetector) {
+                      child.onTap!();
+                    }
+                  },
+                  clusterWidgetSize: const Size(100.0, 100.0),
+                  maxClusterRadius: 205,
+                  builder: (context, position, markerCount, extraClusterData) => Center(
+                    child: Stack(alignment: Alignment.center, children: [
+                      Image.asset(
+                        "images/circlebackground.png",
+                      ),
+                      Positioned(
+                        top: 20,
+                        child: Text(
+                          "$markerCount",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 32,
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: "Rubik",
+                          ),
                         ),
-                    indexBuilder: IndexBuilders.rootIsolate)
-              ]);
-        });
+                      )
+                    ]),
+                  ),
+                  indexBuilder: IndexBuilders.rootIsolate,
+                ),
+              ],
+            );
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+    );
   }
 
   Widget showOnList() {
@@ -291,119 +303,78 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
           margin: const EdgeInsets.only(top: 60),
-          child: ListView.builder(
-            itemCount: _activities.length + (_ads.isNotEmpty ? 1 : 0),
-            itemBuilder: (BuildContext context, int index) {
-              if (index == 1 && _ads.isNotEmpty) {
-                return AdBanner(adBannerData: _ads[0]);
-              } else {
-                int activityIndex =
-                    _ads.isNotEmpty && index > 1 ? index - 1 : index;
+          child: Consumer(
+            builder: (context, watch, child) {
+              final activitiesStream = ref.watch(activitiesStreamProvider);
+              return activitiesStream.when(
+                data: (activities) {
+                  return ListView.builder(
+                    itemCount: activities.length + (_ads.isNotEmpty ? 1 : 0),
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 1 && _ads.isNotEmpty) {
+                        return AdBanner(adBannerData: _ads[0]);
+                      } else {
+                        int activityIndex = _ads.isNotEmpty && index > 1 ? index - 1 : index;
 
-                MiittiActivity activity = _activities[activityIndex];
-                String activityAddress = activity.address;
+                        MiittiActivity activity = activities[activityIndex];
+                        String activityAddress = activity.address;
 
-                List<String> addressParts = activityAddress.split(',');
-                String cityName = addressParts[0].trim();
+                        List<String> addressParts = activityAddress.split(',');
+                        String cityName = addressParts[0].trim();
 
-                int participants = activity.participantsInfo.isEmpty
-                    ? 0
-                    : activity.participantsInfo.length;
+                        int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
 
-                return InkWell(
-                  onTap: () => goToActivityDetailsPage(activity),
-                  child: Card(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    margin: const EdgeInsets.all(10.0),
-                    child: Container(
-                      height: 125,
-                      decoration: BoxDecoration(
-                        color: AppStyle.black.withOpacity(0.8),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: Row(
-                        children: [
-                          Activity.getSymbol(activity),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    activity.title,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppStyle.activityName,
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.calendar_month,
-                                      color: AppStyle.pink,
-                                    ),
-                                    gapW5,
-                                    Text(
-                                      activity.startTime != null ? activity.startTime!.toLocal().toString() : 'To be determined',
-                                      style: AppStyle.activitySubName,
-                                    ),
-                                    gapW10,
-                                    const Icon(
-                                      Icons.map_outlined,
-                                      color: AppStyle.pink,
-                                    ),
-                                    gapW5,
-                                    Flexible(
-                                      child: Text(
-                                        cityName,
-                                        overflow: TextOverflow.ellipsis,
-                                        style:
-                                            AppStyle.activitySubName.copyWith(
-                                          decoration: TextDecoration.underline,
-                                          decorationColor: Colors.white,
+                        return InkWell(
+                          onTap: () => goToActivityDetailsPage(activity),
+                          child: Card(
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                            ),
+                            margin: const EdgeInsets.all(10.0),
+                            child: Container(
+                              height: 125,
+                              decoration: BoxDecoration(
+                                color: AppStyle.black.withOpacity(0.8),
+                                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Activity.getSymbol(activity),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            activity.title,
+                                            style: Theme.of(context).textTheme.bodyMedium,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
-                                      ),
+                                        Text(
+                                          cityName,
+                                          style: Theme.of(context).textTheme.labelMedium,
+                                        ),
+                                        Text(
+                                          '$participants participants',
+                                          style: Theme.of(context).textTheme.labelMedium,
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.account_balance_wallet_outlined,
-                                      color: AppStyle.pink,
-                                    ),
-                                    gapW5,
-                                    Text(
-                                      activity.paid
-                                          ? 'Pääsymaksu'
-                                          : 'Maksuton',
-                                      textAlign: TextAlign.center,
-                                      style: AppStyle.activitySubName,
-                                    ),
-                                    gapW10,
-                                    const Icon(
-                                      Icons.people_outline,
-                                      color: AppStyle.pink,
-                                    ),
-                                    gapW5,
-                                    Text(
-                                      '$participants/${activity.maxParticipants} osallistujaa',
-                                      style: AppStyle.activitySubName,
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
+                        );
+                      }
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) => Center(child: Text('Error: $error')),
+              );
             },
           ),
         ),

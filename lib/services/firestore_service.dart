@@ -166,6 +166,49 @@ Future<MiittiUser?> loadUserData(String userId) async {
     }
   }
 
+  Stream<List<MiittiActivity>> streamFilteredActivities() {
+    final filterSettings = ref.read(activitiesFilterSettingsProvider);
+    final userState = ref.read(userStateProvider.notifier);
+
+    Query query = _firestore.collection(_activitiesCollection)
+        .where(Filter.or(
+          Filter('endTime', isNull: true),
+          Filter('endTime', isGreaterThanOrEqualTo: DateTime.now())))
+        .where('creatorAge', isGreaterThanOrEqualTo: filterSettings.minAge)
+        .where('creatorAge', isLessThanOrEqualTo: filterSettings.maxAge)
+        .where('maxParticipants', isLessThanOrEqualTo: filterSettings.maxParticipants)
+        .where('maxParticipants', isGreaterThanOrEqualTo: filterSettings.minParticipants);
+
+    if (filterSettings.categories.isNotEmpty) {
+      query = query.where('category', whereIn: filterSettings.categories);
+    }
+
+    if (filterSettings.languages.isNotEmpty) {
+      query = query.where('creatorLanguages', arrayContainsAny: filterSettings.languages);
+    }
+
+    if (filterSettings.onlySameGender) {
+      query = query.where('creatorGender', isEqualTo: userState.data.gender!.name);
+    }
+
+    if (!filterSettings.includePaid) {
+      query = query.where('paid', isEqualTo: false);
+    }
+
+    // TODO: Add distance filter
+
+    return query.snapshots().asyncMap((querySnapshot) async {
+      List<MiittiActivity> activities = querySnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
+
+      QuerySnapshot commercialQuery = await _firestore.collection(_commercialActivitiesCollection).get();
+      List<MiittiActivity> commercialActivities = commercialQuery.docs.map((doc) => CommercialActivity.fromFirestore(doc)).toList();
+
+      List<MiittiActivity> list = List<MiittiActivity>.from(activities);
+      list.addAll(List<MiittiActivity>.from(commercialActivities));
+      return list;
+    });
+  }
+
   Future<void> deleteActivity(String activityId) async {
     try {
       await _firestore.collection(_activitiesCollection).doc(activityId).delete();
