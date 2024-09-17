@@ -201,7 +201,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
                                           builder: (context) =>
                                               const AnonymousDialog());
                                     } else {
-                                      String uid = ref.read(userStateProvider.notifier).data.uid!;
+                                      String uid = ref.read(userStateProvider).data.uid!;
                                       pushPage(
                                           context,
                                           uid == user.uid
@@ -357,8 +357,8 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
     if (userStatus != UserStatusInActivity.none) return;
     if (isAnonymous) return;
     FirestoreService firestore = ref.read(firestoreServiceProvider);
-    final userData = ref.read(userStateProvider.notifier).data;
-    String uid = ref.read(userStateProvider.notifier).uid!;
+    final userData = ref.read(userStateProvider).data;
+    String uid = ref.read(userStateProvider).uid!;
     firestore
         .joinOrRequestActivity(widget.myActivity.id)
         .then((newStatus) {
@@ -433,7 +433,7 @@ class _ActivityDetailsPageState extends ConsumerState<ActivityDetailsPage> {
       isAnonymous = true;
       return UserStatusInActivity.none;
     }
-    final userId = ref.read(userStateProvider.notifier).data.uid;
+    final userId = ref.read(userStateProvider).data.uid;
     return widget.myActivity.participantsInfo.keys.contains(userId)
         ? UserStatusInActivity.joined
         : widget.myActivity.requests.contains(userId)

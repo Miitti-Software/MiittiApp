@@ -31,12 +31,6 @@ final remoteConfigServiceProvider = Provider<RemoteConfigService>((ref) {
   return service;
 });
 
-// Provider for RemoteConfigService stream
-final remoteConfigServiceStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
-  final remoteConfigServiceInstance = ref.watch(remoteConfigServiceProvider);
-  return remoteConfigServiceInstance.configStream;
-});
-
 // Provider for FirestoreService
 final firestoreServiceProvider = Provider<FirestoreService>((ref) {
   return FirestoreService(ref);
@@ -58,13 +52,14 @@ final notificationServiceProvider = Provider<PushNotificationService>((ref) {
 
 // Individual providers for more specialized use cases
 
-final configStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
-  final remoteConfigService = ref.watch(remoteConfigServiceProvider);
-  return remoteConfigService.configStream;
+// Provider for RemoteConfigService stream
+final remoteConfigStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
+  final remoteConfigServiceInstance = ref.watch(remoteConfigServiceProvider);
+  return remoteConfigServiceInstance.configStream;
 });
 
 final activitiesStreamProvider = StreamProvider<List<MiittiActivity>>((ref) {
-  return ref.read(firestoreServiceProvider).streamFilteredActivities();
+  return ref.watch(firestoreServiceProvider).streamFilteredActivities();
 });
 
 final providerLoading = Provider<bool>((ref) {

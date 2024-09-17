@@ -187,7 +187,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                             const BorderRadius.all(Radius.circular(20)),
                         child: image == null
                             ? Image.network(
-                                ref.read(userStateProvider.notifier).data.profilePicture!,
+                                ref.read(userStateProvider).data.profilePicture!,
                                 height: 400,
                                 width: 400,
                                 fit: BoxFit.cover,
@@ -401,7 +401,7 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       favoriteActivities.length >= 3) {
                     _formKey.currentState!.save();
 
-                    final miittiUser = ref.read(userStateProvider.notifier).data.toMiittiUser();
+                    final miittiUser = ref.read(userStateProvider).data.toMiittiUser();
                     final updatedUser = MiittiUser(
                       name: miittiUser.name,
                       email: miittiUser.email,

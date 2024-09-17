@@ -29,9 +29,9 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
   @override
   void initState() {
     super.initState();
-    placeholderVisible = ref.read(userStateProvider.notifier).data.birthday == null;
-    birthday = ref.read(userStateProvider.notifier).data.birthday;
-    controller = TextEditingController(text: ref.read(userStateProvider.notifier).data.birthday != null ? DateFormat('ddMMyyyy').format(ref.read(userStateProvider.notifier).data.birthday!) : placeholder);
+    placeholderVisible = ref.read(userStateProvider).data.birthday == null;
+    birthday = ref.read(userStateProvider).data.birthday;
+    controller = TextEditingController(text: ref.read(userStateProvider).data.birthday != null ? DateFormat('ddMMyyyy').format(ref.read(userStateProvider).data.birthday!) : placeholder);
   }
 
   @override
@@ -43,7 +43,8 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final userData = ref.watch(userStateProvider.notifier).data;
+    final userData = ref.watch(userStateProvider).data;
+    final userState = ref.read(userStateProvider.notifier);
     final language = ref.watch(languageProvider);
 
     return ConfigScreen(
@@ -127,7 +128,9 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                             int.parse(value.substring(0, 2)),
                           );
                         });
-                        userData.setBirthday(birthday);
+                        userState.update((state) => state.copyWith(
+                          data: userData.setBirthday(birthday!)
+                        ));
                       }
                     }
                   },
@@ -192,7 +195,9 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                   config.get<String>('invalid-birthday-missing'),
                 );
               } else if (_validateBirthdayDate(controller.text)) {
-                userData.setBirthday(birthday);
+                userState.update((state) => state.copyWith(
+                  data: userData.setBirthday(birthday!)
+                ));
                 context.push('/login/complete-profile/gender');
               }
             },

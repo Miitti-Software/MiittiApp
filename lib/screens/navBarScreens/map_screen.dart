@@ -19,6 +19,7 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
@@ -42,8 +43,8 @@ class MapScreen extends ConsumerStatefulWidget {
 }
 
 class _MapScreenState extends ConsumerState<MapScreen> {
-  late LatLng location;   // TODO: Move to global state
-  double zoom = 13.0;
+  // late LatLng location;   // TODO: Move to global state
+  // double zoom = 13.0;
 
   List<MiittiActivity> _activities = [];
   List<AdBannerData> _ads = [];
@@ -55,13 +56,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeUserData();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    updateLiveLocation();
+    updateUserLocation();
   }
 
   @override
@@ -69,17 +69,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     super.dispose();
   }
 
-  void _initializeUserData() {
-    final userData = ref.read(userStateProvider.notifier).data;
-    final config = ref.read(remoteConfigServiceProvider);
-    final latitude = userData.areas.isNotEmpty ? config.get<Map<String, dynamic>>(userData.areas[0])['latitude'] as double : 60.1699;
-    final longitude = userData.areas.isNotEmpty ? config.get<Map<String, dynamic>>(userData.areas[0])['longitude'] as double : 24.9325;
-    setState(() {
-      location = userData.latestLocation ?? LatLng(latitude, longitude);
-    });
-  }
-
-  void updateLiveLocation() async {
+  void updateUserLocation() async {
     final config = ref.read(remoteConfigServiceProvider);
     final locationPermission = ref.read(locationPermissionProvider.notifier);
     bool serviceEnabled = locationPermission.serviceEnabled;
@@ -91,6 +81,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         if (mounted) {
           ErrorSnackbar.show(context, config.get<String>('location-service-disabled'));
         }
+        return;
       }
     }
 
@@ -100,15 +91,24 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         if (mounted) {
           ErrorSnackbar.show(context, config.get<String>('location-permission-denied'));
         }
+        return;
       }
     }
 
-    final liveLocation = await ref.read(userStateProvider.notifier).updateLocation();
+    print('user location before update ${ref.read(userStateProvider).data.latestLocation}');
 
-    if (mounted && liveLocation) {
-      setState(() {
-        location = ref.read(userStateProvider.notifier).data.latestLocation!;
-      });
+    bool locationUpdated = await ref.read(userStateProvider.notifier).updateLocation();
+
+    // print('user location immediately after update ${ref.read(userStateProvider).data.latestLocation}');
+
+    if (locationUpdated) {
+      final userLocation = ref.read(userStateProvider).data.latestLocation;
+      print('User location: $userLocation');
+      if (userLocation != null) {
+        print('map location before update ${ref.read(mapStateProvider).location}');
+        ref.read(mapStateProvider.notifier).setLocation(userLocation);
+        print('map location after update ${ref.read(mapStateProvider).location}');
+      }
     }
 
     /*myCameraPosition = CameraPosition(
@@ -143,7 +143,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       child: GestureDetector(
         onTap: () {
           // TODO: Switch to GoRouter
-          goToActivityDetailsPage(activity);  // TODO: Refactor
+          // goToActivityDetailsPage(activity);  // TODO: Refactor
+          context.go('/activity/${activity.id}');
         },
         child: activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
       ),
@@ -160,22 +161,22 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
-  // TODO: Delete when redundant
-  goToActivityDetailsPage(MiittiActivity activity) {
-    setState(() {
-      location = LatLng(activity.latitude- 0.001, activity.longitude);    // TODO: Make this work with deep links as well
-      zoom = 17.0;
-    });
-    // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
-    context.go('/activity/${activity.id}');
-  }
+  // // TODO: Delete when redundant
+  // goToActivityDetailsPage(MiittiActivity activity) {
+  //   final mapState = ref.watch(mapStateProvider.notifier);
+  //   mapState.setLocation(LatLng(activity.latitude - 0.001, activity.longitude));
+  //   mapState.setZoom(17.0);
+
+  //   // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
+  //   context.go('/activity/${activity.id}');
+  // }
 
   // TODO: Don't let the user create an activity from the map screen if they are not signed in
   // TODO: Do let the user see commercial activity details from the map screen
 
   @override
   Widget build(BuildContext context) {
-    final configStreamAsyncValue = ref.watch(configStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
+    final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
     final activitiesStream = ref.watch(activitiesStreamProvider);
 
     return Stack(
@@ -212,6 +213,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Widget showMap(AsyncValue<List<MiittiActivity>> activitiesStream) {
+    final mapState = ref.watch(mapStateProvider);
     return activitiesStream.when(
       data: (activities) {
         return FutureBuilder(
@@ -226,8 +228,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               options: MapOptions(
                 keepAlive: true,
                 backgroundColor: AppStyle.black,
-                initialCenter: location,
-                initialZoom: zoom,
+                initialCenter: mapState.location,
+                initialZoom: mapState.zoom,
                 interactionOptions: const InteractionOptions(
                   flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
                 ),
@@ -325,7 +327,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                         int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
 
                         return InkWell(
-                          onTap: () => goToActivityDetailsPage(activity),
+                          onTap: () => context.go('/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
                           child: Card(
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(Radius.circular(20)),

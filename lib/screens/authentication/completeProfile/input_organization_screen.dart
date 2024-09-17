@@ -28,7 +28,7 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
   void initState() {
     super.initState();
     _loadOrganizations();
-    final userOrganizations = ref.read(userStateProvider.notifier).data.organizations;
+    final userOrganizations = ref.read(userStateProvider).data.organizations;
     selectedOrganizations = allOrganizations
         .where((organization) => userOrganizations.contains(organization.item1))
         .map((organization) => organization.item1)
@@ -59,7 +59,8 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userStateProvider.notifier).data;
+    final userData = ref.watch(userStateProvider).data;
+    final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(
@@ -118,10 +119,14 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
                         setState(() {
                           if (isSelected) {
                             selectedOrganizations.remove(organization.item1);
-                            userData.organizations.remove(organization.item1);
+                            userState.update((state) => state.copyWith(
+                              data: userData.removeOrganization(organization.item1)
+                            ));
                           } else {
                             selectedOrganizations.add(organization.item1);
-                            userData.organizations.add(organization.item1);
+                            userState.update((state) => state.copyWith(
+                              data: userData.addOrganization(organization.item1)
+                            ));
                           }
                         });
                       },

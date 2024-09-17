@@ -176,7 +176,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     message: snapshot.data.docs[index]['message'],
                     sender: snapshot.data.docs[index]['sender'],
                     senderName: snapshot.data.docs[index]['senderName'],
-                    sentByMe: ref.read(userStateProvider.notifier).data.uid ==
+                    sentByMe: ref.read(userStateProvider).data.uid ==
                         snapshot.data.docs[index]['sender'],
                     time: DateFormat('HH:mm').format(
                       DateTime.fromMillisecondsSinceEpoch(
@@ -195,8 +195,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
         'message': messageController.text,
-        'sender': ref.read(userStateProvider.notifier).data.uid,
-        'senderName': ref.read(userStateProvider.notifier).data.name!,
+        'sender': ref.read(userStateProvider).data.uid,
+        'senderName': ref.read(userStateProvider).data.name!,
         'time': DateTime.now().millisecondsSinceEpoch,
       };
       ref
@@ -210,7 +210,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         if (receiver.uid == ref.read(firestoreServiceProvider).uid) continue;
         ref.read(notificationServiceProvider).sendMessageNotification(
             receiver.fcmToken,
-            ref.read(userStateProvider.notifier).data.name!,
+            ref.read(userStateProvider).data.name!,
             widget.activity,
             messageController.text);
       }

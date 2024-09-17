@@ -386,7 +386,7 @@ class _ActivityDetailsPageState extends ConsumerState<ComActDetailsPage> {
   }
 
   void joinActivity() async {
-    final user = ref.read(userStateProvider.notifier).data;
+    final user = ref.read(userStateProvider).data;
     checkIfJoined();
     if (!isAlreadyJoined) {
       await ref

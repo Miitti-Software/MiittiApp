@@ -32,7 +32,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 10)).then((value) {
-      if (ref.read(userStateProvider.notifier).isAnonymous) {
+      if (ref.read(userStateProvider).isAnonymous) {
         // WidgetsBinding.instance.addPostFrameCallback((_) {
         //   showDialog(
         //     context: context,
@@ -42,7 +42,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         context.go('/profile/settings');
       } else {
         filteredActivities = ref
-            .read(userStateProvider.notifier)
+            .read(userStateProvider)
             .data
             .favoriteActivities
             .toList();
@@ -51,7 +51,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget getAdminButton() {
-    if (adminId.contains(ref.read(userStateProvider.notifier).data.uid)) {
+    if (adminId.contains(ref.read(userStateProvider).data.uid)) {
       return GestureDetector(
         onTap: () {
           Navigator.of(context).push(
@@ -73,13 +73,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     bool isLoading = ref.watch(providerLoading);
-    bool anonymous = ref.read(userStateProvider.notifier).isAnonymous;
+    bool anonymous = ref.read(userStateProvider).isAnonymous;
 
     if (anonymous) {
       return const AnonymousUserScreen();
     } else {
       List<String> answeredQuestions = ref
-              .watch(userStateProvider.notifier)
+              .watch(userStateProvider)
               .data
               .qaAnswers.keys
           .toList();
@@ -98,7 +98,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            ref.read(userStateProvider.notifier).data.name!,
+            ref.read(userStateProvider).data.name!,
             style: const TextStyle(
               fontSize: 30,
               fontFamily: 'Sora',
@@ -111,7 +111,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => MyProfileEditForm(
-                        user: ref.read(userStateProvider.notifier).data.toMiittiUser(),
+                        user: ref.read(userStateProvider).data.toMiittiUser(),
                       )));
             },
             child: const Icon(
@@ -146,7 +146,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     // Add the first question card and user details card
     String firstQuestion = answeredQuestions[0];
     String firstAnswer =
-        ref.read(userStateProvider.notifier).data.qaAnswers[firstQuestion]!;
+        ref.read(userStateProvider).data.qaAnswers[firstQuestion]!;
     widgets.add(buildQuestionCard(firstQuestion, firstAnswer));
     widgets.add(buildUserDetailsCard());
 
@@ -155,7 +155,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       for (var i = 1; i < answeredQuestions.length; i++) {
         String question = answeredQuestions[i];
         String answer =
-            ref.read(userStateProvider.notifier).data.qaAnswers[question]!;
+            ref.read(userStateProvider).data.qaAnswers[question]!;
         widgets.add(buildQuestionCard(question, answer));
 
         // Add activities grid after the first additional question card
@@ -184,7 +184,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: CachedNetworkImage(
-          imageUrl: ref.read(userStateProvider.notifier).data.profilePicture!, 
+          imageUrl: ref.read(userStateProvider).data.profilePicture!, 
           height: 400,
           width: 400,
           fit: BoxFit.cover,
@@ -231,7 +231,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget buildUserDetailsCard() {
-    MiittiUser miittiUser = ref.read(userStateProvider.notifier).data.toMiittiUser();
+    MiittiUser miittiUser = ref.read(userStateProvider).data.toMiittiUser();
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(

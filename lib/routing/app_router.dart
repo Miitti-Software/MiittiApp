@@ -52,7 +52,7 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: kDebugMode,
-    refreshListenable: ValueNotifier<bool>(ref.watch(userStateProvider.notifier).isSignedIn),
+    refreshListenable: ValueNotifier<bool>(ref.watch(signedInProvider)),
     initialLocation: '/',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
@@ -275,7 +275,7 @@ class AppRouter {
   }
 
   String? _handleRedirect(BuildContext context, GoRouterState state) {
-    final userState = ref.watch(userStateProvider.notifier);
+    final userState = ref.read(userStateProvider);
     final isMaintenanceBreak = ref.watch(remoteConfigServiceProvider).getBool('maintenance_break');
     final currentAppVersion = parseVersionNumber(appVersion);  // The current app version defined in main.dart
     final latestAppVersion = parseVersionNumber(ref.watch(remoteConfigServiceProvider).getString('latest_app_version'));
@@ -304,6 +304,11 @@ class AppRouter {
       previousRoute = state.matchedLocation;
       firstRedirect = false;
       return '/update/false';
+    }
+
+    if (firstRedirect && userState.isSignedIn && userState.isAnonymous && state.matchedLocation == '/') {
+      firstRedirect = false;
+      return '/login/welcome';  // Welcome screen for first-time users
     }
 
     if (state.matchedLocation == '/login/complete-profile') {

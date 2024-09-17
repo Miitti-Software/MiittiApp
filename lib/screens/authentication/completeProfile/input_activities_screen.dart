@@ -27,7 +27,7 @@ List<Tuple2<String, Tuple2<String, String>>> allActivities = [];
 void initState() {
   super.initState();
   _loadActivities();
-  favoriteActivities = ref.read(userStateProvider.notifier).data.favoriteActivities.toSet();
+  favoriteActivities = ref.read(userStateProvider).data.favoriteActivities.toSet();
 }
 
 @override
@@ -43,7 +43,8 @@ Future<void> _loadActivities() async {
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userStateProvider.notifier).data;
+    final userData = ref.watch(userStateProvider).data;
+    final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(
@@ -78,10 +79,14 @@ Future<void> _loadActivities() async {
                         setState(() {
                           if (favoriteActivities.contains(activity.item1)) {
                             favoriteActivities.remove(activity.item1);
-                            userData.favoriteActivities.remove(activity.item1);
+                            userState.update((state) => state.copyWith(
+                              data: userData.removeFavoriteActivity(activity.item1),
+                            ));
                           } else {
                             favoriteActivities.add(activity.item1);
-                            userData.favoriteActivities.add(activity.item1);
+                            userState.update((state) => state.copyWith(
+                              data: userData.addFavoriteActivity(activity.item1),
+                            ));
                           }
                         });
                       },

@@ -24,7 +24,7 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
   void initState() {
     super.initState();
     // Initialize the controller with the user's name
-    final userData = ref.read(userStateProvider.notifier).data;
+    final userData = ref.read(userStateProvider).data;
     _controller = TextEditingController(text: userData.name);
   }
 
@@ -39,7 +39,8 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
     return Consumer(
       builder: (context, ref, child) {
         final config = ref.watch(remoteConfigServiceProvider);
-        final userData = ref.watch(userStateProvider.notifier).data;
+        final userData = ref.watch(userStateProvider).data;
+        final userState = ref.read(userStateProvider.notifier);
 
         return ConfigScreen(
           child: Column(
@@ -51,7 +52,9 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
                 hintText: config.get<String>('input-name-placeholder'),
                 controller: _controller,
                 onSubmit: (value) {
-                  userData.setName(_controller.text);
+                  userState.update((state) => state.copyWith(
+                      data: userData.setName(_controller.text)
+                  ));
                 },
               ),
               const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
@@ -61,7 +64,9 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
                 buttonText: config.get<String>('forward-button'),
                 onPressed: () {
                   if (_controller.text.isNotEmpty) {
-                    userData.setName(_controller.text);
+                    userState.update((state) => state.copyWith(
+                      data: userData.setName(_controller.text)
+                    ));
                     context.push('/login/complete-profile/birthday');
                   } else {
                     ErrorSnackbar.show(context, config.get<String>('invalid-name-missing'));

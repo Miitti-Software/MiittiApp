@@ -119,7 +119,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
   // TODO: Fetch only once upon app startup and set up a listener for changes
   Future<List<MiittiActivity>> fetchFilteredActivities() async {
     try {
-      final userState = ref.read(userStateProvider.notifier);
+      final userState = ref.read(userStateProvider);
       ref.read(activitiesFilterSettingsProvider.notifier).loadPreferences();
       final filterSettings = ref.read(activitiesFilterSettingsProvider);
 
@@ -168,7 +168,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
 
   Stream<List<MiittiActivity>> streamFilteredActivities() {
     final filterSettings = ref.read(activitiesFilterSettingsProvider);
-    final userState = ref.read(userStateProvider.notifier);
+    final userState = ref.read(userStateProvider);
 
     Query query = _firestore.collection(_activitiesCollection)
         .where(Filter.or(
@@ -690,7 +690,7 @@ Future<MiittiUser?> loadUserData(String userId) async {
         showLoadingDialog(context);
       }
       if (imageFile != null) {
-        await uploadUserImage(ref.read(userStateProvider.notifier).uid!, imageFile)
+        await uploadUserImage(ref.read(userStateProvider).uid!, imageFile)
             .then((value) {
           updatedUser.profilePicture = value;
         });

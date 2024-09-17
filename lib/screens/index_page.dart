@@ -65,7 +65,7 @@ class IndexPageState extends ConsumerState<IndexPage> {
               width: 60,
               child: getFloatingButton(
                 onPressed: () async {
-                  if (ref.read(userStateProvider.notifier).isAnonymous) {
+                  if (ref.read(userStateProvider).isAnonymous) {
                     showDialog(
                         context: context,
                         builder: (context) => const AnonymousDialog());

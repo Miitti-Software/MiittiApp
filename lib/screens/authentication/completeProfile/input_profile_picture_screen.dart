@@ -26,7 +26,7 @@ class _InputProfilePictureScreenState
   @override
   void initState() {
     super.initState();
-    final userData = ref.read(userStateProvider.notifier).data;
+    final userData = ref.read(userStateProvider).data;
     if (userData.profilePicture != null) {
       image = File(userData.profilePicture!);
     }
@@ -156,7 +156,9 @@ class _InputProfilePictureScreenState
       if (pickedImage != null) {
         setState(() {
           image = File(pickedImage.path);
-          ref.watch(userStateProvider.notifier).data.profilePicture = image!.path;
+          ref.watch(userStateProvider.notifier).update((state) => state.copyWith(
+            data: ref.watch(userStateProvider).data.setProfilePicture(image!.path)
+          ));
         });
       }
     } catch (e) {

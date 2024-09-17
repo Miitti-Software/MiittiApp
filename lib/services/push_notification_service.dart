@@ -52,7 +52,7 @@ class PushNotificationService {
     debugPrint("############################################################");
 
     //Save token to user data(needed to access other users tokens in code)
-    MiittiUser? user = ref.read(userStateProvider.notifier).data.toMiittiUser();
+    MiittiUser? user = ref.read(userStateProvider).data.toMiittiUser();
     if (user != null && user.fcmToken != token) {
       ref.read(firestoreServiceProvider).updateUser({"fcmToken": token});
     }
@@ -158,12 +158,12 @@ class PushNotificationService {
   }
 
   Future sendRequestNotification(UserCreatedActivity activity) async {
-    if (ref.read(userStateProvider.notifier).isAnonymous) {
+    if (ref.read(userStateProvider).isAnonymous) {
       debugPrint("Cannot send request notification as anonymous user");
       return;
     }
     FirestoreService firestore = ref.read(firestoreServiceProvider);
-    UserState user = ref.read(userStateProvider.notifier);
+    UserStateData user = ref.read(userStateProvider);
     MiittiUser? admin = await firestore.getUser(activity.creator);
     if (admin != null) {
       sendNotification(

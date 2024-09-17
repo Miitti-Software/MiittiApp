@@ -41,7 +41,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   }
 
   void initLists() async {
-    if (ref.read(userStateProvider.notifier).isAnonymous) {
+    if (ref.read(userStateProvider).isAnonymous) {
       Future.delayed(const Duration(milliseconds: 10)).then((value) {
         if (mounted) {
           showDialog(
@@ -73,7 +73,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
         return snapshot.docs
             .map((doc) => MiittiUser.fromFirestore(doc))
             .where((user) =>
-                user.uid != ref.read(userStateProvider.notifier).data.uid && user.name != "")
+                user.uid != ref.read(userStateProvider).data.uid && user.name != "")
             .toList();
       }
       return [];
@@ -102,7 +102,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       setState(() {
         _filteredUsers[type].addAll(snapshot.docs
             .map((doc) => MiittiUser.fromFirestore(doc))
-            .where((user) => user.uid != ref.read(userStateProvider.notifier).data.uid)
+            .where((user) => user.uid != ref.read(userStateProvider).data.uid)
             .toList());
       });
     } else {
@@ -113,7 +113,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (ref.watch(userStateProvider.notifier).isAnonymous) {
+    if (ref.watch(userStateProvider).isAnonymous) {
       return const AnonymousUserScreen();
     } else {
       return SafeArea(
@@ -226,7 +226,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       height: 35,
       width: 110,
       onPressed: () {
-        if (ref.read(userStateProvider.notifier).isAnonymous) {
+        if (ref.read(userStateProvider).isAnonymous) {
           showDialog(
               context: context, builder: (context) => const AnonymousDialog());
         } else {

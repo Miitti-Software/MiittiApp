@@ -28,7 +28,7 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
   void initState() {
     super.initState();
     _loadAreas();
-    final userAreas = ref.read(userStateProvider.notifier).data.areas;
+    final userAreas = ref.read(userStateProvider).data.areas;
     selectedAreas = allAreas
         .where((area) => userAreas.contains(area.item1))
         .map((area) => area.item1)
@@ -59,7 +59,8 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userStateProvider.notifier).data;
+    final userData = ref.watch(userStateProvider).data;
+    final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(
@@ -117,10 +118,14 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
                         setState(() {
                           if (isSelected) {
                             selectedAreas.remove(area.item1);
-                            userData.areas.remove(area.item1);
+                            userState.update((state) => state.copyWith(
+                              data: userData.removeArea(area.item1)
+                            ));
                           } else if (selectedAreas.length < 3) {
                             selectedAreas.add(area.item1);
-                            userData.areas.add(area.item1);
+                            userState.update((state) => state.copyWith(
+                              data: userData.addArea(area.item1)
+                            ));
                           } else {
                             ErrorSnackbar.show(
                                 context, config.get<String>('invalid-area-too-many'));

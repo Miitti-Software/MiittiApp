@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
@@ -31,14 +33,18 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
   final ScrollController descriptionScrollController = ScrollController();
 
   Future<UserCreatedActivity> fetchActivityDetails(String activityId) async {
-    final doc = await FirebaseFirestore.instance.collection('activities').doc(activityId).get();
-    return UserCreatedActivity.fromFirestore(doc);
+    final mapState = ref.read(mapStateProvider.notifier);
+    final doc = await FirebaseFirestore.instance.collection('activities').doc(activityId).get();    // Switch to firestore service provider
+    final activity = UserCreatedActivity.fromFirestore(doc);
+    mapState.setLocation(LatLng(activity.latitude - 0.002, activity.longitude)); // Update user location to correspond to activity
+    mapState.setZoom(16.0); // Set zoom level to 15
+    return activity;
   }
 
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final userState = ref.watch(userStateProvider.notifier);
+    final userState = ref.watch(userStateProvider);
 
     return FutureBuilder<UserCreatedActivity>(
       future: fetchActivityDetails(widget.activityId),

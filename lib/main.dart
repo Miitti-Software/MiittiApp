@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/routing/app_router.dart';
+import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -79,7 +80,8 @@ Future<void> main() async {
 
   // Initialize the RemoteConfigService to fetch and activate the remote config values
   await ProviderContainer().read(remoteConfigServiceProvider).initialize();
-  await ProviderContainer().read(userStateProvider.notifier).initialize();
+  await ProviderContainer().read(userStateProvider);
+  ProviderContainer().read(mapStateProvider.notifier).initializeUserData();
 
   // Activate Firebase App Check for the current environment
   await FirebaseAppCheck.instance.activate(
@@ -121,7 +123,7 @@ class MiittiApp extends ConsumerWidget {
     });
 
     // Listen to the remoteConfig changes and refresh the router when the remote config values change to update the UI
-    ref.listen<AsyncValue<Map<String, dynamic>>>(remoteConfigServiceStreamProvider, (previous, next) {
+    ref.listen<AsyncValue<Map<String, dynamic>>>(remoteConfigStreamProvider, (previous, next) {
       if (previous?.value != null) {
         router.refresh();
       }

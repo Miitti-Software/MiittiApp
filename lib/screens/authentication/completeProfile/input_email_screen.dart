@@ -15,7 +15,7 @@ class InputEmailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final userData = ref.watch(userStateProvider.notifier).data;
+    final userData = ref.watch(userStateProvider).data;
     final controller = TextEditingController(text: userData.email);
 
     return ConfigScreen(

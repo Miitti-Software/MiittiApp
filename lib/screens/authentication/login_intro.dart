@@ -17,7 +17,7 @@ class LoginIntroScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the stream provider
-    final configStreamAsyncValue = ref.watch(configStreamProvider);
+    final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);
 
     return Scaffold(
       body: Stack(

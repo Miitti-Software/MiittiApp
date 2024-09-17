@@ -26,7 +26,7 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
   void initState() {
     super.initState();
     _loadStatusOptions();
-    final userStatuses = ref.read(userStateProvider.notifier).data.occupationalStatuses;
+    final userStatuses = ref.read(userStateProvider).data.occupationalStatuses;
     selectedOccupationalStatuses = statusOptions
         .where((status) => userStatuses.contains(status.item1))
         .map((status) => status.item1)
@@ -41,7 +41,8 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userStateProvider.notifier).data;
+    final userData = ref.watch(userStateProvider).data;
+    final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(
@@ -83,10 +84,14 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
                         setState(() {
                           if (isSelected) {
                             selectedOccupationalStatuses.remove(occupationalStatus.item1);
-                            userData.occupationalStatuses.remove(occupationalStatus.item1);
+                            userState.update((state) => state.copyWith(
+                              data: userData.removeOccupationalStatus(occupationalStatus.item1)
+                            ));
                           } else if (selectedOccupationalStatuses.length < 3) {
                             selectedOccupationalStatuses.add(occupationalStatus.item1);
-                            userData.occupationalStatuses.add(occupationalStatus.item1);
+                            userState.update((state) => state.copyWith(
+                              data: userData.addOccupationalStatus(occupationalStatus.item1)
+                            ));
                           } else {
                             ErrorSnackbar.show(
                                 context, config.get<String>('invalid-occupational-status-too-many'));

@@ -429,7 +429,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                 widget.user.uid, myActivities.first.id)
             .then((value) {
           ref.read(notificationServiceProvider).sendInviteNotification(
-              ref.read(userStateProvider.notifier).data.toMiittiUser(),
+              ref.read(userStateProvider).data.toMiittiUser(),
               widget.user,
               myActivities.first);
           showDialog(
@@ -578,7 +578,7 @@ class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
                                 widget.user.uid, activity.id)
                             .then((value) {
                           ref.read(notificationServiceProvider).sendInviteNotification(
-                              ref.read(userStateProvider.notifier).data.toMiittiUser(),
+                              ref.read(userStateProvider).data.toMiittiUser(),
                               widget.user,
                               activity);
                           afterFrame(() {

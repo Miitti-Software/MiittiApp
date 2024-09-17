@@ -27,7 +27,7 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
   @override
   void initState() {
     super.initState();
-    selectedLanguages = ref.read(userStateProvider.notifier).data.languages.toList();
+    selectedLanguages = ref.read(userStateProvider).data.languages.toList();
   }
 
   @override
@@ -38,7 +38,8 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userStateProvider.notifier).data;
+    final userData = ref.watch(userStateProvider).data;
+    final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(
@@ -80,9 +81,14 @@ class _InputLanguagesScreenState extends ConsumerState<InputLanguagesScreen> {
                               setState(() {
                                 if (selectedLanguages.contains(language)) {
                                   selectedLanguages.remove(language);
+                                  userState.update((state) => state.copyWith(
+                                    data: userData.removeLanguage(language)
+                                  ));
                                 } else {
                                   selectedLanguages.add(language);
-                                  userData.setLanguages(selectedLanguages);
+                                  userState.update((state) => state.copyWith(
+                                    data: userData.addLanguage(language)
+                                  ));
                                 }
                               });
                             },

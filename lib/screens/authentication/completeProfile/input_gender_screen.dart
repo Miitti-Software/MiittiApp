@@ -25,7 +25,7 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
   @override
   void initState() {
     super.initState();
-    selectedGender = ref.read(userStateProvider.notifier).data.gender;
+    selectedGender = ref.read(userStateProvider).data.gender;
   }
 
   @override
@@ -35,7 +35,8 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userStateProvider.notifier).data;
+    final userData = ref.watch(userStateProvider).data;
+    final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
 
     return ConfigScreen(
@@ -56,7 +57,9 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
                 if (!selected) {
                   setState(() {
                     selectedGender = gender;
-                    userData.setGender(selectedGender!);
+                    userState.update((state) => state.copyWith(
+                      data: userData.setGender(selectedGender!)
+                    ));
                   });
                 }
               },

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,103 +16,112 @@ import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/services/auth_service.dart';
 import 'package:miitti_app/state/settings.dart';
 
-/// A singleton class to manage the current user's authentication state
-class UserState extends StateNotifier<User?> {
-  final AuthService _authService;
-  final FirestoreService _firestoreService;
-  final LocalStorageService _localStorageService;
-  final FirebaseStorageService _firebaseStorageService;
-  final LocationPermissionNotifier locationPermissionNotifier;
-  UserData _userData = UserData();
+class UserState extends StateNotifier<UserStateData> {
+  UserState(this.ref) : super(UserStateData()) {
+    _initializeState();
+  }
+
+  final Ref ref;
   final Location _liveLocation = Location();
+  Timer? _locationUpdateTimer;
 
-  static UserState? _instance;
-
-  UserState._internal(this._authService, this._firestoreService, this._localStorageService, this._firebaseStorageService, this.locationPermissionNotifier) : super(null) {
-    state = _authService.currentUser;
-    _authService.authStateChanges.listen((user) async {
-      state = user;
-      if (user != null) {
-        final miittiUser = await _firestoreService.loadUserData(uid!);
-        final latestLocation = await getLocationFromStorage();
-        _userData = UserData(miittiUser: miittiUser, latestestLocation: latestLocation);
-      } else {
-        _userData = UserData();
-      }
-    });
+  Future<void> _initializeState() async {
+    final authService = ref.read(authServiceProvider);
+    final user = authService.currentUser;
+    if (user != null) {
+      final miittiUser = await _loadMiittiUser(user.uid);
+      final latestLocation = await _getLocationFromStorage();
+      state = UserStateData(
+        user: user,
+        data: miittiUser != null 
+          ? UserData.fromMiittiUser(miittiUser, latestLocation: latestLocation) 
+          : UserData(uid: user.uid),
+      );
+    }
+    authService.authStateChanges.listen(_handleAuthStateChanges);
+    _startLiveLocationUpdates();
   }
 
-  static UserState getInstance(AuthService authService, FirestoreService firestoreService, LocalStorageService localStorageService, FirebaseStorageService firebaseStorageService, LocationPermissionNotifier locationPermissionNotifier) {
-    _instance ??= UserState._internal(authService, firestoreService, localStorageService, firebaseStorageService, locationPermissionNotifier);
-    return _instance!;
+  Future<MiittiUser?> _loadMiittiUser(String uid) async {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    return await firestoreService.loadUserData(uid);
   }
 
-  User? get user => state;
-  String? get uid => state?.uid;
-  String? get email => state?.email;
-  bool get isSignedIn => state != null;
-  UserData get data => _userData;
-  bool get isAnonymous => _userData.registrationDate == null;
-
-  Stream<User?> get authStateChanges => _authService.authStateChanges;
-
-  Future<void> initialize() async {
-    if (isSignedIn) {
-      final miittiUser = await _firestoreService.loadUserData(uid!);
-      final latestLocation = await getLocationFromStorage();
-      _userData = UserData(miittiUser: miittiUser, latestestLocation: latestLocation);
+  Future<void> _handleAuthStateChanges(User? user) async {
+    if (user != null) {
+      final miittiUser = await _loadMiittiUser(user.uid);
+      final latestLocation = await _getLocationFromStorage();
+      state = UserStateData(
+        user: user,
+        data: miittiUser != null 
+          ? UserData.fromMiittiUser(miittiUser, latestLocation: latestLocation) 
+          : UserData(uid: user.uid),
+      );
     } else {
-      _userData = UserData();
-      return;
+      state = UserStateData();
     }
   }
 
-  Future<bool> signIn(apple) async {
-    final result = apple ? await _authService.signInWithApple() : await _authService.signInWithGoogle();
+  Future<bool> signIn(bool apple) async {
+    final authService = ref.read(authServiceProvider);
+    final result = apple ? await authService.signInWithApple() : await authService.signInWithGoogle();
     if (result) {
-      state = await _authService.authStateChanges.first;
-      _userData = UserData(miittiUser: await _firestoreService.loadUserData(uid!), latestestLocation: await getLocationFromStorage());
+      final user = await authService.authStateChanges.first;
+      if (user != null) {
+        final miittiUser = await _loadMiittiUser(user.uid);
+        final latestLocation = await _getLocationFromStorage();
+        state = UserStateData(
+          user: user,
+          data: miittiUser != null 
+            ? UserData.fromMiittiUser(miittiUser, latestLocation: latestLocation) 
+            : UserData(uid: user.uid),
+        );
+      }
     }
     return result;
   }
 
   Future<void> createUser() async {
-    if (isSignedIn) {
+    if (state.isSignedIn) {
+      final firestoreService = ref.read(firestoreServiceProvider);
       MiittiUser miittiUser = MiittiUser(
-        uid: uid!,
-        email: email?.trim() ?? '',
-        name: data.name!.trim(),
-        gender: data.gender!,
-        birthday: data.birthday!,
-        languages: data.languages,
-        occupationalStatuses: data.occupationalStatuses,
-        organizations: data.organizations,
+        uid: state.uid!,
+        email: state.email?.trim() ?? '',
+        name: state.data.name!.trim(),
+        gender: state.data.gender!,
+        birthday: state.data.birthday!,
+        languages: state.data.languages,
+        occupationalStatuses: state.data.occupationalStatuses,
+        organizations: state.data.organizations,
         representedOrganizations: [],
-        areas: data.areas,
-        favoriteActivities: data.favoriteActivities,
-        qaAnswers: data.qaAnswers,
-        profilePicture: data.profilePicture!,
+        areas: state.data.areas,
+        favoriteActivities: state.data.favoriteActivities,
+        qaAnswers: state.data.qaAnswers,
+        profilePicture: state.data.profilePicture!,
         invitedActivities: [],
         registrationDate: DateTime.now(),
         lastActive: DateTime.now(),
         fcmToken: '',
       );
-      _firestoreService.saveUserData(
+      await firestoreService.saveUserData(
         userModel: miittiUser,
-        image: File(data.profilePicture!),
+        image: File(state.data.profilePicture!),
       );
-      _userData = UserData(miittiUser: miittiUser);
+      state = state.copyWith(data: UserData.fromMiittiUser(miittiUser));
     }
   }
 
   Future<bool> updateLocation() async {
-    if (isSignedIn && locationPermissionNotifier.state) {
+    final locationPermissionNotifier = ref.read(locationPermissionProvider.notifier);
+    if (state.isSignedIn && locationPermissionNotifier.state) {
       try {
         LocationData locationData = await _liveLocation.getLocation();
         if (locationData.latitude != null && locationData.longitude != null) {
-          _userData.latestLocation = LatLng(locationData.latitude!, locationData.longitude!);
-          _localStorageService.saveDouble('latestLatitude', locationData.latitude!);
-          _localStorageService.saveDouble('latestLongitude', locationData.longitude!);
+          final newLocation = LatLng(locationData.latitude!, locationData.longitude!);
+          state = state.copyWith(
+            data: state.data.copyWith(latestLocation: newLocation),
+          );
+          _saveLocationToStorage(newLocation);
           return true;
         }
       } catch (e) {
@@ -121,10 +131,11 @@ class UserState extends StateNotifier<User?> {
     return false;
   }
 
-  Future<LatLng?> getLocationFromStorage() async {
-    if (isSignedIn) {
-      double? latitude = await _localStorageService.getDouble('latestLatitude');
-      double? longitude = await _localStorageService.getDouble('latestLongitude');
+  Future<LatLng?> _getLocationFromStorage() async {
+    final localStorageService = ref.read(localStorageServiceProvider);
+    if (state.isSignedIn) {
+      double? latitude = await localStorageService.getDouble('latestLatitude');
+      double? longitude = await localStorageService.getDouble('latestLongitude');
       if (latitude != null && longitude != null) {
         return LatLng(latitude, longitude);
       }
@@ -132,142 +143,212 @@ class UserState extends StateNotifier<User?> {
     return null;
   }
 
+  void _saveLocationToStorage(LatLng location) {
+    final localStorageService = ref.read(localStorageServiceProvider);
+    localStorageService.saveDouble('latestLatitude', location.latitude);
+    localStorageService.saveDouble('latestLongitude', location.longitude);
+  }
+
+  void _startLiveLocationUpdates() {
+    _locationUpdateTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      updateLocation();
+    });
+  }
+
+  @override
+  void dispose() {
+    _locationUpdateTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> updateLastActive() async {
-    if (isSignedIn) {
-      _userData.lastActive = DateTime.now();
+    if (state.isSignedIn) {
+      state = state.copyWith(
+        data: state.data.copyWith(lastActive: DateTime.now()),
+      );
     }
   }
 
   Future<void> signOut() async {
-    state = null;
-    _firestoreService.reset();
-    await _authService.signOut();
-    _userData.clear();
-    await _localStorageService.clear();
+    final authService = ref.read(authServiceProvider);
+    final firestoreService = ref.read(firestoreServiceProvider);
+    final localStorageService = ref.read(localStorageServiceProvider);
+
+    await authService.signOut();
+    firestoreService.reset();
+    await localStorageService.clear();
+    _locationUpdateTimer?.cancel();
+    state = UserStateData();
   }
 
   Future<void> deleteUser() async {
-    if (!isAnonymous) {
-      await _firebaseStorageService.deleteUserFolder(data.uid!);
-      await _firestoreService.deleteUser(data.uid!);
-      await _authService.deleteUser();
-      _firestoreService.reset();
-      _userData.clear();
-      await _localStorageService.clear();
-      state = null;
-    } else {
-      await _authService.deleteUser();
-      _firestoreService.reset();
-      _userData.clear();
-      _localStorageService.clear();
-      state = null;
+    final authService = ref.read(authServiceProvider);
+    final firestoreService = ref.read(firestoreServiceProvider);
+    final firebaseStorageService = ref.read(firebaseStorageServiceProvider);
+    final localStorageService = ref.read(localStorageServiceProvider);
+
+    if (!state.isAnonymous) {
+      await firebaseStorageService.deleteUserFolder(state.data.uid!);
+      await firestoreService.deleteUser(state.data.uid!);
+    }
+    await authService.deleteUser();
+    firestoreService.reset();
+    await localStorageService.clear();
+    _locationUpdateTimer?.cancel();
+    state = UserStateData();
+  }
+
+  void update(Function(UserStateData) updateFn) {
+    state = updateFn(state);
+  }
+
+  Future<void> refreshUserData() async {
+    if (state.isSignedIn) {
+      final miittiUser = await _loadMiittiUser(state.uid!);
+      if (miittiUser != null) {
+        state = state.copyWith(
+          data: UserData.fromMiittiUser(miittiUser, latestLocation: state.data.latestLocation),
+        );
+      }
     }
   }
 }
 
-/// A provider for interacting with the UserState class
-final userStateProvider = StateNotifierProvider<UserState, User?>((ref) {
-  final authService = ref.watch(authServiceProvider);
-  final firestoreService = ref.watch(firestoreServiceProvider);
-  final localStorageService = ref.watch(localStorageServiceProvider);
-  final firebaseStorageService = ref.watch(firebaseStorageServiceProvider);
-  final locationPermissionNotifier = ref.watch(locationPermissionProvider.notifier);
-  return UserState.getInstance(authService, firestoreService, localStorageService, firebaseStorageService, locationPermissionNotifier);
-});
+class UserStateData {
+  final User? user;
+  final UserData data;
 
-/// A provider that streams the current user's authentication state
-final authStateProvider = StreamProvider<User?>((ref) {
-  final authServiceInstance = ref.watch(userStateProvider.notifier);
-  return authServiceInstance.authStateChanges;
-});
+  UserStateData({
+    this.user,
+    UserData? data,
+  }) : data = data ?? UserData();
 
-/// A class to manage the current user's data
+  bool get isSignedIn => user != null;
+  String? get uid => user?.uid;
+  String? get email => user?.email;
+  bool get isAnonymous => data.registrationDate == null;
+
+  UserStateData copyWith({
+    User? user,
+    UserData? data,
+  }) {
+    return UserStateData(
+      user: user ?? this.user,
+      data: data ?? this.data,
+    );
+  }
+}
+
 class UserData {
-  String? uid;
-  String? email;
-  String? phoneNumber;
-  String? name;
-  Gender? gender;
-  DateTime? birthday;
-  List<Language> languages = [];
-  List<String> occupationalStatuses = [];
-  List<String> organizations = [];
-  List<String> representedOrganizations = [];
-  List<String> areas = [];
-  List<String> favoriteActivities = [];
-  Map<String, String> qaAnswers = {};
-  String? profilePicture;
-  List<String> invitedActivities = [];
-  DateTime? registrationDate;
-  LatLng? latestLocation;               
-  DateTime? lastActive;                 // Keep latest location and lastActive in sync whenever possible
-  String? fcmToken;
+  final String? uid;
+  final String? email;
+  final String? phoneNumber;
+  final String? name;
+  final Gender? gender;
+  final DateTime? birthday;
+  final List<Language> languages;
+  final List<String> occupationalStatuses;
+  final List<String> organizations;
+  final List<String> representedOrganizations;
+  final List<String> areas;
+  final List<String> favoriteActivities;
+  final Map<String, String> qaAnswers;
+  final String? profilePicture;
+  final List<String> invitedActivities;
+  final DateTime? registrationDate;
+  final LatLng? latestLocation;
+  final DateTime? lastActive;
+  final String? fcmToken;
 
-  UserData({MiittiUser? miittiUser, LatLng? latestestLocation}) {
-    if (miittiUser != null) {
-      uid = miittiUser.uid;
-      email = miittiUser.email;
-      phoneNumber = miittiUser.phoneNumber;
-      name = miittiUser.name;
-      gender = miittiUser.gender;
-      birthday = miittiUser.birthday;
-      languages = miittiUser.languages;
-      occupationalStatuses = miittiUser.occupationalStatuses;
-      organizations = miittiUser.organizations ?? [];
-      representedOrganizations = miittiUser.representedOrganizations ?? [];
-      areas = miittiUser.areas;
-      favoriteActivities = miittiUser.favoriteActivities;
-      qaAnswers = miittiUser.qaAnswers;
-      profilePicture = miittiUser.profilePicture;
-      invitedActivities = miittiUser.invitedActivities;
-      registrationDate = miittiUser.registrationDate;
-      latestLocation = latestestLocation;
-      lastActive = miittiUser.lastActive;
-      fcmToken = miittiUser.fcmToken;
-    }
+  UserData({
+    this.uid,
+    this.email,
+    this.phoneNumber,
+    this.name,
+    this.gender,
+    this.birthday,
+    this.languages = const [],
+    this.occupationalStatuses = const [],
+    this.organizations = const [],
+    this.representedOrganizations = const [],
+    this.areas = const [],
+    this.favoriteActivities = const [],
+    this.qaAnswers = const {},
+    this.profilePicture,
+    this.invitedActivities = const [],
+    this.registrationDate,
+    this.latestLocation,
+    this.lastActive,
+    this.fcmToken,
+  });
+
+  factory UserData.fromMiittiUser(MiittiUser miittiUser, {LatLng? latestLocation}) {
+    return UserData(
+      uid: miittiUser.uid,
+      email: miittiUser.email,
+      phoneNumber: miittiUser.phoneNumber,
+      name: miittiUser.name,
+      gender: miittiUser.gender,
+      birthday: miittiUser.birthday,
+      languages: miittiUser.languages,
+      occupationalStatuses: miittiUser.occupationalStatuses,
+      organizations: miittiUser.organizations,
+      representedOrganizations: miittiUser.representedOrganizations,
+      areas: miittiUser.areas,
+      favoriteActivities: miittiUser.favoriteActivities,
+      qaAnswers: miittiUser.qaAnswers,
+      profilePicture: miittiUser.profilePicture,
+      invitedActivities: miittiUser.invitedActivities,
+      registrationDate: miittiUser.registrationDate,
+      latestLocation: latestLocation,
+      lastActive: miittiUser.lastActive,
+      fcmToken: miittiUser.fcmToken,
+    );
   }
 
-  // Getters
-  String? get getUid => uid;
-  String? get getEmail => email;
-  String? get getPhoneNumber => phoneNumber;
-  String? get getName => name;
-  Gender? get getGender => gender;
-  DateTime? get getBirthday => birthday;
-  List<Language> get getLanguages => languages;
-  List<String>? get getOccupationalStatus => occupationalStatuses;
-  List<String>? get getrepresentedOrganizations => representedOrganizations;
-  List<String>? get getOrganization => organizations;
-  List<String> get getArea => areas;
-  List<String> get getFavoriteActivities => favoriteActivities;
-  Map<String, String> get getQaAnswers => qaAnswers;
-  String? get getProfilePicture => profilePicture;
-  List<String> get getInvitedActivities => invitedActivities;
-  DateTime? get getRegistrationDate => registrationDate;
-  LatLng? get getLatestLocation => latestLocation;
-  DateTime? get getLastActive => lastActive;
-  String? get getFcmToken => fcmToken;
-
-  // Setters
-  void setUid(String? value) => uid = value;
-  void setEmail(String? value) => email = value;
-  void setPhoneNumber(String? value) => phoneNumber = value;
-  void setName(String? value) => name = value;
-  void setGender(Gender? value) => gender = value;
-  void setBirthday(DateTime? value) => birthday = value;
-  void setLanguages(List<Language> value) => languages = value;
-  void setOccupationalStatus(List<String> value) => occupationalStatuses = value;
-  void setOrganization(List<String> value) => organizations = value;
-  void setRepresentedOrganizations(List<String> value) => representedOrganizations = value;
-  void setAreas(List<String> value) => areas = value;
-  void setFavoriteActivities(List<String> value) => favoriteActivities = value;
-  void setQaAnswers(Map<String, String> value) => qaAnswers = value;
-  void setProfilePicture(String value) => profilePicture = value;
-  void setInvitedActivities(List<String> value) => invitedActivities = value;
-  void setRegistrationDate(DateTime? value) => registrationDate = value;
-  void setLatestLocation(LatLng? value) => latestLocation = value;
-  void setLastActive(DateTime? value) => lastActive = value;
-  void setFcmToken(String? value) => fcmToken = value;
+  UserData copyWith({
+    String? uid,
+    String? email,
+    String? phoneNumber,
+    String? name,
+    Gender? gender,
+    DateTime? birthday,
+    List<Language>? languages,
+    List<String>? occupationalStatuses,
+    List<String>? organizations,
+    List<String>? representedOrganizations,
+    List<String>? areas,
+    List<String>? favoriteActivities,
+    Map<String, String>? qaAnswers,
+    String? profilePicture,
+    List<String>? invitedActivities,
+    DateTime? registrationDate,
+    LatLng? latestLocation,
+    DateTime? lastActive,
+    String? fcmToken,
+  }) {
+    return UserData(
+      uid: uid ?? this.uid,
+      email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      name: name ?? this.name,
+      gender: gender ?? this.gender,
+      birthday: birthday ?? this.birthday,
+      languages: languages ?? this.languages,
+      occupationalStatuses: occupationalStatuses ?? this.occupationalStatuses,
+      organizations: organizations ?? this.organizations,
+      representedOrganizations: representedOrganizations ?? this.representedOrganizations,
+      areas: areas ?? this.areas,
+      favoriteActivities: favoriteActivities ?? this.favoriteActivities,
+      qaAnswers: qaAnswers ?? this.qaAnswers,
+      profilePicture: profilePicture ?? this.profilePicture,
+      invitedActivities: invitedActivities ?? this.invitedActivities,
+      registrationDate: registrationDate ?? this.registrationDate,
+      latestLocation: latestLocation ?? this.latestLocation,
+      lastActive: lastActive ?? this.lastActive,
+      fcmToken: fcmToken ?? this.fcmToken,
+    );
+  }
 
   MiittiUser toMiittiUser() {
     return MiittiUser(
@@ -277,7 +358,7 @@ class UserData {
       gender: gender!,
       birthday: birthday!,
       languages: languages,
-      occupationalStatuses: occupationalStatuses!,
+      occupationalStatuses: occupationalStatuses,
       organizations: organizations,
       representedOrganizations: representedOrganizations,
       areas: areas,
@@ -290,26 +371,90 @@ class UserData {
       fcmToken: fcmToken!,
     );
   }
-  
-  void clear() {
-    uid = null;
-    email = null;
-    phoneNumber = null;
-    name = null;
-    gender = null;
-    birthday = null;
-    languages = [];
-    occupationalStatuses = [];
-    organizations = [];
-    representedOrganizations = [];
-    areas = [];
-    favoriteActivities = [];
-    qaAnswers = {};
-    profilePicture = null;
-    invitedActivities = [];
-    registrationDate = null;
-    latestLocation = null;
-    lastActive = null;
-    fcmToken = null;
+
+  setBirthday(DateTime birthday) {
+    return copyWith(birthday: birthday);
   }
+
+  setEmail(String email) {
+    return copyWith(email: email);
+  }
+
+  setGender(Gender gender) {
+    return copyWith(gender: gender);
+  }
+
+  setName(String name) {
+    return copyWith(name: name);
+  }
+
+  setProfilePicture(String profilePicture) {
+    return copyWith(profilePicture: profilePicture);
+  }
+
+  addLanguage(Language language) {
+    return copyWith(languages: [...languages, language]);
+  }
+
+  removeLanguage(Language language) {
+    return copyWith(languages: languages.where((l) => l != language).toList());
+  }
+
+  addArea(String area) {
+    return copyWith(areas: [...areas, area]);
+  }
+
+  removeArea(String area) {
+    return copyWith(areas: areas.where((a) => a != area).toList());
+  }
+
+  addOccupationalStatus(String occupationalStatus) {
+    return copyWith(occupationalStatuses: [...occupationalStatuses, occupationalStatus]);
+  }
+
+  removeOccupationalStatus(String occupationalStatus) {
+    return copyWith(occupationalStatuses: occupationalStatuses.where((o) => o != occupationalStatus).toList());
+  }
+
+  addOrganization(String organization) {
+    return copyWith(organizations: [...organizations, organization]);
+  }
+
+  removeOrganization(String organization) {
+    return copyWith(organizations: organizations.where((o) => o != organization).toList());
+  }
+
+  addFavoriteActivity(String activity) {
+    return copyWith(favoriteActivities: [...favoriteActivities, activity]);
+  }
+
+  removeFavoriteActivity(String activity) {
+    return copyWith(favoriteActivities: favoriteActivities.where((a) => a != activity).toList());
+  }
+
+  addQaAnswer(String question, String answer) {
+    final updatedQaAnswers = Map<String, String>.from(qaAnswers);
+    updatedQaAnswers[question] = answer;
+    return copyWith(qaAnswers: updatedQaAnswers);
+  }
+
+  removeQaAnswer(String question) {
+    final updatedQaAnswers = Map<String, String>.from(qaAnswers);
+    updatedQaAnswers.remove(question);
+    return copyWith(qaAnswers: updatedQaAnswers);
+  }
+
 }
+
+final userStateProvider = StateNotifierProvider<UserState, UserStateData>((ref) {
+  return UserState(ref);
+});
+
+final signedInProvider = Provider<bool>((ref) {
+  return ref.watch(userStateProvider).isSignedIn;
+});
+
+final authStateProvider = StreamProvider<User?>((ref) {
+  final authService = ref.watch(authServiceProvider);
+  return authService.authStateChanges;
+});

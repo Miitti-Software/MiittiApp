@@ -24,8 +24,8 @@ class _InputQACardAnswerScreenState extends ConsumerState<InputQACardAnswerScree
   @override
   void initState() {
     super.initState();
-    final userData = ref.read(userStateProvider.notifier).data;
-    _controller = TextEditingController(text: userData.qaAnswers[widget.question] ?? '');
+    final userData = ref.read(userStateProvider).data;
+    _controller = TextEditingController(text: userData.qaAnswers[ref.read(remoteConfigServiceProvider).get<String>(widget.question)] ?? '');
   }
 
   @override
@@ -39,7 +39,8 @@ class _InputQACardAnswerScreenState extends ConsumerState<InputQACardAnswerScree
     return Consumer(
       builder: (context, ref, child) {
         final config = ref.watch(remoteConfigServiceProvider);
-        final userData = ref.watch(userStateProvider.notifier).data;
+        final userState = ref.watch(userStateProvider.notifier);
+        final userData = ref.watch(userStateProvider).data;
 
         return ConfigScreen(
           child: Column(
@@ -65,9 +66,13 @@ class _InputQACardAnswerScreenState extends ConsumerState<InputQACardAnswerScree
                 buttonText: config.get<String>('save-button'),
                 onPressed: () {
                   if (_controller.text.isNotEmpty) {
-                    userData.qaAnswers[config.get<String>(widget.question)] = _controller.text;
+                    userState.update((state) => state.copyWith(
+                      data: userData.addQaAnswer(config.get<String>(widget.question), _controller.text),
+                    ));
                   } else {
-                    userData.qaAnswers.remove(widget.question);
+                    userState.update((state) => state.copyWith(
+                      data: userData.removeQaAnswer(config.get<String>(widget.question)),
+                    ));
                   }
                   context.pop();
                 },
