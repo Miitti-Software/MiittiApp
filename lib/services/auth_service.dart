@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 /// A class for interfacing with the Firebase Authentication service
 
@@ -18,8 +19,29 @@ class AuthService {
   
   Future<bool> signInWithApple() async {
     try {
-      final appleProvider = AppleAuthProvider();
-      await FirebaseAuth.instance.signInWithProvider(appleProvider);
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final oAuthProvider = OAuthProvider('apple.com');
+      final credential = oAuthProvider.credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+
+      final authResult = await _auth.signInWithCredential(credential);
+
+      // Extract email from the Apple credential
+      final email = appleCredential.email;
+
+      // Update the user's email in Firebase if it's available
+      if (email != null && authResult.user != null) {
+        await authResult.user!.verifyBeforeUpdateEmail(email);
+      }
+
       return true;
     } catch (error) {
       debugPrint('Error signing in with Apple: $error');
