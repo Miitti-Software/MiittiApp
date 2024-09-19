@@ -44,7 +44,7 @@ class HorizontalImageShortlist extends StatelessWidget {
       child: CircleAvatar(
         backgroundImage: CachedNetworkImageProvider(
           imageUrl,
-          cacheManager: CustomCacheManager().instance,
+          cacheManager: ProfilePicturesCacheManager().instance,
           ),
         radius: 20,
       ),
@@ -78,7 +78,7 @@ class HorizontalImageShortlist extends StatelessWidget {
         child: CircleAvatar(
           backgroundImage: CachedNetworkImageProvider(
             imageUrl,
-            cacheManager: CustomCacheManager().instance,
+            cacheManager: ProfilePicturesCacheManager().instance,
             ),
           radius: 20,
         ),
@@ -101,7 +101,7 @@ class HorizontalImageShortlist extends StatelessWidget {
             child: CircleAvatar(
               backgroundImage: CachedNetworkImageProvider(
                 imageUrls[4],
-                cacheManager: CustomCacheManager().instance,
+                cacheManager: ProfilePicturesCacheManager().instance,
                 ),
               radius: 20,
             ),

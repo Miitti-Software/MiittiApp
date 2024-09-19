@@ -169,7 +169,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
               radius: 45,
               backgroundImage: CachedNetworkImageProvider(
                   user.profilePicture.replaceAll('profilePicture', 'thumb_profilePicture'),
-                  cacheManager: CustomCacheManager().instance,
+                  cacheManager: ProfilePicturesCacheManager().instance,
                 ),
             ),
           ),

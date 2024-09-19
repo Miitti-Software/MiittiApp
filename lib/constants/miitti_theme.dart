@@ -82,19 +82,19 @@ final TextTheme textTheme = TextTheme(
     color: colorScheme.onPrimary,
   ),
   bodyMedium: TextStyle(          // ex body
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: FontWeight.w600,
     color: colorScheme.onPrimary,
   ),
   labelLarge: TextStyle(          // ex hintText
     fontSize: 16,
     fontWeight: FontWeight.w300,
-    color: colorScheme.onPrimary.withOpacity(0.6),
+    color: colorScheme.onPrimary.withAlpha(155),
   ),
   labelSmall: TextStyle(          // ex warning
     fontSize: 12,
     fontWeight: FontWeight.w300,
-    color: colorScheme.onPrimary.withOpacity(0.6),
+    color: colorScheme.onPrimary.withAlpha(155),
   ),
   labelMedium: TextStyle(         // ex question
     fontSize: 14,

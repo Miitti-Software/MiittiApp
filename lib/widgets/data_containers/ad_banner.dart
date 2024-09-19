@@ -23,7 +23,7 @@ class AdBanner extends ConsumerWidget {
   Future<Size> _getImageSize(String imageUrl) async {
     final image = CachedNetworkImageProvider(
       imageUrl,
-      cacheManager: CustomCacheManager().instance,
+      cacheManager: ProfilePicturesCacheManager().instance,
     );
     final completer = Completer<ui.Image>();
     image.resolve(const ImageConfiguration()).addListener(

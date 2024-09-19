@@ -2,20 +2,22 @@
 
 import 'dart:ui';
 
-import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:miitti_app/constants/miitti_theme.dart';
 //import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:miitti_app/models/ad_banner_data.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -23,9 +25,10 @@ import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 import 'package:miitti_app/widgets/data_containers/ad_banner.dart';
+import 'package:miitti_app/widgets/data_containers/cluster_bubble.dart';
 import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
-import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
+import 'package:miitti_app/widgets/text_toggle_switch.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
@@ -153,6 +156,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Widget build(BuildContext context) {
     final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where
     ref.listen(activitiesProvider, (_, __) => _updateMarkers());
+    final config = ref.read(remoteConfigServiceProvider);
 
     return Stack(
       children: [
@@ -161,14 +165,16 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           child: Align(
             alignment: Alignment.topCenter,
             child: Container(
-              height: 40,
-              width: 260,
-              padding: const EdgeInsets.all(3),
+              height: 36,
+              width: 250,
+              margin: const EdgeInsets.symmetric(horizontal: AppSizes.minVerticalPadding, vertical: AppSizes.minVerticalPadding),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withAlpha(200),
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                color: Theme.of(context).colorScheme.surface.withAlpha(215),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: mapToggleSwitch(
+              child: TextToggleSwitch(
+                label1: config.get<String>('toggle-show-map'),
+                label2: config.get<String>('toggle-show-list'),
                 initialLabelIndex: showOnMap,
                 onToggle: (index) {
                   setState(() {
@@ -200,7 +206,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         return FlutterMap(
           options: MapOptions(
             keepAlive: true,
-            backgroundColor: AppStyle.black,
+            backgroundColor: const Color(0xFFe4dedd),
             initialCenter: location,
             initialZoom: zoom,
             interactionOptions: const InteractionOptions(
@@ -227,11 +233,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               additionalOptions: const {
                 'accessToken': mapboxAccess,
               },
-              tileProvider: CachedTileProvider(
-                store: HiveCacheStore(
-                  snapshot.data.toString(),
-                ),
+              tileProvider: CustomTileProvider(
+                cacheManager: MapTilesCacheManager().instance,
               ),
+              keepBuffer: 20,
+              panBuffer: 2,
             ),
             Consumer(
               builder: (context, ref, child) {
@@ -240,26 +246,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   initialMarkers: _markerMap.values.toList(),
                   clusterWidgetSize: const Size(100.0, 100.0),
                   maxClusterRadius: 205,
-                  builder: (context, position, markerCount, extraClusterData) => Center(
-                    child: Stack(alignment: Alignment.center, children: [
-                      Image.asset(
-                        "images/circlebackground.png",
-                      ),
-                      Positioned(
-                        top: 20,
-                        child: Text(
-                          "$markerCount",
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 32,
-                            color: Colors.white,
-                            fontWeight: FontWeight.normal,
-                            fontFamily: "Rubik",
-                          ),
-                        ),
-                      )
-                    ]),
-                  ),
+                  builder: (context, position, markerCount, extraClusterData) => ClusterBubble(markerCount: markerCount),
                 );
               },
             ),
@@ -268,6 +255,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       },
     );
   }
+
 
   Widget showOnList() {
     final activities = ref.watch(activitiesProvider);
@@ -375,148 +363,28 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Future<String> getPath() async {
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await getApplicationCacheDirectory();
     return directory.path;
   }
+}
 
+class CustomTileProvider extends TileProvider {
+  final BaseCacheManager cacheManager;
 
+  CustomTileProvider({required this.cacheManager});
 
-
-
-
-  /*CameraPosition myCameraPosition = CameraPosition(
-    target: LatLng(60.1699, 24.9325),
-    zoom: 12,
-    bearing: 0,
-  );*/
-
-  //late MapboxMapController controller;
-
-
-  /*static Future<void> addGeojsonCluster(
-    MapboxMapController controller,
-    List<MiittiActivity> myActivities,
-  ) async {
-    final List<Map<String, dynamic>> features = myActivities.map((activity) {
-      return {
-        "type": "Feature",
-        "properties": {
-          "id": activity.activityUid,
-          'activityCategory':
-              'images/${Activity.solveActivityId(activity.activityCategory)}.png',
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            activity.activityLong,
-            activity.activityLati,
-            0.0,
-          ],
-        }
-      };
-    }).toList();
-
-    final Map<String, dynamic> geoJson = {
-      "type": "FeatureCollection",
-      "crs": {
-        "type": "name",
-        "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}
-      },
-      "features": features,
-    };
-
-    await controller.addSource(
-      "activities",
-      GeojsonSourceProperties(
-        data: geoJson,
-        cluster: true,
-      ),
-    );
-
-    await controller.addSymbolLayer(
-      "activities",
-      'activities-symbols',
-      SymbolLayerProperties(
-        iconImage: [
-          Expressions.caseExpression,
-          [
-            Expressions.boolean,
-            [Expressions.has, 'point_count'],
-            false
-          ],
-          'images/circlebackground.png',
-          [Expressions.get, 'activityCategory'],
-        ],
-        iconSize: [
-          Expressions.caseExpression,
-          [
-            Expressions.boolean,
-            [Expressions.has, 'point_count'],
-            false
-          ],
-          0.85.r,
-          0.8.r,
-        ],
-        iconAllowOverlap: true,
-        symbolSortKey: 10.0,
-      ),
-    );
-
-    await controller.addSymbolLayer(
-      "activities",
-      "activities-count",
-      SymbolLayerProperties(
-        textField: [Expressions.get, 'point_count_abbreviated'],
-        textColor: '#FFFFFF',
-        textFont: ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-        textSize: [
-          Expressions.step,
-          [Expressions.get, 'point_count'],
-          22.sp,
-          5,
-          24.sp,
-          10,
-          26.sp
-        ],
-      ),
-    );
-  }*/
-
-
-  /* void _onFeatureTapped({required LatLng coordinates}) {
-    double zoomLevel = controller.cameraPosition!.zoom;
-    int places = getPlaces(zoomLevel);
-
-    double roundedLatitude =
-        double.parse(coordinates.latitude.toStringAsFixed(places));
-    double roundedLong =
-        double.parse(coordinates.longitude.toStringAsFixed(places));
-
-    for (MiittiActivity activity in _activities) {
-      double roundedActivityLatitude =
-          double.parse(activity.activityLati.toStringAsFixed(places));
-      double roundedActivityLong =
-          double.parse(activity.activityLong.toStringAsFixed(places));
-
-      if (roundedActivityLatitude == roundedLatitude &&
-          roundedActivityLong == roundedLong) {
-        if (!isAnonymous) {
-          goToActivityDetailsPage(activity);
-        } else {
-          showSnackBar(
-              context,
-              'Et ole vielä viimeistellyt profiiliasi, joten\n et voi käyttää vielä sovelluksen kaikkia ominaisuuksia.',
-              ConstantStyles.orange);
-        }
-      }
-    }
+  @override
+  ImageProvider getImage(TileCoordinates coordinates, TileLayer options) {
+    final url = getTileUrl(coordinates, options);
+    return CachedNetworkImageProvider(url, cacheManager: cacheManager);
   }
 
-  _onMapCreated(MapboxMapController controller) {
-    this.controller = controller;
-    controller.onFeatureTapped.add(
-        (id, point, coordinates) => _onFeatureTapped(coordinates: coordinates));
-  }*/
-
-  //Commenting this to merge
+  @override
+  String getTileUrl(TileCoordinates coordinates, TileLayer options) {
+    return options.urlTemplate!
+        .replaceAll('{z}', coordinates.z.toString())
+        .replaceAll('{x}', coordinates.x.toString())
+        .replaceAll('{y}', coordinates.y.toString())
+        .replaceAll('{accessToken}', mapboxAccess);
+  }
 }
