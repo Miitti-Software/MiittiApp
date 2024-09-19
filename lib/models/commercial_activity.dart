@@ -7,6 +7,10 @@ class CommercialActivity extends MiittiActivity {
   String hyperlink;
   String bannerImage;
 
+  int views = 0;
+  int clicks = 0;
+  int hyperlinkClicks = 0;
+
   CommercialActivity({
     required super.id,
     required super.title,
@@ -26,6 +30,9 @@ class CommercialActivity extends MiittiActivity {
     required this.linkTitle,
     required this.hyperlink,
     required this.bannerImage,
+    required this.views,
+    required this.clicks,
+    required this.hyperlinkClicks,
   });
 
   factory CommercialActivity.fromFirestore(DocumentSnapshot snapshot) {
@@ -52,6 +59,9 @@ class CommercialActivity extends MiittiActivity {
       linkTitle: data['linkTitle'],
       hyperlink: data['hyperlink'],
       bannerImage: data['bannerImage'],
+      views: data['views'],
+      clicks: data['clicks'],
+      hyperlinkClicks: data['hyperlinkClicks'],
     );
   }
 

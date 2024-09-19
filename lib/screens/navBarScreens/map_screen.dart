@@ -16,6 +16,7 @@ import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/settings.dart';
@@ -42,7 +43,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   List<AdBannerData> _ads = [];
   SuperclusterMutableController clusterController = SuperclusterMutableController();
   int showOnMap = 0;
-  double radius = 5.0; // Initial radius for geospatial queries
 
   @override
   void initState() {
@@ -126,7 +126,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider); // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
-    final mapState = ref.watch(mapStateProvider);
 
     return Stack(
       children: [
@@ -139,7 +138,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               width: 260,
               padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
-                color: AppStyle.black.withOpacity(0.8),
+                color: Theme.of(context).colorScheme.surface.withAlpha(200),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
               child: mapToggleSwitch(
@@ -158,12 +157,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         ),
       ],
     );
-  }
-
-  double calculateRadius(double zoom) {
-    // Calculate the radius based on the zoom level
-    // Adjust the formula as needed
-    return 5000.0 / zoom;
   }
 
   Widget showMap() {
@@ -187,9 +180,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
             minZoom: 5.0,
             maxZoom: 18.0,
-            onMapReady: () {},
+            onMapReady: () {
+              ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(mapState.location, mapState.zoom);
+            },
             onPositionChanged: (position, hasGesture) {
-                ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(position.center!, calculateRadius(position.zoom!));
+                ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(position.center!, position.zoom!);
             },
           ),
           children: [

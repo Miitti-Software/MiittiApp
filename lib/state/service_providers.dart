@@ -58,9 +58,9 @@ final remoteConfigStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
   return remoteConfigServiceInstance.configStream;
 });
 
-final activitiesStreamProvider = StreamProvider<List<MiittiActivity>>((ref) {
-  return ref.watch(firestoreServiceProvider).streamFilteredActivities();
-});
+// final activitiesStreamProvider = StreamProvider<List<MiittiActivity>>((ref) {
+//   return ref.watch(firestoreServiceProvider).streamFilteredActivities();
+// });
 
 final providerLoading = Provider<bool>((ref) {
   final db = ref.watch(firestoreServiceProvider);
