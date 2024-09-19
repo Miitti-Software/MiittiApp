@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/routing/modal_page.dart';
+import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/widgets/data_containers/activity_details.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_push_notifications.dart';
@@ -126,6 +127,10 @@ class AppRouter {
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   final id = state.pathParameters['id'] as String;
                   return ModalPage<void>(child: ActivityDetails(activityId: id));
+                },
+                onExit: (context, state) {
+                  ref.read(mapStateProvider.notifier).restoreZoom();
+                  return true;
                 },
               ),
             ],

@@ -42,8 +42,8 @@ class MapScreen extends ConsumerStatefulWidget {
 class _MapScreenState extends ConsumerState<MapScreen> {
   List<AdBannerData> _ads = [];
   SuperclusterMutableController clusterController = SuperclusterMutableController();
-  int showOnMap = 0;
   Map<String, Marker> _markerMap = {};
+  int showOnMap = 0;
 
   @override
   void initState() {
@@ -149,27 +149,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
-  void updateClusterMarkers() {
-    final activities = ref.watch(activitiesProvider);
-    final markers = activities.map((activity) {
-      return Marker(
-        width: 100.0,
-        height: 100.0,
-        point: LatLng(activity.latitude, activity.longitude),
-        child: GestureDetector(
-          onTap: () {
-            context.go('/activity/${activity.id}');
-          },
-          child: activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
-        ),
-      );
-    }).toList();
-    clusterController.replaceAll(markers);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);
+    final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where
     ref.listen(activitiesProvider, (_, __) => _updateMarkers());
 
     return Stack(
@@ -205,7 +187,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Widget showMap() {
-    final mapState = ref.watch(mapStateProvider);
+    final location = ref.watch(mapStateProvider.select((state) => state.location));
+    final zoom = ref.watch(mapStateProvider.select((state) => state.zoom));
     return FutureBuilder(
       future: getPath(),
       builder: (context, snapshot) {
@@ -218,8 +201,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           options: MapOptions(
             keepAlive: true,
             backgroundColor: AppStyle.black,
-            initialCenter: mapState.location,
-            initialZoom: mapState.zoom,
+            initialCenter: location,
+            initialZoom: zoom,
             interactionOptions: const InteractionOptions(
               flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
             ),
@@ -227,12 +210,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             maxZoom: 18.0,
             onMapReady: () {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(mapState.location, mapState.zoom);
+                ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(location, zoom);
               });
             },
             onPositionChanged: (position, hasGesture) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(position.center!, position.zoom!);
+                ref.read(mapStateProvider.notifier).saveZoom(position.zoom!);
               });
             },
           ),
@@ -254,12 +238,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 return SuperclusterLayer.mutable(
                   controller: clusterController,
                   initialMarkers: _markerMap.values.toList(),
-                  onMarkerTap: (marker) {
-                    Widget child = marker.child;
-                    if (child is GestureDetector) {
-                      child.onTap!();
-                    }
-                  },
                   clusterWidgetSize: const Size(100.0, 100.0),
                   maxClusterRadius: 205,
                   builder: (context, position, markerCount, extraClusterData) => Center(

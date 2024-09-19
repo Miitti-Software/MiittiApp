@@ -32,12 +32,19 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
   final ScrollController titleScrollController = ScrollController();
   final ScrollController descriptionScrollController = ScrollController();
 
+  @override
+  void dispose() {
+    titleScrollController.dispose();
+    descriptionScrollController.dispose();
+    super.dispose();
+  }
+
   Future<UserCreatedActivity> fetchActivityDetails(String activityId) async {
     final mapState = ref.read(mapStateProvider.notifier);
     final doc = await FirebaseFirestore.instance.collection('activities').doc(activityId).get();    // Switch to firestore service provider
     final activity = UserCreatedActivity.fromFirestore(doc);
     mapState.setLocation(LatLng(activity.latitude - 0.002, activity.longitude)); // Update user location to correspond to activity
-    mapState.setZoom(16.0); // Set zoom level to 15
+    mapState.setZoom(15.0); // Set zoom level to 15
     return activity;
   }
 
