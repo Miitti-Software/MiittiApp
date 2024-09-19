@@ -9,11 +9,7 @@ import 'package:location/location.dart';
 import 'package:miitti_app/constants/genders.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/miitti_user.dart';
-import 'package:miitti_app/services/firebase_storage_service.dart';
-import 'package:miitti_app/services/firestore_service.dart';
-import 'package:miitti_app/services/local_storage_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
-import 'package:miitti_app/services/auth_service.dart';
 import 'package:miitti_app/state/settings.dart';
 
 class UserState extends StateNotifier<UserStateData> {

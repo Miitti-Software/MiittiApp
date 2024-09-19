@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/models/ad_banner_data.dart';
@@ -15,8 +17,6 @@ import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
-import 'package:miitti_app/models/report.dart';
-import 'package:miitti_app/screens/index_page.dart';
 import 'package:miitti_app/state/activities_filter_settings.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
@@ -63,7 +63,7 @@ class FirestoreService {
     }
   }
   
-Future<MiittiUser?> loadUserData(String userId) async {
+  Future<MiittiUser?> loadUserData(String userId) async {
     DocumentSnapshot snapshot = await _firestore.collection(_usersCollection).doc(userId).get();
     if (snapshot.exists) {
       _miittiUser = MiittiUser.fromFirestore(snapshot); // TODO: Delete when redundant
@@ -150,7 +150,6 @@ Future<MiittiUser?> loadUserData(String userId) async {
 
       // TODO: Add distance filter
 
-
       QuerySnapshot querySnapshot = await query.get();
       List<MiittiActivity> activities = querySnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
 
@@ -165,6 +164,65 @@ Future<MiittiUser?> loadUserData(String userId) async {
       return [];
     }
   }
+
+  // Stream<List<MiittiActivity>> streamFilteredActivities(LatLng center, double radius) {
+  //   final filterSettings = ref.read(activitiesFilterSettingsProvider);
+  //   final userState = ref.read(userStateProvider);
+
+  //   final collectionRef = _firestore.collection(_activitiesCollection);
+  //   final geoRef = GeoCollectionReference<Map<String, dynamic>>(collectionRef);
+
+  //   final GeoFirePoint centerPoint = GeoFirePoint(GeoPoint(center.latitude, center.longitude));
+
+  //   Query<Map<String, dynamic>> queryBuilder(Query<Map<String, dynamic>> query) {
+  //     query = query.where('endTime', isNull: true)
+  //                  .where('endTime', isGreaterThanOrEqualTo: DateTime.now())
+  //                  .where('creatorAge', isGreaterThanOrEqualTo: filterSettings.minAge)
+  //                  .where('creatorAge', isLessThanOrEqualTo: filterSettings.maxAge)
+  //                  .where('maxParticipants', isLessThanOrEqualTo: filterSettings.maxParticipants)
+  //                  .where('maxParticipants', isGreaterThanOrEqualTo: filterSettings.minParticipants);
+
+  //     if (filterSettings.categories.isNotEmpty) {
+  //       query = query.where('category', whereIn: filterSettings.categories);
+  //     }
+
+  //     if (filterSettings.languages.isNotEmpty) {
+  //       query = query.where('creatorLanguages', arrayContainsAny: filterSettings.languages);
+  //     }
+
+  //     if (filterSettings.onlySameGender) {
+  //       query = query.where('creatorGender', isEqualTo: userState.data.gender!.name);
+  //     }
+
+  //     if (!filterSettings.includePaid) {
+  //       query = query.where('paid', isEqualTo: false);
+  //     }
+
+  //     return query;
+  //   }
+
+  //   GeoPoint geopointFrom(Map<String, dynamic> data) =>
+  //       (data['location'] as Map<String, dynamic>)['geopoint'] as GeoPoint;
+
+  //   final Stream<List<DocumentSnapshot<Map<String, dynamic>>>> stream = geoRef.subscribeWithin(
+  //     center: centerPoint,
+  //     radiusInKm: radius,
+  //     field: 'location',
+  //     geopointFrom: geopointFrom,
+  //     queryBuilder: queryBuilder,
+  //   );
+
+  //   return stream.asyncMap((querySnapshot) async {
+  //     List<MiittiActivity> activities = querySnapshot.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
+
+  //     QuerySnapshot commercialQuery = await _firestore.collection(_commercialActivitiesCollection).get();
+  //     List<MiittiActivity> commercialActivities = commercialQuery.docs.map((doc) => CommercialActivity.fromFirestore(doc)).toList();
+
+  //     List<MiittiActivity> list = List<MiittiActivity>.from(activities);
+  //     list.addAll(List<MiittiActivity>.from(commercialActivities));
+  //     return list;
+  //   });
+  // }
 
   Stream<List<MiittiActivity>> streamFilteredActivities() {
     final filterSettings = ref.read(activitiesFilterSettingsProvider);

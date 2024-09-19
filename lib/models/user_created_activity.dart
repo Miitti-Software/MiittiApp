@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/genders.dart';
 import 'package:miitti_app/constants/languages.dart';
@@ -72,6 +73,7 @@ class UserCreatedActivity extends MiittiActivity {
       'title': title,
       'description': description,
       'category': category,
+      'location': GeoFirePoint(GeoPoint(latitude, longitude)).data,
       'longitude': longitude,
       'latitude': latitude,
       'address': address,

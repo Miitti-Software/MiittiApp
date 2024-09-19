@@ -10,11 +10,8 @@ import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:miitti_app/screens/activity_details_page.dart';
 //import 'package:mapbox_gl/mapbox_gl.dart';
-import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
 import 'package:miitti_app/models/ad_banner_data.dart';
-import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
@@ -27,7 +24,6 @@ import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 import 'package:miitti_app/widgets/data_containers/ad_banner.dart';
 import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
-import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
@@ -43,15 +39,10 @@ class MapScreen extends ConsumerStatefulWidget {
 }
 
 class _MapScreenState extends ConsumerState<MapScreen> {
-  // late LatLng location;   // TODO: Move to global state
-  // double zoom = 13.0;
-
-  List<MiittiActivity> _activities = [];
   List<AdBannerData> _ads = [];
-
   SuperclusterMutableController clusterController = SuperclusterMutableController();
-
   int showOnMap = 0;
+  double radius = 5.0; // Initial radius for geospatial queries
 
   @override
   void initState() {
@@ -95,45 +86,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       }
     }
 
-    print('user location before update ${ref.read(userStateProvider).data.latestLocation}');
-
     bool locationUpdated = await ref.read(userStateProvider.notifier).updateLocation();
-
-    // print('user location immediately after update ${ref.read(userStateProvider).data.latestLocation}');
 
     if (locationUpdated) {
       final userLocation = ref.read(userStateProvider).data.latestLocation;
-      print('User location: $userLocation');
       if (userLocation != null) {
-        print('map location before update ${ref.read(mapStateProvider).location}');
         ref.read(mapStateProvider.notifier).setLocation(userLocation);
-        print('map location after update ${ref.read(mapStateProvider).location}');
       }
     }
-
-    /*myCameraPosition = CameraPosition(
-      target: currentLatLng,
-      zoom: 12,
-      tilt: 0,
-      bearing: 0,
-    );
-
-    if (controller != null) {
-      controller
-          .animateCamera(CameraUpdate.newCameraPosition(myCameraPosition));
-    }*/
   }
-
-  // void fetchActivities() async {
-  //   List<MiittiActivity> activities = await ref.read(firestoreServiceProvider).fetchFilteredActivities();
-  //   if (mounted) {
-  //     setState(() {
-  //       _activities = activities.toList();
-  //     });
-  //     clusterController.addAll(_activities.map(activityMarker).toList());
-  //     // addGeojsonCluster(controller, _activities);
-  //   }
-  // }
 
   Marker activityMarker(MiittiActivity activity) {
     return Marker(
@@ -142,8 +103,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       point: LatLng(activity.latitude, activity.longitude),
       child: GestureDetector(
         onTap: () {
-          // TODO: Switch to GoRouter
-          // goToActivityDetailsPage(activity);  // TODO: Refactor
           context.go('/activity/${activity.id}');
         },
         child: activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
@@ -161,28 +120,17 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
-  // // TODO: Delete when redundant
-  // goToActivityDetailsPage(MiittiActivity activity) {
-  //   final mapState = ref.watch(mapStateProvider.notifier);
-  //   mapState.setLocation(LatLng(activity.latitude - 0.001, activity.longitude));
-  //   mapState.setZoom(17.0);
-
-  //   // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
-  //   context.go('/activity/${activity.id}');
-  // }
-
   // TODO: Don't let the user create an activity from the map screen if they are not signed in
   // TODO: Do let the user see commercial activity details from the map screen
 
   @override
   Widget build(BuildContext context) {
-    final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
-    final activitiesStream = ref.watch(activitiesStreamProvider);
+    final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider); // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
+    final mapState = ref.watch(mapStateProvider);
 
     return Stack(
       children: [
-        showOnMap == 1 ? showOnList() : showMap(activitiesStream),
-        //top switch
+        showOnMap == 1 ? showOnList() : showMap(),
         SafeArea(
           child: Align(
             alignment: Alignment.topCenter,
@@ -212,47 +160,56 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-  Widget showMap(AsyncValue<List<MiittiActivity>> activitiesStream) {
+  double calculateRadius(double zoom) {
+    // Calculate the radius based on the zoom level
+    // Adjust the formula as needed
+    return 5000.0 / zoom;
+  }
+
+  Widget showMap() {
     final mapState = ref.watch(mapStateProvider);
-    return activitiesStream.when(
-      data: (activities) {
-        return FutureBuilder(
-          future: getPath(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
-            return FlutterMap(
-              options: MapOptions(
-                keepAlive: true,
-                backgroundColor: AppStyle.black,
-                initialCenter: mapState.location,
-                initialZoom: mapState.zoom,
-                interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+    return FutureBuilder(
+      future: getPath(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        return FlutterMap(
+          options: MapOptions(
+            keepAlive: true,
+            backgroundColor: AppStyle.black,
+            initialCenter: mapState.location,
+            initialZoom: mapState.zoom,
+            interactionOptions: const InteractionOptions(
+              flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+            ),
+            minZoom: 5.0,
+            maxZoom: 18.0,
+            onMapReady: () {},
+            onPositionChanged: (position, hasGesture) {
+                ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(position.center!, calculateRadius(position.zoom!));
+            },
+          ),
+          children: [
+            TileLayer(
+              urlTemplate:
+                  "https://api.mapbox.com/styles/v1/miittiapp/clt1ytv8s00jz01qzfiwve3qm/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}",
+              additionalOptions: const {
+                'accessToken': mapboxAccess,
+              },
+              tileProvider: CachedTileProvider(
+                store: HiveCacheStore(
+                  snapshot.data.toString(),
                 ),
-                minZoom: 5.0,
-                maxZoom: 18.0,
-                onMapReady: () {},
               ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                      "https://api.mapbox.com/styles/v1/miittiapp/clt1ytv8s00jz01qzfiwve3qm/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}",
-                  additionalOptions: const {
-                    'accessToken': mapboxAccess,
-                  },
-                  tileProvider: CachedTileProvider(
-                    store: HiveCacheStore(
-                      snapshot.data.toString(),
-                    ),
-                  ),
-                ),
-                SuperclusterLayer.mutable(
-                  controller: clusterController,
-                  initialMarkers: activities.map(activityMarker).toList(),
+            ),
+            Consumer(
+              builder: (context, ref, child) {
+                return SuperclusterLayer.mutable(
+                  controller: ref.watch(activitiesStateProvider).clusterController,
+                  initialMarkers: ref.watch(activitiesProvider).map(activityMarker).toList(),
                   onMarkerTap: (marker) {
                     Widget child = marker.child;
                     if (child is GestureDetector) {
@@ -281,19 +238,17 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       )
                     ]),
                   ),
-                  indexBuilder: IndexBuilders.rootIsolate,
-                ),
-              ],
-            );
-          },
+                );
+              },
+            ),
+          ],
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(child: Text('Error: $error')),
     );
   }
 
   Widget showOnList() {
+    final activities = ref.watch(activitiesProvider);
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -305,84 +260,73 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
           margin: const EdgeInsets.only(top: 60),
-          child: Consumer(
-            builder: (context, watch, child) {
-              final activitiesStream = ref.watch(activitiesStreamProvider);
-              return activitiesStream.when(
-                data: (activities) {
-                  return ListView.builder(
-                    itemCount: activities.length + (_ads.isNotEmpty ? 1 : 0),
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == 1 && _ads.isNotEmpty) {
-                        return AdBanner(adBannerData: _ads[0]);
-                      } else {
-                        int activityIndex = _ads.isNotEmpty && index > 1 ? index - 1 : index;
+          child: ListView.builder(
+            itemCount: activities.length + (_ads.isNotEmpty ? 1 : 0),
+            itemBuilder: (BuildContext context, int index) {
+              if (index == 1 && _ads.isNotEmpty) {
+                return AdBanner(adBannerData: _ads[0]);
+              } else {
+                int activityIndex = _ads.isNotEmpty && index > 1 ? index - 1 : index;
 
-                        MiittiActivity activity = activities[activityIndex];
-                        String activityAddress = activity.address;
+                MiittiActivity activity = activities[activityIndex];
+                String activityAddress = activity.address;
 
-                        List<String> addressParts = activityAddress.split(',');
-                        String cityName = addressParts[0].trim();
+                List<String> addressParts = activityAddress.split(',');
+                String cityName = addressParts[0].trim();
 
-                        int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
+                int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
 
-                        return InkWell(
-                          onTap: () => context.go('/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
-                          child: Card(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(20)),
-                            ),
-                            margin: const EdgeInsets.all(10.0),
-                            child: Container(
-                              height: 125,
-                              decoration: BoxDecoration(
-                                color: AppStyle.black.withOpacity(0.8),
-                                borderRadius: const BorderRadius.all(Radius.circular(20)),
-                              ),
-                              child: Row(
-                                children: [
-                                  Activity.getSymbol(activity),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                            activity.title,
-                                            style: Theme.of(context).textTheme.bodyMedium,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        Text(
-                                          cityName,
-                                          style: Theme.of(context).textTheme.labelMedium,
-                                        ),
-                                        Text(
-                                          '$participants participants',
-                                          style: Theme.of(context).textTheme.labelMedium,
-                                        ),
-                                      ],
-                                    ),
+                return InkWell(
+                  onTap: () => context.go('/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
+                  child: Card(
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                    margin: const EdgeInsets.all(10.0),
+                    child: Container(
+                      height: 125,
+                      decoration: BoxDecoration(
+                        color: AppStyle.black.withOpacity(0.8),
+                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: Row(
+                        children: [
+                          Activity.getSymbol(activity),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    activity.title,
+                                    style: Theme.of(context).textTheme.bodyMedium,
                                   ),
-                                ],
-                              ),
+                                ),
+                                Text(
+                                  cityName,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                Text(
+                                  '$participants participants',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      }
-                    },
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stackTrace) => Center(child: Text('Error: $error')),
-              );
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
             },
           ),
         ),
       ),
     );
   }
+
 
   int getPlaces(double zoomLevel) {
     final zoomToDecimalPlaces = {
