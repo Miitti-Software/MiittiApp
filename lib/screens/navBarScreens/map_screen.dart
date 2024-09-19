@@ -43,10 +43,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   List<AdBannerData> _ads = [];
   SuperclusterMutableController clusterController = SuperclusterMutableController();
   int showOnMap = 0;
+  Map<String, Marker> _markerMap = {};
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeMarkers();
+    });
   }
 
   @override
@@ -60,6 +64,53 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     super.dispose();
   }
 
+  void _initializeMarkers() {
+    final activities = ref.read(activitiesProvider);
+    final newMarkers = {
+      for (var activity in activities)
+        activity.id: _createMarker(activity)
+    };
+    _markerMap = newMarkers;
+    clusterController.replaceAll(_markerMap.values.toList());
+  }
+
+  void _updateMarkers() {
+    final activities = ref.read(activitiesProvider);
+    final currentIds = _markerMap.keys.toSet();
+    final newIds = activities.map((a) => a.id).toSet();
+
+    // Remove markers for activities that no longer exist
+    for (final id in currentIds.difference(newIds)) {
+      final marker = _markerMap.remove(id);
+      if (marker != null) {
+        clusterController.remove(marker);
+      }
+    }
+
+    // Add or update markers for new or existing activities
+    for (final activity in activities) {
+      if (!_markerMap.containsKey(activity.id)) {
+        final marker = _createMarker(activity);
+        _markerMap[activity.id] = marker;
+        clusterController.add(marker);
+      }
+    }
+  }
+
+  Marker _createMarker(MiittiActivity activity) {
+    return Marker(
+      width: 100.0,
+      height: 100.0,
+      point: LatLng(activity.latitude, activity.longitude),
+      child: GestureDetector(
+        onTap: () => context.go('/activity/${activity.id}'),
+        child: activity is UserCreatedActivity
+          ? ActivityMarker(activity: activity)
+          : CommercialActivityMarker(activity: activity),
+      ),
+    );
+  }
+
   void updateUserLocation() async {
     final config = ref.read(remoteConfigServiceProvider);
     final locationPermission = ref.read(locationPermissionProvider.notifier);
@@ -67,47 +118,25 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     bool permissionGranted = ref.watch(locationPermissionProvider);
 
     if (!serviceEnabled) {
-      serviceEnabled = await locationPermission.requestLocationService();
-      if (!serviceEnabled) {
-        if (mounted) {
-          ErrorSnackbar.show(context, config.get<String>('location-service-disabled'));
-        }
-        return;
-      }
-    }
-
-    if (!permissionGranted) {
-      permissionGranted = await locationPermission.requestLocationPermission();
       if (!permissionGranted) {
-        if (mounted) {
-          ErrorSnackbar.show(context, config.get<String>('location-permission-denied'));
+        permissionGranted = await locationPermission.requestLocationPermission();
+        if (!permissionGranted) {
+          if (mounted) {
+            ErrorSnackbar.show(context, config.get<String>('location-permission-denied'));
+          }
+          return;
         }
-        return;
+      }
+
+      bool locationUpdated = await ref.read(userStateProvider.notifier).updateLocation();
+
+      if (locationUpdated) {
+        final userLocation = ref.read(userStateProvider).data.latestLocation;
+        if (userLocation != null) {
+          ref.read(mapStateProvider.notifier).setLocation(userLocation);
+        }
       }
     }
-
-    bool locationUpdated = await ref.read(userStateProvider.notifier).updateLocation();
-
-    if (locationUpdated) {
-      final userLocation = ref.read(userStateProvider).data.latestLocation;
-      if (userLocation != null) {
-        ref.read(mapStateProvider.notifier).setLocation(userLocation);
-      }
-    }
-  }
-
-  Marker activityMarker(MiittiActivity activity) {
-    return Marker(
-      width: 100.0,
-      height: 100.0,
-      point: LatLng(activity.latitude, activity.longitude),
-      child: GestureDetector(
-        onTap: () {
-          context.go('/activity/${activity.id}');
-        },
-        child: activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
-      ),
-    );
   }
 
   void fetchAds() async {
@@ -120,12 +149,28 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
-  // TODO: Don't let the user create an activity from the map screen if they are not signed in
-  // TODO: Do let the user see commercial activity details from the map screen
+  void updateClusterMarkers() {
+    final activities = ref.watch(activitiesProvider);
+    final markers = activities.map((activity) {
+      return Marker(
+        width: 100.0,
+        height: 100.0,
+        point: LatLng(activity.latitude, activity.longitude),
+        child: GestureDetector(
+          onTap: () {
+            context.go('/activity/${activity.id}');
+          },
+          child: activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
+        ),
+      );
+    }).toList();
+    clusterController.replaceAll(markers);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider); // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where 
+    final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);
+    ref.listen(activitiesProvider, (_, __) => _updateMarkers());
 
     return Stack(
       children: [
@@ -181,10 +226,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             minZoom: 5.0,
             maxZoom: 18.0,
             onMapReady: () {
-              ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(mapState.location, mapState.zoom);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(mapState.location, mapState.zoom);
+              });
             },
             onPositionChanged: (position, hasGesture) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 ref.read(activitiesStateProvider.notifier).updateGeoQueryCondition(position.center!, position.zoom!);
+              });
             },
           ),
           children: [
@@ -203,8 +252,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             Consumer(
               builder: (context, ref, child) {
                 return SuperclusterLayer.mutable(
-                  controller: ref.watch(activitiesStateProvider).clusterController,
-                  initialMarkers: ref.watch(activitiesProvider).map(activityMarker).toList(),
+                  controller: clusterController,
+                  initialMarkers: _markerMap.values.toList(),
                   onMarkerTap: (marker) {
                     Widget child = marker.child;
                     if (child is GestureDetector) {
@@ -322,7 +371,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-
   int getPlaces(double zoomLevel) {
     final zoomToDecimalPlaces = {
       20.0: 9, // Very close view, high precision
@@ -349,9 +397,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Future<String> getPath() async {
-    final cacheDirectory = await getTemporaryDirectory();
-    return cacheDirectory.path;
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
   }
+
 
 
 

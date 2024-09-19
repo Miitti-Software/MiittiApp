@@ -80,7 +80,7 @@ Future<void> main() async {
 
   // Initialize the RemoteConfigService to fetch and activate the remote config values
   await ProviderContainer().read(remoteConfigServiceProvider).initialize();
-  await ProviderContainer().read(userStateProvider);
+  ProviderContainer().read(userStateProvider);
   ProviderContainer().read(mapStateProvider.notifier).initializeUserData();
 
   // Activate Firebase App Check for the current environment
