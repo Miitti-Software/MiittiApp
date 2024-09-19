@@ -40,6 +40,7 @@ class AdBanner extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () async {
+        ref.read(firestoreServiceProvider).incrementAdBannerHyperlinkClickCounter(adBannerData.id);
         await launchUrl(Uri.parse(hyperlink));
       },
       child: Card(
@@ -86,7 +87,7 @@ class AdBanner extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                          color: Theme.of(context).colorScheme.primary.withAlpha(200),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(10),
                             bottomRight: Radius.circular(10),

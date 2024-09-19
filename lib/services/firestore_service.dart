@@ -298,17 +298,53 @@ class FirestoreService {
       }
       for (var doc in c) {
         final commercialActivity = CommercialActivity.fromFirestore(doc);
-        _incrementCommercialActivityViewCounter(commercialActivity.id);
+        incrementCommercialActivityViewCounter(commercialActivity.id);
         activities.add(commercialActivity);
       }
       return activities;
     });
   }
 
-  Future<void> _incrementCommercialActivityViewCounter(String activityId) async {
-    final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
-    await docRef.update({'views': FieldValue.increment(1)});
+  Future<void> incrementCommercialActivityViewCounter(String activityId) async {
+  final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
+  await _incrementField(docRef, 'views');
+}
+
+Future<void> incrementCommercialActivityClickCounter(String activityId) async {
+  final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
+  await _incrementField(docRef, 'clicks');
+}
+
+Future<void> incrementCommercialActivityHyperlinkClickCounter(String activityId) async {
+  final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
+  await _incrementField(docRef, 'hyperlinkClicks');
+}
+
+Future<void> incrementAdBannerViewCounter(String id) async {
+  final docRef = _firestore.collection(_adBannersCollection).doc(id);
+  await _incrementField(docRef, 'views');
+}
+
+Future<void> incrementAdBannerHyperlinkClickCounter(String id) async {
+  final docRef = _firestore.collection(_adBannersCollection).doc(id);
+  await _incrementField(docRef, 'hyperlinkClicks');
+}
+
+Future<void> _incrementField(DocumentReference docRef, String fieldName) async {
+  try {
+    final docSnapshot = await docRef.get();
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data() as Map<String, dynamic>;
+      if (data.containsKey(fieldName)) {
+        await docRef.update({fieldName: FieldValue.increment(1)});
+      } else {
+        await docRef.update({fieldName: 1});
+      }
+    }
+  } catch (e) {
+    debugPrint('Error incrementing field: $e');
   }
+}
 
   // Stream<List<MiittiActivity>> streamFilteredActivities() {
   //   final filterSettings = ref.read(activitiesFilterSettingsProvider);

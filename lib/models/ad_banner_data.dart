@@ -1,10 +1,11 @@
 import 'package:miitti_app/constants/languages.dart';
 
 class AdBannerData {
+  String organization;
   String id;
   String image;
   String hyperlink;
-  int clicks;
+  int hyperlinkClicks;
   int views;
   List<String>? targetActivities;
   List<String>? targetLocations;
@@ -16,10 +17,11 @@ class AdBannerData {
   bool? targetWomen;
 
   AdBannerData({
+    required this.organization,
     required this.id,
     required this.image,
     required this.hyperlink,
-    required this.clicks,
+    required this.hyperlinkClicks,
     required this.views,
     this.targetActivities,
     this.targetLocations,
@@ -33,10 +35,11 @@ class AdBannerData {
 
   factory AdBannerData.fromFirestore(Map<String, dynamic> data) {
     return AdBannerData(
+      organization: data['organization'] ?? '',
       id: data['id'] ?? '',
       image: data['image'] ?? '',
       hyperlink: data['hyperlink'] ?? '',
-      clicks: data['clicks'] ?? 0,
+      hyperlinkClicks: data['hyperlinkClicks'] ?? 0,
       views: data['views'] ?? 0,
       targetActivities: data['targetActivities'] ?? [],
       targetLocations: data['targetLocations'] ?? [],

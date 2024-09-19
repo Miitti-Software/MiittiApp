@@ -1,7 +1,4 @@
-//TODO: Refactor
-
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -32,9 +29,6 @@ import 'package:miitti_app/widgets/text_toggle_switch.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:miitti_app/constants/app_style.dart';
 
-
-// TODO: Cache the map tiles
-// TODO: Cache the loaded activities and access the cached ones with activity details
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
 
@@ -106,7 +100,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       height: 100.0,
       point: LatLng(activity.latitude, activity.longitude),
       child: GestureDetector(
-        onTap: () => context.go('/activity/${activity.id}'),
+        onTap: () => context.go('/activity/${activity.id}'),  // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
         child: activity is UserCreatedActivity
           ? ActivityMarker(activity: activity)
           : CommercialActivityMarker(activity: activity),
@@ -160,7 +154,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
     return Stack(
       children: [
-        showOnMap == 1 ? showOnList() : showMap(),
+        showMap(),
+        if (showOnMap == 1) showOnList(),
         SafeArea(
           child: Align(
             alignment: Alignment.topCenter,
@@ -259,14 +254,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   Widget showOnList() {
     final activities = ref.watch(activitiesProvider);
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('images/blurredMap.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: BackdropFilter(
+    return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
           margin: const EdgeInsets.only(top: 60),
@@ -333,33 +321,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             },
           ),
         ),
-      ),
-    );
-  }
-
-  int getPlaces(double zoomLevel) {
-    final zoomToDecimalPlaces = {
-      20.0: 9, // Very close view, high precision
-      19.0: 8,
-      18.0: 7,
-      17.0: 6,
-      16.0: 5,
-      15.0: 4,
-      14.0: 3, // Medium zoom level
-      13.0: 2,
-      12.0: 2,
-      11.0: 2,
-      10.0: 2,
-      9.0: 1, // Medium to high zoom level
-      8.0: 1,
-      7.0: 1,
-      6.0: 1,
-      5.0: 0, // Lower zoom level, less precision
-      4.0: 0,
-      3.0: 0,
-    };
-
-    return zoomToDecimalPlaces[zoomLevel.roundToDouble()] ?? 0;
+      );
   }
 
   Future<String> getPath() async {
