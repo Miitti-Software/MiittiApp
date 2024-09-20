@@ -186,8 +186,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   setState(() {
                     showOnMap = index!;
                     if (index == 1) {
-                      ref.read(mapStateProvider.notifier).fetchAds();
-                      ref.read(activitiesStateProvider.notifier).loadMoreActivities();
+                      ref.read(mapStateProvider.notifier).fetchAds();   // TODO: Only has to be done once
+                      ref.read(activitiesStateProvider.notifier).loadMoreActivities();  // TODO: Load only if there is not enough activities already to fill the first screen
                     }
                   });
                 },
@@ -265,7 +265,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   Widget showOnList() {
     final activities = ref.watch(activitiesProvider);
-    final ads = ref.watch(mapStateProvider.select((state) => state.ads));
+    final ads = ref.watch(mapStateProvider.select((state) => state.ads)); 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
       child: Container(
