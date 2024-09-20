@@ -56,8 +56,14 @@ class MapState extends StateNotifier<MapStateData> {
 
   void fetchAds() async {
     List<AdBannerData> ads = await ref.read(firestoreServiceProvider).fetchAdBanners();
-    ads.shuffle();
     state = state.copyWith(ads: ads);
+  }
+
+  void shuffleAds() {
+    List<AdBannerData> shuffleAds = List.from(state.ads);
+    shuffleAds.shuffle();
+    print(shuffleAds.map((e) => e.id).toList());
+    state = state.copyWith(ads: shuffleAds);
   }
 
   void setShowOnMap(int index) {

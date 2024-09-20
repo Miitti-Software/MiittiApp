@@ -195,6 +195,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       ref.read(activitiesStateProvider.notifier).loadMoreActivities();  // Load only if there is not enough activities already to fill the first screen
                     }
                   }
+                  ref.read(mapStateProvider.notifier).shuffleAds();
                 },
               ),
             ),
@@ -269,89 +270,87 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Widget showOnList() {
-    final activities = ref.watch(activitiesProvider);
-    final ads = ref.watch(mapStateProvider.select((state) => state.ads)); 
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-      child: Container(
-        margin: const EdgeInsets.only(top: 60),
-        child: RefreshIndicator(
-          onRefresh: () async {
-            previousMaxScrollPosition = _scrollController.position.maxScrollExtent * 0.7;
-            return;
-          },
-          triggerMode: RefreshIndicatorTriggerMode.anywhere,
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: activities.length + ads.length, // Adjust item count to include all ads
-            cacheExtent: 100,
-            itemBuilder: (BuildContext context, int index) {
-              // debugPrint('Building item at index: $index');
-              
-              // Determine if the current index should show an ad
-              bool shouldShowAd = (index == 3) || ((index > 3) && ((index - 3) % 10 == 0));
-              int adIndex = (index - 3) ~/ 10;
-          
-              if (shouldShowAd && adIndex < ads.length) {
-                // debugPrint('Showing ad at index: $index, adIndex: $adIndex');
-                return AdBanner(adBannerData: ads[adIndex]);
-              } else {
-                int activityIndex = index - (index > 3 ? (adIndex + 1) : 0); // Adjust activity index to account for ads
-                if (activityIndex >= activities.length) {
-                  // Show remaining ads if there are no more activities
-                  if (adIndex < ads.length) {
-                    // debugPrint('Showing remaining ad at index: $index, adIndex: $adIndex');
-                    return AdBanner(adBannerData: ads[adIndex]);
-                  }
-                  return const SizedBox.shrink(); // Prevent out of bounds error
+  final activities = ref.watch(activitiesProvider);
+  final ads = ref.watch(mapStateProvider.select((state) => state.ads));
+  return BackdropFilter(
+    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+    child: Container(
+      margin: const EdgeInsets.only(top: 60),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          previousMaxScrollPosition = _scrollController.position.maxScrollExtent * 0.7;
+          ref.read(mapStateProvider.notifier).shuffleAds();
+          return;
+        },
+        triggerMode: RefreshIndicatorTriggerMode.anywhere,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: activities.length + ads.length, // Adjust item count to include all ads
+          cacheExtent: 100,
+          itemBuilder: (BuildContext context, int index) {
+            
+            // Determine if the current index should show an ad
+            bool shouldShowAd = (index == 3) || ((index > 3) && ((index - 3) % 7 == 0));
+            int adIndex = (index - 3) ~/ 7;
+
+            if (shouldShowAd && adIndex < ads.length) {
+              return AdBanner(adBannerData: ads[adIndex]);
+            } else {
+              int activityIndex = index - (index > 3 ? (adIndex + 1) : 0);
+              if (activityIndex >= activities.length) {
+                // Show remaining ads if there are no more activities
+                int remainingAdIndex = index - activities.length;
+                if (remainingAdIndex < ads.length) {
+                  return AdBanner(adBannerData: ads[remainingAdIndex]);
                 }
-                MiittiActivity activity = activities[activityIndex];
-                String activityAddress = activity.address;
-                List<String> addressParts = activityAddress.split(',');
-                String cityName = addressParts[0].trim();
-                int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
-          
-                // debugPrint('Showing activity at index: $index, activityIndex: $activityIndex');
-                return InkWell(
-                  onTap: () => context.go('/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
-                  child: Card(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                return const SizedBox.shrink(); // Prevent out of bounds error
+              }
+              MiittiActivity activity = activities[activityIndex];
+              String activityAddress = activity.address;
+              List<String> addressParts = activityAddress.split(',');
+              String cityName = addressParts[0].trim();
+              int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
+
+              return InkWell(
+                onTap: () => context.go('/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
+                child: Card(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  margin: const EdgeInsets.all(10.0),
+                  child: Container(
+                    height: 125,
+                    decoration: BoxDecoration(
+                      color: AppStyle.black.withOpacity(0.8),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
                     ),
-                    margin: const EdgeInsets.all(10.0),
-                    child: Container(
-                      height: 125,
-                      decoration: BoxDecoration(
-                        color: AppStyle.black.withOpacity(0.8),
-                        borderRadius: const BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            activity.title,
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                          Text(
-                            cityName,
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          Text(
-                            '$participants participants',
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                        ],
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          activity.title,
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        Text(
+                          cityName,
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                        Text(
+                          '$participants participants',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              }
-            },
-          ),
+                ),
+              );
+            }
+          },
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
 
   Future<String> getPath() async {

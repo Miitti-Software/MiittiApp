@@ -123,6 +123,7 @@ class FirestoreService {
     int pageSize = 10,
   }) async {
     try {
+      debugPrint('Fetching $pageSize activities');
       // Load user state and filter settings
       final userState = ref.read(userStateProvider);
       ref.read(activitiesFilterSettingsProvider.notifier).loadPreferences();
