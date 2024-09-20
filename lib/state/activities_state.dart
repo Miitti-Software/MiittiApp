@@ -30,6 +30,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       center: const LatLng(60.1699, 24.9325),
     ),
   );
+  bool _isLoadingMore = false;
 
   void updateGeoQueryCondition(LatLng center, double zoom) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
@@ -67,6 +68,23 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
         state = state.copyWith(activities: state.activities.followedBy(filteredActivities).toList());
       }
     });
+  }
+
+  Future<void> loadMoreActivities() async {
+    if (_isLoadingMore) return;
+    _isLoadingMore = true;
+
+    final firestoreService = ref.read(firestoreServiceProvider);
+    List<MiittiActivity> newActivities = await firestoreService.fetchFilteredActivities(pageSize: 10);
+
+    final currentActivityIds = state.activities.map((activity) => activity.id).toSet();
+    final filteredActivities = newActivities.where((activity) => !currentActivityIds.contains(activity.id)).toList();
+
+    if (filteredActivities.isNotEmpty) {
+      state = state.copyWith(activities: state.activities.followedBy(filteredActivities).toList());
+    }
+
+    _isLoadingMore = false;
   }
 
   @override

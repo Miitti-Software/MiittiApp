@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -37,10 +38,11 @@ class MapScreen extends ConsumerStatefulWidget {
 }
 
 class _MapScreenState extends ConsumerState<MapScreen> {
-  List<AdBannerData> _ads = [];
   SuperclusterMutableController clusterController = SuperclusterMutableController();
+  final ScrollController _scrollController = ScrollController();
   Map<String, Marker> _markerMap = {};
-  int showOnMap = 0;
+  int showOnMap = 0;    // TODO: Move to MapState so that you can go to map from list
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeMarkers();
     });
+    _scrollController.addListener(_onScroll);
   }
 
   @override
@@ -59,6 +62,24 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _onScroll() {
+    final scrollPosition = _scrollController.position.pixels;
+    final maxScrollExtent = _scrollController.position.maxScrollExtent;
+    final threshold = maxScrollExtent * 0.7;
+
+    if (scrollPosition >= threshold) {
+      if (_debounce?.isActive ?? false) {
+        _debounce?.cancel();
+      } else {
+        ref.read(activitiesStateProvider.notifier).loadMoreActivities();
+      }
+
+      _debounce = Timer(const Duration(milliseconds: 200), () {
+        _debounce = null;
+      });
+    }
   }
 
   void _initializeMarkers() {
@@ -136,16 +157,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
-  void fetchAds() async {
-    List<AdBannerData> ads = await ref.read(firestoreServiceProvider).fetchAdBanners();
-    setState(() {
-      _ads = ads;
-    });
-    if (_ads.isNotEmpty) {
-      ref.read(firestoreServiceProvider).addAdView(_ads[0].id); // TODO: Do something smarter
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);   // For some incomprehensible reason, configStreamProvider must be accessed here in order to not get stuck in a loading screen when signing out from a session started signed in, even though it is similarly accessed in the LoginIntroScreen where
@@ -175,7 +186,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   setState(() {
                     showOnMap = index!;
                     if (index == 1) {
-                      fetchAds();
+                      ref.read(mapStateProvider.notifier).fetchAds();
+                      ref.read(activitiesStateProvider.notifier).loadMoreActivities();
                     }
                   });
                 },
@@ -251,78 +263,83 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-
   Widget showOnList() {
     final activities = ref.watch(activitiesProvider);
+    final ads = ref.watch(mapStateProvider.select((state) => state.ads));
     return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-        child: Container(
-          margin: const EdgeInsets.only(top: 60),
-          child: ListView.builder(
-            itemCount: activities.length + (_ads.isNotEmpty ? 1 : 0),
-            itemBuilder: (BuildContext context, int index) {
-              if (index == 1 && _ads.isNotEmpty) {
-                return AdBanner(adBannerData: _ads[0]);
-              } else {
-                int activityIndex = _ads.isNotEmpty && index > 1 ? index - 1 : index;
+      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+      child: Container(
+        margin: const EdgeInsets.only(top: 60),
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: activities.length + ads.length, // Adjust item count to include all ads
+          itemBuilder: (BuildContext context, int index) {
+            // debugPrint('Building item at index: $index');
+            
+            // Determine if the current index should show an ad
+            bool shouldShowAd = (index == 3) || ((index > 3) && ((index - 3) % 10 == 0));
+            int adIndex = (index - 3) ~/ 10;
 
-                MiittiActivity activity = activities[activityIndex];
-                String activityAddress = activity.address;
+            if (shouldShowAd && adIndex < ads.length) {
+              // debugPrint('Showing ad at index: $index, adIndex: $adIndex');
+              return AdBanner(adBannerData: ads[adIndex]);
+            } else {
+              int activityIndex = index - (index > 3 ? (adIndex + 1) : 0); // Adjust activity index to account for ads
+              if (activityIndex >= activities.length) {
+                // Show remaining ads if there are no more activities
+                if (adIndex < ads.length) {
+                  // debugPrint('Showing remaining ad at index: $index, adIndex: $adIndex');
+                  return AdBanner(adBannerData: ads[adIndex]);
+                }
+                return SizedBox.shrink(); // Prevent out of bounds error
+              }
+              MiittiActivity activity = activities[activityIndex];
+              String activityAddress = activity.address;
+              List<String> addressParts = activityAddress.split(',');
+              String cityName = addressParts[0].trim();
+              int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
 
-                List<String> addressParts = activityAddress.split(',');
-                String cityName = addressParts[0].trim();
-
-                int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
-
-                return InkWell(
-                  onTap: () => context.go('/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
-                  child: Card(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+              // debugPrint('Showing activity at index: $index, activityIndex: $activityIndex');
+              return InkWell(
+                onTap: () => context.go('/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
+                child: Card(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  margin: const EdgeInsets.all(10.0),
+                  child: Container(
+                    height: 125,
+                    decoration: BoxDecoration(
+                      color: AppStyle.black.withOpacity(0.8),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
                     ),
-                    margin: const EdgeInsets.all(10.0),
-                    child: Container(
-                      height: 125,
-                      decoration: BoxDecoration(
-                        color: AppStyle.black.withOpacity(0.8),
-                        borderRadius: const BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: Row(
-                        children: [
-                          Activity.getSymbol(activity),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    activity.title,
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ),
-                                Text(
-                                  cityName,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                                Text(
-                                  '$participants participants',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          activity.title,
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        Text(
+                          cityName,
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                        Text(
+                          '$participants participants',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              }
-            },
-          ),
+                ),
+              );
+            }
+          },
         ),
-      );
+      ),
+    );
   }
+
 
   Future<String> getPath() async {
     final directory = await getApplicationCacheDirectory();

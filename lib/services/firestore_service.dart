@@ -34,6 +34,8 @@ class FirestoreService {
 
   final FirebaseFirestore _firestore;
   final Ref ref;
+  DocumentSnapshot? _lastUserActivityDocument;
+  DocumentSnapshot? _lastCommercialActivityDocument;
 
   // TODO: Delete when redundant
   MiittiUser? _miittiUser;
@@ -47,7 +49,7 @@ class FirestoreService {
   FirestoreService(this.ref) : _firestore = FirebaseFirestore.instance{
     _firestore.settings = const Settings(
       persistenceEnabled: true,
-      cacheSizeBytes: 100 * 1024 * 1024, // 500 MB
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
     );
   }
 
@@ -117,54 +119,86 @@ class FirestoreService {
   }
 
 
-  // TODO: Fetch only once upon app startup and set up a listener for changes
-  Future<List<MiittiActivity>> fetchFilteredActivities() async {
+  Future<List<MiittiActivity>> fetchFilteredActivities({
+    int pageSize = 10,
+  }) async {
     try {
+      // Load user state and filter settings
       final userState = ref.read(userStateProvider);
       ref.read(activitiesFilterSettingsProvider.notifier).loadPreferences();
       final filterSettings = ref.read(activitiesFilterSettingsProvider);
 
-      Query query = _firestore.collection(_activitiesCollection)
+      // Query for user activities
+      Query userActivitiesQuery = _firestore.collection(_activitiesCollection)
         .where(Filter.or(
           Filter('endTime', isNull: true),
-          Filter('endTime', isGreaterThanOrEqualTo: DateTime.now())))
+          Filter('endTime', isGreaterThanOrEqualTo: DateTime.now()))
+        )
         .where('creatorAge', isGreaterThanOrEqualTo: filterSettings.minAge)
         .where('creatorAge', isLessThanOrEqualTo: filterSettings.maxAge)
         .where('maxParticipants', isLessThanOrEqualTo: filterSettings.maxParticipants)
         .where('maxParticipants', isGreaterThanOrEqualTo: filterSettings.minParticipants);
 
+      // Apply additional filters
       if (filterSettings.categories.isNotEmpty) {
-        query = query.where('category', whereIn: filterSettings.categories);
+        userActivitiesQuery = userActivitiesQuery.where('category', whereIn: filterSettings.categories);
       }
-
       if (filterSettings.languages.isNotEmpty) {
-        query = query.where('creatorLanguages', arrayContainsAny: filterSettings.languages);
+        userActivitiesQuery = userActivitiesQuery.where('creatorLanguages', arrayContainsAny: filterSettings.languages);
       }
-
       if (filterSettings.onlySameGender) {
-        query = query.where('creatorGender', isEqualTo: userState.data.gender!.name);
+        userActivitiesQuery = userActivitiesQuery.where('creatorGender', isEqualTo: userState.data.gender!.name);
       }
-
       if (!filterSettings.includePaid) {
-        query = query.where('paid', isEqualTo: false);
+        userActivitiesQuery = userActivitiesQuery.where('paid', isEqualTo: false);
+      }
+      userActivitiesQuery = userActivitiesQuery.orderBy('creationTime', descending: true);
+
+      // Handle pagination for user activities
+      if (_lastUserActivityDocument != null) {
+        userActivitiesQuery = userActivitiesQuery.startAfter([(_lastUserActivityDocument!.data() as Map<String, dynamic>)['creationTime']]);
       }
 
-      // TODO: Add distance filter
+      // Fetch user activities
+      QuerySnapshot userActivitiesSnapshot = await userActivitiesQuery.limit(pageSize).get();
+      List<MiittiActivity> userActivities = userActivitiesSnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
 
-      QuerySnapshot querySnapshot = await query.get();
-      List<MiittiActivity> activities = querySnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
+      // Update last user activity document
+      if (userActivities.isNotEmpty) {
+        _lastUserActivityDocument = userActivitiesSnapshot.docs.last;
+      }
 
-      QuerySnapshot commercialQuery = await _firestore.collection(_commercialActivitiesCollection).get();
-      List<MiittiActivity> commercialActivities = commercialQuery.docs.map((doc) => CommercialActivity.fromFirestore(doc)).toList();
+      // Query for commercial activities
+      Query commercialActivitiesQuery = _firestore.collection(_commercialActivitiesCollection).orderBy('creationTime', descending: true);
 
-      List<MiittiActivity> list = List<MiittiActivity>.from(activities);
-      list.addAll(List<MiittiActivity>.from(commercialActivities));
-      return list;
+      // Handle pagination for commercial activities
+      if (_lastCommercialActivityDocument != null) {
+        commercialActivitiesQuery = commercialActivitiesQuery.startAfter([(_lastCommercialActivityDocument!.data() as Map<String, dynamic>)['creationTime']]);
+      }
+
+      QuerySnapshot commercialActivitiesSnapshot = await commercialActivitiesQuery.limit(pageSize).get();
+      List<MiittiActivity> commercialActivities = commercialActivitiesSnapshot.docs.map((doc) => CommercialActivity.fromFirestore(doc)).toList();
+
+      // Update last commercial activity document
+      if (commercialActivities.isNotEmpty) {
+        _lastCommercialActivityDocument = commercialActivitiesSnapshot.docs.last;
+      }
+
+      // Combine user and commercial activities
+      List<MiittiActivity> activities = List<MiittiActivity>.from(userActivities);
+      activities.addAll(commercialActivities);
+
+      return activities;
     } catch (e) {
       debugPrint('Error fetching activities: $e');
       return [];
     }
   }
+
+
+
+
+
 
   // Stream<List<MiittiActivity>> streamFilteredActivities(LatLng center, double radius) {
   //   final filterSettings = ref.read(activitiesFilterSettingsProvider);
@@ -407,7 +441,6 @@ Future<void> _incrementField(DocumentReference docRef, String fieldName) async {
           .map((doc) => AdBannerData.fromFirestore(doc.data() as Map<String, dynamic>))
           .toList();
 
-      list.shuffle();
       return list;
 
     } catch (e) {

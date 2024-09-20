@@ -36,7 +36,6 @@ class MapStateData {
   }
 }
 
-
 // MapState class
 class MapState extends StateNotifier<MapStateData> {
   MapState(this.ref) : super(MapStateData()) {
@@ -57,10 +56,8 @@ class MapState extends StateNotifier<MapStateData> {
 
   void fetchAds() async {
     List<AdBannerData> ads = await ref.read(firestoreServiceProvider).fetchAdBanners();
+    ads.shuffle();
     state = state.copyWith(ads: ads);
-    if (ads.isNotEmpty) {
-      ref.read(firestoreServiceProvider).addAdView(ads[0].id); // TODO: Do something smarter
-    }
   }
 
   void setShowOnMap(int index) {
@@ -71,7 +68,7 @@ class MapState extends StateNotifier<MapStateData> {
   }
 
   void setZoom(double zoom) {
-    state = state.copyWith(zoom: zoom,);
+    state = state.copyWith(zoom: zoom);
   }
 
   void saveZoom(double zoom) {

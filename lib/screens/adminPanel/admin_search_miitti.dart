@@ -33,11 +33,11 @@ class _AdminSearchMiittiState extends ConsumerState<AdminSearchMiitti> {
 
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getAllTheActivities() async {
-    List<MiittiActivity> activities =
-        await ref.read(firestoreServiceProvider).fetchFilteredActivities();
+    // List<MiittiActivity> activities =
+        // await ref.read(firestoreServiceProvider).fetchFilteredActivities();
 
-    _miittiActivities = activities.reversed.toList();
-    setState(() {});
+    // _miittiActivities = activities.reversed.toList();
+    // setState(() {});
   }
 
   //Fetching all the users from Google Firebase and assigning the list with them
