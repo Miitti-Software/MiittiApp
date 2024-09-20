@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
@@ -316,7 +317,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    ref.read(firestoreServiceProvider).deleteActivity(activity.id);
+                                    ref.read(activitiesStateProvider.notifier).deleteActivity(activity.id);
                                     context.pop();
                                     context.pop();
                                   },

@@ -91,6 +91,12 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     _isLoadingMore = false;
   }
 
+  Future<void> deleteActivity(String activityId) async {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    await firestoreService.deleteActivity(activityId);
+    state = state.copyWith(activities: state.activities.where((activity) => activity.id != activityId).toList());
+  }
+
   @override
   void dispose() {
     _geoQueryCondition.close();
