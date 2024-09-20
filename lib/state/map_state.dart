@@ -10,13 +10,13 @@ class MapStateData {
   final double zoom;
   final double previousZoom;
   final List<AdBannerData> ads;
-  final int showOnMap;
+  final int toggleIndex;
   MapStateData({
     this.location = const LatLng(60.1699, 24.9325),
     this.zoom = 13.0,
     this.previousZoom = 13.0,
     this.ads = const [],
-    this.showOnMap = 0,
+    this.toggleIndex = 0,
   });
 
   MapStateData copyWith({
@@ -24,14 +24,14 @@ class MapStateData {
     double? zoom,
     double? previousZoom,
     List<AdBannerData>? ads,
-    int? showOnMap,
+    int? toggleIndex,
   }) {
     return MapStateData(
       location: location ?? this.location,
       zoom: zoom ?? this.zoom,
       previousZoom: previousZoom ?? this.previousZoom,
       ads: ads ?? this.ads,
-      showOnMap: showOnMap ?? this.showOnMap,
+      toggleIndex: toggleIndex ?? this.toggleIndex,
     );
   }
 }
@@ -61,7 +61,7 @@ class MapState extends StateNotifier<MapStateData> {
   }
 
   void setShowOnMap(int index) {
-    state = state.copyWith(showOnMap: index);
+    state = state.copyWith(toggleIndex: index);
     if (index == 1) {
       fetchAds();
     }
@@ -81,6 +81,10 @@ class MapState extends StateNotifier<MapStateData> {
 
   void setLocation(LatLng location) {
     state = state.copyWith(location: location);
+  }
+
+  void setToggleIndex(int index) {
+    state = state.copyWith(toggleIndex: index);
   }
 }
 
