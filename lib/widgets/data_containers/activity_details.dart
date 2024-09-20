@@ -54,7 +54,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
     final userState = ref.watch(userStateProvider);
 
     return FutureBuilder<UserCreatedActivity>(
-      future: fetchActivityDetails(widget.activityId),
+      future: fetchActivityDetails(widget.activityId),    // TODO: Load from activities state if available else fetch from firestore
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -202,6 +202,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                       ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(activity.startTime!.toLocal())
                                       : config.get<String>('activity-missing-start-time'),
                                   style: Theme.of(context).textTheme.labelMedium,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -236,6 +237,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                   Text(
                                     address,
                                     style: Theme.of(context).textTheme.labelMedium,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),

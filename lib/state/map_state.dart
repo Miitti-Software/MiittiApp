@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:miitti_app/models/ad_banner_data.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 
@@ -9,13 +8,11 @@ class MapStateData {
   final LatLng location;
   final double zoom;
   final double previousZoom;
-  final List<AdBannerData> ads;
   final int toggleIndex;
   MapStateData({
     this.location = const LatLng(60.1699, 24.9325),
     this.zoom = 13.0,
     this.previousZoom = 13.0,
-    this.ads = const [],
     this.toggleIndex = 0,
   });
 
@@ -23,14 +20,12 @@ class MapStateData {
     LatLng? location,
     double? zoom,
     double? previousZoom,
-    List<AdBannerData>? ads,
     int? toggleIndex,
   }) {
     return MapStateData(
       location: location ?? this.location,
       zoom: zoom ?? this.zoom,
       previousZoom: previousZoom ?? this.previousZoom,
-      ads: ads ?? this.ads,
       toggleIndex: toggleIndex ?? this.toggleIndex,
     );
   }
@@ -52,25 +47,6 @@ class MapState extends StateNotifier<MapStateData> {
     state = state.copyWith(
       location: userData.latestLocation ?? LatLng(latitude, longitude),
     );
-  }
-
-  void fetchAds() async {
-    List<AdBannerData> ads = await ref.read(firestoreServiceProvider).fetchAdBanners();
-    state = state.copyWith(ads: ads);
-  }
-
-  void shuffleAds() {
-    List<AdBannerData> shuffleAds = List.from(state.ads);
-    shuffleAds.shuffle();
-    print(shuffleAds.map((e) => e.id).toList());
-    state = state.copyWith(ads: shuffleAds);
-  }
-
-  void setShowOnMap(int index) {
-    state = state.copyWith(toggleIndex: index);
-    if (index == 1) {
-      fetchAds();
-    }
   }
 
   void setZoom(double zoom) {

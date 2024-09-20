@@ -11,17 +11,17 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 //import 'package:mapbox_gl/mapbox_gl.dart';
-import 'package:miitti_app/models/ad_banner_data.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
-import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/activities_state.dart';
+import 'package:miitti_app/state/ads_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
+import 'package:miitti_app/widgets/data_containers/activity_list_tile.dart';
 import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 import 'package:miitti_app/widgets/data_containers/ad_banner.dart';
 import 'package:miitti_app/widgets/data_containers/cluster_bubble.dart';
@@ -29,7 +29,6 @@ import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.da
 import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:miitti_app/widgets/text_toggle_switch.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:miitti_app/constants/app_style.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -167,6 +166,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     int toggleIndex = ref.watch(mapStateProvider.select((state) => state.toggleIndex));
 
     return Stack(
+      alignment: Alignment.topCenter,
       children: [
         showMap(),
         if (toggleIndex == 1) showOnList(),
@@ -188,14 +188,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 onToggle: (index) {
                   ref.read(mapStateProvider.notifier).setToggleIndex(index!);
                   if (index == 1) {
-                    if (ref.read(mapStateProvider.select((state) => state.ads)).isEmpty) {
-                      ref.read(mapStateProvider.notifier).fetchAds();
+                    if (ref.read(adsStateProvider).isEmpty) {
+                      ref.read(adsStateProvider.notifier).fetchAds();
                     }
                     if (ref.read(activitiesProvider).length < 7) {
                       ref.read(activitiesStateProvider.notifier).loadMoreActivities();  // Load only if there is not enough activities already to fill the first screen
                     }
                   }
-                  ref.read(mapStateProvider.notifier).shuffleAds();
                 },
               ),
             ),
@@ -271,7 +270,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   Widget showOnList() {
   final activities = ref.watch(activitiesProvider);
-  final ads = ref.watch(mapStateProvider.select((state) => state.ads));
+  final ads = ref.watch(adsStateProvider);
   return BackdropFilter(
     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
     child: Container(
@@ -279,13 +278,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       child: RefreshIndicator(
         onRefresh: () async {
           previousMaxScrollPosition = _scrollController.position.maxScrollExtent * 0.7;
-          ref.read(mapStateProvider.notifier).shuffleAds();
+          ref.read(adsStateProvider.notifier).shuffleAds();
           return;
         },
         triggerMode: RefreshIndicatorTriggerMode.anywhere,
         child: ListView.builder(
           controller: _scrollController,
-          itemCount: activities.length + ads.length, // Adjust item count to include all ads
+          itemCount: activities.length + ads.length,
           cacheExtent: 100,
           itemBuilder: (BuildContext context, int index) {
             
@@ -305,45 +304,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 }
                 return const SizedBox.shrink(); // Prevent out of bounds error
               }
-              MiittiActivity activity = activities[activityIndex];
-              String activityAddress = activity.address;
-              List<String> addressParts = activityAddress.split(',');
-              String cityName = addressParts[0].trim();
-              int participants = activity.participantsInfo.isEmpty ? 0 : activity.participantsInfo.length;
-
-              return InkWell(
-                onTap: () => context.go('/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
-                child: Card(
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                  ),
-                  margin: const EdgeInsets.all(10.0),
-                  child: Container(
-                    height: 125,
-                    decoration: BoxDecoration(
-                      color: AppStyle.black.withOpacity(0.8),
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          activity.title,
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                        Text(
-                          cityName,
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                        Text(
-                          '$participants participants',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+              return ActivityListTile(activities[activityIndex]);
             }
           },
         ),

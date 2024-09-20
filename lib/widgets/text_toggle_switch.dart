@@ -34,8 +34,8 @@ class TextToggleSwitch extends StatelessWidget {
         label2,
       ],
       activeBgColors: [
-        [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
-        [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+        [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.surfaceBright],
+        [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.surfaceBright],
       ],
       onToggle: onToggle,
     );

@@ -268,10 +268,6 @@ class AppRouter {
     ];
   }
 
-  // List<GoRoute> _buildShellRoutes() {
-  //   // TODO: Implement
-  // }
-
   Page<void> Function(BuildContext, GoRouterState) _buildNoTransitionPage(Widget child) {
     return (context, state) => NoTransitionPage<void>(
       key: state.pageKey,
@@ -313,7 +309,7 @@ class AppRouter {
 
     if (firstRedirect && userState.isSignedIn && userState.isAnonymous && state.matchedLocation == '/') {
       firstRedirect = false;
-      return '/login/welcome';  // Welcome screen for first-time users
+      return '/login/welcome';
     }
 
     if (state.matchedLocation == '/login/complete-profile') {
@@ -324,8 +320,6 @@ class AppRouter {
     if (!userState.isSignedIn && state.matchedLocation != '/login' && state.matchedLocation != '/login/authenticate') {
       return '/login';  
     }
-
-    // TODO: Add redirection to /login/welcome if user is signed in but profile is incomplete
 
     // TODO: Remove when redundant
     if (userState.isSignedIn && state.matchedLocation != '/login/welcome') {

@@ -56,6 +56,8 @@ final ColorScheme colorScheme = ColorScheme.fromSeed(seedColor: AppColors.pink).
   onTertiary: AppColors.white,
   onTertiaryFixed: AppColors.white,
 
+  surfaceBright: AppColors.red,
+
   surface: AppColors.black,
   onSurface: AppColors.white,
 
