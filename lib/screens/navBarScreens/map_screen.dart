@@ -268,50 +268,58 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-  Widget showOnList() {
-  final activities = ref.watch(activitiesProvider);
-  final ads = ref.watch(adsStateProvider);
-  return BackdropFilter(
-    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-    child: Container(
-      margin: const EdgeInsets.only(top: 60),
-      child: RefreshIndicator(
-        onRefresh: () async {
-          previousMaxScrollPosition = _scrollController.position.maxScrollExtent * 0.7;
-          ref.read(adsStateProvider.notifier).shuffleAds();
-          return;
-        },
-        triggerMode: RefreshIndicatorTriggerMode.anywhere,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: activities.length + ads.length,
-          cacheExtent: 100,
-          itemBuilder: (BuildContext context, int index) {
-            
-            // Determine if the current index should show an ad
-            bool shouldShowAd = (index == 3) || ((index > 3) && ((index - 3) % 7 == 0));
-            int adIndex = (index - 3) ~/ 7;
+Timer? _fullRefreshDebounce;
 
-            if (shouldShowAd && adIndex < ads.length) {
-              return AdBanner(adBannerData: ads[adIndex]);
-            } else {
-              int activityIndex = index - (index > 3 ? (adIndex + 1) : 0);
-              if (activityIndex >= activities.length) {
-                // Show remaining ads if there are no more activities
-                int remainingAdIndex = index - activities.length;
-                if (remainingAdIndex < ads.length) {
-                  return AdBanner(adBannerData: ads[remainingAdIndex]);
-                }
-                return const SizedBox.shrink(); // Prevent out of bounds error
-              }
-              return ActivityListTile(activities[activityIndex]);
+  Widget showOnList() {
+    final activities = ref.watch(activitiesProvider);
+    final ads = ref.watch(adsStateProvider);
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+      child: Container(
+        margin: const EdgeInsets.only(top: 60),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            final completer = Completer<void>();
+            if (_fullRefreshDebounce?.isActive ?? false) {
+              completer.complete();
+              return completer.future;
             }
+            _fullRefreshDebounce = Timer(const Duration(seconds: 3), () {});
+            await ref.read(activitiesStateProvider.notifier).loadMoreActivities(fullRefresh: true);
+            completer.complete();
+            return completer.future;
           },
+          triggerMode: RefreshIndicatorTriggerMode.anywhere,
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: activities.length + ads.length,
+            cacheExtent: 100,
+            itemBuilder: (BuildContext context, int index) {
+              
+              // Determine if the current index should show an ad
+              bool shouldShowAd = (index == 3) || ((index > 3) && ((index - 3) % 7 == 0));
+              int adIndex = (index - 3) ~/ 7;
+
+              if (shouldShowAd && adIndex < ads.length) {
+                return AdBanner(adBannerData: ads[adIndex]);
+              } else {
+                int activityIndex = index - (index > 3 ? (adIndex + 1) : 0);
+                if (activityIndex >= activities.length) {
+                  // Show remaining ads if there are no more activities
+                  int remainingAdIndex = index - activities.length;
+                  if (remainingAdIndex < ads.length) {
+                    return AdBanner(adBannerData: ads[remainingAdIndex]);
+                  }
+                  return const SizedBox.shrink(); // Prevent out of bounds error
+                }
+                return ActivityListTile(activities[activityIndex]);
+              }
+            },
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
 
   Future<String> getPath() async {

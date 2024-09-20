@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 
@@ -24,8 +25,10 @@ class ActivityListTile extends ConsumerWidget {
     final currentParticipants = activity.participants.length;
 
     return InkWell(
-      onTap: () => context.go(
-          '/activity/${activity.id}'), // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
+      onTap: () {
+         context.go('/activity/${activity.id}'); // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
+         ref.read(mapStateProvider.notifier).setToggleIndex(0);
+      },
       child: Card(
         color: Theme.of(context).colorScheme.surface.withAlpha(200),
         margin: const EdgeInsets.all(10),
@@ -54,7 +57,11 @@ class ActivityListTile extends ConsumerWidget {
                       scrollDirection: Axis.horizontal,
                       child: Text(
                         title,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                         fontSize: 18,
+                         fontWeight: FontWeight.w700,
+                          fontStyle: FontStyle.normal,
+                        ),
                         softWrap: true,
                         textAlign: TextAlign.start,
                       ),

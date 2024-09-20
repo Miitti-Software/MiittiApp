@@ -70,12 +70,16 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     });
   }
 
-  Future<void> loadMoreActivities() async {
+  Future<void> loadMoreActivities({bool fullRefresh = false}) async {
     if (_isLoadingMore) return;
     _isLoadingMore = true;
 
+    if (fullRefresh) {
+      state = state.copyWith(activities: []);
+    }
+
     final firestoreService = ref.read(firestoreServiceProvider);
-    List<MiittiActivity> newActivities = await firestoreService.fetchFilteredActivities(pageSize: 10);
+    List<MiittiActivity> newActivities = await firestoreService.fetchFilteredActivities(pageSize: 10, fullRefresh: fullRefresh);
 
     final currentActivityIds = state.activities.map((activity) => activity.id).toSet();
     final filteredActivities = newActivities.where((activity) => !currentActivityIds.contains(activity.id)).toList();

@@ -121,9 +121,16 @@ class FirestoreService {
 
   Future<List<MiittiActivity>> fetchFilteredActivities({
     int pageSize = 10,
+    bool fullRefresh = false,
   }) async {
     try {
       debugPrint('Fetching $pageSize activities');
+
+      if (fullRefresh) {
+        _lastUserActivityDocument = null;
+        _lastCommercialActivityDocument = null;
+      }
+
       // Load user state and filter settings
       final userState = ref.read(userStateProvider);
       ref.read(activitiesFilterSettingsProvider.notifier).loadPreferences();
