@@ -36,7 +36,7 @@ class WelcomeScreen extends ConsumerWidget {
 
           ForwardButton(
             buttonText: config.get<String>('complete-profile-button'),
-            onPressed: () => context.go('/login/complete-profile'),
+            onPressed: () => context.push('/login/complete-profile'),
           ),
 
           TextButton(

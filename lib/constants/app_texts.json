@@ -203,5 +203,14 @@
     "toggle-show-map": "Show on map",
     "toggle-show-list": "Show as list",
 
-    "copied-link": "Link copied to clipboard"
+    "copied-link": "Link copied to clipboard",
+
+    "anonymous-dialog-title": "Whoopsie!",
+    "anonymous-dialog-text": "It looks like your profile is still incomplete. You need to finish your profile before you can access this feature. Shall we finish it now?",
+    "anonymous-dialog-action-prompt": "Finish profile",
+    "anonymous-dialog-cancel": "Later",
+    "anonymous-dialog-disclaimer": "You can also finish your profile later from your profile settings.",
+
+    "anonymous-screen-title": "Profile incomplete",
+    "anonymous-screen-text": "You have not finished your profile, so you cannot access all features. Finish your profile in the profile settings."
   }

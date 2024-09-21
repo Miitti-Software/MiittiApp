@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/activity.dart';
@@ -13,8 +14,8 @@ import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
-import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
+import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 
 class PeopleScreen extends ConsumerStatefulWidget {
   const PeopleScreen({super.key});
@@ -41,18 +42,11 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   }
 
   void initLists() async {
-    if (ref.read(userStateProvider).isAnonymous) {
-      Future.delayed(const Duration(milliseconds: 10)).then((value) {
-        if (mounted) {
-          showDialog(
-              context: context, builder: (context) => const AnonymousDialog());
-        }
-      });
+  if (ref.read(userStateProvider).isAnonymous) {
+    return;
+  }
 
-      return;
-    }
-
-    List responses = await Future.wait([initList(0), initList(1), initList(2)]);
+  List responses = await Future.wait([initList(0), initList(1), initList(2)]);
 
   if (mounted) {
       setState(() {
@@ -227,8 +221,19 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
       width: 110,
       onPressed: () {
         if (ref.read(userStateProvider).isAnonymous) {
-          showDialog(
-              context: context, builder: (context) => const AnonymousDialog());
+          BottomSheetDialog.show(
+            context: context,
+            title: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-title'),
+            body: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-text'),
+            confirmText: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-action-prompt'),
+            onConfirmPressed: () {
+              context.pop();
+              context.push('/login/complete-profile/name');
+            },
+            cancelText: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-cancel'),
+            onCancelPressed: () => context.pop(),
+            disclaimer: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-disclaimer'),
+          );
         } else {
           Navigator.push(
               context,

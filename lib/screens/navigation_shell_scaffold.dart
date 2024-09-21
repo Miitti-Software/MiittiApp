@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/state/map_state.dart';
+import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/custom_navigation_bar.dart';
+import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 
-class NavigationShellScaffold extends StatelessWidget {
+class NavigationShellScaffold extends ConsumerWidget {
   const NavigationShellScaffold({
     Key? key,
     required this.navigationShell,
@@ -22,14 +25,37 @@ class NavigationShellScaffold extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Consumer(
       builder: (context, ref, child) {
         return Scaffold(
           body: navigationShell,
           bottomNavigationBar: CustomNavigationBar(
             currentIndex: navigationShell.currentIndex,
-            onTap: (index) => _goBranch(context, ref, index),
+            onTap: (index) {
+              if (ref.read(userStateProvider).isAnonymous && [0, 2, 3].contains(index)) {
+                BottomSheetDialog.show(
+                  context: context,
+                  title: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-title'),
+                  body: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-text'),
+                  confirmText: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-action-prompt'),
+                  onConfirmPressed: () {
+                    context.pop();
+                    context.push('/login/complete-profile/name');
+                  },
+                  cancelText: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-cancel'),
+                  onCancelPressed: () => context.pop(),
+                  disclaimer: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-disclaimer'),
+                );
+                if (index != 2) {
+                  _goBranch(context, ref, index);
+                } else {
+                  return;
+                }
+              } else {
+                _goBranch(context, ref, index);
+              }
+            },
           ),
         );
       },

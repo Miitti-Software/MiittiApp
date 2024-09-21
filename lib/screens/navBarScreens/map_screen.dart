@@ -27,6 +27,7 @@ import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 import 'package:miitti_app/widgets/data_containers/ad_banner.dart';
 import 'package:miitti_app/widgets/data_containers/cluster_bubble.dart';
 import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
+import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:miitti_app/widgets/text_toggle_switch.dart';
 import 'package:path_provider/path_provider.dart';
@@ -123,7 +124,25 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       height: 100.0,
       point: LatLng(activity.latitude, activity.longitude),
       child: GestureDetector(
-        onTap: () => context.go('/activity/${activity.id}'),  // TODO: Don't let the user go to the activity details page from map screen if they are not signed in - deep link is okay
+        onTap: () {
+          if (ref.watch(userStateProvider).isAnonymous) {
+            BottomSheetDialog.show(
+              context: context,
+              title: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-title'),
+              body: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-text'),
+              confirmText: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-action-prompt'),
+              onConfirmPressed: () {
+                context.pop();
+                context.push('/login/complete-profile/name');
+              },
+              cancelText: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-cancel'),
+              onCancelPressed: () => context.pop(),
+              disclaimer: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-disclaimer'),
+            );
+            return;
+          }
+          context.go('/activity/${activity.id}');
+        },
         child: activity is UserCreatedActivity
           ? ActivityMarker(activity: activity)
           : CommercialActivityMarker(activity: activity),

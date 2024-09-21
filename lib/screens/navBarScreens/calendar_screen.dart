@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/screens/activity_details_page.dart';
 import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/screens/commercialScreens/comact_detailspage.dart';
@@ -20,6 +21,7 @@ import 'package:miitti_app/widgets/confirmdialog.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
+import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -51,18 +53,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 10)).then((value) {
-      if (ref.read(userStateProvider).isAnonymous) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showDialog(
-            context: context,
-            builder: (context) => const AnonymousDialog(),
-          );
-        });
-      } else {
+      if (!ref.read(userStateProvider).isAnonymous) {
         fetchDataFromFirebase();
       }
-    });
   }
 
   Future fetchDataFromFirebase() async {
