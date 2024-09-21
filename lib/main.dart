@@ -13,6 +13,7 @@ import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:miitti_app/envs/firebase_prod_configuration.dart' as prod;
 import 'package:miitti_app/envs/firebase_stag_configuration.dart' as stg;
 import 'package:miitti_app/envs/firebase_dev_configuration.dart' as dev;
@@ -129,18 +130,20 @@ class MiittiApp extends ConsumerWidget {
       }
     });
 
-    return MaterialApp.router(
-      routerConfig: router,
-      locale: Locale(ref.watch(languageProvider).code),
-      supportedLocales: Language.values.map((language) => Locale(language.code)).toList(),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      title: 'Miitti',
-      theme: miittiTheme,
-      debugShowCheckedModeBanner: false,
+    return OverlaySupport.global(
+      child: MaterialApp.router(
+        routerConfig: router,
+        locale: Locale(ref.watch(languageProvider).code),
+        supportedLocales: Language.values.map((language) => Locale(language.code)).toList(),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        title: 'Miitti',
+        theme: miittiTheme,
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }

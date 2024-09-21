@@ -6,6 +6,8 @@ import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/fields/filled_text_area.dart';
+import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
+import 'package:miitti_app/widgets/overlays/success_snackbar.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 
 class ReportBottomSheet extends ConsumerStatefulWidget {
@@ -13,10 +15,10 @@ class ReportBottomSheet extends ConsumerStatefulWidget {
   final String id;
 
   const ReportBottomSheet({
-    Key? key,
+    super.key,
     required this.isActivity,
     required this.id,
-  }) : super(key: key);
+  });
 
   static void show({
     required BuildContext context,
@@ -142,15 +144,22 @@ class _ReportBottomSheetState extends ConsumerState<ReportBottomSheet> {
               onPressed: () async {
                 final firestoreService = ref.read(firestoreServiceProvider);
 
+                if (_selectedReasons.isEmpty) {
+                  ErrorSnackbar.show(context, config.get<String>('invalid-report-missing-reason'));
+                  return;
+                }
+
                 context.pop();
 
                 if (widget.isActivity) {
+                  SuccessSnackbar.show(context, config.get<String>('report-activity-success'));
                   await firestoreService.reportActivity(
                     widget.id,
                     _selectedReasons,
                     _commentsController.text,
                   );
                 } else {
+                  SuccessSnackbar.show(context, config.get<String>('report-profile-success'));
                   await firestoreService.reportUser(
                     widget.id,
                     _selectedReasons,

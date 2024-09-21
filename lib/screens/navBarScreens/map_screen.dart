@@ -191,7 +191,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     if (ref.read(adsStateProvider).isEmpty) {
                       ref.read(adsStateProvider.notifier).fetchAds();
                     }
-                    if (ref.read(activitiesProvider).length < 7) {
+                    if (ref.read(activitiesProvider).length < 6) {
                       ref.read(activitiesStateProvider.notifier).loadMoreActivities();  // Load only if there is not enough activities already to fill the first screen
                     }
                   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-class ErrorSnackbar {
+class SuccessSnackbar {
   static void show(BuildContext context, String message) {
     showOverlayNotification(
       (context) {
@@ -9,7 +9,7 @@ class ErrorSnackbar {
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            color: Theme.of(context).colorScheme.error,
+            color: Colors.green,
             child: Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),

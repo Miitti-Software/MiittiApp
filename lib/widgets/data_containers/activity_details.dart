@@ -15,6 +15,7 @@ import 'package:miitti_app/widgets/buttons/deep_link_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/horizontal_image_shortlist.dart';
 import 'package:miitti_app/widgets/overlays/report_bottom_sheet.dart';
+import 'package:miitti_app/widgets/overlays/success_snackbar.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 
 class ActivityDetails extends ConsumerStatefulWidget {
@@ -69,7 +70,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final userState = ref.watch(userStateProvider);
+    final userUid = ref.watch(userStateProvider.select((state) => state.uid));
 
     return FutureBuilder<MiittiActivity?>(
       future: fetchActivityDetails(widget.activityId),
@@ -317,7 +318,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                   const SizedBox(height: AppSizes.minVerticalPadding),
                   TextButton(
                     onPressed: () {
-                      if (activity.creator == userState.uid) {
+                      if (activity.creator == userUid) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -335,6 +336,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                 TextButton(
                                   onPressed: () {
                                     ref.read(activitiesStateProvider.notifier).deleteActivity(activity.id);
+                                    SuccessSnackbar.show(context, config.get<String>('activity-delete-success'));
                                     context.pop();
                                     context.pop();
                                   },
@@ -352,7 +354,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         );
                       }
                     },
-                    child: Text(activity.creator == userState.uid ? config.get<String>('delete-activity-button') : config.get<String>('report-activity-button')),
+                    child: Text(activity.creator == userUid ? config.get<String>('delete-activity-button') : config.get<String>('report-activity-button')),
                   ),
                   const SizedBox(height: AppSizes.minVerticalPadding),
                 ],
