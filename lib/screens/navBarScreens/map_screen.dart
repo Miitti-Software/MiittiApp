@@ -286,6 +286,7 @@ Timer? _fullRefreshDebounce;
             }
             _fullRefreshDebounce = Timer(const Duration(seconds: 3), () {});
             await ref.read(activitiesStateProvider.notifier).loadMoreActivities(fullRefresh: true);
+            ref.read(adsStateProvider.notifier).shuffleAds();
             completer.complete();
             return completer.future;
           },

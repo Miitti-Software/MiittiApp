@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
-import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/widgets/buttons/deep_link_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/horizontal_image_shortlist.dart';
 import 'package:miitti_app/widgets/overlays/report_bottom_sheet.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ActivityDetails extends ConsumerStatefulWidget {
   final String activityId;
@@ -40,12 +40,29 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
     super.dispose();
   }
 
-  Future<UserCreatedActivity> fetchActivityDetails(String activityId) async {
+  Future<MiittiActivity?> fetchActivityDetails(String activityId) async {
+    final activitiesState = ref.read(activitiesStateProvider);
     final mapState = ref.read(mapStateProvider.notifier);
-    final doc = await FirebaseFirestore.instance.collection('activities').doc(activityId).get();    // Switch to firestore service provider
-    final activity = UserCreatedActivity.fromFirestore(doc);
-    mapState.setLocation(LatLng(activity.latitude - 0.002, activity.longitude)); // Update user location to correspond to activity
-    mapState.setZoom(15.0); // Set zoom level to 15
+
+    // Check if the activity is already in the state
+    final existingActivity = activitiesState.activities.firstWhereOrNull(
+      (activity) => activity.id == activityId,
+    );
+
+    if (existingActivity != null) {
+      Future(() {
+        mapState.setLocation(LatLng(existingActivity.latitude - 0.004, existingActivity.longitude));
+        mapState.setZoom(15.0);
+      });
+      return existingActivity;
+    }
+
+    // Fetch from Firestore if not found in state
+    final activity = await ref.read(activitiesStateProvider.notifier).fetchActivity(activityId);
+    if (activity != null) {
+      mapState.setLocation(LatLng(activity.latitude - 0.004, activity.longitude));
+      mapState.setZoom(15.0);
+    }
     return activity;
   }
 
@@ -54,8 +71,8 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
     final config = ref.watch(remoteConfigServiceProvider);
     final userState = ref.watch(userStateProvider);
 
-    return FutureBuilder<UserCreatedActivity>(
-      future: fetchActivityDetails(widget.activityId),    // TODO: Load from activities state if available else fetch from firestore
+    return FutureBuilder<MiittiActivity?>(
+      future: fetchActivityDetails(widget.activityId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -89,7 +106,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
               )
             ),
           );
-        } else if (!snapshot.hasData) {
+        } else if (!snapshot.hasData || snapshot.data == null) {
           return Center(
             child: Container(
               height: 250,

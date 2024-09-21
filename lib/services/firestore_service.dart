@@ -185,7 +185,11 @@ class FirestoreService {
       }
 
       QuerySnapshot commercialActivitiesSnapshot = await commercialActivitiesQuery.limit(pageSize).get();
-      List<MiittiActivity> commercialActivities = commercialActivitiesSnapshot.docs.map((doc) => CommercialActivity.fromFirestore(doc)).toList();
+      List<MiittiActivity> commercialActivities = commercialActivitiesSnapshot.docs.map((doc) {
+        final commercialActivity = CommercialActivity.fromFirestore(doc);
+        incrementCommercialActivityViewCounter(commercialActivity.id);
+        return commercialActivity;
+      }).toList();
 
       // Update last commercial activity document
       if (commercialActivities.isNotEmpty) {
@@ -430,6 +434,24 @@ Future<void> _incrementField(DocumentReference docRef, String fieldName) async {
   //     return list;
   //   });
   // }
+
+  Future<MiittiActivity?> fetchActivity(String activityId) async {
+    try {
+      final snapshot = await _firestore.collection(_commercialActivitiesCollection).doc(activityId).get();
+      MiittiActivity? activity;
+      if (snapshot.exists) {
+        activity = CommercialActivity.fromFirestore(snapshot);
+        incrementCommercialActivityViewCounter(activityId);
+      } else {
+        final snapshot = await _firestore.collection(_activitiesCollection).doc(activityId).get();
+        activity = UserCreatedActivity.fromFirestore(snapshot);
+      }
+      return activity;
+    } catch (e) {
+      debugPrint('Error fetching activity: $e');
+      return null;
+    }
+  }
 
   Future<void> deleteActivity(String activityId) async {
     try {

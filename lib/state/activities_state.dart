@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
@@ -52,6 +53,17 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     km = ratio * k / (pow(e, ln2 * zoom) * 100);
     km = km / 1000;
     return km;
+  }
+
+  Future<MiittiActivity?> fetchActivity(String activityId) async {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    MiittiActivity? activity = await firestoreService.fetchActivity(activityId);
+    if (activity == null) {
+      debugPrint('Activity with ID $activityId does not exist.');
+      return null;
+    }
+    state = state.copyWith(activities: state.activities.followedBy([activity]).toList());
+    return activity;
   }
 
   void _updateActivities(GeoQueryCondition geoQueryCondition) {
