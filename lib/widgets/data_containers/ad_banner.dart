@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/ad_banner_data.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/ads_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -45,6 +46,7 @@ class AdBanner extends ConsumerWidget {
       onVisibilityChanged: (visibilityInfo) {
         if (visibilityInfo.visibleFraction > 0.5) {
           if (!adViewSessionManager.hasViewed(adBannerData.id)) {
+            ref.read(analyticsServiceProvider).logBannerAdView(adBannerData);
             ref.read(firestoreServiceProvider).incrementAdBannerViewCounter(adBannerData.id);
             adViewSessionManager.markAsViewed(adBannerData.id);
           }
@@ -52,6 +54,7 @@ class AdBanner extends ConsumerWidget {
       },
       child: GestureDetector(
         onTap: () async {
+          ref.read(analyticsServiceProvider).logBannerAdClicked(adBannerData);
           ref.read(firestoreServiceProvider).incrementAdBannerHyperlinkClickCounter(adBannerData.id);
           await launchUrl(Uri.parse(hyperlink));
         },

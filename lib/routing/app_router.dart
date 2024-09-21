@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/routing/modal_page.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/widgets/data_containers/activity_details.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
@@ -54,6 +56,9 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: kDebugMode,
     refreshListenable: ValueNotifier<bool>(ref.watch(signedInProvider)),
+    observers: [FirebaseAnalyticsObserver(
+      analytics: ref.watch(analyticsServiceProvider).instance
+    )],
     initialLocation: '/',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
@@ -68,17 +73,20 @@ class AppRouter {
         pageBuilder: _buildNoTransitionPage(const NotificationMessage()),
       ),
       GoRoute(
+        name: 'login',
         path: '/login',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, __) => const LoginIntroScreen(),
         routes: _buildLoginRoutes(),
       ),
       GoRoute(
+        name: 'maintenance-break',
         path: '/maintenance-break', 
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const MaintenanceBreakScreen())
       ),
       GoRoute(
+        name: 'update',
         path: '/update/:force',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
@@ -106,6 +114,7 @@ class AppRouter {
       navigatorKey: _chatNavigatorKey,
         routes: [
           GoRoute(
+            name: 'chat',
             path: '/chat',
             pageBuilder: _buildNoTransitionPage(const CalendarScreen()),
           ),
@@ -118,11 +127,13 @@ class AppRouter {
       navigatorKey: _mapNavigatorKey,
         routes: [
           GoRoute(
+            name: 'map',
             path: '/',
             pageBuilder: _buildNoTransitionPage(const MapScreen()),
             routes: [
               GoRoute(
                 parentNavigatorKey: _rootNavigatorKey,
+                name: 'activity',
                 path: 'activity/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   final id = state.pathParameters['id'] as String;
@@ -145,6 +156,7 @@ class AppRouter {
       navigatorKey: _createActivityNavigatorKey,
         routes: [
           GoRoute(
+            name: 'create-activity',
             path: '/create-activity',
             pageBuilder: _buildNoTransitionPage(const CreateMiittiOnboarding()),
           ),
@@ -157,6 +169,7 @@ class AppRouter {
       navigatorKey: _peopleNavigatorKey,
         routes: [
           GoRoute(
+            name: 'people',
             path: '/people',
             pageBuilder: _buildNoTransitionPage(const PeopleScreen()),
           ),
@@ -169,10 +182,12 @@ class AppRouter {
       navigatorKey: _profileNavigatorKey,
         routes: [
           GoRoute(
+            name: 'profile',
             path: '/profile',
             pageBuilder: _buildNoTransitionPage(const ProfileScreen()),
             routes: [
               GoRoute(
+                name: 'settings',
                 path: 'settings',
                 pageBuilder: _buildNoTransitionPage(const SettingsScreen()),
               ),
@@ -185,11 +200,13 @@ class AppRouter {
   List<GoRoute> _buildLoginRoutes() {
     return [
       GoRoute(
+        name: 'authenticate',
         path: 'authenticate',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const LoginScreen()),
       ),
       GoRoute(
+        name: 'welcome',
         path: 'welcome',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const WelcomeScreen()),
@@ -199,46 +216,55 @@ class AppRouter {
         // },
       ),
       GoRoute(
+        name: 'input-name',
         path: 'complete-profile/name',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputNameScreen()),
       ),
       GoRoute(
+        name: 'input-profile',
         path: 'complete-profile/birthday',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputBirthdayScreen()),
       ),
       GoRoute(
+        name: 'input-gender',
         path: 'complete-profile/gender',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputGenderScreen()),
       ),
       GoRoute(
+        name: 'input-languages',
         path: 'complete-profile/languages',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputLanguagesScreen()),
       ),
       GoRoute(
+        name: 'input-areas',
         path: 'complete-profile/areas',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputAreasScreen()),
       ),
       GoRoute(
+        name: 'input-life-situation',
         path: 'complete-profile/life-situation',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputLifeSituationScreen()),
       ),
       GoRoute(
+        name: 'input-organization',
         path: 'complete-profile/organization',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputOrganizationScreen()),
       ),
       GoRoute(
+        name: 'input-qa-cards',
         path: 'complete-profile/qa-cards',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputQACardsScreen()),
       ),
       GoRoute(
+        name: 'input-answer-qa-card',
         path: 'complete-profile/qa-card/:question',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: (context, state) {
@@ -247,21 +273,25 @@ class AppRouter {
         },
       ),
       GoRoute(
+        name: 'input-profile-picture',
         path: 'complete-profile/profile-picture',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputProfilePictureScreen()),
       ),
       GoRoute(
+        name: 'input-activities',
         path: 'complete-profile/activities',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputActivitiesScreen()),
       ),
       GoRoute(
+        name: 'push-notifications',
         path: 'complete-profile/push-notifications',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const AcceptPushNotificationsScreen()),
       ),
       GoRoute(
+        name: 'accept-norms',
         path: 'complete-profile/community-norms',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const AcceptNormsScreen()),

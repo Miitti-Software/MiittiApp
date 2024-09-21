@@ -83,6 +83,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   collection: ^1.19.0
   overlay_support: ^2.1.0
+  firebase_analytics: ^11.3.2
 
 dev_dependencies:
   build_runner: ^2.4.11

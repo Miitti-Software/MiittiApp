@@ -74,14 +74,13 @@ Future<void> main() async {
   );
 
   // Initialize Firebase Messaging via PushNotificationService
-  FirebaseMessaging.onBackgroundMessage(
-      PushNotificationService.firebaseBackgroundMessage);
+  FirebaseMessaging.onBackgroundMessage(PushNotificationService.firebaseBackgroundMessage);
   PushNotificationService.listenForeground();
   PushNotificationService.listenTerminated();
 
   // Initialize the RemoteConfigService to fetch and activate the remote config values
   await ProviderContainer().read(remoteConfigServiceProvider).initialize();
-  ProviderContainer().read(userStateProvider);
+  await ProviderContainer().read(userStateProvider.notifier).initializeState();
   ProviderContainer().read(mapStateProvider.notifier).initializeUserData();
 
   // Activate Firebase App Check for the current environment

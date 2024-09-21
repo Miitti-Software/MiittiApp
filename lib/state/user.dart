@@ -14,14 +14,14 @@ import 'package:miitti_app/state/settings.dart';
 
 class UserState extends StateNotifier<UserStateData> {
   UserState(this.ref) : super(UserStateData()) {
-    _initializeState();
+    initializeState();
   }
 
   final Ref ref;
   final Location _liveLocation = Location();
   Timer? _locationUpdateTimer;
 
-  Future<void> _initializeState() async {
+  Future<void> initializeState() async {
     final authService = ref.read(authServiceProvider);
     final user = authService.currentUser;
     if (user != null) {

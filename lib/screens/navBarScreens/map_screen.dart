@@ -14,6 +14,7 @@ import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/ads_state.dart';
@@ -188,6 +189,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 onToggle: (index) {
                   ref.read(mapStateProvider.notifier).setToggleIndex(index!);
                   if (index == 1) {
+                    ref.read(analyticsServiceProvider).logScreenView('ActivitiesListView');
                     if (ref.read(adsStateProvider).isEmpty) {
                       ref.read(adsStateProvider.notifier).fetchAds();
                     }
