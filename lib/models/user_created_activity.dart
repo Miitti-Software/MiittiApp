@@ -7,6 +7,7 @@ import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 
 class UserCreatedActivity extends MiittiActivity {
+  bool requiresRequest;
   List<String> requests;
   List<Language> creatorLanguages;
   Gender creatorGender;
@@ -28,6 +29,7 @@ class UserCreatedActivity extends MiittiActivity {
     required super.maxParticipants,
     required super.participants,
     required super.participantsInfo,
+    required this.requiresRequest,
     required this.requests,
     required this.creatorLanguages,
     required this.creatorGender,
@@ -55,6 +57,7 @@ class UserCreatedActivity extends MiittiActivity {
         'profilePicture': value['profilePicture'],
         'location': value['location'] != null ? LatLng(value['location']['latitude'], value['location']['longitude']) : null,
       })),
+      requiresRequest: data['requiresRequest'],
       requests: List<String>.from(data['requests']),
       creatorLanguages: List.from(data['creatorLanguages']).map((elem) => Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == elem.toLowerCase())).toList(),
       creatorGender: Gender.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['creatorGender'].toLowerCase()),
@@ -92,6 +95,7 @@ class UserCreatedActivity extends MiittiActivity {
           'longitude': (value['location'] as LatLng).longitude,
         } : null,
       })),
+      'requiresRequest': requiresRequest,
       'requests': requests,
       'creatorLanguages': creatorLanguages.map((e) => e.toString().split('.').last).toList(),
       'creatorGender': creatorGender.name,

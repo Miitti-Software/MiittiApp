@@ -684,6 +684,7 @@ class _CreateMiittiOnboardingState
         maxParticipants: activityParticipantsCount.round(),
         participants: [],
         participantsInfo: {},
+        requiresRequest: true,
         requests: [],
         creatorLanguages: [],
         creatorGender: Gender.other,

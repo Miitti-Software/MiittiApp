@@ -6,11 +6,13 @@ import 'package:miitti_app/state/user.dart';
 // MapStateData class
 class MapStateData {
   final LatLng location;
+  final LatLng previousLocation;
   final double zoom;
   final double previousZoom;
   final int toggleIndex;
   MapStateData({
     this.location = const LatLng(60.1699, 24.9325),
+    this.previousLocation = const LatLng(60.1699, 24.9325),
     this.zoom = 13.0,
     this.previousZoom = 13.0,
     this.toggleIndex = 0,
@@ -18,12 +20,14 @@ class MapStateData {
 
   MapStateData copyWith({
     LatLng? location,
+    LatLng? previousLocation,
     double? zoom,
     double? previousZoom,
     int? toggleIndex,
   }) {
     return MapStateData(
       location: location ?? this.location,
+      previousLocation: previousLocation ?? this.previousLocation,
       zoom: zoom ?? this.zoom,
       previousZoom: previousZoom ?? this.previousZoom,
       toggleIndex: toggleIndex ?? this.toggleIndex,
@@ -57,8 +61,26 @@ class MapState extends StateNotifier<MapStateData> {
     state = state.copyWith(previousZoom: zoom);
   }
 
+  void saveLocation(LatLng location) {
+    state = state.copyWith(previousLocation: location);
+  }
+
   void restoreZoom() {
     state = state.copyWith(zoom: state.previousZoom);
+  }
+
+  void restoreLocation() {
+    state = state.copyWith(location: state.previousLocation);
+  }
+
+  void offSetLocationVertically({LatLng? inputLocation, double offset = 0.004}) {
+    final location = inputLocation ?? state.location;
+    state = state.copyWith(location: LatLng(location.latitude - offset, location.longitude));
+  }
+
+  void reverseOffSetLocationVertically({LatLng? inputLocation, double offset = 0.004}) {
+    final location = inputLocation ?? state.location;
+    state = state.copyWith(location: LatLng(location.latitude + offset, location.longitude));
   }
 
   void setLocation(LatLng location) {

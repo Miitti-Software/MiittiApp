@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/languages.dart';
-import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/services/auth_service.dart';
 import 'package:miitti_app/services/firebase_storage_service.dart';
 import 'package:miitti_app/services/firestore_service.dart';
@@ -57,10 +56,6 @@ final remoteConfigStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
   final remoteConfigServiceInstance = ref.watch(remoteConfigServiceProvider);
   return remoteConfigServiceInstance.configStream;
 });
-
-// final activitiesStreamProvider = StreamProvider<List<MiittiActivity>>((ref) {
-//   return ref.watch(firestoreServiceProvider).streamFilteredActivities();
-// });
 
 final providerLoading = Provider<bool>((ref) {
   final db = ref.watch(firestoreServiceProvider);

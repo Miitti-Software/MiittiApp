@@ -8,6 +8,7 @@ class ModalPage<T> extends Page<T> {
   @override
   Route<T> createRoute(BuildContext context) => ModalBottomSheetRoute<T>(
     settings: this,
+    modalBarrierColor: Colors.transparent,
     builder: (context) => Wrap(
       children: [
         Dialog(

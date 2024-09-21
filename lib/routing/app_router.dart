@@ -130,6 +130,7 @@ class AppRouter {
                 },
                 onExit: (context, state) {
                   ref.read(mapStateProvider.notifier).restoreZoom();
+                  ref.read(mapStateProvider.notifier).reverseOffSetLocationVertically();
                   return true;
                 },
               ),

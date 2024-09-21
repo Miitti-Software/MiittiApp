@@ -173,6 +173,9 @@
     "activity-missing-start-time": "To be determined",
     "activity-paid": "Paid",
     "activity-free": "Free",
+    "activity-join-button": "Join",
+    "activity-ask-to-join-button": "Ask to join",
+    "activity-joined-button": "Open chat",
     "activity-delete-success": "Activity deleted",
 
     "report-activity-title": "Report activity",

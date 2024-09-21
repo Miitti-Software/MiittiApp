@@ -5,11 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
-import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/widgets/buttons/deep_link_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
@@ -52,7 +52,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
 
     if (existingActivity != null) {
       Future(() {
-        mapState.setLocation(LatLng(existingActivity.latitude - 0.004, existingActivity.longitude));
+        mapState.offSetLocationVertically(inputLocation: LatLng(existingActivity.latitude, existingActivity.longitude));
         mapState.setZoom(15.0);
       });
       return existingActivity;
@@ -61,7 +61,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
     // Fetch from Firestore if not found in state
     final activity = await ref.read(activitiesStateProvider.notifier).fetchActivity(activityId);
     if (activity != null) {
-      mapState.setLocation(LatLng(activity.latitude - 0.004, activity.longitude));
+      mapState.offSetLocationVertically(inputLocation: LatLng(activity.latitude, activity.longitude));
       mapState.setZoom(15.0);
     }
     return activity;
@@ -181,7 +181,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         Expanded(
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
-                              maxHeight: Theme.of(context).textTheme.titleMedium!.fontSize! * 3.5,
+                              maxHeight: Theme.of(context).textTheme.titleMedium!.fontSize! * 3.3,
                             ),
                             child: SingleChildScrollView(
                                 controller: titleScrollController,
@@ -283,38 +283,48 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                   const SizedBox(height: AppSizes.minVerticalPadding),
                   HorizontalImageShortlist(imageUrls: participantsInfo.values.map((e) => e['profilePicture'].replaceAll('profilePicture', 'thumb_profilePicture') as String).toList()),
                   const SizedBox(height: AppSizes.minVerticalPadding * 1.4),
-                  Flexible(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxHeight: 250,
-                      ),
-                      child: PermanentScrollbar(
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: 120,
+                      maxHeight: 150,
+                    ),
+                    child: PermanentScrollbar(
+                      controller: descriptionScrollController,
+                      child: SingleChildScrollView(
                         controller: descriptionScrollController,
-                        child: SingleChildScrollView(
-                          controller: descriptionScrollController,
-                          padding: const EdgeInsets.only(right: 8),
-                          child: SelectionArea(
-                            child: Text(
-                              description,
-                              style: Theme.of(context).textTheme.labelMedium,
-                            ),
+                        padding: const EdgeInsets.only(right: 8),
+                        child: SelectionArea(
+                          child: Text(
+                            description,
+                            style: Theme.of(context).textTheme.labelMedium,
                           ),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: AppSizes.verticalSeparationPadding),
+                  if (activity.creator == userUid || activity.participants.contains(userUid)) ...[
                   ForwardButton(
-                    buttonText: 'Join',
-                    onPressed: () {}, // TODO: Implement joining
-                  ),
-                  const SizedBox(height: AppSizes.minVerticalPadding),
-                  BackwardButton(
-                    buttonText: 'Back',
+                    buttonText: config.get<String>('activity-joined-button'),
                     onPressed: () {
-                      context.pop();
-                    }, // TODO: Implement going back
+                      // TODO: Open activity chat
+                    },
                   ),
+                  ] else if (activity is UserCreatedActivity && activity.requiresRequest && !activity.participants.contains(userUid)) ...[
+                    ForwardButton(
+                      buttonText: config.get<String>('activity-ask-to-join-button'),
+                      onPressed: () {
+                        // TODO: Implement request to join functionality and refactor & test push notification service
+                      },
+                    ),
+                  ] else if (activity is UserCreatedActivity && !activity.requiresRequest && !activity.participants.contains(userUid)) ...[
+                    ForwardButton(
+                      buttonText: config.get<String>('activity-join-button'),
+                      onPressed: () {
+                        // TODO: Implement join functionality
+                      },
+                    ),
+                  ],
                   const SizedBox(height: AppSizes.minVerticalPadding),
                   TextButton(
                     onPressed: () {
