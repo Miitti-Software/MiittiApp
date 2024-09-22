@@ -91,51 +91,56 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   AppBar buildAppBar() {
-    return AppBar(
-      backgroundColor: AppStyle.black,
-      automaticallyImplyLeading: false,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            ref.read(userStateProvider).data.name!,
-            style: const TextStyle(
-              fontSize: 30,
-              fontFamily: 'Sora',
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+  return AppBar(
+    backgroundColor: AppStyle.black,
+    automaticallyImplyLeading: false,
+    title: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text(
+              ref.read(userStateProvider).data.name!,
+              style: const TextStyle(
+                fontSize: 30,
+                fontFamily: 'Sora',
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
-          const Expanded(child: SizedBox()),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MyProfileEditForm(
-                        user: ref.read(userStateProvider).data.toMiittiUser(),
-                      )));
-            },
-            child: const Icon(
-              Icons.edit_document,
-              size: 30,
-              color: Colors.white,
-            ),
+        ),
+        const Expanded(child: SizedBox()),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => MyProfileEditForm(
+                      user: ref.read(userStateProvider).data.toMiittiUser(),
+                    )));
+          },
+          child: const Icon(
+            Icons.edit_document,
+            size: 30,
+            color: Colors.white,
           ),
-          const SizedBox(width: 20),
-          GestureDetector(
-            onTap: () {
-              context.go('/profile/settings');
-            },
-            child: const Icon(
-              Icons.settings,
-              size: 30,
-              color: Colors.white,
-            ),
+        ),
+        const SizedBox(width: 20),
+        GestureDetector(
+          onTap: () {
+            context.go('/profile/settings');
+          },
+          child: const Icon(
+            Icons.settings,
+            size: 30,
+            color: Colors.white,
           ),
-          getAdminButton(),
-        ],
-      ),
-    );
-  }
+        ),
+        getAdminButton(),
+      ],
+    ),
+  );
+}
 
   Widget buildBody(bool isLoading, List<String> answeredQuestions) {
     List<Widget> widgets = [];

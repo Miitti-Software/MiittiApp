@@ -72,6 +72,9 @@ class UserState extends StateNotifier<UserStateData> {
             ? UserData.fromMiittiUser(miittiUser, latestLocation: latestLocation) 
             : UserData(uid: user.uid),
         );
+        if (!state.isAnonymous) {
+          ref.read(notificationServiceProvider).initialize();
+        }
       }
     }
     return result;

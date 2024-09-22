@@ -73,15 +73,28 @@ Future<void> main() async {
     options: config,
   );
 
+  final container = ProviderContainer();
+
+ // Initialize the RemoteConfigService to fetch and activate the remote config values
+  await container.read(remoteConfigServiceProvider).initialize();
+
+  // Initialize UserState and other services
+  await container.read(userStateProvider.notifier).initializeState().then((value) async {
+    container.read(mapStateProvider.notifier).initializeUserData();
+
+    // Ensure UserState is initialized before initializing PushNotificationService
+    if (container.read(userStateProvider).user != null) {
+      await container.read(notificationServiceProvider).initialize();
+      // await container.read(notificationServiceProvider).localNotiInit();
+    } else {
+      debugPrint('UserState is not initialized.');
+    }
+  });
+
   // Initialize Firebase Messaging via PushNotificationService
   FirebaseMessaging.onBackgroundMessage(PushNotificationService.firebaseBackgroundMessage);
   PushNotificationService.listenForeground();
   PushNotificationService.listenTerminated();
-
-  // Initialize the RemoteConfigService to fetch and activate the remote config values
-  await ProviderContainer().read(remoteConfigServiceProvider).initialize();
-  await ProviderContainer().read(userStateProvider.notifier).initializeState();
-  ProviderContainer().read(mapStateProvider.notifier).initializeUserData();
 
   // Activate Firebase App Check for the current environment
   await FirebaseAppCheck.instance.activate(

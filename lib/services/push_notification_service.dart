@@ -27,7 +27,7 @@ class PushNotificationService {
     return await Permission.notification.isGranted;
   }
 
-  Future init() async {
+  Future initialize() async {
     //on background notification tapped
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
@@ -38,7 +38,7 @@ class PushNotificationService {
     });
 
     //Request notification permission
-    await _firebaseMessaging.requestPermission();
+    await _firebaseMessaging.requestPermission(provisional: true);
 
     if (Platform.isIOS) {
       await _firebaseMessaging.getAPNSToken();
@@ -52,10 +52,23 @@ class PushNotificationService {
     debugPrint("############################################################");
 
     //Save token to user data(needed to access other users tokens in code)
-    MiittiUser? user = ref.read(userStateProvider).data.toMiittiUser();
-    if (user != null && user.fcmToken != token) {
+    if (ref.read(userStateProvider).data.fcmToken != token) {
       ref.read(firestoreServiceProvider).updateUser({"fcmToken": token});
     }
+
+    _firebaseMessaging.onTokenRefresh
+      .listen((fcmToken) {
+        // TODO: If necessary send token to application server.
+        ref.read(firestoreServiceProvider).updateUser({"fcmToken": token});
+        // Note: This callback is fired at each app startup and whenever a new
+        // token is generated.
+      })
+      .onError((err) {
+        // Error getting token.
+        debugPrint("Error getting token: $err");
+      });
+
+      localNotiInit();
   }
 
   Future<bool> requestPermission(bool requestEvenDenied) async {

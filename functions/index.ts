@@ -1,11 +1,8 @@
 import {onObjectFinalized, StorageEvent} from "firebase-functions/v2/storage";
-// import {CloudEvent} from "cloudevents";
-// import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
-// import {onDocumentDeleted} from "firebase-functions/v2/firestore";
-// import {initializeApp} from "firebase-admin/app";
+import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
 import {getStorage} from "firebase-admin/storage";
 import { onRequest } from "firebase-functions/v2/https";
-// import {getMessaging} from "firebase-admin/messaging";
+import {getMessaging} from "firebase-admin/messaging";
 import * as admin from 'firebase-admin';
 import sharp from "sharp";
 import path from "path";
@@ -16,21 +13,6 @@ import fs from "fs";
 admin.initializeApp();
 
 const region = "europe-west1";
-
-// Define interfaces for event data
-// interface StorageObjectData {
-//   name?: string;
-//   contentType?: string;
-//   bucket: string;
-// }
-
-// interface NotificationData {
-//   receiver: string;
-//   message: string;
-//   title: string;
-//   type?: string;
-//   myData?: string;
-// }
 
 // Generate a thumbnail when an image is uploaded
 exports.generateThumbnail = onObjectFinalized(
@@ -229,26 +211,34 @@ export const cleanupOrphanedFolders = onRequest(async (req, res) => {
 });
 
 
-// exports.sendNotificationTo = onCall({region}, async (data: CallableRequest<NotificationData>) => {
-//     const notification = {
-//       token: data.data.receiver,
-//       notification: {
-//         body: data.data.message,
-//         title: data.data.title,
-//       },
-//       data: {
-//         ...data.data,
-//       },
-//     };
-  
-//     try {
-//       const response = await getMessaging().send(notification);
-//       return response;
-//     } catch (error) {
-//       console.error("Error sending notification:", error);
-//       throw new HttpsError("internal", "Error sending notification");
-//     }
-//   });
+interface NotificationData {
+  receiver: string;
+  message: string;
+  title: string;
+  type?: string;
+  myData?: string;
+}
+
+exports.sendNotificationTo = onCall({ region }, async (data: CallableRequest<NotificationData>) => {
+  const notification = {
+    token: data.data.receiver,
+    notification: {
+      body: data.data.message,
+      title: data.data.title,
+    },
+    data: {
+      ...data.data,
+    },
+  };
+
+  try {
+    const response = await getMessaging().send(notification);
+    return response;
+  } catch (error) {
+    console.error("Error sending notification:", error);
+    throw new HttpsError("internal", "Error sending notification");
+  }
+});
 
 // exports.userDeleted = onDocumentDeleted(
 //   {region},

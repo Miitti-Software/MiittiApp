@@ -11,9 +11,9 @@ import 'package:miitti_app/state/settings.dart';
 
 // Providers exposing the service interfaces
 
-final session = Provider<Session>((ref) {
-  return Session(ref);
-});
+// final session = Provider<Session>((ref) {
+//   return Session(ref);
+// });
 
 // Provider for AuthService
 final authServiceProvider = Provider<AuthService>((ref) {
