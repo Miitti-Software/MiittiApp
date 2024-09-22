@@ -22,12 +22,32 @@ class FilterSettings {
   FilterSettings({
     this.minAge = 18,
     this.maxAge = 100,
-    this.genders = const [Gender.male, Gender.female, Gender.other],
-    this.sameArea = true,
+    this.genders = const [],
+    this.sameArea = false,
     this.maxDistance = 10000,
-    this.languages = const [Language.fi, Language.en, Language.sv],
-    this.interests = const ['adventure', 'gaming', 'climbing', 'excercise', 'music', 'reading', 'sports', 'traveling'],
+    this.languages = const [],
+    this.interests = const [],
   });
+
+  FilterSettings copyWith({
+    int? minAge,
+    int? maxAge,
+    List<Gender>? genders,
+    bool? sameArea,
+    double? maxDistance,
+    List<Language>? languages,
+    List<String>? interests,
+  }) {
+    return FilterSettings(
+      minAge: minAge ?? this.minAge,
+      maxAge: maxAge ?? this.maxAge,
+      genders: genders ?? this.genders,
+      sameArea: sameArea ?? this.sameArea,
+      maxDistance: maxDistance ?? this.maxDistance,
+      languages: languages ?? this.languages,
+      interests: interests ?? this.interests,
+    );
+  }
 }
 
 class FilterSettingsNotifier extends StateNotifier<FilterSettings> {

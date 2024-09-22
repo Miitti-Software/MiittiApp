@@ -7,12 +7,16 @@ class SuccessSnackbar {
       (context) {
         return Card(
           child: Container(
+            height: 80,
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             color: Colors.green,
-            child: Text(
-              message,
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                message,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+              ),
             ),
           ),
         );

@@ -6,9 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/routing/modal_page.dart';
+import 'package:miitti_app/screens/filter_users_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
+import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/map_state.dart';
+import 'package:miitti_app/state/users_state.dart';
 import 'package:miitti_app/widgets/data_containers/activity_details.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_push_notifications.dart';
@@ -56,10 +59,12 @@ class AppRouter {
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: kDebugMode,
     refreshListenable: ValueNotifier<bool>(ref.watch(signedInProvider)),
-    observers: [FirebaseAnalyticsObserver(
-      analytics: ref.watch(analyticsServiceProvider).instance,
-      nameExtractor: (state) => router.routerDelegate.currentConfiguration.last.route.path,
-    )],
+    observers: [
+      FirebaseAnalyticsObserver(
+        analytics: ref.watch(analyticsServiceProvider).instance,
+        nameExtractor: (state) {return state.name;},
+      ),
+    ],
     initialLocation: '/',
     routes: _buildRoutes(),
     redirect: _handleRedirect,
@@ -173,6 +178,22 @@ class AppRouter {
             name: 'people',
             path: '/people',
             pageBuilder: _buildNoTransitionPage(const PeopleScreen()),
+            routes: [
+              GoRoute(
+                name: 'filter',
+                path: 'filter',
+                pageBuilder: _buildNoTransitionPage(const FilterUsersSettingsPage()),
+              ),
+              GoRoute(
+                parentNavigatorKey: _rootNavigatorKey,
+                name: 'user',
+                path: 'user/:id',
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  final id = state.pathParameters['id'] as String;
+                  return NoTransitionPage<void>(child: UserProfileEditScreen(user: ref.read(usersStateProvider).users.firstWhere((user) => user.uid == id)));
+                },
+              ),
+            ],
           ),
         ],
     );
@@ -211,10 +232,6 @@ class AppRouter {
         path: 'welcome',
         parentNavigatorKey: _rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const WelcomeScreen()),
-        // onExit: (context, state) {
-        //   context.go('/');
-        //   return true;
-        // },
       ),
       GoRoute(
         name: 'input-name',

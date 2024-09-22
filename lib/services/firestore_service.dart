@@ -444,7 +444,7 @@ class FirestoreService {
       }
 
       // Load user state and filter settings
-      ref.read(usersFilterSettingsProvider.notifier).loadPreferences();
+      await ref.read(usersFilterSettingsProvider.notifier).loadPreferences();
       final filterSettings = ref.read(usersFilterSettingsProvider);
 
       final minAgeTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.now().subtract(Duration(days: filterSettings.minAge * 365)).millisecondsSinceEpoch);
@@ -453,7 +453,8 @@ class FirestoreService {
       // Query for user Users
       Query usersQuery = _firestore.collection(_usersCollection)
         .where('birthday', isLessThanOrEqualTo: minAgeTimestamp)
-        .where('birthday', isGreaterThanOrEqualTo: maxAgeTimestamp);
+        .where('birthday', isGreaterThanOrEqualTo: maxAgeTimestamp)
+        .where('uid', isNotEqualTo: ref.read(userStateProvider).uid);
 
       // if (filterSettings.sameArea) {
       //   String area = userState.data.areas[0];
