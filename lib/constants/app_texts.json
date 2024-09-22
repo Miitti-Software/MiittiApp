@@ -212,5 +212,12 @@
     "anonymous-dialog-disclaimer": "You can also finish your profile later from your profile settings.",
 
     "anonymous-screen-title": "Profile incomplete",
-    "anonymous-screen-text": "You have not finished your profile, so you cannot access all features. Finish your profile in the profile settings."
+    "anonymous-screen-text": "You have not finished your profile, so you cannot access all features. Finish your profile in the profile settings.",
+
+    "people-screen-title": "People",
+
+    "user-status-online": "Online",
+    "user-status-active": "Active",
+    "user-status-away": "Away",
+    "user-status-new": "New"
   }

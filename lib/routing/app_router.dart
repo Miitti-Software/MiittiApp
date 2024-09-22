@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/routing/modal_page.dart';
+import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/widgets/data_containers/activity_details.dart';
@@ -29,7 +30,6 @@ import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
 import 'package:miitti_app/screens/maintenance_break_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/calendar_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/map_screen.dart';
-import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
 import 'package:miitti_app/screens/navigation_shell_scaffold.dart';
@@ -57,7 +57,8 @@ class AppRouter {
     debugLogDiagnostics: kDebugMode,
     refreshListenable: ValueNotifier<bool>(ref.watch(signedInProvider)),
     observers: [FirebaseAnalyticsObserver(
-      analytics: ref.watch(analyticsServiceProvider).instance
+      analytics: ref.watch(analyticsServiceProvider).instance,
+      nameExtractor: (state) => router.routerDelegate.currentConfiguration.last.route.path,
     )],
     initialLocation: '/',
     routes: _buildRoutes(),

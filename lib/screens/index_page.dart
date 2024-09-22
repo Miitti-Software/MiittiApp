@@ -13,7 +13,7 @@ import 'package:miitti_app/widgets/other_widgets.dart';
 import 'navBarScreens/calendar_screen.dart';
 import 'navBarScreens/settings_screen.dart';
 import 'navBarScreens/map_screen.dart';
-import 'navBarScreens/people_screen.dart';
+import 'navBarScreens/old_people_screen.dart';
 import 'navBarScreens/profile_screen.dart';
 
 // Index page that contains the bottom navigation bar and the body of the app
@@ -35,7 +35,7 @@ class IndexPageState extends ConsumerState<IndexPage> {
   static const List<Widget> _pages = <Widget>[
     CalendarScreen(),
     MapScreen(),
-    PeopleScreen(),
+    OldPeopleScreen(),
     ProfileScreen(),
     SettingsScreen(),
   ];

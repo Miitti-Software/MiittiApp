@@ -62,7 +62,7 @@ class CustomNavigationBar extends StatelessWidget {
       child: Icon(
         icon,
         color: currentIndex == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
-        size: 36,
+        size: 38,
         grade: -25,
       ),
     );

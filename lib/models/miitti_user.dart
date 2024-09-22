@@ -28,6 +28,8 @@ class MiittiUser {
 
   // Add marketing preferences here
 
+  // Add statistics such as Miittis created, Miittis attended, etc.
+
   MiittiUser(
       {required this.uid,
       required this.email,

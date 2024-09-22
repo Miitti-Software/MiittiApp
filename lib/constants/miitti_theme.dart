@@ -79,8 +79,8 @@ final TextTheme textTheme = TextTheme(
     color: colorScheme.onPrimary,
   ),
   titleSmall: TextStyle(          // ex activitySubName
-    fontSize: 12,
-    fontWeight: FontWeight.w300,
+    fontSize: 20,
+    fontWeight: FontWeight.w700,
     color: colorScheme.onPrimary,
   ),
   bodyMedium: TextStyle(          // ex body

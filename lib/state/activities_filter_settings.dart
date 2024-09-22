@@ -23,9 +23,9 @@ class FilterSettings {
   FilterSettings({
     this.onlySameGender = false,
     this.minParticipants = 1,
-    this.maxParticipants = 10,
+    this.maxParticipants = 1000,
     this.minAge = 18,
-    this.maxAge = 100,
+    this.maxAge = 1000,
     this.maxDistance = 10000,
     this.includePaid = true,
     this.categories = const [],
@@ -35,15 +35,15 @@ class FilterSettings {
 
 class FilterSettingsNotifier extends StateNotifier<FilterSettings> {
   final LocalStorageService _localStorageService;
-  static const String sameGenderKey = 'onlySameGender';
-  static const String minParticipantsKey = 'minParticipants';
-  static const String maxParticipantsKey = 'maxParticipants';
-  static const String minAgeKey = 'minAge';
-  static const String maxAgeKey = 'maxAge';
-  static const String maxDistanceKey = 'maxDistance';
-  static const String paidKey = 'includePaid';
-  static const String categoriesKey = 'categories';
-  static const String languagesKey = 'languages';
+  static const String sameGenderKey = 'onlySameGenderAF';
+  static const String minParticipantsKey = 'minParticipantsAF';
+  static const String maxParticipantsKey = 'maxParticipantsAF';
+  static const String minAgeKey = 'minAgeAF';
+  static const String maxAgeKey = 'maxAgeAF';
+  static const String maxDistanceKey = 'maxDistanceAF';
+  static const String paidKey = 'includePaidAF';
+  static const String categoriesKey = 'categoriesAF';
+  static const String languagesKey = 'languagesAF';
 
   FilterSettingsNotifier(this._localStorageService) : super(FilterSettings()) {
     loadPreferences();
@@ -53,9 +53,9 @@ class FilterSettingsNotifier extends StateNotifier<FilterSettings> {
     state = FilterSettings(
       onlySameGender: await _localStorageService.getBool(sameGenderKey) ?? false,
       minParticipants: await _localStorageService.getInt(minParticipantsKey) ?? 1,
-      maxParticipants: await _localStorageService.getInt(maxParticipantsKey) ?? 10,
+      maxParticipants: await _localStorageService.getInt(maxParticipantsKey) ?? 1000,
       minAge: await _localStorageService.getInt(minAgeKey) ?? 18,
-      maxAge: await _localStorageService.getInt(maxAgeKey) ?? 100,
+      maxAge: await _localStorageService.getInt(maxAgeKey) ?? 1000,
       maxDistance: await _localStorageService.getDouble(maxDistanceKey) ?? 10000,
       includePaid: await _localStorageService.getBool(paidKey) ?? false,
       categories: await _localStorageService.getStringList(categoriesKey) ?? [],

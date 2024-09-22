@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -20,6 +21,7 @@ import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/state/activities_filter_settings.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
+import 'package:miitti_app/state/users_filter_settings.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -36,6 +38,7 @@ class FirestoreService {
   final Ref ref;
   DocumentSnapshot? _lastUserActivityDocument;
   DocumentSnapshot? _lastCommercialActivityDocument;
+  DocumentSnapshot? _lastUserDocument;
 
   // TODO: Delete when redundant
   MiittiUser? _miittiUser;
@@ -117,7 +120,6 @@ class FirestoreService {
       debugPrint('Got an error deleting user $e');
     }
   }
-
 
   Future<List<MiittiActivity>> fetchFilteredActivities({
     int pageSize = 10,
@@ -207,70 +209,6 @@ class FirestoreService {
     }
   }
 
-
-
-
-
-
-  // Stream<List<MiittiActivity>> streamFilteredActivities(LatLng center, double radius) {
-  //   final filterSettings = ref.read(activitiesFilterSettingsProvider);
-  //   final userState = ref.read(userStateProvider);
-
-  //   final collectionRef = _firestore.collection(_activitiesCollection);
-  //   final geoRef = GeoCollectionReference<Map<String, dynamic>>(collectionRef);
-
-  //   final GeoFirePoint centerPoint = GeoFirePoint(GeoPoint(center.latitude, center.longitude));
-
-  //   Query<Map<String, dynamic>> queryBuilder(Query<Map<String, dynamic>> query) {
-  //     query = query.where('endTime', isNull: true)
-  //                  .where('endTime', isGreaterThanOrEqualTo: DateTime.now())
-  //                  .where('creatorAge', isGreaterThanOrEqualTo: filterSettings.minAge)
-  //                  .where('creatorAge', isLessThanOrEqualTo: filterSettings.maxAge)
-  //                  .where('maxParticipants', isLessThanOrEqualTo: filterSettings.maxParticipants)
-  //                  .where('maxParticipants', isGreaterThanOrEqualTo: filterSettings.minParticipants);
-
-  //     if (filterSettings.categories.isNotEmpty) {
-  //       query = query.where('category', whereIn: filterSettings.categories);
-  //     }
-
-  //     if (filterSettings.languages.isNotEmpty) {
-  //       query = query.where('creatorLanguages', arrayContainsAny: filterSettings.languages);
-  //     }
-
-  //     if (filterSettings.onlySameGender) {
-  //       query = query.where('creatorGender', isEqualTo: userState.data.gender!.name);
-  //     }
-
-  //     if (!filterSettings.includePaid) {
-  //       query = query.where('paid', isEqualTo: false);
-  //     }
-
-  //     return query;
-  //   }
-
-  //   GeoPoint geopointFrom(Map<String, dynamic> data) =>
-  //       (data['location'] as Map<String, dynamic>)['geopoint'] as GeoPoint;
-
-  //   final Stream<List<DocumentSnapshot<Map<String, dynamic>>>> stream = geoRef.subscribeWithin(
-  //     center: centerPoint,
-  //     radiusInKm: radius,
-  //     field: 'location',
-  //     geopointFrom: geopointFrom,
-  //     queryBuilder: queryBuilder,
-  //   );
-
-  //   return stream.asyncMap((querySnapshot) async {
-  //     List<MiittiActivity> activities = querySnapshot.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
-
-  //     QuerySnapshot commercialQuery = await _firestore.collection(_commercialActivitiesCollection).get();
-  //     List<MiittiActivity> commercialActivities = commercialQuery.docs.map((doc) => CommercialActivity.fromFirestore(doc)).toList();
-
-  //     List<MiittiActivity> list = List<MiittiActivity>.from(activities);
-  //     list.addAll(List<MiittiActivity>.from(commercialActivities));
-  //     return list;
-  //   });
-  // }
-
   Stream<List<MiittiActivity>> streamActivitiesWithinRadius(LatLng center, double radiusInKm) {
     final geoCollectionReference = GeoCollectionReference(_firestore.collection(_activitiesCollection));
     final commercialGeoCollectionReference = GeoCollectionReference(_firestore.collection(_commercialActivitiesCollection));
@@ -352,88 +290,45 @@ class FirestoreService {
   }
 
   Future<void> incrementCommercialActivityViewCounter(String activityId) async {
-  final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
-  await _incrementField(docRef, 'views');
-}
-
-Future<void> incrementCommercialActivityClickCounter(String activityId) async {
-  final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
-  await _incrementField(docRef, 'clicks');
-}
-
-Future<void> incrementCommercialActivityHyperlinkClickCounter(String activityId) async {
-  final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
-  await _incrementField(docRef, 'hyperlinkClicks');
-}
-
-Future<void> incrementAdBannerViewCounter(String id) async {
-  final docRef = _firestore.collection(_adBannersCollection).doc(id);
-  await _incrementField(docRef, 'views');
-}
-
-Future<void> incrementAdBannerHyperlinkClickCounter(String id) async {
-  final docRef = _firestore.collection(_adBannersCollection).doc(id);
-  await _incrementField(docRef, 'hyperlinkClicks');
-}
-
-Future<void> _incrementField(DocumentReference docRef, String fieldName) async {
-  try {
-    final docSnapshot = await docRef.get();
-    if (docSnapshot.exists) {
-      final data = docSnapshot.data() as Map<String, dynamic>;
-      if (data.containsKey(fieldName)) {
-        await docRef.update({fieldName: FieldValue.increment(1)});
-      } else {
-        await docRef.update({fieldName: 1});
-      }
-    }
-  } catch (e) {
-    debugPrint('Error incrementing field: $e');
+    final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
+    await _incrementField(docRef, 'views');
   }
-}
 
-  // Stream<List<MiittiActivity>> streamFilteredActivities() {
-  //   final filterSettings = ref.read(activitiesFilterSettingsProvider);
-  //   final userState = ref.read(userStateProvider);
+  Future<void> incrementCommercialActivityClickCounter(String activityId) async {
+    final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
+    await _incrementField(docRef, 'clicks');
+  }
 
-  //   Query query = _firestore.collection(_activitiesCollection)
-    //     .where(Filter.or(
-    //       Filter('endTime', isNull: true),
-    //       Filter('endTime', isGreaterThanOrEqualTo: DateTime.now())))
-    //     .where('creatorAge', isGreaterThanOrEqualTo: filterSettings.minAge)
-    //     .where('creatorAge', isLessThanOrEqualTo: filterSettings.maxAge)
-    //     .where('maxParticipants', isLessThanOrEqualTo: filterSettings.maxParticipants)
-    //     .where('maxParticipants', isGreaterThanOrEqualTo: filterSettings.minParticipants);
+  Future<void> incrementCommercialActivityHyperlinkClickCounter(String activityId) async {
+    final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
+    await _incrementField(docRef, 'hyperlinkClicks');
+  }
 
-    // if (filterSettings.categories.isNotEmpty) {
-    //   query = query.where('category', whereIn: filterSettings.categories);
-    // }
+  Future<void> incrementAdBannerViewCounter(String id) async {
+    final docRef = _firestore.collection(_adBannersCollection).doc(id);
+    await _incrementField(docRef, 'views');
+  }
 
-    // if (filterSettings.languages.isNotEmpty) {
-    //   query = query.where('creatorLanguages', arrayContainsAny: filterSettings.languages);
-    // }
+  Future<void> incrementAdBannerHyperlinkClickCounter(String id) async {
+    final docRef = _firestore.collection(_adBannersCollection).doc(id);
+    await _incrementField(docRef, 'hyperlinkClicks');
+  }
 
-    // if (filterSettings.onlySameGender) {
-    //   query = query.where('creatorGender', isEqualTo: userState.data.gender!.name);
-    // }
-
-    // if (!filterSettings.includePaid) {
-    //   query = query.where('paid', isEqualTo: false);
-  //   }
-
-  //   // TODO: Add distance filter
-
-  //   return query.snapshots().asyncMap((querySnapshot) async {
-  //     List<MiittiActivity> activities = querySnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
-
-  //     QuerySnapshot commercialQuery = await _firestore.collection(_commercialActivitiesCollection).get();
-  //     List<MiittiActivity> commercialActivities = commercialQuery.docs.map((doc) => CommercialActivity.fromFirestore(doc)).toList();
-
-  //     List<MiittiActivity> list = List<MiittiActivity>.from(activities);
-  //     list.addAll(List<MiittiActivity>.from(commercialActivities));
-  //     return list;
-  //   });
-  // }
+  Future<void> _incrementField(DocumentReference docRef, String fieldName) async {
+    try {
+      final docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        final data = docSnapshot.data() as Map<String, dynamic>;
+        if (data.containsKey(fieldName)) {
+          await docRef.update({fieldName: FieldValue.increment(1)});
+        } else {
+          await docRef.update({fieldName: 1});
+        }
+      }
+    } catch (e) {
+      debugPrint('Error incrementing field: $e');
+    }
+  }
 
   Future<MiittiActivity?> fetchActivity(String activityId) async {
     try {
@@ -534,6 +429,72 @@ Future<void> _incrementField(DocumentReference docRef, String fieldName) async {
       });
     } catch (e) {
       debugPrint("Reporting failed: $e");
+    }
+  }
+
+  Future<List<MiittiUser>> fetchFilteredUsers({
+    int pageSize = 10,
+    bool fullRefresh = false,
+  }) async {
+    try {
+      debugPrint('Fetching $pageSize users');
+
+      if (fullRefresh) {
+        _lastUserDocument = null;
+      }
+
+      // Load user state and filter settings
+      ref.read(usersFilterSettingsProvider.notifier).loadPreferences();
+      final filterSettings = ref.read(usersFilterSettingsProvider);
+
+      final minAgeTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.now().subtract(Duration(days: filterSettings.minAge * 365)).millisecondsSinceEpoch);
+      final maxAgeTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.now().subtract(Duration(days: filterSettings.maxAge * 365)).millisecondsSinceEpoch);
+
+      // Query for user Users
+      Query usersQuery = _firestore.collection(_usersCollection)
+        .where('birthday', isLessThanOrEqualTo: minAgeTimestamp)
+        .where('birthday', isGreaterThanOrEqualTo: maxAgeTimestamp);
+
+      // if (filterSettings.sameArea) {
+      //   String area = userState.data.areas[0];
+      //   if (userState.data.latestLocation != null) {
+      //     final placemarks = await placemarkFromCoordinates(userState.data.latestLocation!.latitude, userState.data.latestLocation!.longitude);
+      //     if (placemarks.isNotEmpty) {
+      //       final city = placemarks.first.locality;
+      //       if (city != null) {
+      //         area = city;
+      //       } 
+      //     }
+      //   }
+      //   usersQuery = usersQuery.where('areas', arrayContains: area);
+      // }
+
+      if (filterSettings.interests.isNotEmpty) {
+        usersQuery = usersQuery.where('favoriteActivities', arrayContainsAny: filterSettings.interests);
+      }
+      // if (filterSettings.languages.isNotEmpty) {
+      //   usersQuery = usersQuery.where('languages', arrayContainsAny: filterSettings.languages);
+      // }
+      // if (filterSettings.genders.isNotEmpty) {
+      //   usersQuery = usersQuery.where('gender', whereIn: filterSettings.genders.map((e) => e.name));
+      // }
+      usersQuery = usersQuery.orderBy('lastActive', descending: true);
+
+      if (_lastUserDocument != null) {
+        usersQuery = usersQuery.startAfter([(_lastUserDocument!.data() as Map<String, dynamic>)['lastActive']]);
+      }
+
+      QuerySnapshot usersSnapshot = await usersQuery.limit(pageSize).get();
+      List<MiittiUser> users = usersSnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
+
+      if (users.isNotEmpty) {
+        _lastUserActivityDocument = usersSnapshot.docs.last;
+      }
+
+      return users;
+    } catch (e) {
+      debugPrint('Error fetching users: $e');
+      return [];
     }
   }
 
