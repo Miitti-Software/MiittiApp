@@ -10,6 +10,14 @@
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">
 
+    <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@mipmap/ic_launcher" />
+
+    <meta-data
+          android:name="com.google.firebase.messaging.default_notification_color"
+          android:resource="@android:color/white" />
+
         <!-- <meta-data
             android:name="com.mapbox.token"
             android:value="sk.eyJ1IjoibWlpdHRpYXBwIiwiYSI6ImNsaTFqdTJxZzAyMzgzbG1scnFkaXBzdmoifQ.qzMDjlrnbE_uWsoZyyS8ng"/> -->
