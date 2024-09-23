@@ -11,13 +11,41 @@
         "name": "Adventure",
         "emoji": "🚀"
     },
+    "football": {
+        "name": "Football",
+        "emoji": "⚽️"
+    },
+    "basketball": {
+        "name": "Basketball",
+        "emoji": "🏀"
+    },
+    "volleyball": {
+        "name": "Volleyball",
+        "emoji": "🏐"
+    },
     "ball-games": {
         "name": "Ball games",
-        "emoji": "⚽️"
+        "emoji": "⛹️"
+    },
+    "frisbee": {
+        "name": "Frisbee",
+        "emoji": "🥏"
+    },
+    "badminton": {
+        "name": "Badminton",
+        "emoji": "🏸"
+    },
+    "table-tennis": {
+        "name": "Table tennis",
+        "emoji": "🏓"
     },
     "racket-sports": {
         "name": "Racket sports",
         "emoji": "🏸"
+    },
+    "ice-hockey": {
+        "name": "Ice hockey",
+        "emoji": "🏒"
     },
     "gym": {
         "name": "Gym",
@@ -47,8 +75,8 @@
         "name": "Museum",
         "emoji": "🏛️"
     },
-    "theater": {
-        "name": "Theater",
+    "theatre": {
+        "name": "Theatre",
         "emoji": "🎭"
     },
     "cinema": {
@@ -95,9 +123,17 @@
         "name": "Sauna",
         "emoji": "🧖"
     },
+    "snowboarding": {
+        "name": "Snowboarding",
+        "emoji": "🏂"
+    },
+    "alpine-skiing": {
+        "name": "Alpine skiing",
+        "emoji": "⛷️"
+    },
     "winter-sports": {
         "name": "Winter sports",
-        "emoji": "🏂"
+        "emoji": "🎿"
     },
     "ice-skating": {
         "name": "Ice skating",

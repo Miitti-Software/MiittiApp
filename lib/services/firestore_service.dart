@@ -39,6 +39,7 @@ class FirestoreService {
   DocumentSnapshot? _lastUserActivityDocument;
   DocumentSnapshot? _lastCommercialActivityDocument;
   DocumentSnapshot? _lastUserDocument;
+  DocumentSnapshot? _lastLegacyUserDocument; // TODO: Delete when redundant
 
   // TODO: Delete when redundant
   MiittiUser? _miittiUser;
@@ -490,13 +491,62 @@ class FirestoreService {
         _lastUserActivityDocument = usersSnapshot.docs.last;
       }
 
-      return users;
+      return users.followedBy(await fetchFilteredLegacyUsers()).toList(); // TODO: return only users when all users are migrated to the new user model
     } catch (e) {
       debugPrint('Error fetching users: $e');
       return [];
     }
   }
 
+  // TODO: Delete when redundant, i.e. when all users are migrated to the new user model
+  Future<List<MiittiUser>> fetchFilteredLegacyUsers({
+    int pageSize = 10,
+    bool fullRefresh = false,
+  }) async {
+    try {
+      print('Fetching $pageSize legacy users');
+
+      if (fullRefresh) {
+        _lastLegacyUserDocument = null;
+      }
+
+      // Load user state and filter settings
+      await ref.read(usersFilterSettingsProvider.notifier).loadPreferences();
+      final filterSettings = ref.read(usersFilterSettingsProvider);
+
+      final minAgeTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.now().subtract(Duration(days: filterSettings.minAge * 365)).millisecondsSinceEpoch);
+      final maxAgeTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.now().subtract(Duration(days: filterSettings.maxAge * 365)).millisecondsSinceEpoch);
+
+      // Query for user Users
+      Query usersQuery = _firestore.collection(_usersCollection)
+        .where('userBirthday', isLessThanOrEqualTo: '31/12/${2024 - filterSettings.minAge}')
+        .where('userBirthday', isGreaterThanOrEqualTo: '00/00/${2024 - filterSettings.maxAge}')
+        .where('uid', isNotEqualTo: ref.read(userStateProvider).uid);
+
+      if (filterSettings.interests.isNotEmpty) {
+        usersQuery = usersQuery.where('userFavoriteActivities', arrayContainsAny: filterSettings.interests);
+      }
+
+      usersQuery = usersQuery.orderBy('userStatus', descending: true);
+
+      if (_lastLegacyUserDocument != null) {
+        usersQuery = usersQuery.startAfter([(_lastLegacyUserDocument!.data() as Map<String, dynamic>)['userStatus']]);
+      }
+
+      QuerySnapshot usersSnapshot = await usersQuery.limit(pageSize).get();
+      List<MiittiUser> users = usersSnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
+      print(users[0]);
+
+      if (users.isNotEmpty) {
+        _lastUserActivityDocument = usersSnapshot.docs.last;
+      }
+
+      return users;
+    } catch (e) {
+      debugPrint('Error fetching users: $e');
+      return [];
+    }
+  }
 
 
 

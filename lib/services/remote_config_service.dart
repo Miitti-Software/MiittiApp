@@ -72,7 +72,7 @@ class RemoteConfigService {
       final dynamic file = _configFiles['activities'];
       return Tuple2<String, String>(file[key]['name'] as String, file[key]['emoji'] as String);
     } catch (e) {
-      throw Exception('Error fetching activity: $e');
+      throw Exception('Error fetching activity with key $key: $e');
     }
   }
 

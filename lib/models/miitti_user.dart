@@ -178,7 +178,7 @@ class MiittiUser {
       "Approilemaan": "bar-crawl",
       "Festareille": "festival",
       "Saunomaan": "sauna",
-      "Laskettelemaan": "winter-sports",
+      "Laskettelemaan": "alpine-skiing",
       "Luistelemaan": "ice-skating",
       "Roadtripille": "roadtrip",
       "Pyöräilemään": "cycling",
@@ -199,16 +199,24 @@ class MiittiUser {
       "Standup": "stand-up",
       "Parkour": "parkour",
 
-      "Jalkapallo": "ball-games",
+      "Jalkapallo": "football",
       "Golf": "golf",
       "Festarille": "festival",
-      "Sulkapallo": "racket-sports",
+      "Sulkapallo": "badminton",
       "Hengailla": "hangout",
       "Bailaamaan": "party",
       "Museoon": "museum",
       "Opiskelu": "study",
       "Taidenäyttelyyn": "museum",
-      "Koripallo": "ball-games",
+      "Koripallo": "basketball",
+
+      "ball": "ball-games",
+      "movie": "cinema",
+      "consert": "concert",
+      "sport": "exercise",
+      "theater": "theatre",
+      "teather": "theatre",
+      "climb": "climbing",
     };
 
     for (int i = 0; i < favorites.length; i++) {
