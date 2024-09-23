@@ -421,7 +421,9 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       organizations: [userSchoolController.text],
                       representedOrganizations: [],
                       fcmToken: miittiUser.fcmToken,
+                      online: miittiUser.online,
                       registrationDate: miittiUser.registrationDate,
+                      languageSetting: miittiUser.languageSetting,
                     );
                     await ref
                         .read(firestoreServiceProvider)

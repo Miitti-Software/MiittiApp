@@ -1079,7 +1079,9 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         organizations: noLifeSituation ? [] : [selectedLifeOption],
         representedOrganizations: [],
         fcmToken: '',
+        online: false,
         registrationDate: Timestamp.now().toDate(),
+        languageSetting: Language.en
       );
       registerUser(context, miittiUser);
     }

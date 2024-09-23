@@ -24,12 +24,15 @@ class MiittiUser {
   DateTime registrationDate;
   DateTime lastActive;
   String fcmToken;
+  bool online;
 
   int numOfMiittisCreated = 0;
   int numOfMiittisJoined = 0;
   int numOfMiittisAttended = 0;
   List<String> peopleMet = [];
   List<String> activitiesTried = [];
+
+  Language languageSetting;
 
   // TODO: Add marketing preferences here
 
@@ -51,12 +54,15 @@ class MiittiUser {
       required this.registrationDate,
       required this.lastActive,
       required this.fcmToken,             // Firebase Cloud Messaging token for targeting push notifications
+      required this.online,
 
       this.numOfMiittisCreated = 0,
       this.numOfMiittisJoined = 0,
       this.numOfMiittisAttended = 0,
       this.peopleMet = const [],
-      this.activitiesTried = const []
+      this.activitiesTried = const [],
+
+      required this.languageSetting,
       });
 
   // TODO: Remove this factory in favor of a more elegant one when all users have been updated to the new structure
@@ -81,12 +87,15 @@ class MiittiUser {
         registrationDate: data['registrationDate']?.toDate() ?? resolveTimestamp(data['userRegistrationDate']).toDate(),
         lastActive: data['lastActive']?.toDate() ?? resolveTimestamp(data['userStatus']).toDate(),
         fcmToken: data['fcmToken'] ?? '',
+        online: data['online'] ?? false,
 
         numOfMiittisCreated: data['numOfMiittisCreated'] ?? 0,
         numOfMiittisJoined: data['numOfMiittisJoined'] ?? 0,
         numOfMiittisAttended: data['numOfMiittisAttended'] ?? 0,
         peopleMet: data['peopleMet'] != null ? List<String>.from(data['peopleMet']) : [],
         activitiesTried: data['activitiesTried'] != null ? List<String>.from(data['activitiesTried']) : [],
+
+        languageSetting: data['languageSetting'] != null ? Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == data['languageSetting'].toLowerCase()) : Language.fi,
       );
       
       return miittiUser;
@@ -115,12 +124,15 @@ class MiittiUser {
       'registrationDate': registrationDate,
       'lastActive': lastActive,
       'fcmToken': fcmToken,
+      'online': online,
 
       'numOfMiittisCreated': numOfMiittisCreated,
       'numOfMiittisJoined': numOfMiittisJoined,
       'numOfMiittisAttended': numOfMiittisAttended,
       'peopleMet': peopleMet,
       'activitiesTried': activitiesTried,
+
+      'languageSetting': languageSetting.code,
     };
   }
 
@@ -142,11 +154,13 @@ class MiittiUser {
       profilePicture = newData['profilePicture'] ?? profilePicture;
       lastActive = newData['lastActive'] ?? lastActive;
       fcmToken = newData['fcmToken'] ?? fcmToken;
+      online = newData['online'] ?? online;
       numOfMiittisCreated = newData['numOfMiittisCreated'] ?? numOfMiittisCreated;
       numOfMiittisJoined = newData['numOfMiittisJoined'] ?? numOfMiittisJoined;
       numOfMiittisAttended = newData['numOfMiittisAttended'] ?? numOfMiittisAttended;
       peopleMet = newData['peopleMet'] ?? peopleMet;
       activitiesTried = newData['activitiesTried'] ?? activitiesTried;
+      languageSetting = newData['languageSetting'] ?? languageSetting;
 
       return true;
     } catch (e) {

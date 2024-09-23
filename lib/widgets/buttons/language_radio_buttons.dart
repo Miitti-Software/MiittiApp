@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/state/settings.dart';
+import 'package:miitti_app/state/user.dart';
 
 /// Radio buttons for selecting the language.
 class LanguageRadioButtons extends ConsumerStatefulWidget {
@@ -23,7 +24,7 @@ class _LanguageRadioButtonsState extends ConsumerState<LanguageRadioButtons> {
         final languageName = language.name;
         return GestureDetector(
           onTap: () {
-            ref.read(languageProvider.notifier).setLanguage(language);
+            ref.read(userStateProvider.notifier).setLanguageSetting(language);
           },
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 10),

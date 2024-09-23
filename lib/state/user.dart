@@ -100,12 +100,15 @@ class UserState extends StateNotifier<UserStateData> {
         registrationDate: DateTime.now(),
         lastActive: DateTime.now(),
         fcmToken: '',
+        online: true,
 
         numOfMiittisCreated: 0,
         numOfMiittisJoined: 0,
         numOfMiittisAttended: 0,
         peopleMet: [],
         activitiesTried: [],
+
+        languageSetting: ref.read(languageProvider),
       );
       final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadProfilePicture(state.uid!, File(state.data.profilePicture!));
       miittiUser.profilePicture = imageUrl;
@@ -172,6 +175,11 @@ class UserState extends StateNotifier<UserStateData> {
     _locationUpdateTimer = Timer.periodic(const Duration(seconds: 10), (_) {
       updateLocation();
     });
+  }
+
+  setLanguageSetting(Language language) {
+    ref.read(languageProvider.notifier).setLanguage(language);
+    state = state.copyWith(data: state.data.copyWith(languageSetting: language));
   }
 
   @override
@@ -277,12 +285,15 @@ class UserData {
   final LatLng? latestLocation;
   final DateTime? lastActive;
   final String? fcmToken;
+  final bool online;
 
   final int numOfMiittisCreated;
   final int numOfMiittisJoined;
   final int numOfMiittisAttended;
   final List<String> peopleMet;
   final List<String> activitiesTried;
+
+  final Language languageSetting;
 
   UserData({
     this.uid,
@@ -303,12 +314,15 @@ class UserData {
     this.latestLocation,
     this.lastActive,
     this.fcmToken,
+    this.online = true,
 
     this.numOfMiittisCreated = 0,
     this.numOfMiittisJoined = 0,
     this.numOfMiittisAttended = 0,
     this.peopleMet = const [],
     this.activitiesTried = const [],
+
+    this.languageSetting = Language.en,
   });
 
   factory UserData.fromMiittiUser(MiittiUser miittiUser, {LatLng? latestLocation}) {
@@ -331,12 +345,15 @@ class UserData {
       latestLocation: latestLocation,
       lastActive: miittiUser.lastActive,
       fcmToken: miittiUser.fcmToken,
+      online: miittiUser.online,
 
       numOfMiittisCreated: miittiUser.numOfMiittisCreated,
       numOfMiittisJoined: miittiUser.numOfMiittisJoined,
       numOfMiittisAttended: miittiUser.numOfMiittisAttended,
       peopleMet: miittiUser.peopleMet,
       activitiesTried: miittiUser.activitiesTried,
+
+      languageSetting: miittiUser.languageSetting,
     );
   }
 
@@ -359,12 +376,15 @@ class UserData {
     LatLng? latestLocation,
     DateTime? lastActive,
     String? fcmToken,
+    bool? online,
 
     int? numOfMiittisCreated,
     int? numOfMiittisJoined,
     int? numOfMiittisAttended,
     List<String>? peopleMet,
     List<String>? activitiesTried,
+
+    Language? languageSetting,
   }) {
     return UserData(
       uid: uid ?? this.uid,
@@ -385,12 +405,15 @@ class UserData {
       latestLocation: latestLocation ?? this.latestLocation,
       lastActive: DateTime.now(),
       fcmToken: fcmToken ?? this.fcmToken,
+      online: online ?? this.online,
 
       numOfMiittisCreated: numOfMiittisCreated ?? this.numOfMiittisCreated,
       numOfMiittisJoined: numOfMiittisJoined ?? this.numOfMiittisJoined,
       numOfMiittisAttended: numOfMiittisAttended ?? this.numOfMiittisAttended,
       peopleMet: peopleMet ?? this.peopleMet,
       activitiesTried: activitiesTried ?? this.activitiesTried,
+
+      languageSetting: languageSetting ?? this.languageSetting,
     );
   }
 
@@ -412,12 +435,15 @@ class UserData {
       registrationDate: registrationDate!,
       lastActive: lastActive!,
       fcmToken: fcmToken!,
+      online: online,
 
       numOfMiittisCreated: numOfMiittisCreated,
       numOfMiittisJoined: numOfMiittisJoined,
       numOfMiittisAttended: numOfMiittisAttended,
       peopleMet: peopleMet,
       activitiesTried: activitiesTried,
+
+      languageSetting: languageSetting,
     );
   }
 
