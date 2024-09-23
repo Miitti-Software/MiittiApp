@@ -74,6 +74,7 @@ class AppRouter {
   List<RouteBase> _buildRoutes() {
     return [
       GoRoute(
+        name: 'notificationmessage',
         path: '/notificationmessage',
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const NotificationMessage()),
@@ -320,6 +321,7 @@ class AppRouter {
   Page<void> Function(BuildContext, GoRouterState) _buildNoTransitionPage(Widget child) {
     return (context, state) => NoTransitionPage<void>(
       key: state.pageKey,
+      name: state.name,
       child: child,
     );
   }

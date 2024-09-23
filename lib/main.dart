@@ -128,6 +128,7 @@ class MiittiApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider).router;
+    ref.read(sessionProvider);
 
     // Listen to the authState changes and refresh the router when the user signs in or out to trigger a redirect automatically
     ref.listen<AsyncValue<User?>>(authStateProvider, (previous, next) {

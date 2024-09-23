@@ -54,8 +54,8 @@ class NavigationShellScaffold extends ConsumerWidget {
                   return;
                 }
               } else {
-                if (index == 3) {
-                  ref.read(usersStateProvider.notifier).loadMoreUsers(fullRefresh: true);
+                if (index == 3 && ref.read(usersStateProvider).users.length < 10) {
+                  ref.read(usersStateProvider.notifier).loadMoreUsers();
                 }
                 _goBranch(context, ref, index);
               }

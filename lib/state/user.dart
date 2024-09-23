@@ -125,6 +125,17 @@ class UserState extends StateNotifier<UserStateData> {
     }
   }
 
+  Future<void> sessionUpdateUserData({bool begin = false}) async {
+    if (state.isSignedIn && !state.isAnonymous) {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      MiittiUser miittiUser = state.data.copyWith(
+        lastActive: DateTime.now(),
+        online: begin,
+      ).toMiittiUser();
+      await firestoreService.saveUserData(miittiUser);
+    }
+  }
+
   Future<void> updateUserProfilePicture(String imagePath) async {
     if (state.isSignedIn && !state.isAnonymous) {
       final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadProfilePicture(state.uid!, File(imagePath));
@@ -345,7 +356,7 @@ class UserData {
       latestLocation: latestLocation,
       lastActive: miittiUser.lastActive,
       fcmToken: miittiUser.fcmToken,
-      online: miittiUser.online,
+      online: true,
 
       numOfMiittisCreated: miittiUser.numOfMiittisCreated,
       numOfMiittisJoined: miittiUser.numOfMiittisJoined,
