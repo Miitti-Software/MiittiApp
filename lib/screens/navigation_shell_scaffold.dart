@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
+import 'package:miitti_app/state/users_state.dart';
 import 'package:miitti_app/widgets/custom_navigation_bar.dart';
 import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 
@@ -53,6 +54,9 @@ class NavigationShellScaffold extends ConsumerWidget {
                   return;
                 }
               } else {
+                if (index == 3) {
+                  ref.read(usersStateProvider.notifier).loadMoreUsers(fullRefresh: true);
+                }
                 _goBranch(context, ref, index);
               }
             },

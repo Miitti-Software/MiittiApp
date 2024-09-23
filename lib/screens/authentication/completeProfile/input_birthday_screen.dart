@@ -78,7 +78,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.4))
+                                .withAlpha(100))
                         : Theme.of(context).textTheme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.w800,
                             color: Theme.of(context).colorScheme.onSurface),
@@ -86,7 +86,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                       color: Theme.of(context)
                           .colorScheme
                           .tertiary
-                          .withOpacity(0.15),
+                          .withAlpha(40),
                       border: const Border(
                         bottom: BorderSide(width: 1.0, color: Colors.white),
                       ),
@@ -143,6 +143,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                   final DateTime? picked = await showDatePicker(
                     context: context,
                     locale: Locale(language.code),
+                    initialDate: DateTime.now(),
                     firstDate: DateTime(1900),
                     lastDate: DateTime.now(),
                     builder: (BuildContext context, Widget? child) {
@@ -158,6 +159,13 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                             style: TextButton.styleFrom(
                               foregroundColor:
                                   Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          textTheme: const TextTheme().copyWith(
+                            titleSmall: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 18,
                             ),
                           ),
                         ),

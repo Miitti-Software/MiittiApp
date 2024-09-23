@@ -417,7 +417,6 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                       gender: miittiUser.gender,
                       profilePicture: miittiUser.profilePicture,
                       languages: selectedLanguages.toList(),
-                      invitedActivities: miittiUser.invitedActivities,
                       lastActive: miittiUser.lastActive,
                       organizations: [userSchoolController.text],
                       representedOrganizations: [],

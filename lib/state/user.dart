@@ -97,16 +97,36 @@ class UserState extends StateNotifier<UserStateData> {
         favoriteActivities: state.data.favoriteActivities,
         qaAnswers: state.data.qaAnswers,
         profilePicture: state.data.profilePicture!,
-        invitedActivities: [],
         registrationDate: DateTime.now(),
         lastActive: DateTime.now(),
         fcmToken: '',
+
+        numOfMiittisCreated: 0,
+        numOfMiittisJoined: 0,
+        numOfMiittisAttended: 0,
+        peopleMet: [],
+        activitiesTried: [],
       );
-      await firestoreService.saveUserData(
-        userModel: miittiUser,
-        image: File(state.data.profilePicture!),
-      );
+      final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadProfilePicture(state.uid!, File(state.data.profilePicture!));
+      miittiUser.profilePicture = imageUrl;
+      await firestoreService.saveUserData(miittiUser);
       state = state.copyWith(data: UserData.fromMiittiUser(miittiUser));
+    }
+  }
+
+  Future<void> updateUserData() async {
+    if (state.isSignedIn && !state.isAnonymous) {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      MiittiUser miittiUser = state.data.toMiittiUser();
+      await firestoreService.saveUserData(miittiUser);
+    }
+  }
+
+  Future<void> updateUserProfilePicture(String imagePath) async {
+    if (state.isSignedIn && !state.isAnonymous) {
+      final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadProfilePicture(state.uid!, File(imagePath));
+      state = state.copyWith(data: state.data.setProfilePicture(imageUrl));
+      await updateUserData();
     }
   }
 
@@ -253,11 +273,16 @@ class UserData {
   final List<String> favoriteActivities;
   final Map<String, String> qaAnswers;
   final String? profilePicture;
-  final List<String> invitedActivities;
   final DateTime? registrationDate;
   final LatLng? latestLocation;
   final DateTime? lastActive;
   final String? fcmToken;
+
+  final int numOfMiittisCreated;
+  final int numOfMiittisJoined;
+  final int numOfMiittisAttended;
+  final List<String> peopleMet;
+  final List<String> activitiesTried;
 
   UserData({
     this.uid,
@@ -274,11 +299,16 @@ class UserData {
     this.favoriteActivities = const [],
     this.qaAnswers = const {},
     this.profilePicture,
-    this.invitedActivities = const [],
     this.registrationDate,
     this.latestLocation,
     this.lastActive,
     this.fcmToken,
+
+    this.numOfMiittisCreated = 0,
+    this.numOfMiittisJoined = 0,
+    this.numOfMiittisAttended = 0,
+    this.peopleMet = const [],
+    this.activitiesTried = const [],
   });
 
   factory UserData.fromMiittiUser(MiittiUser miittiUser, {LatLng? latestLocation}) {
@@ -297,11 +327,16 @@ class UserData {
       favoriteActivities: miittiUser.favoriteActivities,
       qaAnswers: miittiUser.qaAnswers,
       profilePicture: miittiUser.profilePicture,
-      invitedActivities: miittiUser.invitedActivities,
       registrationDate: miittiUser.registrationDate,
       latestLocation: latestLocation,
       lastActive: miittiUser.lastActive,
       fcmToken: miittiUser.fcmToken,
+
+      numOfMiittisCreated: miittiUser.numOfMiittisCreated,
+      numOfMiittisJoined: miittiUser.numOfMiittisJoined,
+      numOfMiittisAttended: miittiUser.numOfMiittisAttended,
+      peopleMet: miittiUser.peopleMet,
+      activitiesTried: miittiUser.activitiesTried,
     );
   }
 
@@ -320,11 +355,16 @@ class UserData {
     List<String>? favoriteActivities,
     Map<String, String>? qaAnswers,
     String? profilePicture,
-    List<String>? invitedActivities,
     DateTime? registrationDate,
     LatLng? latestLocation,
     DateTime? lastActive,
     String? fcmToken,
+
+    int? numOfMiittisCreated,
+    int? numOfMiittisJoined,
+    int? numOfMiittisAttended,
+    List<String>? peopleMet,
+    List<String>? activitiesTried,
   }) {
     return UserData(
       uid: uid ?? this.uid,
@@ -341,11 +381,16 @@ class UserData {
       favoriteActivities: favoriteActivities ?? this.favoriteActivities,
       qaAnswers: qaAnswers ?? this.qaAnswers,
       profilePicture: profilePicture ?? this.profilePicture,
-      invitedActivities: invitedActivities ?? this.invitedActivities,
       registrationDate: registrationDate ?? this.registrationDate,
       latestLocation: latestLocation ?? this.latestLocation,
-      lastActive: lastActive ?? this.lastActive,
+      lastActive: DateTime.now(),
       fcmToken: fcmToken ?? this.fcmToken,
+
+      numOfMiittisCreated: numOfMiittisCreated ?? this.numOfMiittisCreated,
+      numOfMiittisJoined: numOfMiittisJoined ?? this.numOfMiittisJoined,
+      numOfMiittisAttended: numOfMiittisAttended ?? this.numOfMiittisAttended,
+      peopleMet: peopleMet ?? this.peopleMet,
+      activitiesTried: activitiesTried ?? this.activitiesTried,
     );
   }
 
@@ -364,10 +409,15 @@ class UserData {
       favoriteActivities: favoriteActivities,
       qaAnswers: qaAnswers,
       profilePicture: profilePicture!,
-      invitedActivities: invitedActivities,
       registrationDate: registrationDate!,
       lastActive: lastActive!,
       fcmToken: fcmToken!,
+
+      numOfMiittisCreated: numOfMiittisCreated,
+      numOfMiittisJoined: numOfMiittisJoined,
+      numOfMiittisAttended: numOfMiittisAttended,
+      peopleMet: peopleMet,
+      activitiesTried: activitiesTried,
     );
   }
 
@@ -441,6 +491,14 @@ class UserData {
     final updatedQaAnswers = Map<String, String>.from(qaAnswers);
     updatedQaAnswers.remove(question);
     return copyWith(qaAnswers: updatedQaAnswers);
+  }
+
+  setFcmToken(String fcmToken) {
+    return copyWith(fcmToken: fcmToken);
+  }
+
+  incrementActivitiesJoined() {
+    return copyWith(numOfMiittisJoined: numOfMiittisJoined + 1);
   }
 
 }

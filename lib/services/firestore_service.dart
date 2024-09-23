@@ -56,10 +56,8 @@ class FirestoreService {
     );
   }
 
-  Future<bool> saveUserData({required MiittiUser userModel, required File? image}) async {
+  Future<bool> saveUserData(MiittiUser userModel) async {
     try {
-      final imageUrl = await ref.read(firebaseStorageServiceProvider).uploadProfilePicture(userModel.uid, image);
-      userModel.profilePicture = imageUrl;
       await _firestore.collection(_usersCollection).doc(userModel.uid).set(userModel.toMap());
       _miittiUser = userModel; // TODO: Delete when redundant
       return true;
@@ -558,13 +556,13 @@ class FirestoreService {
       debugPrint("Anonymous user cannot join or request activities");
       return UserStatusInActivity.none;
     }
-    if (miittiUser!.invitedActivities.contains(activityId)) {
-      await reactToInvite(activityId, true);
-      return UserStatusInActivity.joined;
-    } else {
+    // if (miittiUser!.invitedActivities.contains(activityId)) {
+      // await reactToInvite(activityId, true);
+      // return UserStatusInActivity.joined;
+    // } else {
       await sendActivityRequest(activityId);
       return UserStatusInActivity.requested;
-    }
+    // }
   }
 
   Future reactToInvite(String activityId, bool accepted) async {
@@ -839,16 +837,16 @@ class FirestoreService {
         personActivities.add(UserCreatedActivity.fromFirestore(doc));
       }
 
-      if (miittiUser!.invitedActivities.isNotEmpty) {
-        for (String activityId in miittiUser!.invitedActivities) {
-          DocumentSnapshot activitySnapshot = await _getActivityDoc(activityId);
+      // if (miittiUser!.invitedActivities.isNotEmpty) {
+      //   for (String activityId in miittiUser!.invitedActivities) {
+      //     DocumentSnapshot activitySnapshot = await _getActivityDoc(activityId);
 
-          if (activitySnapshot.exists) {
-            UserCreatedActivity activity = UserCreatedActivity.fromFirestore(activitySnapshot);
-            personActivities.add(activity);
-          }
-        }
-      }
+      //     if (activitySnapshot.exists) {
+      //       UserCreatedActivity activity = UserCreatedActivity.fromFirestore(activitySnapshot);
+      //       personActivities.add(activity);
+      //     }
+      //   }
+      // }
 
       List<MiittiActivity> list = List<MiittiActivity>.from(personActivities);
       list.addAll(List<MiittiActivity>.from(commercialActivities));

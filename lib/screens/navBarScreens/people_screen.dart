@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/state/users_state.dart';
 import 'package:miitti_app/widgets/data_containers/user_list_tile.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
@@ -25,7 +27,6 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(usersStateProvider.notifier).loadMoreUsers(fullRefresh: true);
     _scrollController.addListener(_onScroll);
   }
 
@@ -60,7 +61,8 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
     final config = ref.watch(remoteConfigServiceProvider);
     final people = ref.watch(usersProvider);
 
-    return Scaffold(
+    return 
+    ref.read(userStateProvider).isAnonymous ? const AnonymousUserScreen() : Scaffold(
       appBar: AppBar(
         title: Text(config.get<String>('people-screen-title')),
         actions: [

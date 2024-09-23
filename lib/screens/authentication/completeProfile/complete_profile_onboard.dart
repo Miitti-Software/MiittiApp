@@ -868,8 +868,7 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
 
   void registerUser(BuildContext context, MiittiUser user) {
     ref.read(firestoreServiceProvider).saveUserData(
-          userModel: user,
-          image: image,
+          user,
         );
   }
 
@@ -1076,7 +1075,6 @@ class _CompleteProfileOnboard extends ConsumerState<CompleteProfileOnboard> {
         gender: Gender.other,
         languages: [Language.en],
         profilePicture: '',
-        invitedActivities: [],
         lastActive: Timestamp.now().toDate(),
         organizations: noLifeSituation ? [] : [selectedLifeOption],
         representedOrganizations: [],

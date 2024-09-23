@@ -304,6 +304,8 @@ if (firstRedirect && userState.isAnonymous && userState.data.name != null) {
 }
 ```
 
+Android notification icons must use drawables, not mipmaps. Easiest to generate with Android Studio Image Asset Studio: https://developer.android.com/studio/write/create-app-icons#create-notification. They must also be transparent and can only have a single color: https://stackoverflow.com/questions/57362439/notification-icon-doesnt-show-in-flutter-android-app-local-notification-flutter.
+
 ## Running on iOS
 
 General instructions: https://docs.flutter.dev/deployment/ios

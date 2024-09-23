@@ -52,14 +52,15 @@ class PushNotificationService {
     debugPrint("############################################################");
 
     //Save token to user data(needed to access other users tokens in code)
-    if (ref.read(userStateProvider).data.fcmToken != token) {
-      ref.read(firestoreServiceProvider).updateUser({"fcmToken": token});
+    if (ref.read(userStateProvider).data.fcmToken != token && token != null) {
+      ref.read(userStateProvider).data.setFcmToken(token);
+      ref.read(userStateProvider.notifier).updateUserData();
     }
 
     _firebaseMessaging.onTokenRefresh
       .listen((fcmToken) {
-        // TODO: If necessary send token to application server.
-        ref.read(firestoreServiceProvider).updateUser({"fcmToken": token});
+        ref.read(userStateProvider).data.setFcmToken(fcmToken);
+        ref.read(userStateProvider.notifier).updateUserData();
         // Note: This callback is fired at each app startup and whenever a new
         // token is generated.
       })

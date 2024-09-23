@@ -85,7 +85,6 @@ Future<void> main() async {
     // Ensure UserState is initialized before initializing PushNotificationService
     if (container.read(userStateProvider).user != null) {
       await container.read(notificationServiceProvider).initialize();
-      // await container.read(notificationServiceProvider).localNotiInit();
     } else {
       debugPrint('UserState is not initialized.');
     }

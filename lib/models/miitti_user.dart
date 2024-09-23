@@ -8,27 +8,30 @@ import 'package:miitti_app/constants/languages.dart';
 
 class MiittiUser {
   String uid;
-  String email;         // Make optional
+  String email;
   String? phoneNumber;
   String name;
   Gender gender;
   DateTime birthday;
   List<Language> languages;
-  List<String> occupationalStatuses;  // make into list
+  List<String> occupationalStatuses;
   List<String> organizations;
   List<String> representedOrganizations;
   List<String> areas;
   List<String> favoriteActivities;
   Map<String, String> qaAnswers;
   String profilePicture;
-  List<String> invitedActivities;   // activityInvites - is this the right place? Are these the activities the user has been invited to or the activities the user has invited others to?
   DateTime registrationDate;
   DateTime lastActive;
   String fcmToken;
 
-  // Add marketing preferences here
+  int numOfMiittisCreated = 0;
+  int numOfMiittisJoined = 0;
+  int numOfMiittisAttended = 0;
+  List<String> peopleMet = [];
+  List<String> activitiesTried = [];
 
-  // Add statistics such as Miittis created, Miittis attended, etc.
+  // TODO: Add marketing preferences here
 
   MiittiUser(
       {required this.uid,
@@ -45,10 +48,15 @@ class MiittiUser {
       required this.favoriteActivities,
       required this.qaAnswers,
       required this.profilePicture,
-      required this.invitedActivities,
       required this.registrationDate,
       required this.lastActive,
       required this.fcmToken,             // Firebase Cloud Messaging token for targeting push notifications
+
+      this.numOfMiittisCreated = 0,
+      this.numOfMiittisJoined = 0,
+      this.numOfMiittisAttended = 0,
+      this.peopleMet = const [],
+      this.activitiesTried = const []
       });
 
   // TODO: Remove this factory in favor of a more elegant one when all users have been updated to the new structure
@@ -70,10 +78,15 @@ class MiittiUser {
         favoriteActivities: data['favoriteActivities'] != null ? List.from(data['favoriteActivities']) : _resolveActivities(_toStringList(data['userFavoriteActivities'])),
         qaAnswers: Map.from(data['qaAnswers'] ?? data['userChoices']),
         profilePicture: data['profilePicture'],
-        invitedActivities: data['invitedActivities'] != null ? List.from(data['invitedActivities']) : [],
         registrationDate: data['registrationDate']?.toDate() ?? resolveTimestamp(data['userRegistrationDate']).toDate(),
         lastActive: data['lastActive']?.toDate() ?? resolveTimestamp(data['userStatus']).toDate(),
         fcmToken: data['fcmToken'] ?? '',
+
+        numOfMiittisCreated: data['numOfMiittisCreated'] ?? 0,
+        numOfMiittisJoined: data['numOfMiittisJoined'] ?? 0,
+        numOfMiittisAttended: data['numOfMiittisAttended'] ?? 0,
+        peopleMet: data['peopleMet'] != null ? List<String>.from(data['peopleMet']) : [],
+        activitiesTried: data['activitiesTried'] != null ? List<String>.from(data['activitiesTried']) : [],
       );
       
       return miittiUser;
@@ -99,43 +112,41 @@ class MiittiUser {
       'favoriteActivities': favoriteActivities,
       'qaAnswers': qaAnswers,
       'profilePicture': profilePicture,
-      'invitedActivities': invitedActivities,
       'registrationDate': registrationDate,
       'lastActive': lastActive,
       'fcmToken': fcmToken,
+
+      'numOfMiittisCreated': numOfMiittisCreated,
+      'numOfMiittisJoined': numOfMiittisJoined,
+      'numOfMiittisAttended': numOfMiittisAttended,
+      'peopleMet': peopleMet,
+      'activitiesTried': activitiesTried,
     };
   }
 
+  // TODO: Remove this method in favor of individual setters
   bool updateUser(Map<String, dynamic> newData) {
     try {
-      name = newData['userName'] ?? name;
-      email = newData['userEmail'] ?? email;
-      phoneNumber = newData['userPhoneNumber'] ?? phoneNumber;
-      birthday = newData['userBirthday'] ?? birthday;
-      areas = newData['userArea'] ?? areas;
-      lastActive = newData['lastActive'] ?? lastActive;
-      organizations = newData['userSchool'] ?? organizations;
-      fcmToken = newData['fcmToken'] ?? fcmToken;
-      registrationDate =
-          newData['userRegistrationDate'] ?? registrationDate;
+      email = newData['email'] ?? email;
+      phoneNumber = newData['phoneNumber'] ?? phoneNumber;
+      name = newData['name'] ?? name;
+      gender = newData['gender'] ?? gender;
+      birthday = newData['birthday'] ?? birthday;
+      languages = newData['languages'] ?? languages;
+      occupationalStatuses = newData['occupationalStatuses'] ?? occupationalStatuses;
+      organizations = newData['organizations'] ?? organizations;
+      representedOrganizations = newData['representedOrganizations'] ?? representedOrganizations;
+      areas = newData['areas'] ?? areas;
+      favoriteActivities = newData['favoriteActivities'] ?? favoriteActivities;
+      qaAnswers = newData['qaAnswers'] ?? qaAnswers;
       profilePicture = newData['profilePicture'] ?? profilePicture;
-      gender = newData['userGender'] ?? gender;
-
-      if (newData['userFavoriteActivities'] is List<dynamic>) {
-        favoriteActivities = _resolveActivities(
-            _toStringList(newData['userFavoriteActivities']));
-      }
-      if (newData['userChoices'] is Map<String, String>) {
-        qaAnswers = newData['userChoices'];
-      }
-
-      if (newData['userLanguages'] is List<String>) {
-        languages = newData['userLanguages'];
-      }
-
-      if (newData['invitedActivities'] is List<String>) {
-        invitedActivities = newData['invitedActivities'];
-      }
+      lastActive = newData['lastActive'] ?? lastActive;
+      fcmToken = newData['fcmToken'] ?? fcmToken;
+      numOfMiittisCreated = newData['numOfMiittisCreated'] ?? numOfMiittisCreated;
+      numOfMiittisJoined = newData['numOfMiittisJoined'] ?? numOfMiittisJoined;
+      numOfMiittisAttended = newData['numOfMiittisAttended'] ?? numOfMiittisAttended;
+      peopleMet = newData['peopleMet'] ?? peopleMet;
+      activitiesTried = newData['activitiesTried'] ?? activitiesTried;
 
       return true;
     } catch (e) {

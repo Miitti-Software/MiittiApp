@@ -321,6 +321,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     ForwardButton(
                       buttonText: config.get<String>('activity-join-button'),
                       onPressed: () {
+                        ref.read(userStateProvider).data.incrementActivitiesJoined();
                         // TODO: Implement join functionality
                       },
                     ),
