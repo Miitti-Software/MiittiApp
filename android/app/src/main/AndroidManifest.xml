@@ -12,11 +12,11 @@
 
     <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"
-        android:resource="@mipmap/ic_launcher" />
+        android:resource="@drawable/ic_stat_name" />
 
     <meta-data
           android:name="com.google.firebase.messaging.default_notification_color"
-          android:resource="@android:color/white" />
+          android:resource="@color/pink" />
 
         <!-- <meta-data
             android:name="com.mapbox.token"
@@ -28,7 +28,9 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true">
             <!-- Enable flutter deeplinks -->
             <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
             
