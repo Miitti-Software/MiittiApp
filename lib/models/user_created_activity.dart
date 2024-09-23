@@ -70,6 +70,7 @@ class UserCreatedActivity extends MiittiActivity {
     return UserCreatedActivity.fromMap(data);
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -113,11 +114,12 @@ class UserCreatedActivity extends MiittiActivity {
     return {'requests': requests};
   }
 
-  Map<String, dynamic> addParticipant(String userId, MiittiUser userInfo) {
-    participants.add(userId);
-    participantsInfo[userId] = {
-      'name': userInfo.name,
-      'profilePicture': userInfo.profilePicture,
+  @override
+  Map<String, dynamic> addParticipant(MiittiUser user) {
+    participants.add(user.uid);
+    participantsInfo[user.uid] = {
+      'name': user.name,
+      'profilePicture': user.profilePicture,
     };
     return {
       'participants': participants,
@@ -132,10 +134,13 @@ class UserCreatedActivity extends MiittiActivity {
     };
   }
 
-  Map<String, dynamic> removeParticipant(String userId) {
-    participants.remove(userId);
-    participantsInfo.remove(userId);
+  @override
+  Map<String, dynamic> removeParticipant(MiittiUser user) {
+    requests.remove(user.uid);
+    participants.remove(user.uid);
+    participantsInfo.remove(user.uid);
     return {
+      'requests': requests,
       'participants': participants,
       'participantsInfo': participantsInfo.map((key, value) => MapEntry(key, {
         'name': value['name'],

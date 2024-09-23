@@ -7,7 +7,6 @@ class ErrorSnackbar {
       (context) {
         return Card(
           child: Container(
-            height: 80,
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             color: Theme.of(context).colorScheme.error,

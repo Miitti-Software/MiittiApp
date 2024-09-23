@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -19,7 +18,6 @@ import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/state/activities_filter_settings.dart';
-import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/state/users_filter_settings.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
@@ -80,6 +78,8 @@ class FirestoreService {
 
   Future<void> deleteUser(String uid) async {
     try {
+      final userState = ref.read(userStateProvider);
+
       final participantQuery = _firestore.collection(_activitiesCollection).where('participants', arrayContains: uid);
       final requestQuery = _firestore.collection(_activitiesCollection).where('requests', arrayContains: uid);
       final creatorQuery = _firestore.collection(_activitiesCollection).where('creator', isEqualTo: uid);
@@ -89,7 +89,7 @@ class FirestoreService {
       // Delete the deleted user from participants list in activities where they are a participant
       for (DocumentSnapshot doc in (await participantQuery.get()).docs) {
         final activity = UserCreatedActivity.fromFirestore(doc);
-        await doc.reference.update(activity.removeParticipant(uid));
+        await doc.reference.update(activity.removeParticipant(userState.data.toMiittiUser()));
       }
 
       // Delete the deleted user from requests list in activities where they requested to join
@@ -101,7 +101,7 @@ class FirestoreService {
       // Archive activities where the deleted user is the creator and where there are no participants by setting their endTime to now
       for (DocumentSnapshot doc in (await creatorQuery.get()).docs) {
         final activity = UserCreatedActivity.fromFirestore(doc);
-        activity.removeParticipant(uid);
+        activity.removeParticipant(userState.data.toMiittiUser());
         activity.endTime = DateTime.now();
         await doc.reference.update(activity.toMap());
       }
@@ -109,7 +109,7 @@ class FirestoreService {
       // Delete the deleted user from participants list in commercial activities where they are a participant
       for (DocumentSnapshot doc in (await commercialParticipantQuery.get()).docs) {
         final commercialActivity = CommercialActivity.fromFirestore(doc);
-        await doc.reference.update(commercialActivity.removeParticipant(uid));
+        await doc.reference.update(commercialActivity.removeParticipant(userState.data.toMiittiUser()));
       }
 
       await _firestore.collection(_usersCollection).doc(uid).delete();
@@ -355,23 +355,23 @@ class FirestoreService {
     }
   }
 
-  Future<List<AdBannerData>> fetchAdBanners() async {
-    try {
-      // Banner ads could be fetched according to the activities filter settings as well
-      // Add queries when needed
-      QuerySnapshot querySnapshot = await _firestore.collection(_adBannersCollection).get();
+  Future<void> updateActivity(Map<String, dynamic> data, String activityId) async {
+  try {
+    final activityRef = _firestore.collection(_activitiesCollection).doc(activityId);
+    await _firestore.runTransaction((transaction) async {
+      final activitySnapshot = await transaction.get(activityRef);
+      if (!activitySnapshot.exists) {
+        debugPrint('Activity does not exist.');
+        return;
+      }
 
-      List<AdBannerData> list = querySnapshot.docs
-          .map((doc) => AdBannerData.fromFirestore(doc.data() as Map<String, dynamic>))
-          .toList();
-
-      return list;
-
-    } catch (e) {
-      debugPrint("Error fetching ads $e");
-      return [];
-    }
+      // Update the activity with the new data
+      transaction.update(activityRef, data);
+    });
+  } catch (e) {
+    debugPrint('Error updating activity: $e');
   }
+}
 
   Future<void> reportActivity(String activityId, List<String> reasons, String comments) async {
 
@@ -400,6 +400,24 @@ class FirestoreService {
       });
     } catch (e) {
       debugPrint("Reporting failed: $e");
+    }
+  }
+
+  Future<List<AdBannerData>> fetchAdBanners() async {
+    try {
+      // Banner ads could be fetched according to the activities filter settings as well
+      // Add queries when needed
+      QuerySnapshot querySnapshot = await _firestore.collection(_adBannersCollection).get();
+
+      List<AdBannerData> list = querySnapshot.docs
+          .map((doc) => AdBannerData.fromFirestore(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      return list;
+
+    } catch (e) {
+      debugPrint("Error fetching ads $e");
+      return [];
     }
   }
 
@@ -504,7 +522,7 @@ class FirestoreService {
     bool fullRefresh = false,
   }) async {
     try {
-      print('Fetching $pageSize legacy users');
+      debugPrint('Fetching $pageSize legacy users');
 
       if (fullRefresh) {
         _lastLegacyUserDocument = null;
@@ -513,9 +531,6 @@ class FirestoreService {
       // Load user state and filter settings
       await ref.read(usersFilterSettingsProvider.notifier).loadPreferences();
       final filterSettings = ref.read(usersFilterSettingsProvider);
-
-      final minAgeTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.now().subtract(Duration(days: filterSettings.minAge * 365)).millisecondsSinceEpoch);
-      final maxAgeTimestamp = Timestamp.fromMillisecondsSinceEpoch(DateTime.now().subtract(Duration(days: filterSettings.maxAge * 365)).millisecondsSinceEpoch);
 
       // Query for user Users
       Query usersQuery = _firestore.collection(_usersCollection)
@@ -535,7 +550,6 @@ class FirestoreService {
 
       QuerySnapshot usersSnapshot = await usersQuery.limit(pageSize).get();
       List<MiittiUser> users = usersSnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
-      print(users[0]);
 
       if (users.isNotEmpty) {
         _lastUserActivityDocument = usersSnapshot.docs.last;
@@ -979,7 +993,7 @@ class FirestoreService {
       activityModel.creatorLanguages = _miittiUser!.languages;
       activityModel.id = generateCustomId();
       // activityModel.participants = [_miittiUser!.uid];
-      activityModel.addParticipant(_miittiUser!.uid, _miittiUser!);
+      activityModel.addParticipant(_miittiUser!);
       // activityModel.participantsInfo[_miittiUser!.uid] = {
       //   'name': _miittiUser!.name,
       //   'profilePicture': _miittiUser!.profilePicture,

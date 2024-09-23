@@ -321,8 +321,12 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     ForwardButton(
                       buttonText: config.get<String>('activity-join-button'),
                       onPressed: () {
+                        // TODO: Send notification to creator
                         ref.read(userStateProvider).data.incrementActivitiesJoined();
-                        // TODO: Implement join functionality
+                        ref.read(activitiesStateProvider.notifier).joinActivity(activity);
+                        SuccessSnackbar.show(context, config.get<String>('activity-join-success'));
+                        setState(() {
+                        });
                       },
                     ),
                   ],
@@ -346,12 +350,41 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    ref.read(activitiesStateProvider.notifier).deleteActivity(activity.id);
+                                    ref.read(activitiesStateProvider.notifier).deleteActivity(activity);
                                     SuccessSnackbar.show(context, config.get<String>('activity-delete-success'));
                                     context.pop();
                                     context.pop();
                                   },
                                   child: Text(config.get<String>('delete-button')),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else if (activity.participants.contains(userUid)) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: Theme.of(context).colorScheme.surface,
+                              title: Text(config.get<String>('leave-activity-confirm-title')),
+                              content: Text(config.get<String>('leave-activity-confirm-text')),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    context.pop();
+                                  },
+                                  child: Text(config.get<String>('cancel-button')),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    ref.read(activitiesStateProvider.notifier).leaveActivity(activity);
+                                    SuccessSnackbar.show(context, config.get<String>('leave-activity-success'));
+                                    setState(() {
+                                    });
+                                    context.pop();
+                                  },
+                                  child: Text(config.get<String>('leave-activity-button')),
                                 ),
                               ],
                             );
@@ -365,7 +398,13 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         );
                       }
                     },
-                    child: Text(activity.creator == userUid ? config.get<String>('delete-activity-button') : config.get<String>('report-activity-button')),
+                    child: Text(
+                      activity.creator == userUid
+                          ? config.get<String>('delete-activity-button')
+                          : activity.participants.contains(userUid)
+                              ? config.get<String>('leave-activity-button')
+                              : config.get<String>('report-activity-button'),
+                    ),
                   ),
                   const SizedBox(height: AppSizes.minVerticalPadding),
                 ],

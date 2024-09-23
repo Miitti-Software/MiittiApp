@@ -1,3 +1,5 @@
+import 'package:miitti_app/models/miitti_user.dart';
+
 abstract class MiittiActivity {
   String id;
   String title;
@@ -32,4 +34,8 @@ abstract class MiittiActivity {
     required this.participants,
     required this.participantsInfo
   });
+
+  Map<String, dynamic> toMap();
+  Map<String, dynamic> addParticipant(MiittiUser user);
+  Map<String, dynamic> removeParticipant(MiittiUser user);
 }

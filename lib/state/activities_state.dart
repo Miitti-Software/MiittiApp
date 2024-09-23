@@ -5,7 +5,9 @@ import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:rxdart/rxdart.dart';
 
 class GeoQueryCondition {
@@ -103,10 +105,53 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     _isLoadingMore = false;
   }
 
-  Future<void> deleteActivity(String activityId) async {
+  Future<void> deleteActivity(MiittiActivity activity) async {
     final firestoreService = ref.read(firestoreServiceProvider);
-    await firestoreService.deleteActivity(activityId);
-    state = state.copyWith(activities: state.activities.where((activity) => activity.id != activityId).toList());
+    await firestoreService.deleteActivity(activity.id);
+    state = state.copyWith(activities: state.activities.where((a) => a.id != activity.id).toList());
+    updateState();
+  }
+
+  Future<void> leaveActivity(MiittiActivity activity) async {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    activity.removeParticipant(ref.read(userStateProvider).data.toMiittiUser());
+    await firestoreService.updateActivity(activity.toMap(), activity.id);
+    state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
+    updateState();
+  }
+
+  Future<void> joinActivity(MiittiActivity activity) async {
+    final userState = ref.read(userStateProvider);
+    if (userState.isAnonymous || activity.participants.contains(userState.uid)) {
+      return;
+    }
+    final firestoreService = ref.read(firestoreServiceProvider);
+    activity.addParticipant(ref.read(userStateProvider).data.toMiittiUser());
+    await firestoreService.updateActivity(activity.toMap(), activity.id);
+    state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
+    updateState();
+  }
+
+  void updateState() {
+    final userState = ref.read(userStateProvider);
+    if (!userState.isAnonymous) {
+      final userId = ref.read(userStateProvider).uid!;
+      final List<MiittiActivity> userActivities = [];
+      final List<MiittiActivity> othersActivities = [];
+
+      for (var activity in state.activities) {
+        if (activity.creator == userId) {
+          userActivities.add(activity);
+        } else if (activity.participants.contains(userId) || (activity is UserCreatedActivity && activity.requests.contains(userId))) {
+          othersActivities.add(activity);
+        }
+      }
+
+      state = state.copyWith(
+        userActivities: userActivities,
+        othersActivities: othersActivities,
+      );
+    }
   }
 
   @override
@@ -127,19 +172,27 @@ final activitiesProvider = Provider<List<MiittiActivity>>((ref) {
 
 class ActivitiesStateData {
   final List<MiittiActivity> activities;
+  final List<MiittiActivity> userActivities;
+  final List<MiittiActivity> othersActivities;
   final SuperclusterMutableController clusterController;
 
   ActivitiesStateData({
     this.activities = const [],
+    this.userActivities = const [],
+    this.othersActivities = const [],
     SuperclusterMutableController? clusterController,
   }) : clusterController = clusterController ?? SuperclusterMutableController();
 
   ActivitiesStateData copyWith({
     List<MiittiActivity>? activities,
+    List<MiittiActivity>? userActivities,
+    List<MiittiActivity>? othersActivities,
     SuperclusterMutableController? clusterController,
   }) {
     return ActivitiesStateData(
       activities: activities ?? this.activities,
+      userActivities: userActivities ?? this.userActivities,
+      othersActivities: othersActivities ?? this.othersActivities,
       clusterController: clusterController ?? this.clusterController,
     );
   }

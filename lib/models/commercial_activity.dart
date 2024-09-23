@@ -65,11 +65,41 @@ class CommercialActivity extends MiittiActivity {
     );
   }
 
-  Map<String, dynamic> addParticipant(String userId, MiittiUser userInfo) {
-    participants.add(userId);
-    participantsInfo[userId] = {
-      'name': userInfo.name,
-      'profilePicture': userInfo.profilePicture,
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'description': description,
+      'category': category,
+      'longitude': longitude,
+      'latitude': latitude,
+      'address': address,
+      'creator': creator,
+      'creationTime': creationTime,
+      'startTime': startTime,
+      'endTime': endTime,
+      'paid': paid,
+      'maxParticipants': maxParticipants,
+      'participants': participants,
+      'participantsInfo': participantsInfo.map((key, value) => MapEntry(key, {
+        'name': value['name'],
+        'profilePicture': value['profilePicture'],
+      })),
+      'linkTitle': linkTitle,
+      'hyperlink': hyperlink,
+      'bannerImage': bannerImage,
+      'views': views,
+      'clicks': clicks,
+      'hyperlinkClicks': hyperlinkClicks,
+    };
+  }
+
+  @override
+  Map<String, dynamic> addParticipant(MiittiUser user) {
+    participants.add(user.uid);
+    participantsInfo[user.uid] = {
+      'name': user.name,
+      'profilePicture': user.profilePicture,
     };
     return {
       'participants': participants,
@@ -80,9 +110,10 @@ class CommercialActivity extends MiittiActivity {
     };
   }
 
-  Map<String, dynamic> removeParticipant(String userId) {
-    participants.remove(userId);
-    participantsInfo.remove(userId);
+  @override
+  Map<String, dynamic> removeParticipant(MiittiUser user) {
+    participants.remove(user.uid);
+    participantsInfo.remove(user.uid);
     return {
       'participants': participants,
       'participantsInfo': participantsInfo.map((key, value) => MapEntry(key, {

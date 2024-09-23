@@ -165,7 +165,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
                             titleSmall: TextStyle(
                               color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w300,
-                              fontSize: 18,
+                              fontSize: 16,
                             ),
                           ),
                         ),
