@@ -92,8 +92,8 @@ Future<void> main() async {
 
   // Initialize Firebase Messaging via PushNotificationService
   FirebaseMessaging.onBackgroundMessage(PushNotificationService.firebaseBackgroundMessage);
-  PushNotificationService.listenForeground();
-  PushNotificationService.listenTerminated();
+  container.read(notificationServiceProvider).listenForeground();
+  container.read(notificationServiceProvider).listenTerminated();
 
   // Activate Firebase App Check for the current environment
   await FirebaseAppCheck.instance.activate(

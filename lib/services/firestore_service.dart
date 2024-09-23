@@ -76,6 +76,21 @@ class FirestoreService {
     }
   }
 
+  Future<MiittiUser?> fetchUser(String userId) async {
+    try {
+      final snapshot = await _firestore.collection(_usersCollection).doc(userId).get();
+      if (snapshot.exists) {
+        return MiittiUser.fromFirestore(snapshot);
+      } else {
+        debugPrint('User with ID $userId does not exist.');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error fetching user: $e');
+      return null;
+    }
+  }
+
   Future<void> deleteUser(String uid) async {
     try {
       final userState = ref.read(userStateProvider);

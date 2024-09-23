@@ -322,8 +322,9 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                       buttonText: config.get<String>('activity-join-button'),
                       onPressed: () {
                         // TODO: Send notification to creator
-                        ref.read(userStateProvider).data.incrementActivitiesJoined();
                         ref.read(activitiesStateProvider.notifier).joinActivity(activity);
+                        ref.read(notificationServiceProvider).sendJoinNotification(activity);
+                        ref.read(userStateProvider).data.incrementActivitiesJoined();
                         SuccessSnackbar.show(context, config.get<String>('activity-join-success'));
                         setState(() {
                         });
@@ -379,6 +380,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                 TextButton(
                                   onPressed: () {
                                     ref.read(activitiesStateProvider.notifier).leaveActivity(activity);
+                                    ref.read(userStateProvider).data.decrementActivitiesJoined();
                                     SuccessSnackbar.show(context, config.get<String>('leave-activity-success'));
                                     setState(() {
                                     });

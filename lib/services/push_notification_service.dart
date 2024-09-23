@@ -7,6 +7,7 @@ import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/services/firestore_service.dart';
+import 'package:miitti_app/services/remote_config_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -107,21 +108,24 @@ class PushNotificationService {
         onDidReceiveBackgroundNotificationResponse: onNotificationTap);
   }
 
-  static void listenForeground() {
+  void listenForeground() {
     // to handle foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       String payloadData = jsonEncode(message.data);
       debugPrint("Got a message in foreground");
       if (message.notification != null) {
-        PushNotificationService.showSimpleNotification(
-            title: message.notification!.title!,
-            body: message.notification!.body!,
-            payload: payloadData);
+        showSimpleNotification(
+          title: message.notification!.title!,
+          body: message.notification!.body!,
+          payload: payloadData 
+        );
       }
     });
   }
 
-  static void listenTerminated() async {
+  // Send in the user's first language if it is available, otherwise send in English
+
+  void listenTerminated() async {
     // for handling in terminated state
     final RemoteMessage? message =
         await FirebaseMessaging.instance.getInitialMessage();
@@ -143,52 +147,70 @@ class PushNotificationService {
   }
 
   // show a simple notification
-  static Future showSimpleNotification({
+  Future showSimpleNotification({
     required String title,
     required String body,
     required String payload,
   }) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('your channel id', 'your channel name',
-            channelDescription: 'your channel description',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker');
-    const NotificationDetails notificationDetails =
+    final config = ref.read(remoteConfigServiceProvider);
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+          config.get<String>('generic-channel-id'), 
+          config.get<String>('generic-channel-name'),
+          channelDescription: config.get<String>('generic-channel-description'),
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: config.get<String>('generic-channel-description'));
+    NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
     await _flutterLocalNotificationsPlugin
         .show(0, title, body, notificationDetails, payload: payload);
   }
 
-  void sendInviteNotification(
-      MiittiUser current, MiittiUser receiver, UserCreatedActivity activity) async {
+  void sendInviteNotification(MiittiUser current, MiittiUser receiver, UserCreatedActivity activity) async {
+    final config = ref.read(remoteConfigServiceProvider);
     sendNotification(
       receiver.fcmToken,
-      "Sait kutsun miittiin!",
-      "${current.name} haluis sut mukaan miittiin: ${activity.title}",
-      "invite",
+      config.get<String>('invite-notification-title'),
+      "${current.name} ${config.get<String>('invite-notification-body')} ${activity.title}",
+      config.get<String>('invite-notification-type'),
       activity.id,
     );
   }
 
   Future sendRequestNotification(UserCreatedActivity activity) async {
-    if (ref.read(userStateProvider).isAnonymous) {
-      debugPrint("Cannot send request notification as anonymous user");
-      return;
-    }
     FirestoreService firestore = ref.read(firestoreServiceProvider);
+    final config = ref.read(remoteConfigServiceProvider);
     UserStateData user = ref.read(userStateProvider);
     MiittiUser? admin = await firestore.getUser(activity.creator);
     if (admin != null) {
       sendNotification(
         admin.fcmToken,
-        "Pääsiskö miittiin mukaan?",
-        "${user.data.name} pyysi päästä miittiin: ${activity.title}",
-        "request",
+        config.get<String>('join-request-notification-title'),
+        "${user.data.name} ${config.get<String>('join-request-notification-body')} ${activity.title}",
+        config.get<String>('join-request-notification-type'),
         user.data.uid!,
       );
     } else {
       debugPrint("Couldn't find admin to send request notification to.");
+    }
+  }
+
+  Future sendJoinNotification(UserCreatedActivity activity) async {
+    FirestoreService firestore = ref.read(firestoreServiceProvider);
+    final config = ref.read(remoteConfigServiceProvider);
+    UserStateData user = ref.read(userStateProvider);
+    MiittiUser? activityCreator = await firestore.fetchUser(activity.creator);
+    if (activityCreator != null) {
+      sendNotification(
+        activityCreator.fcmToken,
+        config.get<String>('join-request-notification-title'),
+        "${user.data.name} ${config.get<String>('join-request-notification-body')} ${activity.title}",
+        config.get<String>('join-request-notification-type'),
+        user.data.uid!,
+      );
+    } else {
+      debugPrint("Couldn't find activityCreator to send request notification to.");
     }
   }
 
@@ -207,7 +229,7 @@ class PushNotificationService {
       String type, String data) async {
     debugPrint("Trying to send message: $message");
     final callable =
-        FirebaseFunctions.instance.httpsCallable("sendNotificationTo");
+        FirebaseFunctions.instanceFor(region: 'europe-west1').httpsCallable('sendNotificationTo');
     try {
       final response = await callable.call({
         "receiver": receiverToken,
@@ -220,6 +242,8 @@ class PushNotificationService {
     } on FirebaseFunctionsException catch (e, s) {
       debugPrint("Error calling ${callable.toString()}: $e");
       debugPrint("$s");
+    } catch (e) {
+      debugPrint("Unexpected error: $e");
     }
   }
 

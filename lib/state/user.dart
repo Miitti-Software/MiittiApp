@@ -501,6 +501,10 @@ class UserData {
     return copyWith(numOfMiittisJoined: numOfMiittisJoined + 1);
   }
 
+  decrementActivitiesJoined() {
+    return copyWith(numOfMiittisJoined: numOfMiittisJoined - 1);
+  }
+
 }
 
 final userStateProvider = StateNotifierProvider<UserState, UserStateData>((ref) {
