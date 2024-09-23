@@ -42,13 +42,13 @@ import 'package:miitti_app/screens/update_screen.dart';
 
 // A class to define the app's routing configuration and behavior
 class AppRouter {
-  final WidgetRef ref;
+  final Ref ref;
   String previousRoute = '/';
   bool firstRedirect = true;
 
-  AppRouter(this.ref);
+  AppRouter(this.ref, this.rootNavigatorKey);
 
-  final _rootNavigatorKey = GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState> rootNavigatorKey;
   final _chatNavigatorKey = GlobalKey<NavigatorState>();
   final _mapNavigatorKey = GlobalKey<NavigatorState>();
   final _createActivityNavigatorKey = GlobalKey<NavigatorState>();
@@ -56,7 +56,7 @@ class AppRouter {
   final _profileNavigatorKey = GlobalKey<NavigatorState>();
 
   late final GoRouter router = GoRouter(
-    navigatorKey: _rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     debugLogDiagnostics: kDebugMode,
     refreshListenable: ValueNotifier<bool>(ref.watch(signedInProvider)),
     observers: [
@@ -75,26 +75,26 @@ class AppRouter {
     return [
       GoRoute(
         path: '/notificationmessage',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const NotificationMessage()),
       ),
       GoRoute(
         name: 'login',
         path: '/login',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (_, __) => const LoginIntroScreen(),
         routes: _buildLoginRoutes(),
       ),
       GoRoute(
         name: 'maintenance-break',
         path: '/maintenance-break', 
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const MaintenanceBreakScreen())
       ),
       GoRoute(
         name: 'update',
         path: '/update/:force',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final forceUpdate = state.pathParameters['force']! == 'true';
           return UpdateScreen(forceUpdate, previousRoute);
@@ -138,7 +138,7 @@ class AppRouter {
             pageBuilder: _buildNoTransitionPage(const MapScreen()),
             routes: [
               GoRoute(
-                parentNavigatorKey: _rootNavigatorKey,
+                parentNavigatorKey: rootNavigatorKey,
                 name: 'activity',
                 path: 'activity/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
@@ -185,7 +185,7 @@ class AppRouter {
                 pageBuilder: _buildNoTransitionPage(const FilterUsersSettingsPage()),
               ),
               GoRoute(
-                parentNavigatorKey: _rootNavigatorKey,
+                parentNavigatorKey: rootNavigatorKey,
                 name: 'user',
                 path: 'user/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
@@ -224,67 +224,67 @@ class AppRouter {
       GoRoute(
         name: 'authenticate',
         path: 'authenticate',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const LoginScreen()),
       ),
       GoRoute(
         name: 'welcome',
         path: 'welcome',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const WelcomeScreen()),
       ),
       GoRoute(
         name: 'input-name',
         path: 'complete-profile/name',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputNameScreen()),
       ),
       GoRoute(
         name: 'input-profile',
         path: 'complete-profile/birthday',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputBirthdayScreen()),
       ),
       GoRoute(
         name: 'input-gender',
         path: 'complete-profile/gender',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputGenderScreen()),
       ),
       GoRoute(
         name: 'input-languages',
         path: 'complete-profile/languages',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputLanguagesScreen()),
       ),
       GoRoute(
         name: 'input-areas',
         path: 'complete-profile/areas',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputAreasScreen()),
       ),
       GoRoute(
         name: 'input-life-situation',
         path: 'complete-profile/life-situation',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputLifeSituationScreen()),
       ),
       GoRoute(
         name: 'input-organization',
         path: 'complete-profile/organization',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputOrganizationScreen()),
       ),
       GoRoute(
         name: 'input-qa-cards',
         path: 'complete-profile/qa-cards',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputQACardsScreen()),
       ),
       GoRoute(
         name: 'input-answer-qa-card',
         path: 'complete-profile/qa-card/:question',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) {
           final question = state.pathParameters['question']!;
           return NoTransitionPage(child: InputQACardAnswerScreen(question));
@@ -293,25 +293,25 @@ class AppRouter {
       GoRoute(
         name: 'input-profile-picture',
         path: 'complete-profile/profile-picture',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputProfilePictureScreen()),
       ),
       GoRoute(
         name: 'input-activities',
         path: 'complete-profile/activities',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const InputActivitiesScreen()),
       ),
       GoRoute(
         name: 'push-notifications',
         path: 'complete-profile/push-notifications',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const AcceptPushNotificationsScreen()),
       ),
       GoRoute(
         name: 'accept-norms',
         path: 'complete-profile/community-norms',
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: rootNavigatorKey,
         pageBuilder: _buildNoTransitionPage(const AcceptNormsScreen()),
       ),
     ];

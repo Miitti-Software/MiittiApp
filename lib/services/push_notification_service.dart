@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/services/firestore_service.dart';
-import 'package:miitti_app/services/remote_config_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -18,6 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class PushNotificationService {
   final Ref ref;
+  static BuildContext get context => rootNavigatorKey.currentContext!;
   final _firebaseMessaging = FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -33,8 +34,7 @@ class PushNotificationService {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
         debugPrint("Background notification tapped");
-        navigatorKey.currentState!
-            .pushNamed("/notificationmessage", arguments: message);
+        context.go(message.data['route']);
       }
     });
 
@@ -133,17 +133,18 @@ class PushNotificationService {
     if (message != null) {
       debugPrint("Launched from terminated state");
       Future.delayed(const Duration(seconds: 2), () {
-        navigatorKey.currentState!
-            .pushNamed("/notificationmessage", arguments: message);
+        context.go(message.data['route']);
       });
     }
   }
 
   // on tap local notification in foreground
-  static void onNotificationTap(NotificationResponse notificationResponse) {
-    notificationResponse.payload;
-    navigatorKey.currentState!
-        .pushNamed("/notificationmessage", arguments: notificationResponse);
+  static void onNotificationTap(NotificationResponse notificationResponse) async {
+    if (notificationResponse.payload != null) {
+      final Map<String, dynamic> payloadData = jsonDecode(notificationResponse.payload!);
+      final String route = payloadData['route'];
+      context.go(route);
+    }
   }
 
   // show a simple notification
@@ -205,9 +206,9 @@ class PushNotificationService {
       sendNotification(
         activityCreator.fcmToken,
         config.get<String>('join-request-notification-title'),
-        "${user.data.name} ${config.get<String>('join-request-notification-body')} ${activity.title}",
+        "${user.data.name}${config.get<String>('join-request-notification-body')}${activity.title}",
         config.get<String>('join-request-notification-type'),
-        user.data.uid!,
+        '/activity/${activity.id}',
       );
     } else {
       debugPrint("Couldn't find activityCreator to send request notification to.");
@@ -226,7 +227,7 @@ class PushNotificationService {
   }
 
   Future sendNotification(String receiverToken, String title, String message,
-      String type, String data) async {
+      String type, String route) async {
     debugPrint("Trying to send message: $message");
     final callable =
         FirebaseFunctions.instanceFor(region: 'europe-west1').httpsCallable('sendNotificationTo');
@@ -236,7 +237,7 @@ class PushNotificationService {
         "title": title,
         "message": message,
         "type": type,
-        "myData": data,
+        "route": route,
       });
       debugPrint("Result sending notification: ${response.data}");
     } on FirebaseFunctionsException catch (e, s) {

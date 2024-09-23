@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/widgets/buttons/deep_link_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/horizontal_image_shortlist.dart';
+import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:miitti_app/widgets/overlays/report_bottom_sheet.dart';
 import 'package:miitti_app/widgets/overlays/success_snackbar.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
@@ -381,7 +382,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                   onPressed: () {
                                     ref.read(activitiesStateProvider.notifier).leaveActivity(activity);
                                     ref.read(userStateProvider).data.decrementActivitiesJoined();
-                                    SuccessSnackbar.show(context, config.get<String>('leave-activity-success'));
+                                    ErrorSnackbar.show(context, config.get<String>('leave-activity-success'));
                                     setState(() {
                                     });
                                     context.pop();

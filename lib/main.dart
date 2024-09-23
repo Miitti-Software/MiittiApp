@@ -22,7 +22,7 @@ import 'package:miitti_app/state/user.dart';
 
 const appVersion = '2.0.0'; // App version number - TODO: Update this here as well as in pubspec.yaml for each new release
 
-final navigatorKey = GlobalKey<NavigatorState>();
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   // Ensure that the WidgetsBinding has been set up before the app is run so that the widgets can interact with the Flutter engine.
@@ -75,6 +75,8 @@ Future<void> main() async {
 
   final container = ProviderContainer();
 
+  await container.read(appRouterProvider).router;
+
  // Initialize the RemoteConfigService to fetch and activate the remote config values
   await container.read(remoteConfigServiceProvider).initialize();
 
@@ -125,7 +127,7 @@ class MiittiApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = AppRouter(ref).router;
+    final router = ref.watch(appRouterProvider).router;
 
     // Listen to the authState changes and refresh the router when the user signs in or out to trigger a redirect automatically
     ref.listen<AsyncValue<User?>>(authStateProvider, (previous, next) {

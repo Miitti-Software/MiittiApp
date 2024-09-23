@@ -216,7 +216,7 @@ interface NotificationData {
   message: string;
   title: string;
   type?: string;
-  myData?: string;
+  route?: string;
 }
 
 exports.sendNotificationTo = onCall({ region }, async (data: CallableRequest<NotificationData>) => {

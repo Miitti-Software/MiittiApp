@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/constants/languages.dart';
+import 'package:miitti_app/main.dart';
+import 'package:miitti_app/routing/app_router.dart';
 import 'package:miitti_app/services/auth_service.dart';
 import 'package:miitti_app/services/firebase_storage_service.dart';
 import 'package:miitti_app/services/firestore_service.dart';
@@ -18,6 +20,10 @@ import 'package:miitti_app/state/settings.dart';
 // Provider for AuthService
 final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(ref);
+});
+
+final appRouterProvider = Provider<AppRouter>((ref) {
+  return AppRouter(ref, rootNavigatorKey);
 });
 
 // Initialize Firebase Remote Config service for reading dynamic configuration values for the app from Firebase
