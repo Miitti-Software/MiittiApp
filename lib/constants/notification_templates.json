@@ -4,7 +4,6 @@
     "generic-channel-description": "Generic channel for all notifications ranging from requests and invitations to messages, reminders, updates and campaigns.",
     "generic-ticker-text": "You have a new notification",
     
-
     "invite-notification-title": "Miitti Invite",
     "invite-notification-body": "has invited you to join",
     "invite-notification-type": "invite",

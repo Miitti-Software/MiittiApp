@@ -28,6 +28,8 @@ class RemoteConfigService {
   final Map<String, dynamic> _configFiles = {};
   // A map to store the config values
   final Map<String, dynamic> _configValues = {};
+  // A map to store the notification templates for all languages
+  final Map<String, Map<String, dynamic>> _notificationTemplates = {};
   get configValues => _configValues;
   // List of remote config json file names to be loaded as defaults and fetched from Firebase - the same file names should be present both locally and in the Firebase console
   final List<String> _jsonFiles = ['app_texts', 'error_texts', 'areas', 'occupational_statuses', 'organizations', 'qa_category_1', 'qa_category_2', 'qa_category_3', 'activities', 'community_norms', 'activity_report_reasons', 'profile_report_reasons', 'notification_templates'];
@@ -94,6 +96,7 @@ class RemoteConfigService {
     await _setDefaults();
     await _setConfigSettings();
     await fetchAndActivate(language);
+    await _loadNotificationTemplates();
     setupListener();
   }
 
@@ -135,11 +138,33 @@ class RemoteConfigService {
     _configController.add(_configValues);
   }
 
+  /// Load all language variants of notification_templates.json
+  Future<void> _loadNotificationTemplates() async {
+    for (final language in [Language.en, Language.fi]) {
+      final languageSuffix = language.code;
+      final jsonString = _remoteConfig.getString('notification_templates_$languageSuffix');
+      final values = json.decode(jsonString) as Map<String, dynamic>;
+      _notificationTemplates[languageSuffix] = values;
+    }
+  }
+
+  /// Get a specific string in a specific language from notification_templates.json
+  String getNotificationTemplateString(String key, Language language) {
+    final languageSuffix = language.code;
+    final values = _notificationTemplates[languageSuffix];
+    if (values != null && values.containsKey(key)) {
+      return values[key] as String;
+    } else {
+      throw Exception('The key "$key" does not exist in the notification templates for language "$languageSuffix"');
+    }
+  }
+
   /// Set up a listener for config updates in order to update the config values in real time
   void setupListener() {
     _remoteConfig.onConfigUpdated.listen((event) async {
       await ref.watch(languageProvider.notifier).loadLanguage();
       await fetchAndActivate(ref.read(languageProvider));
+      await _loadNotificationTemplates();
     },
     onError: (error) {
       debugPrint('Remote config server error: $error');  // Sometimes Firebase's remote config server cannot be reached independently of the app in which case the app should continue to use the last fetched values
