@@ -1,3 +1,4 @@
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,6 +45,7 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
     final userData = ref.watch(userStateProvider).data;
     final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('input_life_situation_screen');
 
     return ConfigScreen(
       child: Column(

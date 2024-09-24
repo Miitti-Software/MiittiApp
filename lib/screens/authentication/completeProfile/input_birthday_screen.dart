@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
@@ -46,6 +47,7 @@ class _InputBirthdayScreenState extends ConsumerState<InputBirthdayScreen> {
     final userData = ref.watch(userStateProvider).data;
     final userState = ref.read(userStateProvider.notifier);
     final language = ref.watch(languageProvider);
+    ref.read(analyticsServiceProvider).logScreenView('input_birthday_screen');
 
     return ConfigScreen(
       child: Column(

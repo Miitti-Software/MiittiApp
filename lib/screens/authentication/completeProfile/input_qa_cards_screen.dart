@@ -1,3 +1,4 @@
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 import 'package:tuple/tuple.dart';
@@ -43,6 +44,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
     final userData = ref.watch(userStateProvider).data;
+    ref.read(analyticsServiceProvider).logScreenView('input_qa_cards_screen');
 
     return ConfigScreen(
       child: Column(

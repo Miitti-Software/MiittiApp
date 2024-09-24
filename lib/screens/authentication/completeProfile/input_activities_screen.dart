@@ -1,4 +1,5 @@
 import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,6 +47,7 @@ Future<void> _loadActivities() async {
     final userData = ref.watch(userStateProvider).data;
     final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('input_activities_screen');
 
     return ConfigScreen(
       child: Column(

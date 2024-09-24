@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
@@ -12,6 +13,7 @@ class WelcomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('welcome_screen');
 
     return ConfigScreen(
       child: Column(

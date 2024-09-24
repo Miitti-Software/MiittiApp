@@ -1,3 +1,4 @@
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class _AcceptNormsScreenState extends ConsumerState<AcceptNormsScreen> {
   Widget build(BuildContext context) {
     final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('accept_norms_screen');
 
     return ConfigScreen(
       child: Column(

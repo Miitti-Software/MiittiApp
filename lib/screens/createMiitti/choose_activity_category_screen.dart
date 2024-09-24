@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/create_activity_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
@@ -39,6 +40,7 @@ class _ChooseActivityCategoryScreenState
   Widget build(BuildContext context) {
     final createActivityState = ref.read(createActivityStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('create_activity_category_screen');
 
     return Scaffold(
       body: Center(

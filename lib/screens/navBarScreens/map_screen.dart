@@ -184,6 +184,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     ref.listen(activitiesProvider, (_, __) => _updateMarkers());
     final config = ref.read(remoteConfigServiceProvider);
     int toggleIndex = ref.watch(mapStateProvider.select((state) => state.toggleIndex));
+    ref.read(analyticsServiceProvider).logScreenView('map_screen');
 
     return Stack(
       alignment: Alignment.topCenter,

@@ -30,8 +30,6 @@ class CommercialActivityMarker extends ConsumerWidget {
           }
         }
       },
-      child: Padding(
-      padding: const EdgeInsets.all(13.0),
       child: Stack(
         children: [
           Container(
@@ -82,7 +80,6 @@ class CommercialActivityMarker extends ConsumerWidget {
           //   ),
           // ),
         ],
-      ),
       ),
     );
   }

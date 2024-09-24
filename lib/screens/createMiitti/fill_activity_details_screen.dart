@@ -30,6 +30,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
+//     ref.read(analyticsServiceProvider).logScreenView('create_activity_details_screen');
 //     return Scaffold(
 //       appBar: AppBar(title: Text('Write Info About Activity')),
 //       body: Column(

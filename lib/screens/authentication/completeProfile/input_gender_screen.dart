@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/genders.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
@@ -38,6 +39,7 @@ class _InputGenderScreenState extends ConsumerState<InputGenderScreen> {
     final userData = ref.watch(userStateProvider).data;
     final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('input_gender_screen');
 
     return ConfigScreen(
       child: Column(

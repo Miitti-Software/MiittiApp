@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
+import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
 import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
 
 class ActivityListTile extends ConsumerWidget {
@@ -64,7 +66,7 @@ class ActivityListTile extends ConsumerWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
-                child: ActivityMarker(activity: activity),
+                child: activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
               ),
               Expanded(
                 child: Column(

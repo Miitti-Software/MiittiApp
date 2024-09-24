@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
@@ -41,6 +42,7 @@ class _InputQACardAnswerScreenState extends ConsumerState<InputQACardAnswerScree
         final config = ref.watch(remoteConfigServiceProvider);
         final userState = ref.watch(userStateProvider.notifier);
         final userData = ref.watch(userStateProvider).data;
+        ref.read(analyticsServiceProvider).logScreenView('input_qa_answer_screen');
 
         return ConfigScreen(
           child: Column(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/auth_button.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
@@ -21,6 +22,7 @@ class _LoginAuthState extends ConsumerState<LoginScreen> {
     final remoteConfig = ref.watch(remoteConfigServiceProvider);
     final authTitle = remoteConfig.get<String>('auth-title');
     final authSubtitle = remoteConfig.get<String>('auth-subtitle');
+    ref.read(analyticsServiceProvider).logScreenView('login_screen');
 
     return ConfigScreen(
       child: Column(

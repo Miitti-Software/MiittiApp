@@ -9,6 +9,7 @@ import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/organization.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/ads_state.dart';
@@ -89,6 +90,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
     final userUid = ref.watch(userStateProvider.select((state) => state.uid));
+    ref.read(analyticsServiceProvider).logScreenView('activity_details_screen');
 
     return FutureBuilder<MiittiActivity?>(
       future: fetchActivityDetails(widget.activityId),
@@ -208,6 +210,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                             ),
                           ),
                           onTap: () async {
+                            ref.read(adsStateProvider.notifier).incrementCommercialActivityClickCount(activity.id);
                             final url = Uri.parse(organization!.website);
                             await launchUrl(url, mode: LaunchMode.externalApplication);
                           },

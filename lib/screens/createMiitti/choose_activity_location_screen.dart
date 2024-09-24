@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/commercial_spot.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/ads_state.dart';
 import 'package:miitti_app/state/create_activity_state.dart';
 import 'package:miitti_app/state/map_state.dart';
@@ -48,6 +49,7 @@ class _ChooseActivityLocationScreenState extends ConsumerState<ChooseActivityLoc
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('create_activity_location_screen');
 
     return Scaffold(
       body: Center(

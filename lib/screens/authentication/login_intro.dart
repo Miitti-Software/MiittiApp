@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/widgets/background_gradient.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/buttons/language_radio_buttons.dart';
@@ -18,6 +19,7 @@ class LoginIntroScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the stream provider
     final configStreamAsyncValue = ref.watch(remoteConfigStreamProvider);
+    ref.read(analyticsServiceProvider).logScreenView('login_intro_screen');
 
     return Scaffold(
       body: Stack(

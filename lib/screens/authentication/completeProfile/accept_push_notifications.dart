@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
@@ -23,6 +24,7 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('accept_push_notifications_screen');
 
     return ConfigScreen(
       child: Column(

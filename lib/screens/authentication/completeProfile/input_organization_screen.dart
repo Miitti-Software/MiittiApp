@@ -1,3 +1,4 @@
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +63,7 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
     final userData = ref.watch(userStateProvider).data;
     final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
+    ref.read(analyticsServiceProvider).logScreenView('input_organization_screen');
 
     return ConfigScreen(
       child: Column(

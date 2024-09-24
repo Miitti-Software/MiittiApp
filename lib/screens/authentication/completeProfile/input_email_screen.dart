@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
@@ -17,6 +18,7 @@ class InputEmailScreen extends ConsumerWidget {
     final config = ref.watch(remoteConfigServiceProvider);
     final userData = ref.watch(userStateProvider).data;
     final controller = TextEditingController(text: userData.email);
+    ref.read(analyticsServiceProvider).logScreenView('input_email_screen');
 
     return ConfigScreen(
       child: Column(
