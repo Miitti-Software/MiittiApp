@@ -1,16 +1,22 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/organization.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/activities_state.dart';
+import 'package:miitti_app/state/ads_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/deep_link_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/horizontal_image_shortlist.dart';
@@ -18,6 +24,7 @@ import 'package:miitti_app/widgets/overlays/error_snackbar.dart';
 import 'package:miitti_app/widgets/overlays/report_bottom_sheet.dart';
 import 'package:miitti_app/widgets/overlays/success_snackbar.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ActivityDetails extends ConsumerStatefulWidget {
   final String activityId;
@@ -34,6 +41,8 @@ class ActivityDetails extends ConsumerStatefulWidget {
 class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
   final ScrollController titleScrollController = ScrollController();
   final ScrollController descriptionScrollController = ScrollController();
+  bool isCommercialActivity = false;
+  late Organization? organization;
 
   @override
   void dispose() {
@@ -56,6 +65,10 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
         mapState.offSetLocationVertically(inputLocation: LatLng(existingActivity.latitude, existingActivity.longitude));
         mapState.setZoom(15.0);
       });
+      if (existingActivity is CommercialActivity) {
+        organization = await ref.read(firestoreServiceProvider).fetchOrganization(existingActivity.organization);
+        isCommercialActivity = true;
+      }
       return existingActivity;
     }
 
@@ -64,6 +77,10 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
     if (activity != null) {
       mapState.offSetLocationVertically(inputLocation: LatLng(activity.latitude, activity.longitude));
       mapState.setZoom(15.0);
+    }
+    if (activity is CommercialActivity) {
+      organization = await ref.read(firestoreServiceProvider).fetchOrganization(activity.organization);
+      isCommercialActivity = true;
     }
     return activity;
   }
@@ -171,11 +188,49 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     endIndent: 100,
                   ),
                   const SizedBox(height: AppSizes.verticalSeparationPadding),
+                  if (isCommercialActivity)
+                    Row(
+                      children: [
+                        GestureDetector(
+                          child: CircleAvatar(
+                            backgroundColor: Theme.of(context).colorScheme.tertiary,
+                            radius: 27,
+                            child: CircleAvatar(
+                              backgroundImage: CachedNetworkImageProvider(
+                                organization!.image,
+                                cacheManager: ProfilePicturesCacheManager().instance,
+                              ),
+                              radius: 25,
+                              onBackgroundImageError: (exception, stackTrace) => const Text(
+                                '💎',
+                                style: TextStyle(fontSize: 34),
+                              ),
+                            ),
+                          ),
+                          onTap: () async {
+                            final url = Uri.parse(organization!.website);
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            controller: ScrollController(),
+                            scrollDirection: Axis.horizontal,
+                            child: SelectableText(
+                              organization!.name,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            )
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (isCommercialActivity) const SizedBox(height: AppSizes.verticalSeparationPadding),
                   SelectionArea(
                     child: Row(
                       children: [
                         Text(
-                          config.getActivityTuple(category).item2,
+                          isCommercialActivity ? (activity as CommercialActivity).customEmoji : config.getActivityTuple(category).item2,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(width: 8),
@@ -329,6 +384,28 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         SuccessSnackbar.show(context, config.get<String>('activity-join-success'));
                         setState(() {
                         });
+                      },
+                    ),
+                  ] else if (isCommercialActivity) ...[
+                    ForwardButton(
+                      buttonText: config.get<String>('commercial-activity-join-button'),
+                      onPressed: () async {
+                        ref.read(activitiesStateProvider.notifier).joinActivity(activity);
+                        ref.read(userStateProvider).data.incrementActivitiesJoined();
+                        SuccessSnackbar.show(context, config.get<String>('activity-join-success'));
+                        setState(() {
+                        });
+                      },
+                    ),
+                  ],
+                  if (isCommercialActivity) ...[
+                    const SizedBox(height: AppSizes.minVerticalPadding),
+                    BackwardButton(
+                      buttonText: config.get<String>('commercial-activity-hyperlink-button'),
+                      onPressed: () async {
+                        ref.read(adsStateProvider.notifier).incrementCommercialActivityClickCount(activity.id);
+                        final url = Uri.parse((activity as CommercialActivity).hyperlink);
+                        await launchUrl(url, mode: LaunchMode.externalApplication);
                       },
                     ),
                   ],

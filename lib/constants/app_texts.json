@@ -233,5 +233,15 @@
     "activity-management-screen-title": "Upcoming activities",
     "chats-screen-title": "Chats",
     "own-activities-screen-title": "My activities",
-    "others-activities-screen-title": "Others' activities"
+    "others-activities-screen-title": "Others' activities",
+
+    "create-activity-category-title": "Choose a category",
+    "invalid-activity-category-missing": "Please choose a category above to proceed.",
+
+    "create-activity-location-title": "Choose a location",
+    "create-activity-location-recommendations": "Recommended MiittiSpots:",
+
+    "commercial-activity-join-button": "Join",
+    "commercial-activity-joined-button": "Open chat",
+    "commercial-activity-hyperlink-button": "Open website"
 }

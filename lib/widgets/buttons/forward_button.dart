@@ -17,7 +17,7 @@ class ForwardButton extends StatelessWidget {
     return OutlinedButton(
       style: ButtonStyle(
         backgroundColor: WidgetStatePropertyAll<Color>(
-          Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          Theme.of(context).colorScheme.primary.withAlpha(25),
         ),
         side: WidgetStatePropertyAll<BorderSide>(
           BorderSide(
@@ -31,15 +31,14 @@ class ForwardButton extends StatelessWidget {
           ),
         ),
         minimumSize: WidgetStateProperty.all<Size>(
-          const Size(AppSizes.fullContentWidth, AppSizes.fullContentWidth / 7),
+          const Size(double.infinity, AppSizes.fullContentWidth / 7),
         ),
       ),
-        
       onPressed: onPressed,
       child: Text(
         buttonText,
         style: Theme.of(context).textTheme.bodyMedium,
-      )
+      ),
     );
   }
 }

@@ -16,6 +16,7 @@ import 'package:miitti_app/models/commercial_spot.dart';
 import 'package:miitti_app/models/commercial_user.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/organization.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/state/activities_filter_settings.dart';
 import 'package:miitti_app/state/user.dart';
@@ -30,7 +31,9 @@ class FirestoreService {
   static const String _usersCollection = 'users';
   static const String _activitiesCollection = 'activities';
   static const String _commercialActivitiesCollection = 'commercialActivities';
+  static const String _commercialSpotsCollection = 'commercialSpots';
   static const String _adBannersCollection = 'adBanners';
+  static const String _organizationsCollection = 'organizations';
 
   final FirebaseFirestore _firestore;
   final Ref ref;
@@ -305,6 +308,8 @@ class FirestoreService {
     final filterSettings = ref.read(activitiesFilterSettingsProvider);
     final userState = ref.read(userStateProvider);
 
+    debugPrint('Streaming activities within $radiusInKm km from $center');
+
     Query<Map<String, dynamic>> queryBuilder(Query<Map<String, dynamic>> query) {
       query = query
         .where('creatorAge', isGreaterThanOrEqualTo: filterSettings.minAge)
@@ -355,24 +360,37 @@ class FirestoreService {
       field: 'location',
       geopointFrom: (data) => (data['location'] as Map<String, dynamic>)['geopoint'] as GeoPoint,
       strictMode: false,
+      queryBuilder: (query) => query.where('endTime', isNull: true),
+    );
+
+    Stream<List<DocumentSnapshot<Map<String, dynamic>>>> stream4 = commercialGeoCollectionReference.subscribeWithin(
+      center: GeoFirePoint(GeoPoint(center.latitude, center.longitude)),
+      radiusInKm: radiusInKm,
+      field: 'location',
+      geopointFrom: (data) => (data['location'] as Map<String, dynamic>)['geopoint'] as GeoPoint,
+      strictMode: false,
       queryBuilder: (query) => query.where('endTime', isGreaterThanOrEqualTo: DateTime.now()),
     );
 
-    return Rx.combineLatest3(stream1, stream2, stream3, (
-      List<DocumentSnapshot<Map<String, dynamic>>> a,
-      List<DocumentSnapshot<Map<String, dynamic>>> b,
-      List<DocumentSnapshot<Map<String, dynamic>>> c,
+    return Rx.combineLatest4(stream1, stream2, stream3, stream4, (
+      List<DocumentSnapshot<Map<String, dynamic>>> s1,
+      List<DocumentSnapshot<Map<String, dynamic>>> s2,
+      List<DocumentSnapshot<Map<String, dynamic>>> s3,
+      List<DocumentSnapshot<Map<String, dynamic>>> s4,
     ) {
       final List<MiittiActivity> activities = [];
-      for (var doc in a) {
+      for (var doc in s1) {
         activities.add(UserCreatedActivity.fromFirestore(doc));
       }
-      for (var doc in b) {
+      for (var doc in s2) {
         activities.add(UserCreatedActivity.fromFirestore(doc));
       }
-      for (var doc in c) {
+      for (var doc in s3) {
         final commercialActivity = CommercialActivity.fromFirestore(doc);
-        incrementCommercialActivityViewCounter(commercialActivity.id);
+        activities.add(commercialActivity);
+      }
+      for (var doc in s4) {
+        final commercialActivity = CommercialActivity.fromFirestore(doc);
         activities.add(commercialActivity);
       }
       return activities;
@@ -404,6 +422,21 @@ class FirestoreService {
     await _incrementField(docRef, 'hyperlinkClicks');
   }
 
+  Future<void> incrementCommercialSpotViewCounter(String spotId) async {
+    final docRef = _firestore.collection(_commercialSpotsCollection).doc(spotId);
+    await _incrementField(docRef, 'views');
+  }
+
+  Future<void> incrementCommercialSpotClickCounter(String spotId) async {
+    final docRef = _firestore.collection(_commercialSpotsCollection).doc(spotId);
+    await _incrementField(docRef, 'clicks');
+  }
+
+  Future<void> incrementCommercialSpotActivityCounter(String spotId) async {
+    final docRef = _firestore.collection(_commercialSpotsCollection).doc(spotId);
+    await _incrementField(docRef, 'activitiesArranged');
+  }
+
   Future<void> _incrementField(DocumentReference docRef, String fieldName) async {
     try {
       final docSnapshot = await docRef.get();
@@ -420,13 +453,27 @@ class FirestoreService {
     }
   }
 
+  Future<Organization?> fetchOrganization(String organizationId) async {
+    try {
+      final snapshot = await _firestore.collection(_organizationsCollection).doc(organizationId).get();
+      Organization? organization;
+      if (snapshot.exists) {
+        organization = Organization.fromFirestore(snapshot.data() as Map<String, dynamic>);
+      }
+      return organization;
+    } catch (e) {
+      debugPrint('Error fetching organization: $e');
+      return null;
+    }
+  }
+
   Future<MiittiActivity?> fetchActivity(String activityId) async {
     try {
       final snapshot = await _firestore.collection(_commercialActivitiesCollection).doc(activityId).get();
       MiittiActivity? activity;
       if (snapshot.exists) {
         activity = CommercialActivity.fromFirestore(snapshot);
-        incrementCommercialActivityViewCounter(activityId);
+        incrementCommercialActivityClickCounter(activityId);
       } else {
         final snapshot = await _firestore.collection(_activitiesCollection).doc(activityId).get();
         activity = UserCreatedActivity.fromFirestore(snapshot);
@@ -652,6 +699,41 @@ class FirestoreService {
       return [];
     }
   }
+
+  Future<List<CommercialSpot>> fetchCommercialSpots(String category) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore.collection(_commercialSpotsCollection).where('categories', arrayContains: category).get();
+
+      List<CommercialSpot> spots = querySnapshot.docs
+          .map((doc) =>
+              CommercialSpot.fromFirestore(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      return spots;
+    } catch (e) {
+      debugPrint('Error fetching commercial spots: $e');
+      return [];
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -883,22 +965,6 @@ class FirestoreService {
       "recentMessageSender": chatMessageData['sender'],
       "recentMessageTime": chatMessageData['time'].toString(),
     });
-  }
-
-  Future<List<CommercialSpot>> fetchCommercialSpots() async {
-    try {
-      QuerySnapshot querySnapshot = await _getFireQuery('commercialSpots');
-
-      List<CommercialSpot> spots = querySnapshot.docs
-          .map((doc) =>
-              CommercialSpot.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
-
-      return spots;
-    } catch (e) {
-      debugPrint('Error fetching commercial spots: $e');
-      return [];
-    }
   }
 
   Future<String> uploadUserImage(String uid, File? image) async {

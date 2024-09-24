@@ -18,6 +18,34 @@ class AdsState extends StateNotifier<List<AdBannerData>> {
     shuffledAds.shuffle();
     state = shuffledAds;
   }
+
+  void incrementAdBannerViewCount(String adId) {
+    ref.read(firestoreServiceProvider).incrementAdBannerViewCounter(adId);
+  }
+
+  void incrementAdBannerClickCount(String adId) {
+    ref.read(firestoreServiceProvider).incrementAdBannerHyperlinkClickCounter(adId);
+  }
+
+  void incrementCommercialSpotViewCount(String adId) {
+    ref.read(firestoreServiceProvider).incrementCommercialSpotViewCounter(adId);
+  }
+
+  void incrementCommercialSpotClickCount(String adId) {
+    ref.read(firestoreServiceProvider).incrementCommercialSpotClickCounter(adId);
+  }
+
+  void incrementCommercialActivityViewCount(String adId) {
+    ref.read(firestoreServiceProvider).incrementCommercialActivityViewCounter(adId);
+  }
+
+  void incrementCommercialActivityClickCount(String adId) {
+    ref.read(firestoreServiceProvider).incrementCommercialActivityClickCounter(adId);
+  }
+
+  void incrementCommercialActivityHyperlinkClickCount(String adId) {
+    ref.read(firestoreServiceProvider).incrementCommercialActivityHyperlinkClickCounter(adId);
+  }
 }
 
 final adsStateProvider = StateNotifierProvider<AdsState, List<AdBannerData>>((ref) {

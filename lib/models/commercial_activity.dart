@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 
@@ -6,6 +7,8 @@ class CommercialActivity extends MiittiActivity {
   String linkTitle;
   String hyperlink;
   String bannerImage;
+  String customEmoji;
+  String organization;
 
   int views = 0;
   int clicks = 0;
@@ -30,6 +33,8 @@ class CommercialActivity extends MiittiActivity {
     required this.linkTitle,
     required this.hyperlink,
     required this.bannerImage,
+    required this.customEmoji,
+    required this.organization,
     required this.views,
     required this.clicks,
     required this.hyperlinkClicks,
@@ -41,16 +46,16 @@ class CommercialActivity extends MiittiActivity {
       id: snapshot.id,
       title: data['title'],
       description: data['description'],
-      category: data['category'],
+      category: data['category'] ?? '',
       longitude: data['longitude'],
       latitude: data['latitude'],
       address: data['address'],
-      creator: data['creator'],
-      creationTime: data['creationTime'],
-      startTime: data['startTime'],
-      endTime: data['endTime'],
+      creator: data['creator'] ?? '',
+      creationTime: data['creationTime']?.toDate(),
+      startTime: data['startTime']?.toDate(),
+      endTime: data['endTime']?.toDate(),
       paid: data['paid'],
-      maxParticipants: data['maxParticipants'],
+      maxParticipants: data['maxParticipants'] ?? 1000000,
       participants: List<String>.from(data['participants']),
       participantsInfo: (data['participantsInfo'] as Map<String, dynamic>).map((key, value) => MapEntry(key, {
         'name': value['name'],
@@ -59,9 +64,11 @@ class CommercialActivity extends MiittiActivity {
       linkTitle: data['linkTitle'],
       hyperlink: data['hyperlink'],
       bannerImage: data['bannerImage'],
-      views: data['views'],
-      clicks: data['clicks'],
-      hyperlinkClicks: data['hyperlinkClicks'],
+      customEmoji: data['customEmoji'],
+      organization: data['organization'],
+      views: data['views'] ?? 0,
+      clicks: data['clicks'] ?? 0,
+      hyperlinkClicks: data['hyperlinkClicks'] ?? 0,
     );
   }
 
@@ -73,6 +80,7 @@ class CommercialActivity extends MiittiActivity {
       'category': category,
       'longitude': longitude,
       'latitude': latitude,
+      'location': GeoFirePoint(GeoPoint(latitude, longitude)).data,
       'address': address,
       'creator': creator,
       'creationTime': creationTime,
@@ -88,6 +96,8 @@ class CommercialActivity extends MiittiActivity {
       'linkTitle': linkTitle,
       'hyperlink': hyperlink,
       'bannerImage': bannerImage,
+      'customEmoji': customEmoji,
+      'organization': organization,
       'views': views,
       'clicks': clicks,
       'hyperlinkClicks': hyperlinkClicks,

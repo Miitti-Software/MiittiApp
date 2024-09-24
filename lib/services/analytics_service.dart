@@ -2,6 +2,8 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/models/ad_banner_data.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
+import 'package:miitti_app/models/commercial_spot.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 
@@ -53,6 +55,27 @@ class AnalyticsService {
       parameters: {
         'id': adBanner.id,
         'organization': adBanner.organization,
+      },
+    );
+  }
+
+  Future<void> logCommercialSpotView(CommercialSpot commercialSpot) async {
+    await _analytics.logEvent(
+      name: 'commercial_spot_viewed',
+      parameters: {
+        'id': commercialSpot.id,
+        'organization': commercialSpot.organization,
+      },
+    );
+  }
+
+  Future<void> logCommercialActivityView(CommercialActivity activity) async {
+    await _analytics.logEvent(
+      name: 'commercial_activity_viewed',
+      parameters: {
+        'id': activity.id,
+        'category': activity.category,
+        'creator': activity.creator,
       },
     );
   }

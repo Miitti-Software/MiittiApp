@@ -1,8 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/services/analytics_service.dart';
+import 'package:miitti_app/services/cache_manager_service.dart';
+import 'package:miitti_app/state/ads_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class CommercialActivityMarker extends ConsumerWidget {
   final MiittiActivity activity;
@@ -12,45 +17,73 @@ class CommercialActivityMarker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final activityEmoji = config.getActivityTuples().firstWhere((tuple) => tuple.item1 == activity.category).item2.item2;
+    const activityEmoji = '💎';
 
-    return Padding(
-            padding: const EdgeInsets.all(13.0),
-            child: Stack(
-              children: [
-                CircleAvatar(
-                  backgroundColor: AppStyle.violet,
-                  radius: 37,
-                  child: CircleAvatar(
-                    // backgroundImage: NetworkImage(activity.bannerImage),
-                    radius: 34,
-                    onBackgroundImageError: (exception, stackTrace) => Text(
-                      activityEmoji,
-                      style: const TextStyle(fontSize: 34),
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Icon(
-                        Icons.circle,
-                        color: AppStyle.violet,
-                        size: 25,
-                      ),
-                      Icon(
-                        Icons.verified,
-                        color: AppStyle.lightPurple,
-                        size: 20,
-                      ),
-                    ],
-                  ),
+    return VisibilityDetector(
+      key: Key(activity.id),
+      onVisibilityChanged: (visibilityInfo) {
+        if (visibilityInfo.visibleFraction > 0.5) {
+          if (!adViewSessionManager.hasViewed(activity.id)) {
+            ref.read(analyticsServiceProvider).logCommercialActivityView(activity as CommercialActivity);
+            ref.read(adsStateProvider.notifier).incrementCommercialActivityViewCount(activity.id);
+            adViewSessionManager.markAsViewed(activity.id);
+          }
+        }
+      },
+      child: Padding(
+      padding: const EdgeInsets.all(13.0),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(120),
+                  spreadRadius: 1,
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
-          );
+            child: CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
+              radius: 37,
+              child: CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(
+                  (activity as CommercialActivity).bannerImage,
+                  cacheManager: ProfilePicturesCacheManager().instance,
+                ),
+                radius: 34,
+                onBackgroundImageError: (exception, stackTrace) => const Text(
+                  activityEmoji,
+                  style: TextStyle(fontSize: 34),
+                ),
+              ),
+            ),
+          ),
+          // const Positioned(
+          //   right: 0,
+          //   top: 0,
+          //   child: Stack(
+          //     alignment: Alignment.center,
+          //     children: [
+          //       Icon(
+          //         Icons.circle,
+          //         color: AppStyle.violet,
+          //         size: 25,
+          //       ),
+          //       Icon(
+          //         Icons.verified,
+          //         color: AppStyle.lightPurple,
+          //         size: 20,
+          //       ),
+          //     ],
+          //   ),
+          // ),
+        ],
+      ),
+      ),
+    );
   }
 }

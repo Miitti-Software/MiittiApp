@@ -29,9 +29,12 @@ class AdBanner extends ConsumerWidget {
       cacheManager: ProfilePicturesCacheManager().instance,
     );
     final completer = Completer<ui.Image>();
-    image.resolve(const ImageConfiguration()).addListener(
-      ImageStreamListener((info, _) => completer.complete(info.image))
-    );
+    final listener = ImageStreamListener((info, _) {
+      if (!completer.isCompleted) {
+        completer.complete(info.image);
+      }
+    });
+    image.resolve(const ImageConfiguration()).addListener(listener);
     final loadedImage = await completer.future;
     return Size(loadedImage.width.toDouble(), loadedImage.height.toDouble());
   }
@@ -47,7 +50,7 @@ class AdBanner extends ConsumerWidget {
         if (visibilityInfo.visibleFraction > 0.5) {
           if (!adViewSessionManager.hasViewed(adBannerData.id)) {
             ref.read(analyticsServiceProvider).logBannerAdView(adBannerData);
-            ref.read(firestoreServiceProvider).incrementAdBannerViewCounter(adBannerData.id);
+            ref.read(adsStateProvider.notifier).incrementAdBannerViewCount(adBannerData.id);
             adViewSessionManager.markAsViewed(adBannerData.id);
           }
         }
@@ -55,7 +58,7 @@ class AdBanner extends ConsumerWidget {
       child: GestureDetector(
         onTap: () async {
           ref.read(analyticsServiceProvider).logBannerAdClicked(adBannerData);
-          ref.read(firestoreServiceProvider).incrementAdBannerHyperlinkClickCounter(adBannerData.id);
+          ref.read(adsStateProvider.notifier).incrementAdBannerClickCount(adBannerData.id);
           await launchUrl(Uri.parse(hyperlink));
         },
         child: Card(

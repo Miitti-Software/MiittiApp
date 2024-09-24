@@ -10,6 +10,8 @@ import 'package:miitti_app/screens/activityManagement/activity_management_shell_
 import 'package:miitti_app/screens/activityManagement/chats_screen.dart';
 import 'package:miitti_app/screens/activityManagement/others_activities_screen.dart';
 import 'package:miitti_app/screens/activityManagement/own_activities_screen.dart';
+import 'package:miitti_app/screens/createMiitti/choose_activity_category_screen.dart';
+import 'package:miitti_app/screens/createMiitti/choose_activity_location_screen.dart';
 import 'package:miitti_app/screens/filter_users_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
@@ -218,10 +220,20 @@ class AppRouter {
     return StatefulShellBranch(
       navigatorKey: _createActivityNavigatorKey,
         routes: [
+          // GoRoute(
+          //   name: 'create-activity',
+          //   path: '/create-activity',
+          //   pageBuilder: _buildNoTransitionPage(const CreateMiittiOnboarding()),
+          // ),
           GoRoute(
-            name: 'create-activity',
-            path: '/create-activity',
-            pageBuilder: _buildNoTransitionPage(const CreateMiittiOnboarding()),
+            name: 'create-activity/category',
+            path: '/create-activity/category',
+            pageBuilder: _buildNoTransitionPage(const ChooseActivityCategoryScreen()),
+          ),
+          GoRoute(
+            name: 'create-activity/location',
+            path: '/create-activity/location',
+            pageBuilder: _buildNoTransitionPage(ChooseActivityLocationScreen()),
           ),
         ],
     );

@@ -17,8 +17,11 @@ import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/functions/utils.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:location/location.dart' as location;
+import 'package:miitti_app/widgets/buttons/forward_button.dart';
+import 'package:miitti_app/widgets/data_containers/commercial_spot.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -135,7 +138,7 @@ class _CreateMiittiOnboardingState
   }*/
 
   void fetchSpots() {
-    ref.read(firestoreServiceProvider).fetchCommercialSpots().then((value) {
+    ref.read(firestoreServiceProvider).fetchCommercialSpots(favoriteActivity).then((value) {
       setState(() {
         spots = value;
       });
@@ -238,11 +241,11 @@ class _CreateMiittiOnboardingState
                                 debugPrint(
                                     "Location changed ${position.center}");
                                 for (int i = 0; i < spots.length; i++) {
-                                  bool onSpot = (spots[i].lati -
+                                  bool onSpot = (spots[i].latitude -
                                                   position.center!.latitude)
                                               .abs() <
                                           0.0002 &&
-                                      (spots[i].long -
+                                      (spots[i].longitude -
                                                   position.center!.longitude)
                                               .abs() <
                                           0.0002;
@@ -295,12 +298,12 @@ class _CreateMiittiOnboardingState
                         initialCameraPosition: myCameraPosition,
                         onCameraIdle: () {
                           for (int i = 0; i < spots.length; i++) {
-                            bool onSpot = (spots[i].lati -
+                            bool onSpot = (spots[i].latitude -
                                             mapController.cameraPosition!.target
                                                 .latitude)
                                         .abs() <
                                     0.0002 &&
-                                (spots[i].long -
+                                (spots[i].longitude -
                                             mapController.cameraPosition!.target
                                                 .longitude)
                                         .abs() <
@@ -341,11 +344,13 @@ class _CreateMiittiOnboardingState
                                     onTap: () => setState(() {
                                           selectedSpotNotifier.value = index;
                                           myCameraPosition = LatLng(
-                                              spots[index].lati,
-                                              spots[index].long);
+                                              spots[index].latitude,
+                                              spots[index].longitude);
                                         }),
-                                    child: spots[index]
-                                        .getWidget(index == selectedSpot));
+                                    child: CommercialSpotWidget(
+                                        spot: spots[index],
+                                        highlight: index == selectedSpot,
+                                      ));
                               },
                             );
                           }),
@@ -729,27 +734,31 @@ class _CreateMiittiOnboardingState
                         ),
                         gapH20,
                         mainWidgetsForScreens(index),
-                        gapH10,
-                        MyButton(
-                          buttonText: screen.isFullView == true
-                              ? 'Julkaise'
-                              : 'Seuraava',
-                          onPressed: () => errorHandlingScreens(index),
+                        gapH20,
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ForwardButton(
+                            buttonText: screen.isFullView == true
+                                ? 'Julkaise'
+                                : 'Seuraava',
+                            onPressed: () => errorHandlingScreens(index),
+                          ),
                         ),
                         gapH10,
-                        MyButton(
-                          buttonText: 'Takaisin',
-                          isWhiteButton: true,
-                          onPressed: () {
-                            if (_pageController.page != 0) {
-                              _pageController.previousPage(
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.linear,
-                              );
-                            } else {
-                              Navigator.pop(context);
-                            }
-                          },
+                        Align(
+                          child: BackwardButton(
+                            buttonText: 'Takaisin',
+                            onPressed: () {
+                              if (_pageController.page != 0) {
+                                _pageController.previousPage(
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.linear,
+                                );
+                              } else {
+                                Navigator.pop(context);
+                              }
+                            },
+                          ),
                         ),
                       ],
                     ),
