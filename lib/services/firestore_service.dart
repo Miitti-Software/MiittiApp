@@ -36,6 +36,8 @@ class FirestoreService {
   final Ref ref;
   DocumentSnapshot? _lastUserActivityDocument;
   DocumentSnapshot? _lastCommercialActivityDocument;
+  DocumentSnapshot? _lastParticipatingUserActivityDocument;
+  DocumentSnapshot? _lastParticipatingCommercialActivityDocument;
   DocumentSnapshot? _lastUserDocument;
   DocumentSnapshot? _lastLegacyUserDocument; // TODO: Delete when redundant
 
@@ -215,6 +217,80 @@ class FirestoreService {
       // Combine user and commercial activities
       List<MiittiActivity> activities = List<MiittiActivity>.from(userActivities);
       activities.addAll(commercialActivities);
+
+      return activities;
+    } catch (e) {
+      debugPrint('Error fetching activities: $e');
+      return [];
+    }
+  }
+
+  Future<List<MiittiActivity>> fetchParticipatingActivities({
+    int pageSize = 10,
+    bool fullRefresh = false,
+  }) async {
+    try {
+      debugPrint('Fetching $pageSize participating activities');
+
+      if (fullRefresh) {
+        _lastParticipatingUserActivityDocument = null;
+        _lastParticipatingCommercialActivityDocument = null;
+      }
+
+      // Load user state and filter settings
+      final userState = ref.read(userStateProvider);
+
+      // Query for user activities
+      Query participatingActivitiesQuery = _firestore.collection(_activitiesCollection)
+        .where('participants', arrayContains: userState.data.uid);
+        
+      participatingActivitiesQuery = participatingActivitiesQuery.orderBy('creationTime', descending: true);
+
+      // Handle pagination for user activities
+      if (_lastParticipatingUserActivityDocument != null) {
+        participatingActivitiesQuery = participatingActivitiesQuery.startAfter([(_lastParticipatingUserActivityDocument!.data() as Map<String, dynamic>)['creationTime']]);
+      }
+
+      // Fetch user activities
+      QuerySnapshot participatingActivitiesSnapshot = await participatingActivitiesQuery.limit(pageSize).get();
+      List<MiittiActivity> participatingActivities = participatingActivitiesSnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
+
+      // Update last user activity document
+      if (participatingActivities.isNotEmpty) {
+        _lastParticipatingUserActivityDocument = participatingActivitiesSnapshot.docs.last;
+      }
+
+      // Query for commercial activities
+      Query commercialActivitiesQuery = _firestore.collection(_commercialActivitiesCollection).where('participants', arrayContains: userState.data.uid).orderBy('creationTime', descending: true);
+
+      // Handle pagination for commercial activities
+      if (_lastParticipatingCommercialActivityDocument != null) {
+        commercialActivitiesQuery = commercialActivitiesQuery.startAfter([(_lastParticipatingCommercialActivityDocument!.data() as Map<String, dynamic>)['creationTime']]);
+      }
+
+      QuerySnapshot commercialActivitiesSnapshot = await commercialActivitiesQuery.limit(pageSize).get();
+      List<MiittiActivity> commercialActivities = commercialActivitiesSnapshot.docs.map((doc) {
+        final commercialActivity = CommercialActivity.fromFirestore(doc);
+        incrementCommercialActivityViewCounter(commercialActivity.id);
+        return commercialActivity;
+      }).toList();
+
+      // Update last commercial activity document
+      if (commercialActivities.isNotEmpty) {
+        _lastCommercialActivityDocument = commercialActivitiesSnapshot.docs.last;
+      }
+
+      // Query for requested activities
+      Query requestedActivitiesQuery = _firestore.collection(_activitiesCollection)
+        .where('requests', arrayContains: userState.data.uid);
+
+      QuerySnapshot requestedActivitiesSnapshot = await requestedActivitiesQuery.get();
+      List<MiittiActivity> requestedActivities = requestedActivitiesSnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
+
+      // Combine user, commercial, and requested activities
+      List<MiittiActivity> activities = List<MiittiActivity>.from(participatingActivities);
+      activities.addAll(commercialActivities);
+      activities.addAll(requestedActivities);
 
       return activities;
     } catch (e) {

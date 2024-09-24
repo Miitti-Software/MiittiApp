@@ -6,6 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/routing/modal_page.dart';
+import 'package:miitti_app/screens/activityManagement/activity_management_shell_scaffold.dart';
+import 'package:miitti_app/screens/activityManagement/chats_screen.dart';
+import 'package:miitti_app/screens/activityManagement/others_activities_screen.dart';
+import 'package:miitti_app/screens/activityManagement/own_activities_screen.dart';
 import 'package:miitti_app/screens/filter_users_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
@@ -106,7 +110,7 @@ class AppRouter {
           navigationShell: navigationShell,
         ),
         branches: [
-          _buildChatBranch(),
+          _buildChatShellBranch(),
           _buildMapBranch(),
           _buildCreateActivityBranch(),
           _buildPeopleBranch(),
@@ -116,16 +120,57 @@ class AppRouter {
     ];
   }
 
-  StatefulShellBranch _buildChatBranch() {
+  StatefulShellBranch _buildChatShellBranch() {
     return StatefulShellBranch(
       navigatorKey: _chatNavigatorKey,
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) => ActivityManagementShellScaffold(
+              navigationShell: navigationShell,
+            ),
+            branches: [
+              _buildChatBranch(),
+              _buildOwnActivitiesBranch(),
+              _buildOthersActivitiesBranch(),
+            ],
+          ),
+        ],
+    );
+  }
+
+  StatefulShellBranch _buildChatBranch() {
+    return StatefulShellBranch(
         routes: [
           GoRoute(
             name: 'chat',
             path: '/chat',
-            pageBuilder: _buildNoTransitionPage(const CalendarScreen()),
+            pageBuilder: _buildNoTransitionPage(const ChatsScreen()),
           ),
         ],
+    );
+  }
+
+  StatefulShellBranch _buildOwnActivitiesBranch() {
+    return StatefulShellBranch(
+      routes: [
+        GoRoute(
+          name: 'own-activities',
+          path: '/own-activities',
+          pageBuilder: _buildNoTransitionPage(const OwnActivitiesScreen()),
+        ),
+      ],
+    );
+  }
+
+  StatefulShellBranch _buildOthersActivitiesBranch() {
+    return StatefulShellBranch(
+      routes: [
+        GoRoute(
+          name: 'others-activities',
+          path: '/others-activities',
+          pageBuilder: _buildNoTransitionPage(const OthersActivitiesScreen()),
+        ),
+      ],
     );
   }
 

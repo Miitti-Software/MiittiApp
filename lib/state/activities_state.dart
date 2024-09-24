@@ -103,6 +103,29 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     }
 
     _isLoadingMore = false;
+    updateState();
+  }
+
+  Future<void> loadMoreParticipatingActivities({bool fullRefresh = false}) async {
+    if (_isLoadingMore) return;
+    _isLoadingMore = true;
+
+    if (fullRefresh) {
+      state = state.copyWith(activities: []);
+    }
+
+    final firestoreService = ref.read(firestoreServiceProvider);
+    List<MiittiActivity> newActivities = await firestoreService.fetchParticipatingActivities(pageSize: 10, fullRefresh: fullRefresh);
+
+    final currentActivityIds = state.activities.map((activity) => activity.id).toSet();
+    final filteredActivities = newActivities.where((activity) => !currentActivityIds.contains(activity.id)).toList();
+
+    if (filteredActivities.isNotEmpty) {
+      state = state.copyWith(activities: state.activities.followedBy(filteredActivities).toList());
+    }
+
+    _isLoadingMore = false;
+    updateState();
   }
 
   Future<void> deleteActivity(MiittiActivity activity) async {
@@ -138,8 +161,12 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       final userId = ref.read(userStateProvider).uid!;
       final List<MiittiActivity> userActivities = [];
       final List<MiittiActivity> othersActivities = [];
+      final List<MiittiActivity> participatingActivities = [];
 
       for (var activity in state.activities) {
+        if (activity.participants.contains(userId)) {
+          participatingActivities.add(activity);
+        } 
         if (activity.creator == userId) {
           userActivities.add(activity);
         } else if (activity.participants.contains(userId) || (activity is UserCreatedActivity && activity.requests.contains(userId))) {
@@ -150,6 +177,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       state = state.copyWith(
         userActivities: userActivities,
         othersActivities: othersActivities,
+        participatingActivities: participatingActivities,
       );
     }
   }
@@ -174,12 +202,14 @@ class ActivitiesStateData {
   final List<MiittiActivity> activities;
   final List<MiittiActivity> userActivities;
   final List<MiittiActivity> othersActivities;
+  final List<MiittiActivity> participatingActivities;
   final SuperclusterMutableController clusterController;
 
   ActivitiesStateData({
     this.activities = const [],
     this.userActivities = const [],
     this.othersActivities = const [],
+    this.participatingActivities = const [],
     SuperclusterMutableController? clusterController,
   }) : clusterController = clusterController ?? SuperclusterMutableController();
 
@@ -187,12 +217,14 @@ class ActivitiesStateData {
     List<MiittiActivity>? activities,
     List<MiittiActivity>? userActivities,
     List<MiittiActivity>? othersActivities,
+    List<MiittiActivity>? participatingActivities,
     SuperclusterMutableController? clusterController,
   }) {
     return ActivitiesStateData(
       activities: activities ?? this.activities,
       userActivities: userActivities ?? this.userActivities,
       othersActivities: othersActivities ?? this.othersActivities,
+      participatingActivities: participatingActivities ?? this.participatingActivities,
       clusterController: clusterController ?? this.clusterController,
     );
   }

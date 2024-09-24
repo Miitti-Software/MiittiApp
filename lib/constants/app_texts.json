@@ -226,5 +226,10 @@
     "user-status-online": "Online",
     "user-status-active": "Active",
     "user-status-away": "Away",
-    "user-status-new": "New"
-  }
+    "user-status-new": "New",
+
+    "activity-management-screen-title": "Upcoming activities",
+    "chats-screen-title": "Chats",
+    "own-activities-screen-title": "My activities",
+    "others-activities-screen-title": "Others' activities"
+}
