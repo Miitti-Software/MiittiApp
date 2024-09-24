@@ -34,7 +34,8 @@ class _ChooseActivityLocationScreenState extends ConsumerState<ChooseActivityLoc
     selectedSpotNotifier = ValueNotifier<int>(-1);
     mapController = MapController();
     final userLocation = ref.read(mapStateProvider).location;
-    location = LatLng(userLocation.latitude, userLocation.longitude);
+    final createActivityState = ref.read(createActivityStateProvider);
+    location = createActivityState.latitude != null ? LatLng(createActivityState.latitude!, createActivityState.longitude!) : LatLng(userLocation.latitude, userLocation.longitude);
     fetchSpots();
   }
 
@@ -77,8 +78,8 @@ class _ChooseActivityLocationScreenState extends ConsumerState<ChooseActivityLoc
                       options: MapOptions(
                         keepAlive: true,
                         backgroundColor: Theme.of(context).colorScheme.surface,
-                        center: location,
-                        zoom: 13.0,
+                        initialCenter: location,
+                        initialZoom: 13.0,
                         interactionOptions: const InteractionOptions(
                             flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
                         minZoom: 5.0,
@@ -139,26 +140,26 @@ class _ChooseActivityLocationScreenState extends ConsumerState<ChooseActivityLoc
                 spots.isNotEmpty
                     ? Expanded(
                         child: ValueListenableBuilder<int>(
-                            valueListenable: selectedSpotNotifier,
-                            builder: (context, selectedSpot, kid) {
-                              return ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: spots.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedSpotNotifier.value = index;
-                                          location = LatLng(
-                                              spots[index].latitude, spots[index].longitude);
-                                          mapController.move(location, 13.0); // Update the map's center
-                                          ref.read(adsStateProvider.notifier).incrementCommercialSpotClickCount(spots[index].id);
-                                        });
-                                      },
-                                      child: CommercialSpotWidget(
-                                        spot: spots[index],
-                                        highlight: index == selectedSpot,
-                                      ));
+                          valueListenable: selectedSpotNotifier,
+                          builder: (context, selectedSpot, kid) {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: spots.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedSpotNotifier.value = index;
+                                      location = LatLng(
+                                          spots[index].latitude, spots[index].longitude);
+                                      mapController.move(location, 13.0); // Update the map's center
+                                      ref.read(adsStateProvider.notifier).incrementCommercialSpotClickCount(spots[index].id);
+                                    });
+                                  },
+                                  child: CommercialSpotWidget(
+                                    spot: spots[index],
+                                    highlight: index == selectedSpot,
+                                  ));
                                 },
                               );
                             }),
@@ -173,7 +174,7 @@ class _ChooseActivityLocationScreenState extends ConsumerState<ChooseActivityLoc
                 const SizedBox(height: AppSizes.minVerticalPadding),
                 const SizedBox(height: AppSizes.minVerticalPadding),
                 ForwardButton(
-                  buttonText: 'Next',
+                  buttonText: config.get<String>('forward-button'),
                   onPressed: () {
                     ref.read(createActivityStateProvider.notifier).update((state) =>
                                   state.copyWith(latitude: location.latitude, longitude: location.longitude));
@@ -182,10 +183,9 @@ class _ChooseActivityLocationScreenState extends ConsumerState<ChooseActivityLoc
                 ),
                 const SizedBox(height: AppSizes.minVerticalPadding),
                 BackwardButton(
-                  buttonText: 'Back',
+                  buttonText: config.get<String>('back-button'),
                   onPressed: () => context.go('/create-activity/category'),
                 ),
-                const SizedBox(height: AppSizes.minVerticalPadding),
               ],
             ),
           ),

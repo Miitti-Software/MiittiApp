@@ -6,6 +6,7 @@ class FilledTextArea extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final void Function(String)? onSubmit;
+  final bool autofocus;
 
   const FilledTextArea({
     super.key,
@@ -13,13 +14,14 @@ class FilledTextArea extends StatelessWidget {
     required this.controller,
     this.onSubmit,
     this.keyboardType = TextInputType.text,
+    this.autofocus = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       maxLines: 5,
-      autofocus: true,
+      autofocus: autofocus,
       controller: controller,
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
             color: Theme.of(context).colorScheme.onPrimary,

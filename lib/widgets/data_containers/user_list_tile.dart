@@ -8,8 +8,16 @@ import 'package:miitti_app/state/service_providers.dart';
 class UserListTile extends ConsumerWidget {
   final MiittiUser user;
   final VoidCallback onTap;
+  final VoidCallback? onTrailingTap;
+  final Widget? trailing;
 
-  const UserListTile({super.key, required this.user, required this.onTap});
+  const UserListTile({
+    super.key,
+    required this.user,
+    required this.onTap,
+    this.onTrailingTap,
+    this.trailing,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,12 +28,12 @@ class UserListTile extends ConsumerWidget {
 
     String status;
     Color borderColor;
-    if (difference <= 1) {
+    if (user.online) {
       status = config.get<String>('user-status-online');
-      borderColor = Theme.of(context).colorScheme.secondary;
+      borderColor = Theme.of(context).colorScheme.primary;
     } else if (difference <= 30) {
       status = config.get<String>('user-status-active');
-      borderColor = Theme.of(context).colorScheme.primary;
+      borderColor = Theme.of(context).colorScheme.secondary;
     } else if (now.difference(user.registrationDate).inDays <= 7) {
       status = config.get<String>('user-status-new');
       borderColor = Theme.of(context).colorScheme.tertiary;
@@ -44,73 +52,88 @@ class UserListTile extends ConsumerWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         constraints: const BoxConstraints(maxHeight: 100),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: CachedNetworkImage(
-                imageUrl: user.profilePicture.replaceAll('profilePicture', 'thumb_profilePicture'),
-                fit: BoxFit.cover,
-                width: 80,
-                height: 80,
-                cacheManager: ProfilePicturesCacheManager().instance,
-                placeholder: (context, url) => const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: CachedNetworkImage(
+                    imageUrl: user.profilePicture.replaceAll('profilePicture', 'thumb_profilePicture'),
+                    fit: BoxFit.cover,
+                    width: 80,
+                    height: 80,
+                    cacheManager: ProfilePicturesCacheManager().instance,
+                    placeholder: (context, url) => const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Text(
-                            '${user.name}, ${calculateAge(user.birthday)}',
-                            style: Theme.of(context).textTheme.titleSmall,
-                            overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                '${user.name}, ${calculateAge(user.birthday)}',
+                                style: Theme.of(context).textTheme.titleSmall,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+                      Text(
+                        user.areas.join(', '),
+                        style: Theme.of(context).textTheme.labelSmall,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const Spacer(),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text(
+                          user.favoriteActivities
+                              .map((interest) => '${config.getActivityTuple(interest).item2} ${config.getActivityTuple(interest).item1}')
+                              .join(', '),
+                          style: Theme.of(context).textTheme.labelSmall,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      if (status != config.get<String>('user-status-away'))
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: borderColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            status,
-                            style: const TextStyle(fontSize: 12, color: Colors.white),
-                          ),
-                        ),
                     ],
                   ),
-                  Text(
-                    user.areas.join(', '),
-                    style: Theme.of(context).textTheme.labelSmall,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const Spacer(),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Text(
-                      user.favoriteActivities
-                          .map((interest) => '${config.getActivityTuple(interest).item2} ${config.getActivityTuple(interest).item1}')
-                          .join(', '),
-                      style: Theme.of(context).textTheme.labelSmall,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                ),
+                if (trailing != null)
+                  GestureDetector(
+                    onTap: onTrailingTap,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: Center(child: trailing),
                     ),
                   ),
-                ],
-              ),
+              ],
             ),
+            if (status != config.get<String>('user-status-away'))
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: borderColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    status,
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

@@ -164,6 +164,20 @@ class UserState extends StateNotifier<UserStateData> {
     return false;
   }
 
+  int getAge() {
+    if (state.data.birthday != null) {
+      final now = DateTime.now();
+      final age = now.year - state.data.birthday!.year;
+      final month1 = now.month;
+      final month2 = state.data.birthday!.month;
+      if (month2 > month1 || (month1 == month2 && now.day < state.data.birthday!.day)) {
+        return age - 1;
+      }
+      return age;
+    }
+    return 0;
+  }
+
   Future<LatLng?> _getLocationFromStorage() async {
     final localStorageService = ref.read(localStorageServiceProvider);
     if (state.isSignedIn) {

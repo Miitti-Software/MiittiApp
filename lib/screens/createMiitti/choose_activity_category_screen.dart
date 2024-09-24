@@ -128,7 +128,7 @@ class _ChooseActivityCategoryScreenState
                 const SizedBox(height: AppSizes.minVerticalPadding),
                 const SizedBox(height: AppSizes.minVerticalPadding),
                 ForwardButton(
-                  buttonText: 'Next',
+                  buttonText: config.get<String>('forward-button'),
                   onPressed: () {
                     if (selectedActivity != null) {
                       context.go('/create-activity/location');
@@ -139,10 +139,9 @@ class _ChooseActivityCategoryScreenState
                 ),
                 const SizedBox(height: AppSizes.minVerticalPadding),
                 BackwardButton(
-                    buttonText: 'Back',
+                    buttonText: config.get<String>('back-button'),
                     onPressed: () => context.go('/')
                 ),
-                const SizedBox(height: AppSizes.minVerticalPadding),
               ],
             ),
           ),

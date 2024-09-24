@@ -1,18 +1,113 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:miitti_app/constants/genders.dart';
 import 'package:miitti_app/constants/languages.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/services/analytics_service.dart';
+import 'package:miitti_app/state/user.dart';
 
 class CreateActivityState extends StateNotifier<CreateActivityStateData> {
   CreateActivityState(this.ref) : super(CreateActivityStateData());
   final Ref ref;
 
+  final invitedUsers = <MiittiUser>[];
+
+  UserCreatedActivity? get activity => state.isActivityCreated ? UserCreatedActivity(
+    id: state.id!,
+    title: state.title!,
+    description: state.description!,
+    category: state.category!,
+    longitude: state.longitude!,
+    latitude: state.latitude!,
+    address: state.address!,
+    creator: state.creator!,
+    creationTime: state.creationTime!,
+    startTime: state.startTime,
+    endTime: state.endTime,
+    paid: state.paid!,
+    maxParticipants: state.maxParticipants!,
+    participants: state.participants!,
+    participantsInfo: state.participantsInfo!,
+    requiresRequest: state.requiresRequest!,
+    requests: state.requests!,
+    creatorLanguages: state.creatorLanguages!,
+    creatorGender: state.creatorGender!,
+    creatorAge: state.creatorAge!,
+  ) : null; 
+
   void update(Function(CreateActivityStateData) updateFn) {
     state = updateFn(state);
   }
 
-  Future<void> refreshActivityData() async {
-    // Add logic to refresh activity data if needed
+  Future<UserCreatedActivity> createUserCreatedActivity() async {
+    final creator = ref.read(userStateProvider).data;
+    if (ref.read(userStateProvider).isAnonymous) {
+      throw Exception('Anonymous users cannot create activities');
+    }
+    final address = await getAddressFromCoordinates(state.latitude!, state.longitude!);
+    final activity = UserCreatedActivity(
+      id: generateCustomId(),
+      title: state.title!,
+      description: state.description!,
+      category: state.category!,
+      longitude: state.longitude!,
+      latitude: state.latitude!,
+      address: address,
+      creator: creator.uid!,
+      creationTime: DateTime.now(),
+      startTime: state.startTime,
+      endTime: state.endTime,
+      paid: state.paid!,
+      maxParticipants: state.maxParticipants!,
+      participants: [creator.uid!],
+      participantsInfo: <String, Map<String, dynamic>>{
+        creator.uid!: {
+          'name': creator.name,
+          'profilePicture': creator.profilePicture,
+          'location': null,
+        }
+      },
+      requiresRequest: state.requiresRequest!,
+      requests: [],
+      creatorLanguages: creator.languages,
+      creatorGender: creator.gender!,
+      creatorAge: ref.read(userStateProvider.notifier).getAge(),
+    );
+    return activity;
+  }
+
+  // Future<void> uploadUserCreatedActivity() async {
+  //   final activity = await createUserCreatedActivity();
+  //   await ref.read(userStateProvider.notifier).addUserCreatedActivity(activity);
+  //   ref.read(analyticsServiceProvider).logUserCreatedActivityCreated(activity, ref.read(userStateProvider).data);
+  // }
+
+  String generateCustomId() {
+    final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    final String random = Random().nextInt(9999999).toString().padLeft(7, '0');
+    return '$timestamp$random';
+  }
+
+  Future<String> getAddressFromCoordinates(
+      double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+
+      if (placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+        String address = placemark.subLocality!.isEmpty
+            ? '${placemark.locality}'
+            : '${placemark.subLocality}, ${placemark.locality}';
+        return address;
+      } else {
+        return "";
+      }
+    } catch (e) {
+      return "";
+    }
   }
 }
 
@@ -50,13 +145,13 @@ class CreateActivityStateData {
     this.creationTime,
     this.startTime,
     this.endTime,
-    this.paid,
-    this.maxParticipants,
-    this.participants,
+    this.paid = false,
+    this.maxParticipants = 5,
+    this.participants = const [],
     this.participantsInfo,
-    this.requiresRequest,
-    this.requests,
-    this.creatorLanguages,
+    this.requiresRequest = true,
+    this.requests = const [],
+    this.creatorLanguages = const [],
     this.creatorGender,
     this.creatorAge,
   });

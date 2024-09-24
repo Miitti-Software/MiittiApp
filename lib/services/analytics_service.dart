@@ -74,8 +74,9 @@ class AnalyticsService {
       name: 'commercial_activity_viewed',
       parameters: {
         'id': activity.id,
+        'title': activity.title,
         'category': activity.category,
-        'creator': activity.creator,
+        'organization': activity.creator,
       },
     );
   }

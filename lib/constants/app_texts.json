@@ -39,10 +39,12 @@
 
     "cancel-button": "Cancel",
     "close-button": "Close",
+    "skip-button": "Skip",
     "delete-button": "Delete",
     "forward-button": "Next",
     "back-button": "Back",
     "save-button": "Save",
+    "publish-button": "Publish",
 
     "input-name-title": "Let's begin, what's your name?",
     "input-name-placeholder": "Your first name",
@@ -240,6 +242,21 @@
 
     "create-activity-location-title": "Choose a location",
     "create-activity-location-recommendations": "Recommended MiittiSpots:",
+
+    "create-activity-details-title": "What would you like to tell about your activity?",
+    "create-activity-details-title-placeholder": "The concise title of your activity",
+    "create-activity-details-description-placeholder": "What else would you like to tell about your activity?",
+    "create-activity-requires-request-toggle": "Require a request to join",
+    "create-activity-free-to-attend-toggle": "Free to join, requires no paid tickets",
+    "create-activity-max-participants-before-number": "max.",
+    "create-activity-max-participants-after-number": "participants",
+    "create-activity-agree-time-later-toggle": "Time to be determined later",
+    "invalid-activity-fields-missing": "Please fill in all the fields above to proceed.",
+
+    "invite-screen-title": "Want to invite someone already or let them find you on their own?",
+
+    "create-activity-review-title": "Review your activity",
+    "create-activity-success": "Activity created",
 
     "commercial-activity-join-button": "Join",
     "commercial-activity-joined-button": "Open chat",

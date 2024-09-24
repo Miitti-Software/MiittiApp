@@ -12,6 +12,9 @@ import 'package:miitti_app/screens/activityManagement/others_activities_screen.d
 import 'package:miitti_app/screens/activityManagement/own_activities_screen.dart';
 import 'package:miitti_app/screens/createMiitti/choose_activity_category_screen.dart';
 import 'package:miitti_app/screens/createMiitti/choose_activity_location_screen.dart';
+import 'package:miitti_app/screens/createMiitti/create_activity_review_screen.dart';
+import 'package:miitti_app/screens/createMiitti/fill_activity_details_screen.dart';
+import 'package:miitti_app/screens/createMiitti/invite_screen.dart';
 import 'package:miitti_app/screens/filter_users_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
@@ -233,7 +236,22 @@ class AppRouter {
           GoRoute(
             name: 'create-activity/location',
             path: '/create-activity/location',
-            pageBuilder: _buildNoTransitionPage(ChooseActivityLocationScreen()),
+            pageBuilder: _buildNoTransitionPage(const ChooseActivityLocationScreen()),
+          ),
+          GoRoute(
+            name: 'create-activity/details',
+            path: '/create-activity/details',
+            pageBuilder: _buildNoTransitionPage(const FillActivityDetailsScreen()),
+          ),
+          GoRoute(
+            name: 'create-activity/invite',
+            path: '/create-activity/invite',
+            pageBuilder: _buildNoTransitionPage(const InviteScreen()),
+          ),
+          GoRoute(
+            name: 'create-activity/review',
+            path: '/create-activity/review',
+            pageBuilder: _buildNoTransitionPage(const CreateActivityReviewScreen()),
           ),
         ],
     );
