@@ -10,12 +10,14 @@ import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/screens/navBarScreens/map_screen.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/create_activity_state.dart';
+import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
+import 'package:miitti_app/widgets/overlays/success_snackbar.dart';
 import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 
 class CreateActivityReviewScreen extends ConsumerStatefulWidget {
@@ -294,21 +296,29 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Flexible(
-                        child: PermanentScrollbar(
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 4.0),
-                            child: SingleChildScrollView(
-                              controller: descriptionScrollController,
-                              child: Text(
-                                description,
-                                style: AppStyle.question,
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            minHeight: 100,
+                            maxHeight: 180,
+                          ),
+                          child: Flexible(
+                            child: PermanentScrollbar(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 4.0),
+                                child: SingleChildScrollView(
+                                  controller: descriptionScrollController,
+                                  child: Text(
+                                    description,
+                                    style: AppStyle.question,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: AppSizes.verticalSeparationPadding),
+                      
+                      const Spacer(),
+                      const SizedBox(height: AppSizes.minVerticalPadding),
                       LinearProgressIndicator(
                         value: 0.99,
                         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
@@ -319,7 +329,14 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                       ForwardButton(
                         buttonText: config.get<String>('publish-button'),
                         onPressed: () {
-                          // Implement the publish logic here
+                          ref.read(createActivityStateProvider.notifier).publishUserCreatedActivity();
+                          ref.read(mapStateProvider.notifier).setLocation(LatLng(activity.latitude, activity.longitude));
+                          SuccessSnackbar.show(context, config.get<String>('create-activity-success'));
+                          GoRouter.of(context).go('/create-activity/category');
+                          Future.delayed(
+                            const Duration(milliseconds: 10),
+                            () => GoRouter.of(context).go('/'),
+                          );
                         },
                       ),
                       const SizedBox(height: 10),

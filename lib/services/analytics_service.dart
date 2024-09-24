@@ -31,7 +31,7 @@ class AnalyticsService {
         'category': activity.category,
         'max_participants': activity.maxParticipants,
         'creator_age': activity.creatorAge,
-        'creator_gender': activity.creatorGender,
+        'creator_gender': activity.creatorGender.name,
         'creator_primary_occupation': user.occupationalStatuses.isNotEmpty ? user.occupationalStatuses[0] : 'none',
         'creator_primary_organization': user.organizations.isNotEmpty ? user.organizations[0] : 'none',
         },

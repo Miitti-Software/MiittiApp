@@ -716,6 +716,13 @@ class FirestoreService {
     }
   }
 
+  Future<void> createActivity(String activityId, Map<String, dynamic> data) async {
+    try {
+      await _firestore.collection(_activitiesCollection).doc(activityId).set(data);
+    } catch (e) {
+      debugPrint('Error creating activity: $e');
+    }
+  }
 
 
 

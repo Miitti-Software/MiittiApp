@@ -176,7 +176,7 @@ class PushNotificationService {
       config.getNotificationTemplateString('invite-notification-title', language),
       "${current.name} ${config.getNotificationTemplateString('invite-notification-body', language)} ${activity.title}",
       config.getNotificationTemplateString('invite-notification-type', language),
-      activity.id,
+      '/activity/${activity.id}',
     );
   }
 

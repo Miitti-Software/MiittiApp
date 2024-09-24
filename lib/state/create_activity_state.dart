@@ -7,13 +7,14 @@ import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/services/analytics_service.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 
 class CreateActivityState extends StateNotifier<CreateActivityStateData> {
   CreateActivityState(this.ref) : super(CreateActivityStateData());
   final Ref ref;
 
-  final invitedUsers = <MiittiUser>[];
+  List<MiittiUser> invitedUsers = [];
 
   UserCreatedActivity? get activity => state.isActivityCreated ? UserCreatedActivity(
     id: state.id!,
@@ -79,11 +80,20 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
     return activity;
   }
 
-  // Future<void> uploadUserCreatedActivity() async {
-  //   final activity = await createUserCreatedActivity();
-  //   await ref.read(userStateProvider.notifier).addUserCreatedActivity(activity);
-  //   ref.read(analyticsServiceProvider).logUserCreatedActivityCreated(activity, ref.read(userStateProvider).data);
-  // }
+  Future<void> publishUserCreatedActivity() async {
+    final activity = await createUserCreatedActivity();
+    await ref.read(firestoreServiceProvider).createActivity(activity.id, activity.toMap());
+    ref.read(analyticsServiceProvider).logUserCreatedActivityCreated(activity, ref.read(userStateProvider).data.toMiittiUser());
+    final user = ref.read(userStateProvider).data;
+    user.incrementActivitiesCreated();
+    ref.read(userStateProvider.notifier).updateUserData();
+    for (final invitee in invitedUsers) {
+      ref.read(notificationServiceProvider).sendInviteNotification(user.toMiittiUser(), invitee, activity);
+    }
+    Future.delayed(const Duration(seconds: 1), () {
+      state = CreateActivityStateData();
+    });
+  }
 
   String generateCustomId() {
     final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();

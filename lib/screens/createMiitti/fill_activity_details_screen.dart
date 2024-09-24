@@ -53,13 +53,47 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
   }
 
   Future<void> _pickDateTime(BuildContext context) async {
-    final language = ref.watch(languageProvider);
-    final DateTime? picked = await showDatePicker(
+  final language = ref.watch(languageProvider);
+  
+  // Show the date picker first
+  final DateTime? pickedDate = await showDatePicker(
+    context: context,
+    locale: Locale(language.code),
+    initialDate: activityTime,
+    firstDate: DateTime.now(),
+    lastDate: DateTime(2101),
+    builder: (BuildContext context, Widget? child) {
+      return Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: ColorScheme.light(
+            primary: Theme.of(context).colorScheme.primary,
+            onPrimary: Theme.of(context).colorScheme.onPrimary,
+            surface: Theme.of(context).colorScheme.surface,
+            onSurface: Theme.of(context).colorScheme.onSurface,
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          textTheme: const TextTheme().copyWith(
+            titleSmall: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.w300,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        child: child!,
+      );
+    },
+  );
+
+  if (pickedDate != null) {
+    // Show the time picker after a date has been picked
+    final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      locale: Locale(language.code),
-      initialDate: activityTime,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
+      initialTime: TimeOfDay.fromDateTime(activityTime),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -86,12 +120,21 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
         );
       },
     );
-    if (picked != null && picked != activityTime) {
+
+    if (pickedTime != null) {
+      // Combine the picked date and time into a single DateTime object
       setState(() {
-        activityTime = picked;
+        activityTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
       });
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

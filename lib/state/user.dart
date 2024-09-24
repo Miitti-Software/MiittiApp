@@ -556,6 +556,10 @@ class UserData {
     return copyWith(numOfMiittisJoined: numOfMiittisJoined - 1);
   }
 
+  incrementActivitiesCreated() {
+    return copyWith(numOfMiittisCreated: numOfMiittisCreated + 1);
+  }
+
 }
 
 final userStateProvider = StateNotifierProvider<UserState, UserStateData>((ref) {

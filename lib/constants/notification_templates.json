@@ -6,10 +6,10 @@
     
     "invite-notification-title": "Miitti Invite",
     "invite-notification-body": "has invited you to join",
-    "invite-notification-type": "invite",
+    "invite-notification-type": "Invite",
 
     "join-request-notification-title": "Join Request",
     "join-request-notification-body": "has requested to join you in",
-    "join-request-notification-type": "request"
+    "join-request-notification-type": "Request"
 }
 

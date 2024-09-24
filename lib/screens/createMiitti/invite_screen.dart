@@ -101,8 +101,7 @@ class _InviteScreenState extends ConsumerState<InviteScreen> {
                       ForwardButton(
                         buttonText: invitedUsers.isEmpty ? config.get<String>('skip-button') : config.get<String>('forward-button'),
                         onPressed: () {
-                          // Handle the invite action with the selected users
-                          // For example, you can pass the selected user IDs to the next screen or save them
+                          ref.read(createActivityStateProvider.notifier).invitedUsers = invitedUsers;
                           context.go('/create-activity/review');
                         },
                       ),
