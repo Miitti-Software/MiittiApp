@@ -6,52 +6,58 @@ import 'package:miitti_app/widgets/permanent_scrollbar.dart';
 
 class InfiniteList<T> extends ConsumerStatefulWidget {
   final List<T> dataSource;
-  final Future<void> Function() refreshFunction;
+  final Future<void> Function()? loadMoreFunction;
+  final Future<void> Function()? refreshFunction;
   final Widget Function(BuildContext, int) listTileBuilder;
-  final ScrollController scrollController;
-  final Future<void> Function() loadMoreFunction;
+  final ScrollController? scrollController;
 
   const InfiniteList({
     Key? key,
     required this.dataSource,
-    required this.refreshFunction,
     required this.listTileBuilder,
-    required this.scrollController,
-    required this.loadMoreFunction,
+    this.scrollController,
+    this.loadMoreFunction,
+    this.refreshFunction,
   }) : super(key: key);
 
   @override
-  _InfinityListState<T> createState() => _InfinityListState<T>();
+  _InfiniteListState<T> createState() => _InfiniteListState<T>();
 }
 
-class _InfinityListState<T> extends ConsumerState<InfiniteList<T>> {
-  Timer? _fullRefreshDebounce;
+class _InfiniteListState<T> extends ConsumerState<InfiniteList<T>> {
   Timer? _debounce;
+  Timer? _fullRefreshDebounce;
   double previousMaxScrollPosition = 0.0;
+  late ScrollController _internalScrollController;
 
   @override
   void initState() {
     super.initState();
-    widget.scrollController.addListener(_onScroll);
+    _internalScrollController = widget.scrollController ?? ScrollController();
+    _internalScrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    widget.scrollController.removeListener(_onScroll);
-    widget.scrollController.dispose();
+    _internalScrollController.removeListener(_onScroll);
+    if (widget.scrollController == null) {
+      _internalScrollController.dispose();
+    }
     super.dispose();
   }
 
   void _onScroll() {
-    final scrollPosition = widget.scrollController.position.pixels;
-    final maxScrollExtent = widget.scrollController.position.maxScrollExtent;
+    if (widget.loadMoreFunction == null) return;
+
+    final scrollPosition = _internalScrollController.position.pixels;
+    final maxScrollExtent = _internalScrollController.position.maxScrollExtent;
     final threshold = maxScrollExtent * 0.7;
 
     if (scrollPosition >= threshold && scrollPosition > previousMaxScrollPosition) {
       if (_debounce?.isActive ?? false) {
         _debounce?.cancel();
       } else {
-        widget.loadMoreFunction();
+        widget.loadMoreFunction!();
       }
 
       previousMaxScrollPosition = max(scrollPosition, previousMaxScrollPosition);
@@ -61,25 +67,29 @@ class _InfinityListState<T> extends ConsumerState<InfiniteList<T>> {
     }
   }
 
+  Future<void> _handleRefresh() async {
+    final completer = Completer<void>();
+    if (_fullRefreshDebounce?.isActive ?? false) {
+      completer.complete();
+      return completer.future;
+    }
+    _fullRefreshDebounce = Timer(const Duration(seconds: 3), () {});
+    if (widget.refreshFunction != null) {
+      await widget.refreshFunction!();
+    }
+    completer.complete();
+    return completer.future;
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () async {
-        final completer = Completer<void>();
-        if (_fullRefreshDebounce?.isActive ?? false) {
-          completer.complete();
-          return completer.future;
-        }
-        _fullRefreshDebounce = Timer(const Duration(seconds: 3), () {});
-        await widget.refreshFunction();
-        completer.complete();
-        return completer.future;
-      },
+      onRefresh: _handleRefresh,
       triggerMode: RefreshIndicatorTriggerMode.anywhere,
       child: PermanentScrollbar(
-        controller: widget.scrollController,
+        controller: _internalScrollController,
         child: ListView.builder(
-          controller: widget.scrollController,
+          controller: _internalScrollController,
           itemCount: widget.dataSource.length,
           cacheExtent: 100,
           itemBuilder: widget.listTileBuilder,

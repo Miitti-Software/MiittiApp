@@ -38,6 +38,7 @@
     "delete-account-confirmation-button": "Delete",
 
     "cancel-button": "Cancel",
+    "close-button": "Close",
     "delete-button": "Delete",
     "forward-button": "Next",
     "back-button": "Back",
@@ -179,6 +180,7 @@
     "activity-delete-success": "Activity deleted",
     "activity-join-success": "You joined the activity",
     "activity-join-request-sent": "Join request sent",
+    "activity-participants-list-title": "Participants",
 
     "report-activity-title": "Report activity",
     "report-activity-reason-title": "Reason",

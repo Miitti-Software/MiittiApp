@@ -17,6 +17,9 @@ class UsersState extends StateNotifier<UsersStateData> {
   bool _isLoadingMore = false;
 
   Future<MiittiUser?> fetchUser(String userId) async {
+    if (state.users.any((element) => element.uid == userId)) {  // The user can currently discover their own public facing profile and add it to the list by tapping their profile picture in activities
+      return state.users.firstWhere((element) => element.uid == userId);
+    }
     final firestoreService = ref.read(firestoreServiceProvider);
     MiittiUser? user = await firestoreService.loadUserData(userId);
     if (user == null) {

@@ -58,6 +58,9 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
   }
 
   Future<MiittiActivity?> fetchActivity(String activityId) async {
+    if (state.activities.any((element) => element.id == activityId)) {
+      return state.activities.firstWhere((element) => element.id == activityId);
+    }
     final firestoreService = ref.read(firestoreServiceProvider);
     MiittiActivity? activity = await firestoreService.fetchActivity(activityId);
     if (activity == null) {

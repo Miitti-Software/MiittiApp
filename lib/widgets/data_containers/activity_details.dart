@@ -282,7 +282,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     ),
                   ),
                   const SizedBox(height: AppSizes.minVerticalPadding),
-                  HorizontalImageShortlist(imageUrls: participantsInfo.values.map((e) => e['profilePicture'].replaceAll('profilePicture', 'thumb_profilePicture') as String).toList()),
+                  HorizontalImageShortlist(usersData: participantsInfo, activityId: activity.id,),
                   const SizedBox(height: AppSizes.minVerticalPadding * 1.4),
                   ConstrainedBox(
                     constraints: const BoxConstraints(

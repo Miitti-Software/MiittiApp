@@ -264,6 +264,8 @@ keytool -genkey -v -keystore $env:USERPROFILE\upload-keystore.jks `
 
 Access keystore: `keytool -list -v  -keystore C:\Users\Miro\production-keystore.jks` + optionally `-alias production-keystore`
 
+`keytool -list -v  -keystore C:\Users\Miro\miitti-upload-keystore.jks -alias upload`
+
 Clear gradle cache: `./gradlew clean`
 
 Check the used signing fingerprints: `keytool -printcert -jarfile app-production-debug.apk` (must be in miitti_app/build/app/outputs/apk/production/debug or nearby depending on the file)

@@ -35,7 +35,6 @@ import 'package:miitti_app/screens/authentication/login_screen.dart';
 import 'package:miitti_app/screens/authentication/login_intro.dart';
 import 'package:miitti_app/screens/create_miitti/create_miitti_onboarding.dart';
 import 'package:miitti_app/screens/maintenance_break_screen.dart';
-import 'package:miitti_app/screens/navBarScreens/calendar_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/map_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/profile_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
@@ -43,6 +42,7 @@ import 'package:miitti_app/screens/navigation_shell_scaffold.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/screens/update_screen.dart';
+import 'package:miitti_app/widgets/data_containers/participants_list.dart';
 
 // A class to define the app's routing configuration and behavior
 class AppRouter {
@@ -196,6 +196,17 @@ class AppRouter {
                   ref.read(mapStateProvider.notifier).reverseOffSetLocationVertically();
                   return true;
                 },
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: rootNavigatorKey,
+                    name: 'participants',
+                    path: 'participants/:activityId',
+                    pageBuilder: (BuildContext context, GoRouterState state) {
+                      final id = state.pathParameters['activityId'] as String;
+                      return NoTransitionPage<void>(child: ParticipantsList(activityId: id));
+                    },
+                  ),
+                ],
               ),
             ],
           ),
