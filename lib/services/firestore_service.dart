@@ -24,8 +24,6 @@ import 'package:miitti_app/state/users_filter_settings.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../screens/activity_details_page.dart';
-
 // A class for interfacing with the Firebase Firestore service
 class FirestoreService {
   static const String _usersCollection = 'users';
@@ -1315,10 +1313,6 @@ class FirestoreService {
 
   Future<DocumentSnapshot> _getActivityDoc(String activityId) {
     return _firestore.collection(_activitiesCollection).doc(activityId).get();
-  }
-
-  DocumentReference _userDocRef(String userId) {
-    return _firestore.collection(_usersCollection).doc(userId);
   }
 
   DocumentReference _activityDocRef(String activityId) {

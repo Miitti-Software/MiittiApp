@@ -26,6 +26,7 @@ class CommercialActivity extends MiittiActivity {
     required super.creationTime,
     required super.startTime,
     required super.endTime,
+    required super.latestActivity,
     required super.paid,
     required super.maxParticipants,
     required super.participants,
@@ -54,12 +55,16 @@ class CommercialActivity extends MiittiActivity {
       creationTime: data['creationTime']?.toDate(),
       startTime: data['startTime']?.toDate(),
       endTime: data['endTime']?.toDate(),
+      latestActivity: data['latestActivity']?.toDate(),
       paid: data['paid'],
       maxParticipants: data['maxParticipants'] ?? 1000000,
       participants: List<String>.from(data['participants']),
       participantsInfo: (data['participantsInfo'] as Map<String, dynamic>).map((key, value) => MapEntry(key, {
         'name': value['name'],
         'profilePicture': value['profilePicture'],
+        'joined': value['joined']?.toDate(),
+        'lastSeen': value['lastSeen']?.toDate(),    // In the context of the activity either in chat or ongoing miitti overlay, not overall
+        'lastReadMessage': value['lastReadMessage'] ?? '',
       })),
       linkTitle: data['linkTitle'],
       hyperlink: data['hyperlink'],
@@ -86,12 +91,16 @@ class CommercialActivity extends MiittiActivity {
       'creationTime': creationTime,
       'startTime': startTime,
       'endTime': endTime,
+      'latestActivity': DateTime.now(),
       'paid': paid,
       'maxParticipants': maxParticipants,
       'participants': participants,
       'participantsInfo': participantsInfo.map((key, value) => MapEntry(key, {
         'name': value['name'],
         'profilePicture': value['profilePicture'],
+        'joined': value['joined'],
+        'lastSeen': value['lastSeen'],
+        'lastReadMessage': value['lastReadMessage'],
       })),
       'linkTitle': linkTitle,
       'hyperlink': hyperlink,
@@ -110,6 +119,9 @@ class CommercialActivity extends MiittiActivity {
     participantsInfo[user.uid] = {
       'name': user.name,
       'profilePicture': user.profilePicture,
+      'joined': DateTime.now(),
+      'lastSeen': DateTime.now(),
+      'lastReadMessage': '',
     };
     return this;
   }

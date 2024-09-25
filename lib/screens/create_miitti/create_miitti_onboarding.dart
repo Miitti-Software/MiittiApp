@@ -685,6 +685,7 @@ class _CreateMiittiOnboardingState
         creationTime: DateTime.now(),
         startTime: activityTime.toDate(),
         endTime: null,
+        latestActivity: DateTime.now(),
         paid: !isActivityFree,
         maxParticipants: activityParticipantsCount.round(),
         participants: [],

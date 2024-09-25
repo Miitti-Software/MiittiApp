@@ -12,6 +12,7 @@ abstract class MiittiActivity {
   DateTime creationTime;
   DateTime? startTime;
   DateTime? endTime;
+  DateTime latestActivity;
   bool paid;
   int maxParticipants;
   List<String> participants;
@@ -29,6 +30,7 @@ abstract class MiittiActivity {
     required this.creationTime,
     required this.startTime,
     required this.endTime,
+    required this.latestActivity,
     required this.paid,
     required this.maxParticipants,
     required this.participants,

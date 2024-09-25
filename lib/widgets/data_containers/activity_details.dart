@@ -161,7 +161,12 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
         }
 
         final activity = snapshot.data!;
+        final participants = activity.participants;
         final participantsInfo = activity.participantsInfo;
+        final filteredParticipantsInfo = Map<String, Map<String, dynamic>>.fromEntries(
+          participantsInfo.entries
+          .where((entry) => participants.contains(entry.key))
+          .map((entry) => MapEntry(entry.key, entry.value)));
         final category = activity.category;
         final title = activity.title;
         final description = activity.description;
@@ -341,7 +346,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     ),
                   ),
                   const SizedBox(height: AppSizes.minVerticalPadding),
-                  HorizontalImageShortlist(usersData: participantsInfo, activityId: activity.id,),
+                  HorizontalImageShortlist(usersData: filteredParticipantsInfo, activityId: activity.id,),
                   const SizedBox(height: AppSizes.minVerticalPadding * 1.4),
                   ConstrainedBox(
                     constraints: const BoxConstraints(

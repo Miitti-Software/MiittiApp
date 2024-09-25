@@ -25,6 +25,7 @@ class UserCreatedActivity extends MiittiActivity {
     required super.creationTime,
     required super.startTime,
     required super.endTime,
+    required super.latestActivity,
     required super.paid,
     required super.maxParticipants,
     required super.participants,
@@ -49,6 +50,7 @@ class UserCreatedActivity extends MiittiActivity {
       creationTime: data['creationTime'].toDate(),
       startTime: data['startTime']?.toDate(),
       endTime: data['endTime']?.toDate(),
+      latestActivity: data['latestActivity'].toDate(),
       paid: data['paid'],
       maxParticipants: data['maxParticipants'],
       participants: List<String>.from(data['participants']),
@@ -56,6 +58,9 @@ class UserCreatedActivity extends MiittiActivity {
         'name': value['name'],
         'profilePicture': value['profilePicture'],
         'location': value['location'] != null ? LatLng(value['location']['latitude'], value['location']['longitude']) : null,
+        'joined': value['joined']?.toDate(),
+        'lastSeen': value['lastSeen']?.toDate(),    // In the context of the activity either in chat or ongoing miitti overlay, not overall
+        'lastReadMessage': value['lastReadMessage'] ?? '',
       })),
       requiresRequest: data['requiresRequest'],
       requests: List<String>.from(data['requests']),
@@ -85,6 +90,7 @@ class UserCreatedActivity extends MiittiActivity {
       'creationTime': creationTime,
       'startTime': startTime,
       'endTime': endTime,
+      'latestActivity': DateTime.now(),
       'paid': paid,
       'maxParticipants': maxParticipants,
       'participants': participants,
@@ -95,6 +101,9 @@ class UserCreatedActivity extends MiittiActivity {
           'latitude': (value['location'] as LatLng).latitude,
           'longitude': (value['location'] as LatLng).longitude,
         } : null,
+        'joined': value['joined'],
+        'lastSeen': value['lastSeen'],
+        'lastReadMessage': value['lastReadMessage'],
       })),
       'requiresRequest': requiresRequest,
       'requests': requests,
@@ -120,6 +129,10 @@ class UserCreatedActivity extends MiittiActivity {
     participantsInfo[user.uid] = {
       'name': user.name,
       'profilePicture': user.profilePicture,
+      'location': null,
+      'joined': DateTime.now(),
+      'lastSeen': DateTime.now(),
+      'lastReadMessage': '',
     };
     return this;
   }
@@ -128,7 +141,6 @@ class UserCreatedActivity extends MiittiActivity {
   UserCreatedActivity removeParticipant(MiittiUser user) {
     requests.remove(user.uid);
     participants.remove(user.uid);
-    participantsInfo.remove(user.uid);
     return this;
   }
 }
