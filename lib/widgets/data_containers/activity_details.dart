@@ -370,30 +370,38 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                       context.go('/activity/${activity.id}/chat/${activity.id}', extra: {'activity': activity});
                     },
                   ),
-                  ] else if (activity is UserCreatedActivity && activity.requiresRequest && !activity.participants.contains(userUid)) ...[
-                    ForwardButton(
-                      buttonText: config.get<String>('activity-ask-to-join-button'),
-                      onPressed: () {
-                        // TODO: Implement request to join functionality and refactor & test push notification service
-                        ref.read(activitiesStateProvider.notifier).requestToJoinActivity(activity);
-                      },
-                    ),
                   ] else if (activity is UserCreatedActivity && activity.requests.contains(userUid)) ...[
                     const SizedBox(height: AppSizes.minVerticalPadding),
                     BackwardButton(
                       buttonText: config.get<String>('activity-requested-button'),
                       onPressed: () {
+                        // Show request status
                         ErrorSnackbar.show(context, config.get<String>('invalid-activity-requested'));
                       },
                     ),
+                    ] else if (activity is UserCreatedActivity && activity.requiresRequest && !activity.participants.contains(userUid)) ...[
+                    ForwardButton(
+                      buttonText: config.get<String>('activity-ask-to-join-button'),
+                      onPressed: () async {
+                        // Request to join activity
+                        final success = await ref.read(activitiesStateProvider.notifier).requestToJoinActivity(activity);
+                        if (!mounted) return;
+                        if (success) {
+                          SuccessSnackbar.show(context, config.get<String>('activity-request-success'));
+                        } else {
+                          ErrorSnackbar.show(context, config.get<String>('activity-request-error'));
+                        }
+                        setState(() {
+                        });
+                      },
+                    ),
+                  
                   ] else if (activity is UserCreatedActivity && !activity.requiresRequest && !activity.participants.contains(userUid)) ...[
                     ForwardButton(
                       buttonText: config.get<String>('activity-join-button'),
                       onPressed: () {
-                        // TODO: Send notification to creator
+                        // Join activity
                         ref.read(activitiesStateProvider.notifier).joinActivity(activity);
-                        ref.read(notificationServiceProvider).sendJoinNotification(activity);
-                        ref.read(userStateProvider).data.incrementActivitiesJoined();
                         SuccessSnackbar.show(context, config.get<String>('activity-join-success'));
                         setState(() {
                         });
@@ -404,7 +412,6 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                       buttonText: config.get<String>('commercial-activity-join-button'),
                       onPressed: () async {
                         ref.read(activitiesStateProvider.notifier).joinActivity(activity);
-                        ref.read(userStateProvider).data.incrementActivitiesJoined();
                         SuccessSnackbar.show(context, config.get<String>('activity-join-success'));
                         setState(() {
                         });
@@ -453,7 +460,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                             );
                           },
                         );
-                      } else if (activity.participants.contains(userUid)) {
+                      } else if (activity.participants.contains(userUid) || (activity is UserCreatedActivity && activity.requests.contains(userUid))) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -494,7 +501,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     child: Text(
                       activity.creator == userUid
                           ? config.get<String>('delete-activity-button')
-                          : activity.participants.contains(userUid)
+                          : (activity.participants.contains(userUid) || (activity is UserCreatedActivity && activity.requests.contains(userUid)))
                               ? config.get<String>('leave-activity-button')
                               : config.get<String>('report-activity-button'),
                     ),

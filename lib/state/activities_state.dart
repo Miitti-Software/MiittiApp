@@ -131,44 +131,72 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     updateState();
   }
 
-  Future<void> deleteActivity(MiittiActivity activity) async {
+  Future<bool> deleteActivity(MiittiActivity activity) async {
+  try {
     final firestoreService = ref.read(firestoreServiceProvider);
     await firestoreService.deleteActivity(activity.id);
     state = state.copyWith(activities: state.activities.where((a) => a.id != activity.id).toList());
     updateState();
+    return true;
+  } catch (e) {
+    debugPrint('Error deleting activity: $e');
+    return false;
   }
+}
 
-  Future<void> leaveActivity(MiittiActivity activity) async {
+Future<bool> leaveActivity(MiittiActivity activity) async {
+  try {
     final firestoreService = ref.read(firestoreServiceProvider);
     activity.removeParticipant(ref.read(userStateProvider).data.toMiittiUser());
     await firestoreService.updateActivity(activity.toMap(), activity.id);
     state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
     updateState();
+    return true;
+  } catch (e) {
+    debugPrint('Error leaving activity: $e');
+    return false;
   }
+}
 
-  Future<void> joinActivity(MiittiActivity activity) async {
+Future<bool> joinActivity(MiittiActivity activity) async {
+  try {
     final userState = ref.read(userStateProvider);
     if (userState.isAnonymous || activity.participants.contains(userState.uid)) {
-      return;
+      return false;
     }
     final firestoreService = ref.read(firestoreServiceProvider);
-    activity.addParticipant(ref.read(userStateProvider).data.toMiittiUser());
-    await firestoreService.updateActivity(activity.toMap(), activity.id);
-    state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
+    MiittiActivity updatedActivity = activity.addParticipant(ref.read(userStateProvider).data.toMiittiUser());
+    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id);
+    if (!success) return false;
+    if (updatedActivity is UserCreatedActivity) ref.read(notificationServiceProvider).sendJoinNotification(updatedActivity);
+    ref.read(userStateProvider).data.incrementActivitiesJoined();
+    state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
     updateState();
+    return true;
+  } catch (e) {
+    debugPrint('Error joining activity: $e');
+    return false;
   }
+}
 
-  Future<void> requestToJoinActivity(UserCreatedActivity activity) async {
+Future<bool> requestToJoinActivity(UserCreatedActivity activity) async {
+  try {
     final userState = ref.read(userStateProvider);
     if (userState.isAnonymous || activity.requests.contains(userState.uid) || activity.participants.contains(userState.uid)) {
-      return;
+      return false;
     }
     final firestoreService = ref.read(firestoreServiceProvider);
-    activity.addRequest(ref.read(userStateProvider).uid!);
-    await firestoreService.updateActivity(activity.toMap(), activity.id);
-    state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
+    UserCreatedActivity updatedActivity = activity.addRequest(ref.read(userStateProvider).uid!);
+    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id);
+    if (!success) return false;
+    state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
     updateState();
+    return true;
+  } catch (e) {
+    debugPrint('Error requesting to join activity: $e');
+    return false;
   }
+}
 
   void updateState() {
     final userState = ref.read(userStateProvider);
@@ -176,11 +204,14 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       final userId = ref.read(userStateProvider).uid!;
       final List<MiittiActivity> userActivities = [];
       final List<MiittiActivity> othersActivities = [];
+      final List<MiittiActivity> requestedActivities = [];
       final List<MiittiActivity> participatingActivities = [];
 
       for (var activity in state.activities) {
         if (activity.participants.contains(userId)) {
           participatingActivities.add(activity);
+        } else if (activity is UserCreatedActivity && activity.requests.contains(userId)) {
+          requestedActivities.add(activity);
         } 
         if (activity.creator == userId) {
           userActivities.add(activity);
@@ -217,6 +248,7 @@ class ActivitiesStateData {
   final List<MiittiActivity> activities;
   final List<MiittiActivity> userActivities;
   final List<MiittiActivity> othersActivities;
+  final List<MiittiActivity> requestedActivities;
   final List<MiittiActivity> participatingActivities;
   final SuperclusterMutableController clusterController;
 
@@ -224,6 +256,7 @@ class ActivitiesStateData {
     this.activities = const [],
     this.userActivities = const [],
     this.othersActivities = const [],
+    this.requestedActivities = const [],
     this.participatingActivities = const [],
     SuperclusterMutableController? clusterController,
   }) : clusterController = clusterController ?? SuperclusterMutableController();
@@ -232,6 +265,7 @@ class ActivitiesStateData {
     List<MiittiActivity>? activities,
     List<MiittiActivity>? userActivities,
     List<MiittiActivity>? othersActivities,
+    List<MiittiActivity>? requestedActivities,
     List<MiittiActivity>? participatingActivities,
     SuperclusterMutableController? clusterController,
   }) {
@@ -239,6 +273,7 @@ class ActivitiesStateData {
       activities: activities ?? this.activities,
       userActivities: userActivities ?? this.userActivities,
       othersActivities: othersActivities ?? this.othersActivities,
+      requestedActivities: requestedActivities ?? this.requestedActivities,
       participatingActivities: participatingActivities ?? this.participatingActivities,
       clusterController: clusterController ?? this.clusterController,
     );

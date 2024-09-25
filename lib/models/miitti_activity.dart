@@ -36,6 +36,6 @@ abstract class MiittiActivity {
   });
 
   Map<String, dynamic> toMap();
-  Map<String, dynamic> addParticipant(MiittiUser user);
-  Map<String, dynamic> removeParticipant(MiittiUser user);
+  MiittiActivity addParticipant(MiittiUser user);
+  MiittiActivity removeParticipant(MiittiUser user);
 }

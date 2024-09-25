@@ -186,6 +186,8 @@
 
     "activity-requested-button": "Requested to join",
     "invalid-activity-requested": "You have already requested to join this activity.",
+    "activity-request-success": "Request sent",
+    "activity-request-error": "Could not send request. The activity may have been deleted. Refresh the list and try again.",
 
     "report-activity-title": "Report activity",
     "report-activity-reason-title": "Reason",

@@ -104,52 +104,31 @@ class UserCreatedActivity extends MiittiActivity {
     };
   }
 
-  Map<String, dynamic> addRequest(String userId) {
+  UserCreatedActivity addRequest(String userId) {
     requests.add(userId);
-    return {'requests': requests};
+    return this;
   }
 
-  Map<String, dynamic> removeRequest(String userId) {
+  UserCreatedActivity removeRequest(String userId) {
     requests.remove(userId);
-    return {'requests': requests};
+    return this;
   }
 
   @override
-  Map<String, dynamic> addParticipant(MiittiUser user) {
+  UserCreatedActivity addParticipant(MiittiUser user) {
     participants.add(user.uid);
     participantsInfo[user.uid] = {
       'name': user.name,
       'profilePicture': user.profilePicture,
     };
-    return {
-      'participants': participants,
-      'participantsInfo': participantsInfo.map((key, value) => MapEntry(key, {
-        'name': value['name'],
-        'profilePicture': value['profilePicture'],
-        'location': value['location'] != null ? {
-          'latitude': (value['location'] as LatLng).latitude,
-          'longitude': (value['location'] as LatLng).longitude,
-        } : null,
-      })),
-    };
+    return this;
   }
 
   @override
-  Map<String, dynamic> removeParticipant(MiittiUser user) {
+  UserCreatedActivity removeParticipant(MiittiUser user) {
     requests.remove(user.uid);
     participants.remove(user.uid);
     participantsInfo.remove(user.uid);
-    return {
-      'requests': requests,
-      'participants': participants,
-      'participantsInfo': participantsInfo.map((key, value) => MapEntry(key, {
-        'name': value['name'],
-        'profilePicture': value['profilePicture'],
-        'location': value['location'] != null ? {
-          'latitude': (value['location'] as LatLng).latitude,
-          'longitude': (value['location'] as LatLng).longitude,
-        } : null,
-      })),
-    };
+    return this;
   }
 }

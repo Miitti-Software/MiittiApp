@@ -109,13 +109,13 @@ class FirestoreService {
       // Delete the deleted user from participants list in activities where they are a participant
       for (DocumentSnapshot doc in (await participantQuery.get()).docs) {
         final activity = UserCreatedActivity.fromFirestore(doc);
-        await doc.reference.update(activity.removeParticipant(userState.data.toMiittiUser()));
+        await doc.reference.update(activity.removeParticipant(userState.data.toMiittiUser()).toMap());
       }
 
       // Delete the deleted user from requests list in activities where they requested to join
       for (DocumentSnapshot doc in (await requestQuery.get()).docs) {
         final activity = UserCreatedActivity.fromFirestore(doc);
-        await doc.reference.update(activity.removeRequest(uid));
+        await doc.reference.update(activity.removeRequest(uid).toMap());
       }
 
       // Archive activities where the deleted user is the creator and where there are no participants by setting their endTime to now
@@ -129,7 +129,7 @@ class FirestoreService {
       // Delete the deleted user from participants list in commercial activities where they are a participant
       for (DocumentSnapshot doc in (await commercialParticipantQuery.get()).docs) {
         final commercialActivity = CommercialActivity.fromFirestore(doc);
-        await doc.reference.update(commercialActivity.removeParticipant(userState.data.toMiittiUser()));
+        await doc.reference.update(commercialActivity.removeParticipant(userState.data.toMiittiUser()).toMap());
       }
 
       await _firestore.collection(_usersCollection).doc(uid).delete();
@@ -485,33 +485,37 @@ class FirestoreService {
     }
   }
 
-  Future<void> deleteActivity(String activityId) async {
+  Future<bool> deleteActivity(String activityId) async {
     try {
       await _firestore.collection(_activitiesCollection).doc(activityId).delete();
+      return true;
     } catch (e) {
       debugPrint('Error while removing activity: $e');
+      return false;
     }
   }
 
-  Future<void> updateActivity(Map<String, dynamic> data, String activityId) async {
+  Future<bool> updateActivity(Map<String, dynamic> data, String activityId) async {
   try {
     final activityRef = _firestore.collection(_activitiesCollection).doc(activityId);
     await _firestore.runTransaction((transaction) async {
       final activitySnapshot = await transaction.get(activityRef);
       if (!activitySnapshot.exists) {
         debugPrint('Activity does not exist.');
-        return;
+        return false;
       }
 
       // Update the activity with the new data
       transaction.update(activityRef, data);
     });
+    return true;
   } catch (e) {
     debugPrint('Error updating activity: $e');
+    return false;
   }
 }
 
-  Future<void> reportActivity(String activityId, List<String> reasons, String comments) async {
+  Future<bool> reportActivity(String activityId, List<String> reasons, String comments) async {
 
     try {
       DocumentReference doc = _firestore.collection('reportedActivities').doc(activityId);
@@ -536,8 +540,10 @@ class FirestoreService {
           });
         }
       });
+      return true;
     } catch (e) {
       debugPrint("Reporting failed: $e");
+      return false;
     }
   }
 
@@ -716,11 +722,13 @@ class FirestoreService {
     }
   }
 
-  Future<void> createActivity(String activityId, Map<String, dynamic> data) async {
+  Future<bool> createActivity(String activityId, Map<String, dynamic> data) async {
     try {
       await _firestore.collection(_activitiesCollection).doc(activityId).set(data);
+      return true;
     } catch (e) {
       debugPrint('Error creating activity: $e');
+      return false;
     }
   }
 
