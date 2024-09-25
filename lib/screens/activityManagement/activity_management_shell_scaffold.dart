@@ -35,6 +35,8 @@ class ActivityManagementShellScaffold extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(titles[currentIndex]),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        notificationPredicate: (notification) => false,
       ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

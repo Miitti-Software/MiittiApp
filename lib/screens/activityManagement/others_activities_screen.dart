@@ -41,6 +41,8 @@ class _OthersActivitiesScreenState extends ConsumerState<OthersActivitiesScreen>
         : Scaffold(
             appBar: AppBar(
               title: Text(config.get<String>('others-activities-screen-title')),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              notificationPredicate: (notification) => false,
             ),
             body: Container(
               color: Theme.of(context).colorScheme.surface,

@@ -28,7 +28,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
   bool isActivityFree = true;
   double activityParticipantsCount = 5;
   bool isActivityTimeUndefined = true;
-  DateTime activityTime = DateTime.now();
+  DateTime? activityTime = DateTime.now();
 
   @override
   void initState() {
@@ -41,6 +41,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
     final paid = ref.read(createActivityStateProvider).paid;
     isActivityFree = paid != null ? !paid : true;
     activityParticipantsCount = ref.read(createActivityStateProvider).maxParticipants?.toDouble() ?? 5;
+    print(ref.read(createActivityStateProvider).startTime);
     isActivityTimeUndefined = ref.read(createActivityStateProvider).startTime == null;
     activityTime = ref.read(createActivityStateProvider).startTime ?? DateTime.now();
   }
@@ -93,7 +94,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
     // Show the time picker after a date has been picked
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(activityTime),
+      initialTime: TimeOfDay.fromDateTime(activityTime ?? DateTime.now()),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -132,6 +133,10 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
           pickedTime.minute,
         );
       });
+    } else {
+      setState(() {
+        activityTime = pickedDate;
+      });
     }
   }
 }
@@ -142,7 +147,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
     final config = ref.watch(remoteConfigServiceProvider);
     ref.read(analyticsServiceProvider).logScreenView('create_activity_details_screen');
     final DateFormat formatter = DateFormat('dd.MM.yyyy   HH:mm');
-    final String formattedTime = formatter.format(activityTime);
+    final String formattedTime = formatter.format(activityTime?? DateTime.now());
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -169,12 +174,18 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                       FilledTextField(
                         controller: titleController,
                         hintText: config.get<String>('create-activity-details-title-placeholder'),
+                        onChange: (string) {
+                          createActivityState.update((state) => state.copyWith(title: string));
+                        },
                       ),
                       const SizedBox(height: 20),
                       FilledTextArea(
                         controller: subTitleController,
                         hintText: config.get<String>('create-activity-details-description-placeholder'),
                         autofocus: false,
+                        onChange: (string) {
+                          createActivityState.update((state) => state.copyWith(description: string));
+                        },
                       ),
                       ListTile(
                         minVerticalPadding: 0,
@@ -185,6 +196,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                           onChanged: (bool value) {
                             setState(() {
                               requiresRequest = value;
+                              createActivityState.update((state) => state.copyWith(requiresRequest: requiresRequest));
                             });
                           },
                         ),
@@ -202,6 +214,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                           onChanged: (bool value) {
                             setState(() {
                               isActivityFree = value;
+                              createActivityState.update((state) => state.copyWith(paid: !isActivityFree));
                             });
                           },
                         ),
@@ -222,6 +235,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                           onChanged: (newValue) {
                             setState(() {
                               activityParticipantsCount = newValue;
+                              createActivityState.update((state) => state.copyWith(maxParticipants: activityParticipantsCount.round()));
                             });
                           },
                         ),
@@ -239,13 +253,16 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                         leading: Switch(
                           activeColor: Theme.of(context).colorScheme.primary,
                           value: isActivityTimeUndefined,
-                          onChanged: (bool value) {
+                          onChanged: (bool value) async {
                             setState(() {
                               isActivityTimeUndefined = value;
                             });
                             if (!isActivityTimeUndefined) {
-                              _pickDateTime(context);
+                              await _pickDateTime(context);
                             }
+                            createActivityState.update((state) => state.copyWithNullableStartTime(
+                              startTime: isActivityTimeUndefined ? null : activityTime,
+                            ));
                           },
                         ),
                         title: Text(
@@ -273,7 +290,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                               if (titleController.text.isEmpty || subTitleController.text.isEmpty) {
                                 ErrorSnackbar.show(context, config.get<String>('invalid-activity-fields-missing'));
                               } else {
-                                createActivityState.update((state) => state.copyWith(
+                                createActivityState.update((state) => state.copyWithNullableStartTime(
                                   title: titleController.text,
                                   description: subTitleController.text,
                                   paid: !isActivityFree,
@@ -288,7 +305,9 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                           const SizedBox(height: AppSizes.minVerticalPadding),
                           BackwardButton(
                             buttonText: config.get<String>('back-button'),
-                            onPressed: () => context.go('/create-activity/location'),
+                            onPressed: () {
+                              context.go('/create-activity/location');
+                            } 
                           ),
                         ],
                       ),

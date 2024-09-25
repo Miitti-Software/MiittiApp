@@ -758,6 +758,8 @@ class FirestoreService {
 
 
 
+
+
   void reset() {
     _miittiUser = null;
   }
@@ -795,19 +797,19 @@ class FirestoreService {
     }
   }
 
-  Future<UserStatusInActivity> joinOrRequestActivity(String activityId) async {
-    if (isAnonymous) {
-      debugPrint("Anonymous user cannot join or request activities");
-      return UserStatusInActivity.none;
-    }
-    // if (miittiUser!.invitedActivities.contains(activityId)) {
-      // await reactToInvite(activityId, true);
-      // return UserStatusInActivity.joined;
-    // } else {
-      await sendActivityRequest(activityId);
-      return UserStatusInActivity.requested;
-    // }
-  }
+  // Future<UserStatusInActivity> joinOrRequestActivity(String activityId) async {
+  //   if (isAnonymous) {
+  //     debugPrint("Anonymous user cannot join or request activities");
+  //     return UserStatusInActivity.none;
+  //   }
+  //   // if (miittiUser!.invitedActivities.contains(activityId)) {
+  //     // await reactToInvite(activityId, true);
+  //     // return UserStatusInActivity.joined;
+  //   // } else {
+  //     await sendActivityRequest(activityId);
+  //     return UserStatusInActivity.requested;
+  //   // }
+  // }
 
   Future reactToInvite(String activityId, bool accepted) async {
     try {

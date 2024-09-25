@@ -40,6 +40,9 @@ class _ChooseActivityLocationScreenState extends ConsumerState<ChooseActivityLoc
   }
 
   void fetchSpots() {
+    if (ref.read(createActivityStateProvider).category == null) {
+      return;
+    }
     ref.read(firestoreServiceProvider).fetchCommercialSpots(ref.read(createActivityStateProvider).category!).then((value) {
       setState(() {
         spots = value;

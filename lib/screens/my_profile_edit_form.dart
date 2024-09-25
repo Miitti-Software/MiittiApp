@@ -433,11 +433,11 @@ class _MyProfileEditFormState extends ConsumerState<MyProfileEditForm> {
                           context: context,
                         )
                         .then((value) {
-                      pushNRemoveUntil(
-                          context,
-                          const IndexPage(
-                            initialPage: 3,
-                          ));
+                      // pushNRemoveUntil(
+                      //     context,
+                      //     const IndexPage(
+                      //       initialPage: 3,
+                      //     ));
                     });
                   } else {
                     showSnackBar(

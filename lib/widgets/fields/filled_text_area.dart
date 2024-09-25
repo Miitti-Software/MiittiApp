@@ -5,6 +5,7 @@ class FilledTextArea extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final TextInputType? keyboardType;
+  final void Function(String)? onChange;
   final void Function(String)? onSubmit;
   final bool autofocus;
 
@@ -12,6 +13,7 @@ class FilledTextArea extends StatelessWidget {
     super.key,
     required this.hintText,
     required this.controller,
+    this.onChange,
     this.onSubmit,
     this.keyboardType = TextInputType.text,
     this.autofocus = true,
@@ -30,6 +32,7 @@ class FilledTextArea extends StatelessWidget {
       onTapOutside: (PointerDownEvent event) {
         FocusScope.of(context).unfocus();
       },
+      onChanged: onChange,
       onSubmitted: onSubmit,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),

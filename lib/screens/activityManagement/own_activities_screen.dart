@@ -41,6 +41,8 @@ class _OwnActivitiesScreenState extends ConsumerState<OwnActivitiesScreen> {
         : Scaffold(
             appBar: AppBar(
               title: Text(config.get<String>('own-activities-screen-title')),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              notificationPredicate: (notification) => false,
             ),
             body: Container(
               color: Theme.of(context).colorScheme.surface,

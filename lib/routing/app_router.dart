@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
+import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/routing/modal_page.dart';
 import 'package:miitti_app/screens/activityManagement/activity_management_shell_scaffold.dart';
 import 'package:miitti_app/screens/activityManagement/chats_screen.dart';
 import 'package:miitti_app/screens/activityManagement/others_activities_screen.dart';
 import 'package:miitti_app/screens/activityManagement/own_activities_screen.dart';
+import 'package:miitti_app/screens/chat_page.dart';
 import 'package:miitti_app/screens/createMiitti/choose_activity_category_screen.dart';
 import 'package:miitti_app/screens/createMiitti/choose_activity_location_screen.dart';
 import 'package:miitti_app/screens/createMiitti/create_activity_review_screen.dart';
@@ -82,12 +84,12 @@ class AppRouter {
 
   List<RouteBase> _buildRoutes() {
     return [
-      GoRoute(
-        name: 'notificationmessage',
-        path: '/notificationmessage',
-        parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: _buildNoTransitionPage(const NotificationMessage()),
-      ),
+      // GoRoute(
+      //   name: 'notificationmessage',
+      //   path: '/notificationmessage',
+      //   parentNavigatorKey: rootNavigatorKey,
+      //   pageBuilder: _buildNoTransitionPage(const NotificationMessage()),
+      // ),
       GoRoute(
         name: 'login',
         path: '/login',
@@ -147,8 +149,8 @@ class AppRouter {
     return StatefulShellBranch(
         routes: [
           GoRoute(
-            name: 'chat',
-            path: '/chat',
+            name: 'chats',
+            path: '/chats',
             pageBuilder: _buildNoTransitionPage(const ChatsScreen()),
           ),
         ],
@@ -209,6 +211,16 @@ class AppRouter {
                     pageBuilder: (BuildContext context, GoRouterState state) {
                       final id = state.pathParameters['activityId'] as String;
                       return NoTransitionPage<void>(child: ParticipantsList(activityId: id));
+                    },
+                  ),
+                  GoRoute(
+                    parentNavigatorKey: rootNavigatorKey,
+                    name: 'chat',
+                    path: 'chat/:activityId',
+                    pageBuilder: (BuildContext context, GoRouterState state) {
+                      final id = state.pathParameters['activityId'] as String;
+                      final activity = (state.extra as Map<String, dynamic>)['activity'];
+                      return NoTransitionPage<void>(child: ChatPage(activity: activity));
                     },
                   ),
                 ],

@@ -41,6 +41,8 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
         : Scaffold(
             appBar: AppBar(
               title: Text(config.get<String>('chats-screen-title')),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              notificationPredicate: (notification) => false,
             ),
             body: Container(
               color: Theme.of(context).colorScheme.surface,

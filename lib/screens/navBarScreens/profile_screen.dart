@@ -54,8 +54,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (adminId.contains(ref.read(userStateProvider).data.uid)) {
       return GestureDetector(
         onTap: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const AdminHomePage()));
+          // Navigator.of(context).push(
+          //     MaterialPageRoute(builder: (context) => const AdminHomePage()));
         },
         child: Container(
           margin: const EdgeInsets.only(left: 20),

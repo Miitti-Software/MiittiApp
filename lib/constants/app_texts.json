@@ -184,6 +184,9 @@
     "activity-join-request-sent": "Join request sent",
     "activity-participants-list-title": "Participants",
 
+    "activity-requested-button": "Requested to join",
+    "invalid-activity-requested": "You have already requested to join this activity.",
+
     "report-activity-title": "Report activity",
     "report-activity-reason-title": "Reason",
     "report-activity-textfield-title": "Comments",
@@ -270,5 +273,7 @@
     "filter-users-save-button": "Save",
     "filter-users-cancel-button": "Cancel",
     "filter-users-max-interests-error": "You can only select up to 10 interests"
+
+
 
 }

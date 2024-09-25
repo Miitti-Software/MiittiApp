@@ -367,6 +367,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     buttonText: config.get<String>('activity-joined-button'),
                     onPressed: () {
                       // TODO: Open activity chat
+                      context.go('/activity/${activity.id}/chat/${activity.id}', extra: {'activity': activity});
                     },
                   ),
                   ] else if (activity is UserCreatedActivity && activity.requiresRequest && !activity.participants.contains(userUid)) ...[
@@ -374,6 +375,15 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                       buttonText: config.get<String>('activity-ask-to-join-button'),
                       onPressed: () {
                         // TODO: Implement request to join functionality and refactor & test push notification service
+                        ref.read(activitiesStateProvider.notifier).requestToJoinActivity(activity);
+                      },
+                    ),
+                  ] else if (activity is UserCreatedActivity && activity.requests.contains(userUid)) ...[
+                    const SizedBox(height: AppSizes.minVerticalPadding),
+                    BackwardButton(
+                      buttonText: config.get<String>('activity-requested-button'),
+                      onPressed: () {
+                        ErrorSnackbar.show(context, config.get<String>('invalid-activity-requested'));
                       },
                     ),
                   ] else if (activity is UserCreatedActivity && !activity.requiresRequest && !activity.participants.contains(userUid)) ...[

@@ -109,9 +109,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               ),
               SizedBox(
                 height: 75,
-                child: Image.asset(
-                  'images/${widget.activity.category.toLowerCase()}.png',
-                ),
+                // child: Image.asset(
+                //   'images/${widget.activity.category.toLowerCase()}.png',
+                // ),
               ),
             ],
           ),

@@ -158,6 +158,18 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     updateState();
   }
 
+  Future<void> requestToJoinActivity(UserCreatedActivity activity) async {
+    final userState = ref.read(userStateProvider);
+    if (userState.isAnonymous || activity.requests.contains(userState.uid) || activity.participants.contains(userState.uid)) {
+      return;
+    }
+    final firestoreService = ref.read(firestoreServiceProvider);
+    activity.addRequest(ref.read(userStateProvider).uid!);
+    await firestoreService.updateActivity(activity.toMap(), activity.id);
+    state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
+    updateState();
+  }
+
   void updateState() {
     final userState = ref.read(userStateProvider);
     if (!userState.isAnonymous) {

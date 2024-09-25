@@ -213,6 +213,52 @@ class CreateActivityStateData {
       creatorAge: creatorAge ?? this.creatorAge,
     );
   }
+
+  CreateActivityStateData copyWithNullableStartTime({
+    String? id,
+    String? title,
+    String? description,
+    String? category,
+    double? longitude,
+    double? latitude,
+    String? address,
+    String? creator,
+    DateTime? creationTime,
+    DateTime? startTime,
+    DateTime? endTime,
+    bool? paid,
+    int? maxParticipants,
+    List<String>? participants,
+    Map<String, Map<String, dynamic>>? participantsInfo,
+    bool? requiresRequest,
+    List<String>? requests,
+    List<Language>? creatorLanguages,
+    Gender? creatorGender,
+    int? creatorAge,
+  }) {
+    return CreateActivityStateData(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      category: category ?? this.category,
+      longitude: longitude ?? this.longitude,
+      latitude: latitude ?? this.latitude,
+      address: address ?? this.address,
+      creator: creator ?? this.creator,
+      creationTime: creationTime ?? this.creationTime,
+      startTime: startTime,
+      endTime: endTime ?? this.endTime,
+      paid: paid ?? this.paid,
+      maxParticipants: maxParticipants ?? this.maxParticipants,
+      participants: participants ?? this.participants,
+      participantsInfo: participantsInfo ?? this.participantsInfo,
+      requiresRequest: requiresRequest ?? this.requiresRequest,
+      requests: requests ?? this.requests,
+      creatorLanguages: creatorLanguages ?? this.creatorLanguages,
+      creatorGender: creatorGender ?? this.creatorGender,
+      creatorAge: creatorAge ?? this.creatorAge,
+    );
+  }
 }
 
 final createActivityStateProvider = StateNotifierProvider<CreateActivityState, CreateActivityStateData>((ref) {
