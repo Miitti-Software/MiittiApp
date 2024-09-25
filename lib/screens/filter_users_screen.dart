@@ -24,7 +24,7 @@ class FilterUsersSettingsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Filter Settings'),
+        title: Text(config.get<String>('filter-users-title')),
         automaticallyImplyLeading: false,
       ),
       body: Container(
@@ -37,11 +37,11 @@ class FilterUsersSettingsPage extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Age Range', 
+                  config.get<String>('filter-users-age-range-label'),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Text(
-                  '18 - 100+', 
+                  config.get<String>('filter-users-age-range-values'),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -69,7 +69,7 @@ class FilterUsersSettingsPage extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Show only users in the same area', 
+                  config.get<String>('filter-users-same-area-label'),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Transform.scale(
@@ -92,7 +92,7 @@ class FilterUsersSettingsPage extends ConsumerWidget {
             ),
             const SizedBox(height: AppSizes.verticalSeparationPadding),
             Text(
-              'Select interests', 
+              config.get<String>('filter-users-select-interests-label'),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: AppSizes.minVerticalPadding),
@@ -112,7 +112,7 @@ class FilterUsersSettingsPage extends ConsumerWidget {
                           } else if (updatedInterests.length < 10) {
                             updatedInterests.add(activity.item1);
                           } else {
-                            ErrorSnackbar.show(context, 'You can only select up to 10 interests');
+                            ErrorSnackbar.show(context, config.get<String>('filter-users-max-interests-error'));
                           }
                           filterSettingsNotifier.updatePreferences(
                             filterSettings.copyWith(interests: updatedInterests),
@@ -141,13 +141,13 @@ class FilterUsersSettingsPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: AppSizes.verticalSeparationPadding),
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Column(
                   children: [
                     ForwardButton(
-                      buttonText: config.get<String>('save-button'), 
+                      buttonText: config.get<String>('filter-users-save-button'), 
                       onPressed: () {
                         filterSettingsNotifier.savePreferences();
                         ref.read(usersStateProvider.notifier).loadMoreUsers(fullRefresh: true);
@@ -156,7 +156,7 @@ class FilterUsersSettingsPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: AppSizes.minVerticalPadding),
                     BackwardButton(
-                      buttonText: config.get<String>('cancel-button'), 
+                      buttonText: config.get<String>('filter-users-cancel-button'), 
                       onPressed: () {
                         context.pop(context);
                       }

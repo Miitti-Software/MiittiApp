@@ -260,5 +260,15 @@
 
     "commercial-activity-join-button": "Join",
     "commercial-activity-joined-button": "Open chat",
-    "commercial-activity-hyperlink-button": "Open website"
+    "commercial-activity-hyperlink-button": "Open website",
+
+    "filter-users-title": "Filter Settings",
+    "filter-users-age-range-label": "Age Range",
+    "filter-users-age-range-values": "18 - 100+",
+    "filter-users-same-area-label": "Show only users in the same area",
+    "filter-users-select-interests-label": "Select interests",
+    "filter-users-save-button": "Save",
+    "filter-users-cancel-button": "Cancel",
+    "filter-users-max-interests-error": "You can only select up to 10 interests"
+
 }
