@@ -397,6 +397,25 @@ class FirestoreService {
     });
   }
 
+  Stream<List<UserCreatedActivity>> streamUserCreatedActivities() {
+    final userId = ref.read(userStateProvider).uid!;
+    final now = DateTime.now();
+
+    return _firestore.collection(_activitiesCollection)
+      .where(Filter.or(
+        Filter('participants', arrayContains: userId),
+        Filter('requests', arrayContains: userId)
+      ))
+      .where(Filter.or(
+        Filter('endTime', isNull: true),
+        Filter('endTime', isGreaterThanOrEqualTo: now)
+      ))
+      .snapshots()
+      .map((querySnapshot) {
+        return querySnapshot.docs.map((doc) => UserCreatedActivity.fromFirestore(doc)).toList();
+      });
+  }
+
   Future<void> incrementCommercialActivityViewCounter(String activityId) async {
     final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
     await _incrementField(docRef, 'views');

@@ -335,7 +335,10 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                           GoRouter.of(context).go('/create-activity/category');
                           Future.delayed(
                             const Duration(milliseconds: 10),
-                            () => GoRouter.of(context).go('/'),
+                            () {
+                              GoRouter.of(context).go('/');
+                              ref.read(createActivityStateProvider.notifier).reset();
+                            },
                           );
                         },
                       ),

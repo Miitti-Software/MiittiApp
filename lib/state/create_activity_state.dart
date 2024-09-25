@@ -90,9 +90,10 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
     for (final invitee in invitedUsers) {
       ref.read(notificationServiceProvider).sendInviteNotification(user.toMiittiUser(), invitee, activity);
     }
-    Future.delayed(const Duration(seconds: 1), () {
-      state = CreateActivityStateData();
-    });
+  }
+
+  void reset() {
+    state = CreateActivityStateData();
   }
 
   String generateCustomId() {

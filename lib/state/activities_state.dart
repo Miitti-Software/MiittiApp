@@ -23,6 +23,7 @@ class GeoQueryCondition {
 class ActivitiesState extends StateNotifier<ActivitiesStateData> {
   ActivitiesState(this.ref) : super(ActivitiesStateData()) {
     _geoQueryCondition.stream.listen(_updateActivities);
+    _initializeFirestoreListener();
   }
 
   final Ref ref;
@@ -34,6 +35,14 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     ),
   );
   bool _isLoadingMore = false;
+
+  void _initializeFirestoreListener() {
+    if (ref.read(userStateProvider).isAnonymous) return;
+    final firestoreService = ref.read(firestoreServiceProvider);
+    firestoreService.streamUserCreatedActivities().listen((updatedActivities) {
+      _updateRequestsAndParticipants(updatedActivities);
+    });
+  }
 
   void updateGeoQueryCondition(LatLng center, double zoom) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
@@ -83,8 +92,28 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
 
       if (filteredActivities.isNotEmpty) {
         state = state.copyWith(activities: state.activities.followedBy(filteredActivities).toList());
+        updateState();
       }
     });
+  }
+
+  void _updateRequestsAndParticipants(List<UserCreatedActivity> updatedActivities) {
+    debugPrint('Updating requests and participants');
+    final currentActivityIds = state.activities.map((activity) => activity.id).toSet();
+    final updatedStateActivities = state.activities.map((activity) {
+      if (activity is UserCreatedActivity) {
+        final updatedActivity = updatedActivities.firstWhere((a) => a.id == activity.id, orElse: () => activity);
+        return updatedActivity;
+      }
+      return activity;
+    }).toList();
+
+    final newActivitiesToAdd = updatedActivities.where((activity) => !currentActivityIds.contains(activity.id)).toList();
+
+    if (newActivitiesToAdd.isNotEmpty || updatedStateActivities.isNotEmpty) {
+      state = state.copyWith(activities: updatedStateActivities.followedBy(newActivitiesToAdd).toList());
+      updateState();
+    }
   }
 
   Future<void> loadMoreActivities({bool fullRefresh = false}) async {
@@ -93,6 +122,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
 
     if (fullRefresh) {
       state = state.copyWith(activities: []);
+      updateState();
     }
 
     final firestoreService = ref.read(firestoreServiceProvider);

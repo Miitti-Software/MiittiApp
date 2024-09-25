@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
-import 'package:miitti_app/routing/app_router.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/services/push_notification_service.dart';

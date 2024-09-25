@@ -88,6 +88,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(activitiesProvider);
     final config = ref.watch(remoteConfigServiceProvider);
     final userUid = ref.watch(userStateProvider.select((state) => state.uid));
     ref.read(analyticsServiceProvider).logScreenView('activity_details_screen');
@@ -395,7 +396,6 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         });
                       },
                     ),
-                  
                   ] else if (activity is UserCreatedActivity && !activity.requiresRequest && !activity.participants.contains(userUid)) ...[
                     ForwardButton(
                       buttonText: config.get<String>('activity-join-button'),
@@ -426,6 +426,16 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         ref.read(adsStateProvider.notifier).incrementCommercialActivityClickCount(activity.id);
                         final url = Uri.parse((activity as CommercialActivity).hyperlink);
                         await launchUrl(url, mode: LaunchMode.externalApplication);
+                      },
+                    ),
+                  ],
+                  if (activity.creator == userUid && (activity is UserCreatedActivity && activity.requests.isNotEmpty)) ...[
+                    const SizedBox(height: AppSizes.minVerticalPadding),
+                    BackwardButton(
+                      buttonText: config.get<String>('activity-requests-button'),
+                      onPressed: () {
+                        // TODO: Show requests
+                        // context.go('/activity/${activity.id}/requests', extra: {'activity': activity});
                       },
                     ),
                   ],

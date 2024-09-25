@@ -189,6 +189,8 @@
     "activity-request-success": "Request sent",
     "activity-request-error": "Could not send request. The activity may have been deleted. Refresh the list and try again.",
 
+    "activity-requests-button": "Requests",
+
     "report-activity-title": "Report activity",
     "report-activity-reason-title": "Reason",
     "report-activity-textfield-title": "Comments",
