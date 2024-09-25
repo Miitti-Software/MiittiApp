@@ -11,8 +11,9 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 class CommercialActivityMarker extends ConsumerWidget {
   final MiittiActivity activity;
+  final double size;
 
-  const CommercialActivityMarker({required this.activity, super.key});
+  const CommercialActivityMarker({required this.activity, this.size = 34, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,16 +47,16 @@ class CommercialActivityMarker extends ConsumerWidget {
             ),
             child: CircleAvatar(
               backgroundColor: Theme.of(context).colorScheme.tertiary,
-              radius: 37,
+              radius: size,
               child: CircleAvatar(
                 backgroundImage: CachedNetworkImageProvider(
                   (activity as CommercialActivity).bannerImage,
                   cacheManager: ProfilePicturesCacheManager().instance,
                 ),
-                radius: 34,
-                onBackgroundImageError: (exception, stackTrace) => const Text(
+                radius: size - 3,
+                onBackgroundImageError: (exception, stackTrace) => Text(
                   activityEmoji,
-                  style: TextStyle(fontSize: 34),
+                  style: TextStyle(fontSize: size - 3),
                 ),
               ),
             ),

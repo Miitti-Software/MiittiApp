@@ -5,8 +5,9 @@ import 'package:miitti_app/state/service_providers.dart';
 
 class ActivityMarker extends ConsumerWidget {
   final MiittiActivity activity;
+  final double size;
 
-  const ActivityMarker({required this.activity, super.key});
+  const ActivityMarker({required this.activity, this.size = 34, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +33,7 @@ class ActivityMarker extends ConsumerWidget {
               child: Center(
                 child: Text(
                   activityEmoji,
-                  style: const TextStyle(fontSize: 34),
+                  style: TextStyle(fontSize: size),
                 ),
               ),
             ),

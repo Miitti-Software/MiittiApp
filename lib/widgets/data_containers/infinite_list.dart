@@ -10,15 +10,17 @@ class InfiniteList<T> extends ConsumerStatefulWidget {
   final Future<void> Function()? refreshFunction;
   final Widget Function(BuildContext, int) listTileBuilder;
   final ScrollController? scrollController;
+  final bool? startFromBottom;
 
   const InfiniteList({
-    Key? key,
+    super.key,
     required this.dataSource,
     required this.listTileBuilder,
     this.scrollController,
     this.loadMoreFunction,
     this.refreshFunction,
-  }) : super(key: key);
+    this.startFromBottom = false,
+  });
 
   @override
   _InfiniteListState<T> createState() => _InfiniteListState<T>();
@@ -89,6 +91,7 @@ class _InfiniteListState<T> extends ConsumerState<InfiniteList<T>> {
       child: PermanentScrollbar(
         controller: _internalScrollController,
         child: ListView.builder(
+          reverse: widget.startFromBottom!,
           controller: _internalScrollController,
           itemCount: widget.dataSource.length,
           cacheExtent: 100,
