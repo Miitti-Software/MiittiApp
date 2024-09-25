@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map_supercluster/flutter_map_supercluster.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:rxdart/rxdart.dart';
@@ -178,7 +180,8 @@ Future<bool> leaveActivity(MiittiActivity activity) async {
   try {
     final firestoreService = ref.read(firestoreServiceProvider);
     activity.removeParticipant(ref.read(userStateProvider).data.toMiittiUser());
-    await firestoreService.updateActivity(activity.toMap(), activity.id);
+    await firestoreService.updateActivity(activity.toMap(), activity.id, activity is CommercialActivity);
+    ref.read(userStateProvider.notifier).decrementActivitiesJoined();
     state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
     updateState();
     return true;
@@ -196,10 +199,15 @@ Future<bool> joinActivity(MiittiActivity activity) async {
     }
     final firestoreService = ref.read(firestoreServiceProvider);
     MiittiActivity updatedActivity = activity.addParticipant(ref.read(userStateProvider).data.toMiittiUser());
-    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id);
+    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
     if (!success) return false;
-    if (updatedActivity is UserCreatedActivity) ref.read(notificationServiceProvider).sendJoinNotification(updatedActivity);
-    ref.read(userStateProvider).data.incrementActivitiesJoined();
+    if (updatedActivity is UserCreatedActivity) {
+      ref.read(notificationServiceProvider).sendJoinNotification(updatedActivity);
+      ref.read(analyticsServiceProvider).logActivityJoined(updatedActivity, ref.read(userStateProvider).data.toMiittiUser());
+    } else {
+      ref.read(analyticsServiceProvider).logCommercialActivityJoined(updatedActivity as CommercialActivity, ref.read(userStateProvider).data.toMiittiUser());
+    }
+    ref.read(userStateProvider.notifier).incrementActivitiesJoined();
     state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
     updateState();
     return true;
@@ -217,8 +225,10 @@ Future<bool> requestToJoinActivity(UserCreatedActivity activity) async {
     }
     final firestoreService = ref.read(firestoreServiceProvider);
     UserCreatedActivity updatedActivity = activity.addRequest(ref.read(userStateProvider).uid!);
-    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id);
+    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, activity is CommercialActivity);
     if (!success) return false;
+    ref.read(userStateProvider.notifier).incrementActivitiesJoined();
+    ref.read(analyticsServiceProvider).logActivityJoined(updatedActivity, ref.read(userStateProvider).data.toMiittiUser());
     state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
     updateState();
     return true;

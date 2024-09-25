@@ -26,14 +26,19 @@ class AnalyticsService {
     await _analytics.logEvent(
       name: 'activity_created',
       parameters: {
-        'id': activity.id,
         'address': activity.address,
         'category': activity.category,
         'max_participants': activity.maxParticipants,
+        'paid': activity.paid ? 1 : 0,
         'creator_age': activity.creatorAge,
         'creator_gender': activity.creatorGender.name,
+        'creator_primary_area': user.areas.isNotEmpty ? user.areas[0] : 'none',
+        'creator_primary_language': user.languages.isNotEmpty ? user.languages[0].name : 'none',
         'creator_primary_occupation': user.occupationalStatuses.isNotEmpty ? user.occupationalStatuses[0] : 'none',
         'creator_primary_organization': user.organizations.isNotEmpty ? user.organizations[0] : 'none',
+        'creator_num_of_activities_attended': user.numOfActivitiesAttended,
+        'creator_num_of_activities_created': user.numOfActivitiesCreated,
+        'creator_num_of_activities_joined': user.numOfActivitiesJoined,
         },
     );
   }
@@ -42,10 +47,45 @@ class AnalyticsService {
     await _analytics.logScreenView(screenName: screenName);
   }
 
-  Future<void> logActivityJoined(String activityId) async {
+  Future<void> logActivityJoined(UserCreatedActivity activity, MiittiUser user) async {
+
     await _analytics.logEvent(
       name: 'activity_joined',
-      parameters: {'activity_id': activityId},
+      parameters: {
+        'address': activity.address,
+        'category': activity.category,
+        'max_participants': activity.maxParticipants,
+        'paid': activity.paid ? 1 : 0,
+        'creator_age': activity.creatorAge,
+        'creator_gender': activity.creatorGender.name,
+        'creator_primary_language': activity.creatorLanguages[0].name,
+        'user_primary_area': user.areas.isNotEmpty ? user.areas[0] : 'none',
+        'user_primary_organization': user.organizations.isNotEmpty ? user.organizations[0] : 'none',
+        'user_primary_language': user.languages.isNotEmpty ? user.languages[0].name.toString() : 'none',
+        'user_primary_occupation': user.occupationalStatuses.isNotEmpty ? user.occupationalStatuses[0] : 'none',
+        'user_num_of_activities_attended': user.numOfActivitiesAttended,
+        'user_num_of_activities_created': user.numOfActivitiesCreated,
+        'user_num_of_activities_joined': user.numOfActivitiesJoined,
+      },
+    );
+  }
+
+  Future<void> logCommercialActivityJoined(CommercialActivity activity, MiittiUser user) async {
+    await _analytics.logEvent(
+      name: 'commercial_activity_joined',
+      parameters: {
+        'address': activity.address,
+        'category': activity.category,
+        'max_participants': activity.maxParticipants,
+        'paid': activity.paid ? 1 : 0,
+        'user_primary_area': user.areas.isNotEmpty ? user.areas[0] : 'none',
+        'user_primary_organization': user.organizations.isNotEmpty ? user.organizations[0] : 'none',
+        'user_primary_language': user.languages.isNotEmpty ? user.languages[0].name.toString() : 'none',
+        'user_primary_occupation': user.occupationalStatuses.isNotEmpty ? user.occupationalStatuses[0] : 'none',
+        'user_num_of_activities_attended': user.numOfActivitiesAttended,
+        'user_num_of_activities_created': user.numOfActivitiesCreated,
+        'user_num_of_activities_joined': user.numOfActivitiesJoined,
+      },
     );
   }
 

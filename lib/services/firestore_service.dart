@@ -14,6 +14,7 @@ import 'package:miitti_app/models/ad_banner_data.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/commercial_spot.dart';
 import 'package:miitti_app/models/commercial_user.dart';
+import 'package:miitti_app/models/message.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/organization.dart';
@@ -32,6 +33,7 @@ class FirestoreService {
   static const String _commercialSpotsCollection = 'commercialSpots';
   static const String _adBannersCollection = 'adBanners';
   static const String _organizationsCollection = 'organizations';
+  static const String _messagesCollection = 'messages';
 
   final FirebaseFirestore _firestore;
   final Ref ref;
@@ -512,9 +514,9 @@ class FirestoreService {
     }
   }
 
-  Future<bool> updateActivity(Map<String, dynamic> data, String activityId) async {
+  Future<bool> updateActivity(Map<String, dynamic> data, String activityId, isCommercialActivity) async {
   try {
-    final activityRef = _firestore.collection(_activitiesCollection).doc(activityId);
+    final activityRef = isCommercialActivity ? _firestore.collection(_commercialActivitiesCollection).doc(activityId) : _firestore.collection(_activitiesCollection).doc(activityId);
     await _firestore.runTransaction((transaction) async {
       final activitySnapshot = await transaction.get(activityRef);
       if (!activitySnapshot.exists) {
@@ -748,6 +750,34 @@ class FirestoreService {
       return false;
     }
   }
+
+  Stream<QuerySnapshot> getMessages(String activityId, {bool isCommercialActivity = false}) {
+    DocumentReference docRef = isCommercialActivity
+        ? _firestore.collection(_commercialActivitiesCollection).doc(activityId)
+        : _firestore.collection(_activitiesCollection).doc(activityId);
+    return docRef
+        .collection(_messagesCollection)
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+
+  Future<bool> sendMessage(String activityId, Message message, {bool isCommercialActivity = false}) async {
+    try {
+      DocumentReference docRef = isCommercialActivity
+          ? _firestore.collection(_commercialActivitiesCollection).doc(activityId)
+          : _firestore.collection(_activitiesCollection).doc(activityId);
+      await docRef
+          .collection(_messagesCollection)
+          .add(message.toMap());
+      return true;
+    } catch (e) {
+      debugPrint('Error sending message: $e');
+      return false;
+    }
+  }
+
+
+
 
 
 
@@ -987,19 +1017,19 @@ class FirestoreService {
     return query.limit(batchSize).get();
   }
 
-  void sendMessage(String activityId, Map<String, dynamic> chatMessageData,
-      [bool commercial = false]) async {
-    DocumentReference docRef = commercial
-        ? _comActivityDocRef(activityId)
-        : _activityDocRef(activityId);
-    await docRef.collection("messages").add(chatMessageData);
+  // void sendMessage(String activityId, Map<String, dynamic> chatMessageData,
+  //     [bool commercial = false]) async {
+  //   DocumentReference docRef = commercial
+  //       ? _comActivityDocRef(activityId)
+  //       : _activityDocRef(activityId);
+  //   await docRef.collection("messages").add(chatMessageData);
 
-    await docRef.update({
-      "recentMessage": chatMessageData['message'],
-      "recentMessageSender": chatMessageData['sender'],
-      "recentMessageTime": chatMessageData['time'].toString(),
-    });
-  }
+  //   await docRef.update({
+  //     "recentMessage": chatMessageData['message'],
+  //     "recentMessageSender": chatMessageData['sender'],
+  //     "recentMessageTime": chatMessageData['time'].toString(),
+  //   });
+  // }
 
   Future<String> uploadUserImage(String uid, File? image) async {
     final metadata = SettableMetadata(
@@ -1247,15 +1277,15 @@ class FirestoreService {
     return false;
   }
 
-  getChats(String activityId, [bool commercial = false]) async {
-    DocumentReference docRef = commercial
-        ? _comActivityDocRef(activityId)
-        : _activityDocRef(activityId);
-    return docRef
-        .collection('messages')
-        .orderBy('time', descending: true)
-        .snapshots();
-  }
+  // getChats(String activityId, [bool commercial = false]) async {
+  //   DocumentReference docRef = commercial
+  //       ? _comActivityDocRef(activityId)
+  //       : _activityDocRef(activityId);
+  //   return docRef
+  //       .collection('messages')
+  //       .orderBy('time', descending: true)
+  //       .snapshots();
+  // }
 
   
 

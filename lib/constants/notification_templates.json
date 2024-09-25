@@ -10,6 +10,14 @@
 
     "join-request-notification-title": "Join Request",
     "join-request-notification-body": "has requested to join you in",
-    "join-request-notification-type": "Request"
+    "join-request-notification-type": "Request",
+
+    "join-notification-title": "Joined",
+    "join-notification-body": "has joined you in",
+    "join-notification-type": "Join",
+
+    "cancel-notification-title": "Cancelled",
+    "cancel-notification-body": "has unfortunately cancelled joining you in",
+    "cancel-notification-type": "Cancel"
 }
 

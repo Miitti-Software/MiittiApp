@@ -8,6 +8,7 @@ import 'package:miitti_app/main.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/routing/modal_page.dart';
 import 'package:miitti_app/screens/activityManagement/activity_management_shell_scaffold.dart';
+import 'package:miitti_app/screens/activityManagement/chat_screen.dart';
 import 'package:miitti_app/screens/activityManagement/chats_screen.dart';
 import 'package:miitti_app/screens/activityManagement/others_activities_screen.dart';
 import 'package:miitti_app/screens/activityManagement/own_activities_screen.dart';
@@ -220,7 +221,7 @@ class AppRouter {
                     pageBuilder: (BuildContext context, GoRouterState state) {
                       final id = state.pathParameters['activityId'] as String;
                       final activity = (state.extra as Map<String, dynamic>)['activity'];
-                      return NoTransitionPage<void>(child: ChatPage(activity: activity));
+                      return NoTransitionPage<void>(child: ChatScreen(id));
                     },
                   ),
                 ],

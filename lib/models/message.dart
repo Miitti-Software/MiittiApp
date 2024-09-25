@@ -10,4 +10,22 @@ class Message {
     required this.senderName,
     required this.timestamp,
   });
+
+  factory Message.fromFirestore(Map<String, dynamic> data) {
+    return Message(
+      message: data['message'],
+      senderId: data['senderId'],
+      senderName: data['senderName'],
+      timestamp: data['timestamp']?.toDate(),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'message': message,
+      'senderId': senderId,
+      'senderName': senderName,
+      'timestamp': timestamp,
+    };
+  }
 }

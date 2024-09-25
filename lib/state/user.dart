@@ -102,9 +102,9 @@ class UserState extends StateNotifier<UserStateData> {
         fcmToken: '',
         online: true,
 
-        numOfMiittisCreated: 0,
-        numOfMiittisJoined: 0,
-        numOfMiittisAttended: 0,
+        numOfActivitiesCreated: 0,
+        numOfActivitiesJoined: 0,
+        numOfActivitiesAttended: 0,
         peopleMet: [],
         activitiesTried: [],
 
@@ -254,6 +254,18 @@ class UserState extends StateNotifier<UserStateData> {
     state = updateFn(state);
   }
 
+  incrementActivitiesJoined() {
+    state = state.copyWith(data: state.data.incrementActivitiesJoined());
+  }
+
+  decrementActivitiesJoined() {
+    state = state.copyWith(data: state.data.decrementActivitiesJoined());
+  }
+
+  incrementActivitiesCreated() {
+    state = state.copyWith(data: state.data.incrementActivitiesCreated());
+  }
+
   Future<void> refreshUserData() async {
     if (state.isSignedIn) {
       final miittiUser = await _loadMiittiUser(state.uid!);
@@ -312,9 +324,9 @@ class UserData {
   final String? fcmToken;
   final bool online;
 
-  final int numOfMiittisCreated;
-  final int numOfMiittisJoined;
-  final int numOfMiittisAttended;
+  final int numOfActivitiesCreated;
+  final int numOfActivitiesJoined;
+  final int numOfActivitiesAttended;
   final List<String> peopleMet;
   final List<String> activitiesTried;
 
@@ -341,9 +353,9 @@ class UserData {
     this.fcmToken,
     this.online = true,
 
-    this.numOfMiittisCreated = 0,
-    this.numOfMiittisJoined = 0,
-    this.numOfMiittisAttended = 0,
+    this.numOfActivitiesCreated = 0,
+    this.numOfActivitiesJoined = 0,
+    this.numOfActivitiesAttended = 0,
     this.peopleMet = const [],
     this.activitiesTried = const [],
 
@@ -372,9 +384,9 @@ class UserData {
       fcmToken: miittiUser.fcmToken,
       online: true,
 
-      numOfMiittisCreated: miittiUser.numOfMiittisCreated,
-      numOfMiittisJoined: miittiUser.numOfMiittisJoined,
-      numOfMiittisAttended: miittiUser.numOfMiittisAttended,
+      numOfActivitiesCreated: miittiUser.numOfActivitiesCreated,
+      numOfActivitiesJoined: miittiUser.numOfActivitiesJoined,
+      numOfActivitiesAttended: miittiUser.numOfActivitiesAttended,
       peopleMet: miittiUser.peopleMet,
       activitiesTried: miittiUser.activitiesTried,
 
@@ -403,9 +415,9 @@ class UserData {
     String? fcmToken,
     bool? online,
 
-    int? numOfMiittisCreated,
-    int? numOfMiittisJoined,
-    int? numOfMiittisAttended,
+    int? numOfActivitiesCreated,
+    int? numOfActivitiesJoined,
+    int? numOfActivitiesAttended,
     List<String>? peopleMet,
     List<String>? activitiesTried,
 
@@ -432,9 +444,9 @@ class UserData {
       fcmToken: fcmToken ?? this.fcmToken,
       online: online ?? this.online,
 
-      numOfMiittisCreated: numOfMiittisCreated ?? this.numOfMiittisCreated,
-      numOfMiittisJoined: numOfMiittisJoined ?? this.numOfMiittisJoined,
-      numOfMiittisAttended: numOfMiittisAttended ?? this.numOfMiittisAttended,
+      numOfActivitiesCreated: numOfActivitiesCreated ?? this.numOfActivitiesCreated,
+      numOfActivitiesJoined: numOfActivitiesJoined ?? this.numOfActivitiesJoined,
+      numOfActivitiesAttended: numOfActivitiesAttended ?? this.numOfActivitiesAttended,
       peopleMet: peopleMet ?? this.peopleMet,
       activitiesTried: activitiesTried ?? this.activitiesTried,
 
@@ -462,9 +474,9 @@ class UserData {
       fcmToken: fcmToken!,
       online: online,
 
-      numOfMiittisCreated: numOfMiittisCreated,
-      numOfMiittisJoined: numOfMiittisJoined,
-      numOfMiittisAttended: numOfMiittisAttended,
+      numOfActivitiesCreated: numOfActivitiesCreated,
+      numOfActivitiesJoined: numOfActivitiesJoined,
+      numOfActivitiesAttended: numOfActivitiesAttended,
       peopleMet: peopleMet,
       activitiesTried: activitiesTried,
 
@@ -549,15 +561,15 @@ class UserData {
   }
 
   incrementActivitiesJoined() {
-    return copyWith(numOfMiittisJoined: numOfMiittisJoined + 1);
+    return copyWith(numOfActivitiesJoined: numOfActivitiesJoined + 1);
   }
 
   decrementActivitiesJoined() {
-    return copyWith(numOfMiittisJoined: numOfMiittisJoined - 1);
+    return copyWith(numOfActivitiesJoined: numOfActivitiesJoined - 1);
   }
 
   incrementActivitiesCreated() {
-    return copyWith(numOfMiittisCreated: numOfMiittisCreated + 1);
+    return copyWith(numOfActivitiesCreated: numOfActivitiesCreated + 1);
   }
 
 }

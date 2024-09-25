@@ -26,9 +26,9 @@ class MiittiUser {
   String fcmToken;
   bool online;
 
-  int numOfMiittisCreated = 0;
-  int numOfMiittisJoined = 0;
-  int numOfMiittisAttended = 0;
+  int numOfActivitiesCreated = 0;
+  int numOfActivitiesJoined = 0;
+  int numOfActivitiesAttended = 0;
   List<String> peopleMet = [];
   List<String> activitiesTried = [];
 
@@ -56,9 +56,9 @@ class MiittiUser {
       required this.fcmToken,             // Firebase Cloud Messaging token for targeting push notifications
       required this.online,
 
-      this.numOfMiittisCreated = 0,
-      this.numOfMiittisJoined = 0,
-      this.numOfMiittisAttended = 0,
+      this.numOfActivitiesCreated = 0,
+      this.numOfActivitiesJoined = 0,
+      this.numOfActivitiesAttended = 0,
       this.peopleMet = const [],
       this.activitiesTried = const [],
 
@@ -89,9 +89,9 @@ class MiittiUser {
         fcmToken: data['fcmToken'] ?? '',
         online: data['online'] ?? false,
 
-        numOfMiittisCreated: data['numOfMiittisCreated'] ?? 0,
-        numOfMiittisJoined: data['numOfMiittisJoined'] ?? 0,
-        numOfMiittisAttended: data['numOfMiittisAttended'] ?? 0,
+        numOfActivitiesCreated: data['numOfActivitiesCreated'] ?? 0,
+        numOfActivitiesJoined: data['numOfActivitiesJoined'] ?? 0,
+        numOfActivitiesAttended: data['numOfActivitiesAttended'] ?? 0,
         peopleMet: data['peopleMet'] != null ? List<String>.from(data['peopleMet']) : [],
         activitiesTried: data['activitiesTried'] != null ? List<String>.from(data['activitiesTried']) : [],
 
@@ -126,9 +126,9 @@ class MiittiUser {
       'fcmToken': fcmToken,
       'online': online,
 
-      'numOfMiittisCreated': numOfMiittisCreated,
-      'numOfMiittisJoined': numOfMiittisJoined,
-      'numOfMiittisAttended': numOfMiittisAttended,
+      'numOfActivitiesCreated': numOfActivitiesCreated,
+      'numOfActivitiesJoined': numOfActivitiesJoined,
+      'numOfActivitiesAttended': numOfActivitiesAttended,
       'peopleMet': peopleMet,
       'activitiesTried': activitiesTried,
 
@@ -155,9 +155,9 @@ class MiittiUser {
       lastActive = newData['lastActive'] ?? lastActive;
       fcmToken = newData['fcmToken'] ?? fcmToken;
       online = newData['online'] ?? online;
-      numOfMiittisCreated = newData['numOfMiittisCreated'] ?? numOfMiittisCreated;
-      numOfMiittisJoined = newData['numOfMiittisJoined'] ?? numOfMiittisJoined;
-      numOfMiittisAttended = newData['numOfMiittisAttended'] ?? numOfMiittisAttended;
+      numOfActivitiesCreated = newData['numOfActivitiesCreated'] ?? numOfActivitiesCreated;
+      numOfActivitiesJoined = newData['numOfActivitiesJoined'] ?? numOfActivitiesJoined;
+      numOfActivitiesAttended = newData['numOfActivitiesAttended'] ?? numOfActivitiesAttended;
       peopleMet = newData['peopleMet'] ?? peopleMet;
       activitiesTried = newData['activitiesTried'] ?? activitiesTried;
       languageSetting = newData['languageSetting'] ?? languageSetting;

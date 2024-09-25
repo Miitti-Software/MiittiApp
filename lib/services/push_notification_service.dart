@@ -208,9 +208,28 @@ class PushNotificationService {
       final language = activityCreator.languageSetting;
       sendNotification(
         activityCreator.fcmToken,
-        config.getNotificationTemplateString('join-request-notification-title', language),
-        "${user.data.name} ${config.getNotificationTemplateString('join-request-notification-body', language)} ${activity.title}",
-        config.getNotificationTemplateString('join-request-notification-type', language),
+        config.getNotificationTemplateString('join-notification-title', language),
+        "${user.data.name} ${config.getNotificationTemplateString('join-notification-body', language)} ${activity.title}",
+        config.getNotificationTemplateString('join-notification-type', language),
+        '/activity/${activity.id}',
+      );
+    } else {
+      debugPrint("Couldn't find activityCreator to send request notification to.");
+    }
+  }
+
+  Future sendCancelNotification(UserCreatedActivity activity) async {
+    FirestoreService firestore = ref.read(firestoreServiceProvider);
+    final config = ref.read(remoteConfigServiceProvider);
+    UserStateData user = ref.read(userStateProvider);
+    MiittiUser? activityCreator = await firestore.fetchUser(activity.creator);
+    if (activityCreator != null) {
+      final language = activityCreator.languageSetting;
+      sendNotification(
+        activityCreator.fcmToken,
+        config.getNotificationTemplateString('cancel-notification-title', language),
+        "${user.data.name} ${config.getNotificationTemplateString('cancel-notification-body', language)} ${activity.title}",
+        config.getNotificationTemplateString('cancel-notification-type', language),
         '/activity/${activity.id}',
       );
     } else {

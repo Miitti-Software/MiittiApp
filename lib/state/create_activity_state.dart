@@ -87,7 +87,7 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
     await ref.read(firestoreServiceProvider).createActivity(activity.id, activity.toMap());
     ref.read(analyticsServiceProvider).logUserCreatedActivityCreated(activity, ref.read(userStateProvider).data.toMiittiUser());
     final user = ref.read(userStateProvider).data;
-    user.incrementActivitiesCreated();
+    ref.read(userStateProvider.notifier).incrementActivitiesCreated();
     ref.read(userStateProvider.notifier).updateUserData();
     for (final invitee in invitedUsers) {
       ref.read(notificationServiceProvider).sendInviteNotification(user.toMiittiUser(), invitee, activity);
