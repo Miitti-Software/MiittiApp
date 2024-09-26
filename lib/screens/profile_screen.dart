@@ -46,6 +46,19 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                     _buildProfilePicture(context, currentUserUid!),
                     _buildFramedList(context, currentUserUid),
                     _buildQACarousel(context),
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                          textStyle: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        onPressed: () {
+                          context.push('/login/complete-profile/qa-cards');
+                        },
+                        child: Text(config.get<String>('edit-qa-cards-button')),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0, top: 32.0, bottom: 0),
                       child: Text(
@@ -244,6 +257,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   }
 
   Widget _buildQACarousel(BuildContext context) {
+    final currentUser = ref.watch(userStateProvider);
+    final userData = (currentUser.uid == widget.userData!.uid) ? currentUser.data.toMiittiUser() : widget.userData!;
+
     return Column(
       children: [
         SizedBox(
@@ -255,9 +271,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 _currentPage = index;
               });
             },
-            itemCount: widget.userData!.qaAnswers.length,
+            itemCount: userData.qaAnswers.length,
             itemBuilder: (context, index) {
-              final entry = widget.userData!.qaAnswers.entries.elementAt(index);
+              final entry = userData.qaAnswers.entries.elementAt(index);
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
@@ -292,7 +308,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
         ),
         Wrap(
           alignment: WrapAlignment.center,
-          children: List.generate(widget.userData!.qaAnswers.length, (index) {
+          children: List.generate(userData.qaAnswers.length, (index) {
             return Container(
               width: 8.0,
               height: 8.0,

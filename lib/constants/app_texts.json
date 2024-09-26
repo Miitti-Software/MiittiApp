@@ -282,6 +282,8 @@
     "filter-users-cancel-button": "Cancel",
     "filter-users-max-interests-error": "You can only select up to 10 interests",
 
-    "favorite-activities-title": "Favorite Activities"
+    "favorite-activities-title": "Favorite Activities",
+
+    "edit-qa-cards-button": "Edit Q&A cards"
 
 }
