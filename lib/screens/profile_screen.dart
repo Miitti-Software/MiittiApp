@@ -35,7 +35,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildProfilePicture(context, currentUserUi!),
+                    _buildProfilePicture(context, currentUserUid!),
                     _buildFramedList(context, currentUserUid),
                     _buildQACarousel(context),
                     if (widget.userData!.uid == currentUserUid)
