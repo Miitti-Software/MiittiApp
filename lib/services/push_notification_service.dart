@@ -192,10 +192,29 @@ class PushNotificationService {
         config.getNotificationTemplateString('join-request-notification-title', language),
         "${user.data.name} ${config.getNotificationTemplateString('join-request-notification-body', language)} ${activity.title}",
         config.getNotificationTemplateString('join-request-notification-type', language),
-        user.data.uid!,
+        '/activity/${activity.id}/requests/${activity.id}',
       );
     } else {
       debugPrint("Couldn't find creator to send request notification to.");
+    }
+  }
+
+  Future sendRequestAcceptedNotification(UserCreatedActivity activity) async {
+    FirestoreService firestore = ref.read(firestoreServiceProvider);
+    final config = ref.read(remoteConfigServiceProvider);
+    UserStateData user = ref.read(userStateProvider);
+    MiittiUser? requestor = await firestore.getUser(user.data.uid!);
+    if (requestor != null) {
+      final language = requestor.languageSetting;
+      sendNotification(
+        requestor.fcmToken,
+        config.getNotificationTemplateString('join-request-accepted-notification-title', language),
+        "${activity.title} ${config.getNotificationTemplateString('join-request-accepted-notification-body', language)}",
+        config.getNotificationTemplateString('join-request-accepted-notification-type', language),
+        '/activity/${activity.id}',
+      );
+    } else {
+      debugPrint("Couldn't find requestor to send request notification to.");
     }
   }
 

@@ -174,8 +174,9 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
 
   bool isReadByEveryone(Message message, Map<String, dynamic> participantsInfo) {
     return participantsInfo.values.every((info) {
-      final lastReadMessage = info['lastReadMessage'];
-      return lastReadMessage != null && lastReadMessage.isNotEmpty && DateTime.parse(lastReadMessage).isAfter(message.timestamp);
+      // final lastReadMessage = info['lastReadMessage'];
+      // return lastReadMessage != null && lastReadMessage.isNotEmpty && DateTime.parse(lastReadMessage).isAfter(message.timestamp);
+      return false;
     });
   }
 }

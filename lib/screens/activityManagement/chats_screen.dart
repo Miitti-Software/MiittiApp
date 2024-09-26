@@ -39,14 +39,13 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
     return ref.read(userStateProvider).isAnonymous
         ? const AnonymousUserScreen()
         : Scaffold(
-            appBar: AppBar(
-              title: Text(config.get<String>('chats-screen-title')),
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              notificationPredicate: (notification) => false,
-            ),
+            // appBar: AppBar(
+            //   title: Text(config.get<String>('chats-screen-title')),
+            //   backgroundColor: Theme.of(context).colorScheme.surface,
+            //   notificationPredicate: (notification) => false,
+            // ),
             body: Container(
               color: Theme.of(context).colorScheme.surface,
-              padding: const EdgeInsets.only(top: AppSizes.minVerticalEdgePadding),
               child: InfiniteList(
                 dataSource: activities,
                 refreshFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreParticipatingActivities(fullRefresh: true),

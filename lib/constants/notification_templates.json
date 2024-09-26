@@ -18,6 +18,10 @@
 
     "cancel-notification-title": "Cancelled",
     "cancel-notification-body": "has unfortunately cancelled joining you in",
-    "cancel-notification-type": "Cancel"
+    "cancel-notification-type": "Cancel",
+
+    "request-accepted-notification-title": "Request Accepted",
+    "request-accepted-notification-body": "has accepted your request to join",
+    "request-accepted-notification-type": "Accept"
 }
 

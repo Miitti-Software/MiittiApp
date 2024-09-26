@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -191,6 +192,21 @@ Future<bool> leaveActivity(MiittiActivity activity) async {
   }
 }
 
+Future<bool> removeParticipant(UserCreatedActivity activity, MiittiUser user) async {
+  try {
+    if (user.uid == activity.creator) return false;
+    final firestoreService = ref.read(firestoreServiceProvider);
+    final updatedActivity = activity.removeParticipant(user);
+    await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+    state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
+    updateState();
+    return true;
+  } catch (e) {
+    debugPrint('Error removing participant: $e');
+    return false;
+  }
+}
+
 Future<bool> joinActivity(MiittiActivity activity) async {
   try {
     final userState = ref.read(userStateProvider);
@@ -234,6 +250,39 @@ Future<bool> requestToJoinActivity(UserCreatedActivity activity) async {
     return true;
   } catch (e) {
     debugPrint('Error requesting to join activity: $e');
+    return false;
+  }
+}
+
+Future<bool> acceptRequest(String activityId, MiittiUser user) async {
+  try {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    final activity = state.activities.firstWhere((a) => a.id == activityId) as UserCreatedActivity;
+    final updatedActivity = activity.addParticipant(user);
+    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+    if (!success) return false;
+    ref.read(notificationServiceProvider).sendRequestAcceptedNotification(updatedActivity);
+    state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
+    updateState();
+    return true;
+  } catch (e) {
+    debugPrint('Error accepting request: $e');
+    return false;
+  }
+}
+
+Future<bool> declineRequest(String activityId, String userId) async {
+  try {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    final activity = state.activities.firstWhere((a) => a.id == activityId) as UserCreatedActivity;
+    final updatedActivity = activity.removeRequest(userId);
+    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+    if (!success) return false;
+    state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
+    updateState();
+    return true;
+  } catch (e) {
+    debugPrint('Error declining request: $e');
     return false;
   }
 }

@@ -51,6 +51,7 @@ import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/screens/update_screen.dart';
 import 'package:miitti_app/widgets/data_containers/participants_list.dart';
+import 'package:miitti_app/widgets/data_containers/requests_list.dart';
 
 // A class to define the app's routing configuration and behavior
 class AppRouter {
@@ -216,11 +217,19 @@ class AppRouter {
                   ),
                   GoRoute(
                     parentNavigatorKey: rootNavigatorKey,
+                    name: 'requests',
+                    path: 'requests/:activityId',
+                    pageBuilder: (BuildContext context, GoRouterState state) {
+                      final id = state.pathParameters['activityId'] as String;
+                      return NoTransitionPage<void>(child: RequestsList(activityId: id));
+                    },
+                  ),
+                  GoRoute(
+                    parentNavigatorKey: rootNavigatorKey,
                     name: 'chat',
                     path: 'chat/:activityId',
                     pageBuilder: (BuildContext context, GoRouterState state) {
                       final id = state.pathParameters['activityId'] as String;
-                      final activity = (state.extra as Map<String, dynamic>)['activity'];
                       return NoTransitionPage<void>(child: ChatScreen(id));
                     },
                   ),

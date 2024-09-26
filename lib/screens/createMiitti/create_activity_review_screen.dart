@@ -295,28 +295,25 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppSizes.verticalSeparationPadding),
                       ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            minHeight: 100,
-                            maxHeight: 180,
-                          ),
-                          child: Flexible(
-                            child: PermanentScrollbar(
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 4.0),
-                                child: SingleChildScrollView(
-                                  controller: descriptionScrollController,
-                                  child: Text(
-                                    description,
-                                    style: AppStyle.question,
-                                  ),
-                                ),
+                        constraints: const BoxConstraints(
+                          minHeight: 100,
+                          maxHeight: 200,
+                        ),
+                        child: PermanentScrollbar(
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: SingleChildScrollView(
+                              controller: descriptionScrollController,
+                              child: Text(
+                                description,
+                                style: AppStyle.question,
                               ),
                             ),
                           ),
                         ),
-                      
+                      ),
                       const Spacer(),
                       const SizedBox(height: AppSizes.minVerticalPadding),
                       LinearProgressIndicator(
@@ -334,12 +331,11 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                           SuccessSnackbar.show(context, config.get<String>('create-activity-success'));
                           GoRouter.of(context).go('/create-activity/category');
                           Future.delayed(
-                            const Duration(milliseconds: 10),
+                            const Duration(milliseconds: 100),
                             () {
                               GoRouter.of(context).go('/');
-                              ref.read(createActivityStateProvider.notifier).reset();
                             },
-                          );
+                          ).then((_) => ref.read(createActivityStateProvider.notifier).reset());
                         },
                       ),
                       const SizedBox(height: 10),

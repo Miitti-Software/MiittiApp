@@ -326,18 +326,23 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                 ],
                               ),
                               const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.group_outlined,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '$currentParticipants / $maxParticipants',
-                                    style: Theme.of(context).textTheme.labelMedium,
-                                  ),
-                                ],
+                              GestureDetector(
+                                onTap: () {
+                                  context.go('/activity/${activity.id}/participants/${activity.id}');
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.group_outlined,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '$currentParticipants / $maxParticipants',
+                                      style: Theme.of(context).textTheme.labelMedium,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -373,7 +378,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     buttonText: config.get<String>('activity-joined-button'),
                     onPressed: () {
                       // TODO: Open activity chat
-                      context.go('/activity/${activity.id}/chat/${activity.id}', extra: {'activity': activity});
+                      context.go('/activity/${activity.id}/chat/${activity.id}');
                     },
                   ),
                   ] else if (activity is UserCreatedActivity && activity.requests.contains(userUid)) ...[
@@ -440,7 +445,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                       buttonText: config.get<String>('activity-requests-button'),
                       onPressed: () {
                         // TODO: Show requests
-                        // context.go('/activity/${activity.id}/requests', extra: {'activity': activity});
+                        context.go('/activity/${activity.id}/requests/${activity.id}');
                       },
                     ),
                   ],

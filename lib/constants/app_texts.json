@@ -183,6 +183,7 @@
     "activity-join-success": "You joined the activity",
     "activity-join-request-sent": "Join request sent",
     "activity-participants-list-title": "Participants",
+    "activity-requests-list-title": "Requests",
 
     "activity-requested-button": "Requested to join",
     "invalid-activity-requested": "You have already requested to join this activity.",
@@ -239,7 +240,7 @@
     "user-status-away": "Away",
     "user-status-new": "New",
 
-    "activity-management-screen-title": "Upcoming activities",
+    "activity-management-screen-title": "Manage activities",
     "chats-screen-title": "Chats",
     "own-activities-screen-title": "My activities",
     "others-activities-screen-title": "Others' activities",
@@ -277,7 +278,5 @@
     "filter-users-save-button": "Save",
     "filter-users-cancel-button": "Cancel",
     "filter-users-max-interests-error": "You can only select up to 10 interests"
-
-
 
 }

@@ -92,6 +92,7 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
     for (final invitee in invitedUsers) {
       ref.read(notificationServiceProvider).sendInviteNotification(user.toMiittiUser(), invitee, activity);
     }
+    reset();
   }
 
   void reset() {

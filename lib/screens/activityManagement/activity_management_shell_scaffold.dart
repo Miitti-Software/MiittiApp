@@ -25,21 +25,22 @@ class ActivityManagementShellScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final titles = [
-      config.get<String>('chats-screen-title'),
-      config.get<String>('own-activities-screen-title'),
-      config.get<String>('others-activities-screen-title'),
-    ];
-    final currentIndex = navigationShell.currentIndex;
+    // final titles = [
+    //   config.get<String>('chats-screen-title'),
+    //   config.get<String>('own-activities-screen-title'),
+    //   config.get<String>('others-activities-screen-title'),
+    // ];
+    // final currentIndex = navigationShell.currentIndex;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(titles[currentIndex]),
+        title: Text(config.get<String>('activity-management-screen-title')),
         backgroundColor: Theme.of(context).colorScheme.surface,
         notificationPredicate: (notification) => false,
       ),
       body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: AppSizes.minVerticalPadding),

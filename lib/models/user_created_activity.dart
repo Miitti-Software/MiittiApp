@@ -102,7 +102,7 @@ class UserCreatedActivity extends MiittiActivity {
           'longitude': (value['location'] as LatLng).longitude,
         } : null,
         'joined': value['joined'],
-        'lastSeen': value['lastSeen'],
+        'lastSeen': DateTime.now(),
         'lastReadMessage': value['lastReadMessage'],
       })),
       'requiresRequest': requiresRequest,
