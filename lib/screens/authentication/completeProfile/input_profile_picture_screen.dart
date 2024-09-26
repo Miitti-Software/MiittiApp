@@ -43,6 +43,7 @@ class _InputProfilePictureScreenState
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
     final isAnonymous = ref.watch(userStateProvider).isAnonymous;
+    final userState = ref.read(userStateProvider.notifier);
     ref.read(analyticsServiceProvider).logScreenView('input_profile_picture_screen');
 
     return ConfigScreen(
@@ -152,10 +153,13 @@ class _InputProfilePictureScreenState
           const Spacer(),
           
           ForwardButton(
-            buttonText: isAnonymous ? config.get<String>('next-button') : config.get<String>('save-button'),
+            buttonText: isAnonymous ? config.get<String>('forward-button') : config.get<String>('save-button'),
             onPressed: () async {
               if (image != null || imageUrl != null) {
                 if (isAnonymous) {
+                  userState.update((state) => state.copyWith(
+                      data: state.data.copyWith(profilePicture: image!.path)
+                    ));
                   context.push('/login/complete-profile/activities');
                 } else {
                   await ref.read(userStateProvider.notifier).updateUserProfilePicture(image!.path);

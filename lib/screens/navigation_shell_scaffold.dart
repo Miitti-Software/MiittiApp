@@ -54,7 +54,7 @@ class NavigationShellScaffold extends ConsumerWidget {
                   return;
                 }
               } else if (ref.watch(userStateProvider).isAnonymous && index == 4) {
-                context.go('/profile/settings');
+                context.push('/profile/settings');
               } else {
                 if (index == 3 && ref.watch(usersStateProvider).users.length < 10) {
                   ref.read(usersStateProvider.notifier).loadMoreUsers();

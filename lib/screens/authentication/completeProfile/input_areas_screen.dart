@@ -30,11 +30,6 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
   void initState() {
     super.initState();
     _loadAreas();
-    final userAreas = ref.read(userStateProvider).data.areas;
-    selectedAreas = allAreas
-        .where((area) => userAreas.contains(area.item1))
-        .map((area) => area.item1)
-        .toList();
   }
 
   @override
@@ -47,6 +42,11 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
     setState(() {
       allAreas = ref.read(remoteConfigServiceProvider).getTuplesList<Map<String, dynamic>>('areas').map((e) => Tuple2(e.item1, e.item2['name'] as String)).toList();
       filteredAreas = allAreas;
+      final userAreas = ref.read(userStateProvider).data.areas;
+      selectedAreas = allAreas
+          .where((area) => userAreas.contains(area.item1))
+          .map((area) => area.item1)
+          .toList();
     });
   }
 
@@ -145,6 +145,9 @@ class _InputAreasScreenState extends ConsumerState<InputAreasScreen> {
                   buttonText: config.get<String>('forward-button'),
                   onPressed: () {
                     if (selectedAreas.isNotEmpty) {
+                      userState.update((state) => state.copyWith(
+                        data: userData.copyWith(areas: selectedAreas)
+                      ));
                       context.push('/login/complete-profile/life-situation');
                     } else {
                       ErrorSnackbar.show(

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
@@ -46,6 +47,7 @@ class _DeleteAccountButtonState extends ConsumerState<DeleteAccountButton> {
     ) == true) {
       _showLoadingOverlay();
       try {
+        context.go('/login');
         await ref.read(userStateProvider.notifier).deleteUser();
       } catch (error) {
         _showErrorSnackBar('${ref.watch(remoteConfigServiceProvider).get<String>('delete-account-error')} ${ref.watch(remoteConfigServiceProvider).get<String>('generic-error-action-prompt')}');
