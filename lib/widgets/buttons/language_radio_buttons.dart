@@ -16,7 +16,7 @@ class _LanguageRadioButtonsState extends ConsumerState<LanguageRadioButtons> {
   @override
   Widget build(BuildContext context) {
     final selectedLanguage = ref.watch(languageProvider);
-    final languageOptions = Language.values.where((language) => language == Language.en || language == Language.fi);
+    final languageOptions = Language.values.where((language) => language == Language.en || language == Language.fi || language == Language.sv);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

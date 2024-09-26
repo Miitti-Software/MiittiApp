@@ -285,6 +285,16 @@
     "favorite-activities-title": "Favorite Activities",
 
     "edit-qa-cards-button": "Edit Q&A cards",
-    "edit-activities-button": "Edit activities"
+    "edit-activities-button": "Edit activities",
 
+    "settings-join-requests-title": "Join requests",
+    "settings-join-requests-body": "Manage your activities, other users' requests and past activities.",
+    "settings-feedback-title": "Give feedback",
+    "settings-feedback-body": "Help us improve Miitti App by giving feedback.",
+    "settings-contact-button": "Contact support",
+    "settings-privacy-policy-button": "Privacy policy",
+    "settings-terms-of-service-button": "Terms & conditions",
+    "settings-current-version-text": "Current version",
+    "settings-push-notifications-title": "Push notifications",
+    "settings-sign-out-button": "Sign out"
 }

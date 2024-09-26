@@ -16,17 +16,40 @@ import 'dart:convert';
 
 import 'package:permission_handler/permission_handler.dart';
 
-class PushNotificationService {
+final pushNotificationServiceProvider = StateNotifierProvider<PushNotificationService, bool>((ref) {
+  return PushNotificationService(ref);
+});
+
+class PushNotificationService extends StateNotifier<bool> {
   final Ref ref;
   static BuildContext get context => rootNavigatorKey.currentContext!;
   final _firebaseMessaging = FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  PushNotificationService(this.ref);
+  PushNotificationService(this.ref) : super(false);
+
+  bool get isNotificationsEnabled => state;
+
+  Future<void> setNotificationsEnabled(bool enabled) async {
+    state = enabled;
+    if (enabled) {
+      await _firebaseMessaging.requestPermission(
+        alert: true,
+        announcement: true,
+        provisional: true,
+        sound: true
+      );
+      listenForeground();
+    } else {
+      await _firebaseMessaging.deleteToken();
+    }
+  }
 
   Future<bool> checkPermission() async {
-    return await Permission.notification.isGranted;
+    final permission = await Permission.notification.isGranted;
+    state = permission;
+    return permission;
   }
 
   Future initialize() async {
