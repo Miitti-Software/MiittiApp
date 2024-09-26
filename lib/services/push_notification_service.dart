@@ -256,6 +256,18 @@ class PushNotificationService {
     }
   }
 
+  Future sendMessageNotification(String receiverToken, String message, MiittiActivity activity, String senderName) async {
+    final config = ref.read(remoteConfigServiceProvider);
+    final language = ref.read(userStateProvider).data.languageSetting;
+    sendNotification(
+      receiverToken,
+      activity.title,
+      "$senderName: $message",
+      config.getNotificationTemplateString('message-notification-type', language),
+      '/activity/${activity.id}/chat/${activity.id}',
+    );
+  }
+
   void sendAcceptedNotification(
       MiittiUser receiver, MiittiActivity activity) async {
     sendNotification(
@@ -289,14 +301,14 @@ class PushNotificationService {
     }
   }
 
-  void sendMessageNotification(String receiverToken, String senderName,
-      MiittiActivity activity, String message) async {
-    sendNotification(
-      receiverToken,
-      "Uusi viesti miitissä ${activity.title}",
-      "$senderName: $message",
-      "message",
-      activity.id,
-    );
-  }
+  // void sendMessageNotification(String receiverToken, String senderName,
+  //     MiittiActivity activity, String message) async {
+  //   sendNotification(
+  //     receiverToken,
+  //     "Uusi viesti miitissä ${activity.title}",
+  //     "$senderName: $message",
+  //     "message",
+  //     activity.id,
+  //   );
+  // }
 }

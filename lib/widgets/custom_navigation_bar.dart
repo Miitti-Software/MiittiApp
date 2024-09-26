@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miitti_app/state/activities_state.dart';
+import 'package:miitti_app/state/user.dart';
 
-class CustomNavigationBar extends StatelessWidget {
+class CustomNavigationBar extends ConsumerWidget {
   final int currentIndex;
   final Function(int) onTap;
 
@@ -11,7 +14,10 @@ class CustomNavigationBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUser = ref.read(userStateProvider).data;
+    final hasNewActivityUpdates = ref.watch(activitiesStateProvider.notifier).hasNewActivityUpdates(currentUser.uid!);
+
     return Container(
       padding: const EdgeInsets.only(left: 30, right: 30, top: 10, bottom: 20),
       decoration: BoxDecoration(
@@ -24,7 +30,7 @@ class CustomNavigationBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildIcon(context, Icons.chat_bubble_outline, 0),
+              _buildIcon(context, Icons.chat_bubble_outline, 0, hasNewActivityUpdates),
               _buildIcon(context, Icons.map_outlined, 1),
               GestureDetector(
                 onTap: () => onTap(2),
@@ -50,20 +56,35 @@ class CustomNavigationBar extends StatelessWidget {
               _buildIcon(context, Icons.person_outline, 4),
             ],
           ),
-            
         ],
       ),
     );
   }
 
-  Widget _buildIcon(context, IconData icon, int index) {
+  Widget _buildIcon(BuildContext context, IconData icon, int index, [bool hasNotification = false]) {
     return GestureDetector(
       onTap: () => onTap(index),
-      child: Icon(
-        icon,
-        color: currentIndex == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
-        size: 38,
-        grade: -25,
+      child: Stack(
+        children: [
+          Icon(
+            icon,
+            color: currentIndex == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+            size: 38,
+          ),
+          if (hasNotification)
+            Positioned(
+              right: 0,
+              top: 0,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

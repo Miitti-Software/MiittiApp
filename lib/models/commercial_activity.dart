@@ -91,7 +91,7 @@ class CommercialActivity extends MiittiActivity {
       'creationTime': creationTime,
       'startTime': startTime,
       'endTime': endTime,
-      'latestActivity': DateTime.now(),
+      'latestActivity': latestActivity,
       'paid': paid,
       'maxParticipants': maxParticipants,
       'participants': participants,
@@ -116,6 +116,7 @@ class CommercialActivity extends MiittiActivity {
   @override
   CommercialActivity addParticipant(MiittiUser user) {
     participants.add(user.uid);
+    latestActivity = DateTime.now();
     participantsInfo[user.uid] = {
       'name': user.name,
       'profilePicture': user.profilePicture,
@@ -130,6 +131,18 @@ class CommercialActivity extends MiittiActivity {
   CommercialActivity removeParticipant(MiittiUser user) {
     participants.remove(user.uid);
     participantsInfo.remove(user.uid);
+    return this;
+  }
+
+  @override
+  CommercialActivity notifyParticipants() {
+    latestActivity = DateTime.now();
+    return this;
+  }
+
+  @override
+  CommercialActivity markSeen(String userId) {
+    participantsInfo[userId]!['lastSeen'] = DateTime.now();
     return this;
   }
 }

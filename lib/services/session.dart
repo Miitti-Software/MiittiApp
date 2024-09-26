@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/user.dart';
 
 class Session with WidgetsBindingObserver {
@@ -39,6 +40,7 @@ class Session with WidgetsBindingObserver {
       // endSession();
     } else if (state == AppLifecycleState.hidden || state == AppLifecycleState.detached || state == AppLifecycleState.paused) {
       ref.read(userStateProvider.notifier).sessionUpdateUserData(begin: false);
+      ref.read(activitiesStateProvider.notifier).sessionUpdateActivitiesData();
       // startTime = Timestamp.now();
     }
   }

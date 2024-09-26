@@ -12,6 +12,7 @@ import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tuple/tuple.dart';
 
 class GeoQueryCondition {
   GeoQueryCondition({
@@ -164,18 +165,54 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     updateState();
   }
 
-  Future<bool> deleteActivity(MiittiActivity activity) async {
-  try {
-    final firestoreService = ref.read(firestoreServiceProvider);
-    await firestoreService.deleteActivity(activity.id);
-    state = state.copyWith(activities: state.activities.where((a) => a.id != activity.id).toList());
-    updateState();
-    return true;
-  } catch (e) {
-    debugPrint('Error deleting activity: $e');
-    return false;
+  void markSeenLocally(MiittiActivity activity) {
+    final seenActivity = Tuple2(activity, DateTime.now());
+    if (!state.seenActivities.any((tuple) => tuple.item1.id == activity.id)) {
+      state = state.copyWith(seenActivities: [...state.seenActivities, seenActivity]);
+    }
   }
-}
+
+  Future<bool> sessionUpdateActivitiesData() async {
+    try {
+      final userState = ref.read(userStateProvider);
+      final userId = userState.uid;
+      if (userId == null) return false;
+
+      final firestoreService = ref.read(firestoreServiceProvider);
+
+      // Filter activities that are marked as seen and the user is a participant
+      final seenActivities = state.activities.where((activity) {
+        return state.seenActivities.any((tuple) => tuple.item1.id == activity.id) && activity.participants.contains(userId);
+      }).toList();
+
+      // Update each seen activity in Firebase
+      for (var activity in seenActivities) {
+        await firestoreService.updateActivity(activity.markSeen(userId).toMap(), activity.id, activity is CommercialActivity);
+      }
+
+      // Clear the seen activities list
+      state = state.copyWith(seenActivities: []);
+
+      updateState();
+      return true;
+    } catch (e) {
+      debugPrint('Error updating activities data: $e');
+      return false;
+    }
+  }
+
+  Future<bool> deleteActivity(MiittiActivity activity) async {
+    try {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      await firestoreService.deleteActivity(activity.id);
+      state = state.copyWith(activities: state.activities.where((a) => a.id != activity.id).toList());
+      updateState();
+      return true;
+    } catch (e) {
+      debugPrint('Error deleting activity: $e');
+      return false;
+    }
+  }
 
 Future<bool> leaveActivity(MiittiActivity activity) async {
   try {
@@ -215,7 +252,7 @@ Future<bool> joinActivity(MiittiActivity activity) async {
     }
     final firestoreService = ref.read(firestoreServiceProvider);
     MiittiActivity updatedActivity = activity.addParticipant(ref.read(userStateProvider).data.toMiittiUser());
-    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+    final success = await firestoreService.updateActivity(updatedActivity.notifyParticipants().markSeen(userState.uid!).toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
     if (!success) return false;
     if (updatedActivity is UserCreatedActivity) {
       ref.read(notificationServiceProvider).sendJoinNotification(updatedActivity);
@@ -241,7 +278,7 @@ Future<bool> requestToJoinActivity(UserCreatedActivity activity) async {
     }
     final firestoreService = ref.read(firestoreServiceProvider);
     UserCreatedActivity updatedActivity = activity.addRequest(ref.read(userStateProvider).uid!);
-    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, activity is CommercialActivity);
+    final success = await firestoreService.updateActivity(updatedActivity.notifyParticipants().markSeen(userState.uid!).toMap(), updatedActivity.id, activity is CommercialActivity);
     if (!success) return false;
     ref.read(userStateProvider.notifier).incrementActivitiesJoined();
     ref.read(analyticsServiceProvider).logActivityJoined(updatedActivity, ref.read(userStateProvider).data.toMiittiUser());
@@ -259,7 +296,7 @@ Future<bool> acceptRequest(String activityId, MiittiUser user) async {
     final firestoreService = ref.read(firestoreServiceProvider);
     final activity = state.activities.firstWhere((a) => a.id == activityId) as UserCreatedActivity;
     final updatedActivity = activity.addParticipant(user);
-    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+    final success = await firestoreService.updateActivity(updatedActivity.notifyParticipants().markSeen(ref.read(userStateProvider).uid!).toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
     if (!success) return false;
     ref.read(notificationServiceProvider).sendRequestAcceptedNotification(updatedActivity);
     state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
@@ -271,21 +308,30 @@ Future<bool> acceptRequest(String activityId, MiittiUser user) async {
   }
 }
 
-Future<bool> declineRequest(String activityId, String userId) async {
-  try {
-    final firestoreService = ref.read(firestoreServiceProvider);
-    final activity = state.activities.firstWhere((a) => a.id == activityId) as UserCreatedActivity;
-    final updatedActivity = activity.removeRequest(userId);
-    final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
-    if (!success) return false;
-    state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
-    updateState();
-    return true;
-  } catch (e) {
-    debugPrint('Error declining request: $e');
-    return false;
+  Future<bool> declineRequest(String activityId, String userId) async {
+    try {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      final activity = state.activities.firstWhere((a) => a.id == activityId) as UserCreatedActivity;
+      final updatedActivity = activity.removeRequest(userId);
+      final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+      if (!success) return false;
+      state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
+      updateState();
+      return true;
+    } catch (e) {
+      debugPrint('Error declining request: $e');
+      return false;
+    }
   }
-}
+
+  bool hasNewActivityUpdates(String userId) {
+    return state.activities.any((activity) {
+      final isParticipant = activity.participants.contains(userId);
+      final lastSeen = activity.participantsInfo[userId]?['lastSeen'];
+      final condition = state.seenActivities.any((tuple) => tuple.item1.id == activity.id && tuple.item2.isAfter(activity.latestActivity));
+      return isParticipant && (lastSeen == null && !condition || lastSeen != null && (activity.latestActivity.isAfter(lastSeen)) && !condition);
+    });
+  }
 
   void updateState() {
     final userState = ref.read(userStateProvider);
@@ -339,6 +385,7 @@ class ActivitiesStateData {
   final List<MiittiActivity> othersActivities;
   final List<MiittiActivity> requestedActivities;
   final List<MiittiActivity> participatingActivities;
+  final List<Tuple2<MiittiActivity, DateTime>> seenActivities;
   final SuperclusterMutableController clusterController;
 
   ActivitiesStateData({
@@ -347,6 +394,7 @@ class ActivitiesStateData {
     this.othersActivities = const [],
     this.requestedActivities = const [],
     this.participatingActivities = const [],
+    this.seenActivities = const [],
     SuperclusterMutableController? clusterController,
   }) : clusterController = clusterController ?? SuperclusterMutableController();
 
@@ -356,6 +404,7 @@ class ActivitiesStateData {
     List<MiittiActivity>? othersActivities,
     List<MiittiActivity>? requestedActivities,
     List<MiittiActivity>? participatingActivities,
+    List<Tuple2<MiittiActivity, DateTime>>? seenActivities,
     SuperclusterMutableController? clusterController,
   }) {
     return ActivitiesStateData(
@@ -364,6 +413,7 @@ class ActivitiesStateData {
       othersActivities: othersActivities ?? this.othersActivities,
       requestedActivities: requestedActivities ?? this.requestedActivities,
       participatingActivities: participatingActivities ?? this.participatingActivities,
+      seenActivities: seenActivities ?? this.seenActivities,
       clusterController: clusterController ?? this.clusterController,
     );
   }

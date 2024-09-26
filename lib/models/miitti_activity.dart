@@ -40,4 +40,6 @@ abstract class MiittiActivity {
   Map<String, dynamic> toMap();
   MiittiActivity addParticipant(MiittiUser user);
   MiittiActivity removeParticipant(MiittiUser user);
+  MiittiActivity notifyParticipants();
+  MiittiActivity markSeen(String userId);
 }

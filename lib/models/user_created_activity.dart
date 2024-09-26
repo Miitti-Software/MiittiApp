@@ -90,7 +90,7 @@ class UserCreatedActivity extends MiittiActivity {
       'creationTime': creationTime,
       'startTime': startTime,
       'endTime': endTime,
-      'latestActivity': DateTime.now(),
+      'latestActivity': latestActivity,
       'paid': paid,
       'maxParticipants': maxParticipants,
       'participants': participants,
@@ -102,7 +102,7 @@ class UserCreatedActivity extends MiittiActivity {
           'longitude': (value['location'] as LatLng).longitude,
         } : null,
         'joined': value['joined'],
-        'lastSeen': DateTime.now(),
+        'lastSeen': value['lastSeen'],
         'lastReadMessage': value['lastReadMessage'],
       })),
       'requiresRequest': requiresRequest,
@@ -114,6 +114,7 @@ class UserCreatedActivity extends MiittiActivity {
   }
 
   UserCreatedActivity addRequest(String userId) {
+    latestActivity = DateTime.now();
     requests.add(userId);
     return this;
   }
@@ -126,6 +127,7 @@ class UserCreatedActivity extends MiittiActivity {
   @override
   UserCreatedActivity addParticipant(MiittiUser user) {
     participants.add(user.uid);
+    latestActivity = DateTime.now();
     participantsInfo[user.uid] = {
       'name': user.name,
       'profilePicture': user.profilePicture,
@@ -141,6 +143,20 @@ class UserCreatedActivity extends MiittiActivity {
   UserCreatedActivity removeParticipant(MiittiUser user) {
     requests.remove(user.uid);
     participants.remove(user.uid);
+    return this;
+  }
+
+  @override
+  UserCreatedActivity notifyParticipants() {
+    latestActivity = DateTime.now();
+    return this;
+  }
+
+  @override
+  UserCreatedActivity markSeen(String userId) {
+    if (participants.contains(userId)) {
+      participantsInfo[userId]!['lastSeen'] = DateTime.now();
+    }
     return this;
   }
 }

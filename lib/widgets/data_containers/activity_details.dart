@@ -176,6 +176,8 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
         final maxParticipants = activity.maxParticipants;
         final currentParticipants = activity.participants.length;
 
+        Future((() => ref.read(activitiesStateProvider.notifier).markSeenLocally(activity)));
+
         return SafeArea(
           child: Container(
             decoration: const BoxDecoration(
