@@ -100,7 +100,9 @@ class SettingsScreen extends ConsumerWidget {
                 child: ForwardButton(
                   onPressed: () async {
                     context.go('/login');
-                    await userState.signOut();
+                    Future.delayed(const Duration(milliseconds: 500), () async {
+                      await userState.signOut();
+                    });
                   },
                   buttonText: config.get<String>('settings-sign-out-button'),
                 ),
