@@ -1,42 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:miitti_app/constants/app_style.dart';
+//TODO: Seperate styles
 class ConfirmDialog extends StatelessWidget {
   final String title;
   final String mainText;
-  final String leftButtonText;
-  final String rightButtonText;
+  final String cancelButtonText;
+  final String confirmButtonText;
 
   const ConfirmDialog({
     required this.title,
     required this.mainText,
-    this.leftButtonText = 'Poista',
-    this.rightButtonText = 'Peruuta',
+    required this.cancelButtonText,
+    required this.confirmButtonText,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: AppColors.darkPurpleColor,
+      backgroundColor: AppStyle.darkPurple,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Sora',
-          fontSize: 20.0.sp,
+          fontSize: 20.0,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
       ),
       content: Text(
         mainText,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Rubik',
-          fontSize: 16.0.sp,
+          fontSize: 16.0,
           color: Colors.white70,
         ),
       ),
@@ -54,7 +53,7 @@ class ConfirmDialog extends StatelessWidget {
             ),
           ),
           child: Text(
-            rightButtonText,
+            confirmButtonText,
             style: const TextStyle(
               fontFamily: 'Rubik',
               fontSize: 16.0,
@@ -68,14 +67,14 @@ class ConfirmDialog extends StatelessWidget {
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red.shade600, // Set the button color
-            foregroundColor: Colors.white, // Set the text color
+            backgroundColor: AppStyle.red, // Set the button color
+            foregroundColor: AppStyle.white, // Set the text color
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
           ),
           child: Text(
-            leftButtonText,
+            cancelButtonText,
             style: const TextStyle(
               fontFamily: 'Rubik',
               fontSize: 16.0,

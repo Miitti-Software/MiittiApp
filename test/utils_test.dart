@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:miitti_app/functions/utils.dart';
 
 void main() {
   test('validatePhoneNumber should return true for valid phone numbers', () {
@@ -38,8 +38,16 @@ void main() {
     const birthDateString = '23/07/2000';
     const expectedAge = 23;
 
+    //Split birthdate string into day, month and year
+    final birthDate = birthDateString.split('/');
+    final day = int.parse(birthDate[0]);
+    final month = int.parse(birthDate[1]);
+    final year = int.parse(birthDate[2]);
+
+    final timestamp = DateTime(year, month, day);
+
     // Act
-    final age = calculateAge(birthDateString);
+    final age = calculateAge(timestamp);
 
     // Assert
     expect(age, expectedAge);

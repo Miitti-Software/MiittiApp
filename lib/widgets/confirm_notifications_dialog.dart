@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
-import 'package:miitti_app/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/widgets/other_widgets.dart';
 
-class ConfirmNotificationsDialog extends StatelessWidget {
+class ConfirmNotificationsDialog extends ConsumerWidget {
   const ConfirmNotificationsDialog({super.key, required this.nextPage});
 
   final Function nextPage;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -21,14 +22,14 @@ class ConfirmNotificationsDialog extends StatelessWidget {
             Container(
               alignment: Alignment.bottomCenter,
               decoration: const BoxDecoration(
-                color: ConstantStyles.black,
+                color: AppStyle.black,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.all(10.w),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   children: [
                     const Divider(
@@ -39,21 +40,22 @@ class ConfirmNotificationsDialog extends StatelessWidget {
                     ),
                     Text(
                       'Hei!',
-                      style: ConstantStyles.title,
+                      style: AppStyle.title,
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
                         'Oletko aivan varma valinnastasi. Sovellusilmoitukset ovat sinua varten. Missaat paljon ilman niitä.',
-                        style: ConstantStyles.body,
+                        style: AppStyle.body,
                       ),
                     ),
                     getSomeSpace(10),
-                    CustomButton(
+                    MyButton(
                       buttonText: 'Hyväksy ilmoitukset',
                       onPressed: () async {
-                        bool granted =
-                            await PushNotifications.requestPermission(true);
+                        bool granted = await ref
+                            .read(notificationServiceProvider)
+                            .requestPermission(true);
                         if (granted) {
                           if (context.mounted) {
                             Navigator.pop(context);
@@ -64,13 +66,13 @@ class ConfirmNotificationsDialog extends StatelessWidget {
                             showSnackBar(
                                 context,
                                 "Sinun täytyy sallia ilmoitukset myös laitteeltasi jatkaaksesi",
-                                ConstantStyles.red);
+                                AppStyle.red);
                           }
                         }
                       },
                     ), //Removed extra padding in ConstantsCustomButton
-                    ConstantStyles().gapH10,
-                    CustomButton(
+                    gapH10,
+                    MyButton(
                       buttonText: 'Ei vielä',
                       isWhiteButton: true,
                       onPressed: () {
@@ -78,7 +80,7 @@ class ConfirmNotificationsDialog extends StatelessWidget {
                         nextPage();
                       },
                     ), //Removed extra padding in ConstantsCustomButton
-                    getSomeSpace(10.h),
+                    getSomeSpace(10),
                   ],
                 ),
               ),

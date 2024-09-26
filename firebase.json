@@ -11,11 +11,98 @@
         "node_modules",
         ".git",
         "firebase-debug.log",
-        "firebase-debug.*.log"
+        "firebase-debug.*.log",
+        "*.local"
       ],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint"
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
-  ]
+  ],
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "miitti-app",
+          "appId": "1:261026197907:android:09668553c4cfb03265f866",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/envs/firebase_prod_configuration.dart": {
+          "projectId": "miitti-app",
+          "configurations": {
+            "android": "1:261026197907:android:09668553c4cfb03265f866",
+            "ios": "1:261026197907:ios:6ebb8041e71b845a65f866"
+          }
+        },
+        "lib/envs/firebase_dev_configuration.dart": {
+          "projectId": "miittiappdev",
+          "configurations": {
+            "android": "1:82682289256:android:162f15484eab426ec0afdd",
+            "ios": "1:82682289256:ios:4a0550a73f7caa77c0afdd"
+          }
+        },
+        "lib/envs/firebase_stag_configuration.dart": {
+          "projectId": "miittiappstage",
+          "configurations": {
+            "android": "1:377453260995:android:96c8db20dbb3c1a3a63276",
+            "ios": "1:377453260995:ios:13bdc56602c749a7a63276"
+          }
+        }
+      }
+    }
+  },
+  "emulators": {
+    "auth": {
+      "host": "0.0.0.0",
+      "port": 9099
+    },
+    "functions": {
+      "host": "0.0.0.0",
+      "port": 5001
+    },
+    "firestore": {
+      "host": "0.0.0.0",
+      "port": 8080
+    },
+    "storage": {
+      "host": "0.0.0.0",
+      "port": 9199
+    },
+    "ui": {
+      "host": "0.0.0.0",
+      "enabled": true
+    },
+    "singleProjectMode": true
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "remoteconfig": {},
+  "hosting": {
+    "public": "public",
+    "headers": [
+      {
+        "source": "/.well-known/*",
+        "headers": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "content-type", "value": "application/json"}
+        ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "**",
+        "destination": "https://www.miitti.app/",
+        "type": 301
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
 }

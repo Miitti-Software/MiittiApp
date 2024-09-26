@@ -1,0 +1,29 @@
+{
+    "generic-channel-id": "generic-channel-id",
+    "generic-channel-name": "Generic",
+    "generic-channel-description": "Generic channel for all notifications ranging from requests and invitations to messages, reminders, updates and campaigns.",
+    "generic-ticker-text": "You have a new notification",
+    
+    "invite-notification-title": "Miitti Invite",
+    "invite-notification-body": "has invited you to join",
+    "invite-notification-type": "Invite",
+
+    "join-request-notification-title": "Join Request",
+    "join-request-notification-body": "has requested to join you in",
+    "join-request-notification-type": "Request",
+
+    "join-notification-title": "Joined",
+    "join-notification-body": "has joined you in",
+    "join-notification-type": "Join",
+
+    "cancel-notification-title": "Cancelled",
+    "cancel-notification-body": "has unfortunately cancelled joining you in",
+    "cancel-notification-type": "Cancel",
+
+    "request-accepted-notification-title": "Request Accepted",
+    "request-accepted-notification-body": "has accepted your request to join",
+    "request-accepted-notification-type": "Accept",
+
+    "message-notification-type": "Message"
+}
+

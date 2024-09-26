@@ -1,0 +1,258 @@
+{
+    "exercise": {
+        "name": "Exercise",
+        "emoji": "👟"
+    },
+    "outdoors": {
+        "name": "Outdoors",
+        "emoji": "🌳"
+    },
+    "adventure": {
+        "name": "Adventure",
+        "emoji": "🚀"
+    },
+    "football": {
+        "name": "Football",
+        "emoji": "⚽️"
+    },
+    "basketball": {
+        "name": "Basketball",
+        "emoji": "🏀"
+    },
+    "volleyball": {
+        "name": "Volleyball",
+        "emoji": "🏐"
+    },
+    "ball-games": {
+        "name": "Ball games",
+        "emoji": "⛹️"
+    },
+    "frisbee": {
+        "name": "Frisbee",
+        "emoji": "🥏"
+    },
+    "badminton": {
+        "name": "Badminton",
+        "emoji": "🏸"
+    },
+    "table-tennis": {
+        "name": "Table tennis",
+        "emoji": "🏓"
+    },
+    "racket-sports": {
+        "name": "Racket sports",
+        "emoji": "🏸"
+    },
+    "ice-hockey": {
+        "name": "Ice hockey",
+        "emoji": "🏒"
+    },
+    "gym": {
+        "name": "Gym",
+        "emoji": "🏋️"
+    },
+    "eating": {
+        "name": "Eating",
+        "emoji": "🍔"
+    },
+    "coffee": {
+        "name": "Coffee",
+        "emoji": "☕"
+    },
+    "hangout": {
+        "name": "Hangout",
+        "emoji": "💬"
+    },
+
+
+    "concert": {
+        "name": "Concert",
+        "emoji": "🎫"
+    },
+
+
+    "museum": {
+        "name": "Museum",
+        "emoji": "🏛️"
+    },
+    "theatre": {
+        "name": "Theatre",
+        "emoji": "🎭"
+    },
+    "cinema": {
+        "name": "Cinema",
+        "emoji": "🎥"
+    },
+    "drinks": {
+        "name": "Drinks",
+        "emoji": "🥂"
+    },
+    "board-games": {
+        "name": "Board games",
+        "emoji": "🎲"
+    },
+    "studying": {
+        "name": "Studying",
+        "emoji": "📚"
+    },
+    "traveling": {
+        "name": "Traveling",
+        "emoji": "✈️"
+    },
+    "photography": {
+        "name": "Photography",
+        "emoji": "📸"
+    },
+    "party": {
+        "name": "Party",
+        "emoji": "🥳"
+    },
+    "bar-crawl": {
+        "name": "Bar crawl",
+        "emoji": "🍻"
+    },
+    "dancing": {
+        "name": "Dancing",
+        "emoji": "💃"
+    },
+    "festival": {
+        "name": "Festival",
+        "emoji": "🎉"
+    },
+    "sauna": {
+        "name": "Sauna",
+        "emoji": "🧖"
+    },
+    "snowboarding": {
+        "name": "Snowboarding",
+        "emoji": "🏂"
+    },
+    "alpine-skiing": {
+        "name": "Alpine skiing",
+        "emoji": "⛷️"
+    },
+    "winter-sports": {
+        "name": "Winter sports",
+        "emoji": "🎿"
+    },
+    "ice-skating": {
+        "name": "Ice skating",
+        "emoji": "⛸️"
+    },
+    "roadtrip": {
+        "name": "Roadtrip",
+        "emoji": "🚘"
+    },
+    "hiking": {
+        "name": "Hiking",
+        "emoji": "🥾"
+    },
+    "climbing": {
+        "name": "Climbing",
+        "emoji": "🧗"
+    },
+    "cycling": {
+        "name": "Cycling",
+        "emoji": "🚴"
+    },
+    "running": {
+        "name": "Running",
+        "emoji": "🏃"
+    },
+    "swimming": {
+        "name": "Swimming",
+        "emoji": "🏊"
+    },
+    "gaming": {
+        "name": "Gaming",
+        "emoji": "🎮"
+    },
+    "skateboarding": {
+        "name": "Skateboarding",
+        "emoji": "🛹"
+    },
+    "camping": {
+        "name": "Camping",
+        "emoji": "🏕️"
+    },
+    "playdate": {
+        "name": "Playdate",
+        "emoji": "🛝"
+    },
+    "bookclub": {
+        "name": "Book club",
+        "emoji": "📖"
+    },
+    "bowling": {
+        "name": "Bowling",
+        "emoji": "🎳"
+    },
+    "golf": {
+        "name": "Golf",
+        "emoji": "⛳"
+    },
+    "sightseeing": {
+        "name": "Sightseeing",
+        "emoji": "🏞️"
+    },
+    "crafts": {
+        "name": "Crafts",
+        "emoji": "✂️"
+    },
+    "jamming": {
+        "name": "Jamming",
+        "emoji": "🎸"
+    },
+    "shopping": {
+        "name": "Shopping",
+        "emoji": "🛍️"
+    },
+    "street-performance": {
+        "name": "Street performance",
+        "emoji": "👀"
+    },
+    "stand-up": {
+        "name": "Stand-up",
+        "emoji": "🎤"
+    },
+    "parkour": {
+        "name": "Parkour",
+        "emoji": "🤸"
+    },
+    "combat-sports": {
+        "name": "Combat sports",
+        "emoji": "🥋"
+    },
+    "water-sports": {
+        "name": "Water sports",
+        "emoji": "🏄"
+    },
+    "music": {
+        "name": "Music",
+        "emoji": "🎵"
+    },
+    "volunteering": {
+        "name": "Volunteering",
+        "emoji": "🤝"
+    },
+    "language-exchange": {
+        "name": "Language exchange",
+        "emoji": "🌐"
+    },
+    "help": {
+        "name": "Help request",
+        "emoji": "🙋‍♂️"
+    },
+    "building": {
+        "name": "Building",
+        "emoji": "🛠️"
+    },
+    "coworking": {
+        "name": "Coworking",
+        "emoji": "👨‍💻"
+    },
+    "other-activity": {
+        "name": "Other",
+        "emoji": "🃏"
+    }
+}

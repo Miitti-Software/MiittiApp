@@ -1,5 +1,11 @@
 {
   "projects": {
-    "default": "miittiapp-8182e"
-  }
+    "default": "miitti-app",
+    "production": "miitti-app",
+    "development": "miittiappdev",
+    "staging": "miittiappstage"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

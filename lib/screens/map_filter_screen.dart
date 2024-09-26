@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/widgets/safe_scaffold.dart';
 
-import '../utils/filter_settings.dart';
+import '../functions/filter_settings.dart';
 
 //TODO: New UI
 class MapFilter extends StatefulWidget {
@@ -58,13 +58,13 @@ class _MapFilterState extends State<MapFilter> {
 
   Widget makeToggleSwitch(String textValue, bool value, String target) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10.0.w),
+      margin: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
         children: [
           Text(
             textValue,
-            style: TextStyle(
-              fontSize: 19.sp,
+            style: const TextStyle(
+              fontSize: 19,
               color: Colors.white,
               fontFamily: 'Rubik',
             ),
@@ -75,8 +75,8 @@ class _MapFilterState extends State<MapFilter> {
             onChanged: (comingValue) {
               toggleSwitch(target);
             },
-            activeColor: AppColors.purpleColor,
-            activeTrackColor: AppColors.lightPurpleColor,
+            activeColor: AppStyle.violet,
+            activeTrackColor: AppStyle.lightPurple,
           ),
         ],
       ),
@@ -85,115 +85,107 @@ class _MapFilterState extends State<MapFilter> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(8.0.w),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      saveValues();
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 60.w,
-                      width: 60.w,
-                      decoration: BoxDecoration(
+    return SafeScaffold(
+      Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    saveValues();
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    height: 60,
+                    width: 60,
+                    decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppColors.lightRedColor,
-                            AppColors.orangeColor,
-                          ],
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 30.r,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 8,
-                  ),
-                  Text(
-                    'Suodata miittejä',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 21.sp,
+                        gradient: AppStyle.pinkGradient),
+                    child: const Icon(
+                      Icons.arrow_back,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Rubik',
+                      size: 30,
                     ),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 30.h,
-            ),
-            makeToggleSwitch(
-              'Hae vain samaa sukupuolta',
-              searchSameGender,
-              'sameGender',
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            makeToggleSwitch(
-              'Hae useamman ihmisen miittejä',
-              searchMultiplePeople,
-              'multiplePeople',
-            ),
-            SizedBox(
-              height: 80.h,
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10.0.w),
-              child: Row(
-                children: [
-                  Text(
-                    'Ikähaarukka',
-                    style: TextStyle(
-                      fontSize: 19.sp,
-                      color: Colors.white,
-                      fontFamily: 'Rubik',
-                    ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 8,
+                ),
+                const Text(
+                  'Suodata miittejä',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 21,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Rubik',
                   ),
-                  const Expanded(child: SizedBox()),
-                  Text(
-                    "${_values.start.toStringAsFixed(0)} - ${_values.end.toStringAsFixed(0)}",
-                    style: TextStyle(
-                      fontSize: 19.sp,
-                      color: Colors.white,
-                      fontFamily: 'Rubik',
-                    ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          makeToggleSwitch(
+            'Hae vain samaa sukupuolta',
+            searchSameGender,
+            'sameGender',
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          makeToggleSwitch(
+            'Hae useamman ihmisen miittejä',
+            searchMultiplePeople,
+            'multiplePeople',
+          ),
+          const SizedBox(
+            height: 80,
+          ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Row(
+              children: [
+                const Text(
+                  'Ikähaarukka',
+                  style: TextStyle(
+                    fontSize: 19,
+                    color: Colors.white,
+                    fontFamily: 'Rubik',
                   ),
-                ],
-              ),
+                ),
+                const Expanded(child: SizedBox()),
+                Text(
+                  "${_values.start.toStringAsFixed(0)} - ${_values.end.toStringAsFixed(0)}",
+                  style: const TextStyle(
+                    fontSize: 19,
+                    color: Colors.white,
+                    fontFamily: 'Rubik',
+                  ),
+                ),
+              ],
             ),
-            RangeSlider(
-              values: _values,
-              min: 18,
-              max: 80,
-              activeColor: AppColors.purpleColor,
-              inactiveColor: AppColors.lightPurpleColor,
-              onChanged: (RangeValues newValues) {
-                setState(() {
-                  _values = newValues;
-                });
-              },
-              labels: RangeLabels(
-                _values.start.toStringAsFixed(0),
-                _values.end.toStringAsFixed(0),
-              ),
+          ),
+          RangeSlider(
+            values: _values,
+            min: 18,
+            max: 80,
+            activeColor: AppStyle.violet,
+            inactiveColor: AppStyle.lightPurple,
+            onChanged: (RangeValues newValues) {
+              setState(() {
+                _values = newValues;
+              });
+            },
+            labels: RangeLabels(
+              _values.start.toStringAsFixed(0),
+              _values.end.toStringAsFixed(0),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -4,32 +4,37 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/constants/constants_styles.dart';
-import 'package:miitti_app/data/commercial_spot.dart';
-import 'package:miitti_app/data/onboarding_part.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/activity.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/utils.dart';
-import 'package:miitti_app/widgets/custom_button.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/constants/genders.dart';
+import 'package:miitti_app/models/commercial_spot.dart';
+import 'package:miitti_app/models/onboarding_part.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/widgets/buttons/backward_button.dart';
+import 'package:miitti_app/widgets/buttons/custom_button.dart';
 import 'package:location/location.dart' as location;
+import 'package:miitti_app/widgets/buttons/forward_button.dart';
+import 'package:miitti_app/widgets/data_containers/commercial_spot.dart';
 import 'package:miitti_app/widgets/other_widgets.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 
-class CreateMiittiOnboarding extends StatefulWidget {
+class CreateMiittiOnboarding extends ConsumerStatefulWidget {
   const CreateMiittiOnboarding({super.key});
 
   @override
-  State<CreateMiittiOnboarding> createState() => _CreateMiittiOnboardingState();
+  ConsumerState<CreateMiittiOnboarding> createState() =>
+      _CreateMiittiOnboardingState();
 }
 
-class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
+class _CreateMiittiOnboardingState
+    extends ConsumerState<CreateMiittiOnboarding> {
   late PageController _pageController;
 
   final List<ConstantsOnboarding> onboardingScreens = [
@@ -133,9 +138,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
   }*/
 
   void fetchSpots() {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: false);
-
-    ap.fetchCommercialSpots().then((value) {
+    ref.read(firestoreServiceProvider).fetchCommercialSpots(favoriteActivity).then((value) {
       setState(() {
         spots = value;
       });
@@ -167,30 +170,29 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   });
                 },
                 child: Container(
-                  width: 100.w,
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10.h,
-                    horizontal: 5.h,
+                  width: 100,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 5,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        isSelected ? ConstantStyles.pink : Colors.transparent,
+                    color: isSelected ? AppStyle.pink : Colors.transparent,
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10.0),
                     ),
-                    border: Border.all(color: ConstantStyles.pink),
+                    border: Border.all(color: AppStyle.pink),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
                         Activity.getActivity(activity).emojiData,
-                        style: ConstantStyles.title,
+                        style: AppStyle.title,
                       ),
                       Text(
                         Activity.getActivity(activity).name,
                         overflow: TextOverflow.ellipsis,
-                        style: ConstantStyles.warning.copyWith(
+                        style: AppStyle.warning.copyWith(
                           color: Colors.white,
                         ),
                       ),
@@ -207,8 +209,8 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 300.w,
-                width: 350.w,
+                height: 300,
+                width: 350,
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   child: FutureBuilder(
@@ -226,7 +228,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                             //mapController: mapController,
                             options: MapOptions(
                               keepAlive: true,
-                              backgroundColor: AppColors.backgroundColor,
+                              backgroundColor: AppStyle.black,
                               initialCenter: myCameraPosition,
                               initialZoom: 13.0,
                               interactionOptions: const InteractionOptions(
@@ -239,11 +241,11 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                                 debugPrint(
                                     "Location changed ${position.center}");
                                 for (int i = 0; i < spots.length; i++) {
-                                  bool onSpot = (spots[i].lati -
+                                  bool onSpot = (spots[i].latitude -
                                                   position.center!.latitude)
                                               .abs() <
                                           0.0002 &&
-                                      (spots[i].long -
+                                      (spots[i].longitude -
                                                   position.center!.longitude)
                                               .abs() <
                                           0.0002;
@@ -273,7 +275,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                               Center(
                                 child: Image.asset(
                                   'images/location.png',
-                                  height: 65.h,
+                                  height: 65,
                                 ),
                               ),
                             ]);
@@ -296,12 +298,12 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                         initialCameraPosition: myCameraPosition,
                         onCameraIdle: () {
                           for (int i = 0; i < spots.length; i++) {
-                            bool onSpot = (spots[i].lati -
+                            bool onSpot = (spots[i].latitude -
                                             mapController.cameraPosition!.target
                                                 .latitude)
                                         .abs() <
                                     0.0002 &&
-                                (spots[i].long -
+                                (spots[i].longitude -
                                             mapController.cameraPosition!.target
                                                 .longitude)
                                         .abs() <
@@ -321,14 +323,14 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                       ),*/
                 ),
               ),
-              ConstantStyles().gapH20,
+              gapH20,
               spots.isNotEmpty
                   ? Text(
                       "Valitse Miitti-Spotti:",
-                      style: ConstantStyles.activityName,
+                      style: AppStyle.activityName,
                     )
                   : Container(),
-              ConstantStyles().gapH5,
+              gapH5,
               spots.isNotEmpty
                   ? Expanded(
                       child: ValueListenableBuilder<int>(
@@ -342,11 +344,13 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                                     onTap: () => setState(() {
                                           selectedSpotNotifier.value = index;
                                           myCameraPosition = LatLng(
-                                              spots[index].lati,
-                                              spots[index].long);
+                                              spots[index].latitude,
+                                              spots[index].longitude);
                                         }),
-                                    child: spots[index]
-                                        .getWidget(index == selectedSpot));
+                                    child: CommercialSpotWidget(
+                                        spot: spots[index],
+                                        highlight: index == selectedSpot,
+                                      ));
                               },
                             );
                           }),
@@ -360,24 +364,24 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              OtherWidgets().getCustomTextFormField(
+              getCustomTextFormField(
                 controller: titleController,
                 hintText: 'Miittisi ytimekäs otsikko',
-                maxLength: 30,
+                maxLength: 100,
                 maxLines: 1,
               ),
-              ConstantStyles().gapH20,
-              OtherWidgets().getCustomTextFormField(
+              gapH20,
+              getCustomTextFormField(
                 controller: subTitleController,
                 hintText: 'Mitä muuta haluaisit kertoa miitistä?',
-                maxLength: 150,
+                maxLength: 5000,
                 maxLines: 4,
               ),
-              ConstantStyles().gapH20,
+              gapH20,
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CupertinoSwitch(
-                  activeColor: ConstantStyles.pink,
+                  activeColor: AppStyle.pink,
                   value: isActivityFree,
                   onChanged: (bool value) {
                     setState(() {
@@ -389,18 +393,18 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   isActivityFree
                       ? 'Maksuton, ei vaadi pääsylippua'
                       : "Maksullinen, vaatii pääsylipun",
-                  style: ConstantStyles.activityName.copyWith(
+                  style: AppStyle.activityName.copyWith(
                     fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
-              ConstantStyles().gapH10,
+              gapH10,
               SliderTheme(
                 data: SliderThemeData(
                   overlayShape: SliderComponentShape.noOverlay,
                 ),
                 child: Slider(
-                  activeColor: ConstantStyles.pink,
+                  activeColor: AppStyle.pink,
                   value: activityParticipantsCount,
                   min: 2,
                   max: 10,
@@ -412,21 +416,21 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   },
                 ),
               ),
-              ConstantStyles().gapH10,
+              gapH10,
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   "${activityParticipantsCount.round()} osallistujaa",
-                  style: ConstantStyles.activityName.copyWith(
+                  style: AppStyle.activityName.copyWith(
                     fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
-              ConstantStyles().gapH10,
+              gapH10,
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CupertinoSwitch(
-                  activeColor: ConstantStyles.pink,
+                  activeColor: AppStyle.pink,
                   value: isActivityTimeUndefined,
                   onChanged: (bool value) {
                     setState(() {
@@ -448,7 +452,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   isActivityTimeUndefined
                       ? 'Sovitaan tarkempi aika myöhemmin'
                       : timestampToString(activityTime),
-                  style: ConstantStyles.activityName.copyWith(
+                  style: AppStyle.activityName.copyWith(
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -462,8 +466,8 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 300.w,
-                width: 350.w,
+                height: 300,
+                width: 350,
                 child: Stack(
                   children: [
                     ClipRRect(
@@ -482,7 +486,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                             return FlutterMap(
                                 options: MapOptions(
                                     keepAlive: true,
-                                    backgroundColor: AppColors.backgroundColor,
+                                    backgroundColor: AppStyle.black,
                                     initialCenter: myCameraPosition,
                                     initialZoom: 13.0,
                                     interactionOptions:
@@ -509,42 +513,42 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                     Center(
                       child: Image.asset(
                         'images/${Activity.solveActivityId(favoriteActivity)}.png',
-                        height: 65.h,
+                        height: 65,
                       ),
                     ),
                   ],
                 ),
               ),
-              ConstantStyles().gapH20,
+              gapH20,
               Text(
                 titleController.text.trim(),
-                style: ConstantStyles.body.copyWith(fontSize: 24.sp),
+                style: AppStyle.body.copyWith(fontSize: 24),
               ),
-              ConstantStyles().gapH10,
+              gapH10,
               Row(
                 children: [
                   const Icon(
                     Icons.calendar_month,
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                   ),
-                  ConstantStyles().gapW10,
+                  gapW10,
                   Text(
                     isActivityTimeUndefined
                         ? 'Sovitaan myöhemmin'
                         : timestampToString(activityTime),
-                    style: ConstantStyles.activitySubName,
+                    style: AppStyle.activitySubName,
                   ),
-                  ConstantStyles().gapW20,
+                  gapW20,
                   const Icon(
                     Icons.map_outlined,
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                   ),
-                  ConstantStyles().gapW10,
+                  gapW10,
                   Flexible(
                     child: Text(
                       activityCity,
                       overflow: TextOverflow.ellipsis,
-                      style: ConstantStyles.activitySubName.copyWith(
+                      style: AppStyle.activitySubName.copyWith(
                         decoration: TextDecoration.underline,
                         decorationColor: Colors.white,
                       ),
@@ -552,35 +556,35 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                   ),
                 ],
               ),
-              ConstantStyles().gapH5,
+              gapH5,
               Row(
                 children: [
                   const Icon(
                     Icons.account_balance_wallet_outlined,
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                   ),
-                  ConstantStyles().gapW10,
+                  gapW10,
                   Text(
                     isActivityFree ? 'Maksuton' : 'Pääsymaksu',
                     textAlign: TextAlign.center,
-                    style: ConstantStyles.activitySubName,
+                    style: AppStyle.activitySubName,
                   ),
-                  ConstantStyles().gapW20,
+                  gapW20,
                   const Icon(
                     Icons.people_outline,
-                    color: ConstantStyles.pink,
+                    color: AppStyle.pink,
                   ),
-                  ConstantStyles().gapW10,
+                  gapW10,
                   Text(
                     'max. ${activityParticipantsCount.round()} osallistujaa',
-                    style: ConstantStyles.activitySubName,
+                    style: AppStyle.activitySubName,
                   ),
                 ],
               ),
-              ConstantStyles().gapH10,
+              gapH10,
               Text(
                 subTitleController.text.trim(),
-                style: ConstantStyles.question,
+                style: AppStyle.question,
               ),
             ],
           ),
@@ -590,7 +594,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
           return const Expanded(
             child: Center(
               child: CircularProgressIndicator(
-                backgroundColor: ConstantStyles.pink,
+                backgroundColor: AppStyle.pink,
               ),
             ),
           );
@@ -639,7 +643,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
           showSnackBar(
             context,
             'Valitse 1 sopivaa kategoria miittillesi!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -656,7 +660,7 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
           showSnackBar(
             context,
             'Varmista, että olet täyttänyt kaikki kohdat!',
-            ConstantStyles.red,
+            AppStyle.red,
           );
           return;
         }
@@ -669,34 +673,38 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
       );
     } else {
       //Register miitti
-      PersonActivity activity = PersonActivity(
-        activityTitle: titleController.text.trim(),
-        activityDescription: subTitleController.text.trim(),
-        activityCategory: favoriteActivity,
-        admin: '',
-        activityUid: '',
-        activityLong: markerCoordinates!.longitude,
-        activityLati: markerCoordinates!.latitude,
-        activityAdress: activityCity,
-        activityTime: activityTime,
-        isMoneyRequired: !isActivityFree,
-        personLimit: activityParticipantsCount.round(),
-        participants: {},
-        requests: {},
-        adminGender: '',
-        adminAge: 0,
-        timeDecidedLater: isActivityTimeUndefined,
+      UserCreatedActivity activity = UserCreatedActivity(
+        id: '',
+        title: titleController.text.trim(),
+        description: subTitleController.text.trim(),
+        category: favoriteActivity,
+        longitude: markerCoordinates!.longitude,
+        latitude: markerCoordinates!.latitude,
+        address: activityCity,
+        creator: '',
+        creationTime: DateTime.now(),
+        startTime: activityTime.toDate(),
+        endTime: null,
+        latestActivity: DateTime.now(),
+        paid: !isActivityFree,
+        maxParticipants: activityParticipantsCount.round(),
+        participants: [],
+        participantsInfo: {},
+        requiresRequest: true,
+        requests: [],
+        creatorLanguages: [],
+        creatorGender: Gender.other,
+        creatorAge: 0,
       );
       saveMiittiToFirebase(activity);
     }
   }
 
-  Future<void> saveMiittiToFirebase(PersonActivity personActivity) async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.saveMiittiActivityDataToFirebase(
-      context: context,
-      activityModel: personActivity,
-    );
+  Future<void> saveMiittiToFirebase(UserCreatedActivity personActivity) async {
+    await ref.read(firestoreServiceProvider).saveMiittiActivityDataToFirebase(
+          context: context,
+          activityModel: personActivity,
+        );
   }
 
   @override
@@ -715,39 +723,43 @@ class _CreateMiittiOnboardingState extends State<CreateMiittiOnboarding> {
                 itemBuilder: (context, index) {
                   ConstantsOnboarding screen = onboardingScreens[index];
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ConstantStyles().gapH10,
+                        gapH10,
                         Text(
                           screen.title,
-                          style: ConstantStyles.activityName
-                              .copyWith(fontSize: 20.sp),
+                          style:
+                              AppStyle.activityName.copyWith(fontSize: 20),
                         ),
-                        ConstantStyles().gapH20,
+                        gapH20,
                         mainWidgetsForScreens(index),
-                        ConstantStyles().gapH10,
-                        CustomButton(
-                          buttonText: screen.isFullView == true
-                              ? 'Julkaise'
-                              : 'Seuraava',
-                          onPressed: () => errorHandlingScreens(index),
+                        gapH20,
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ForwardButton(
+                            buttonText: screen.isFullView == true
+                                ? 'Julkaise'
+                                : 'Seuraava',
+                            onPressed: () => errorHandlingScreens(index),
+                          ),
                         ),
-                        ConstantStyles().gapH10,
-                        CustomButton(
-                          buttonText: 'Takaisin',
-                          isWhiteButton: true,
-                          onPressed: () {
-                            if (_pageController.page != 0) {
-                              _pageController.previousPage(
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.linear,
-                              );
-                            } else {
-                              Navigator.pop(context);
-                            }
-                          },
+                        gapH10,
+                        Align(
+                          child: BackwardButton(
+                            buttonText: 'Takaisin',
+                            onPressed: () {
+                              if (_pageController.page != 0) {
+                                _pageController.previousPage(
+                                  duration: const Duration(milliseconds: 500),
+                                  curve: Curves.linear,
+                                );
+                              } else {
+                                Navigator.pop(context);
+                              }
+                            },
+                          ),
                         ),
                       ],
                     ),

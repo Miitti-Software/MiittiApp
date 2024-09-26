@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
+    id 'com.google.firebase.crashlytics'
 }
 
 def localProperties = new Properties()
@@ -24,10 +25,21 @@ if (flutterVersionName == null) {
 }
 
 def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
+def keystoreProductionProperties = new Properties()
+
+def keystorePropertiesFile = rootProject.file('upload-key.properties')
+def keystoreProductionPropertiesFile = rootProject.file('production-key.properties')
+
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
+
+if (keystoreProductionPropertiesFile.exists()) {
+    keystoreProductionProperties.load(new FileInputStream(keystoreProductionPropertiesFile))
+}
+
+println("keystoreProperties: " + keystoreProperties)
+println("keystoreProductionProperties: " + keystoreProductionProperties)
 
 android {
     namespace "com.miittisoftwareoy.miitti_app"
@@ -35,6 +47,7 @@ android {
     ndkVersion flutter.ndkVersion
 
     compileOptions {
+        coreLibraryDesugaringEnabled = true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -58,6 +71,7 @@ android {
         multiDexEnabled true
 
     }
+
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -65,15 +79,50 @@ android {
             storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
             storePassword keystoreProperties['storePassword']
         }
+
+        production {
+            keyAlias keystoreProductionProperties['keyAlias']
+            keyPassword keystoreProductionProperties['keyPassword']
+            storeFile keystoreProductionProperties['storeFile'] ? file(keystoreProductionProperties['storeFile']) : null
+            storePassword keystoreProductionProperties['storePassword']
+        }
     }
+
+    flavorDimensions 'default'
+
+    productFlavors {
+        production {
+            dimension 'default'
+            resValue "string", "app_name", "Miitti"
+        }
+
+        development {
+            dimension 'default'
+            applicationIdSuffix '.dev'
+            versionNameSuffix '.dev'
+            resValue "string", "app_name", "Miitti DEV"
+        }
+
+        staging {
+            dimension 'default'
+            applicationIdSuffix '.stg'
+            versionNameSuffix '.stg'
+            resValue "string", "app_name", "Miitti TEST"
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.release // Ensure productionRelease uses the release keystore
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {
-            signingConfig signingConfigs.debug
-            minifyEnabled true
+            // Use the production keystore only for the production flavor debug builds
+            matchingFallbacks = ['debug', 'release']
+            signingConfig signingConfigs.production // Uncomment this line to use the production keystore for all debug builds
+            minifyEnabled true // Disable shrinking for debug builds
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -83,8 +132,8 @@ flutter {
 }
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10"
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.browser:browser:1.5.0"
-
 }

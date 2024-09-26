@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_user.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 
 class AdminUserInfo extends StatefulWidget {
   final MiittiUser user;
@@ -18,10 +17,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
 
   @override
   void initState() {
-    userLastOpenDate = widget.user.userStatus.isEmpty
-        ? ''
-        : DateFormat('MMMM d, HH:mm')
-            .format(DateTime.tryParse(widget.user.userStatus)!);
+    DateFormat('MMMM d, HH:mm').format(widget.user.lastActive);
     super.initState();
   }
 
@@ -29,25 +25,25 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
   Widget createPurpleBox(
       String title, String mainText, BuildContext context, bool isCopy) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10.h),
-      height: 100.h,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      height: 100,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: AppColors.purpleColor,
+        color: AppStyle.violet,
       ),
       child: ListTile(
         title: Text(
           title,
-          style: TextStyle(
-            fontSize: 15.sp,
+          style: const TextStyle(
+            fontSize: 15,
             color: Colors.white,
           ),
         ),
         subtitle: Text(
           mainText,
-          style: TextStyle(
-            fontSize: 18.sp,
+          style: const TextStyle(
+            fontSize: 18,
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -57,9 +53,9 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: mainText));
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.copy,
-                  size: 20.sp,
+                  size: 20,
                   color: Colors.white,
                 ),
               )
@@ -75,11 +71,11 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
         children: <TextSpan>[
           TextSpan(
             text: normalText,
-            style: TextStyle(fontSize: 15.sp),
+            style: const TextStyle(fontSize: 15),
           ),
           TextSpan(
             text: boldedText,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
         ],
       ),
@@ -92,7 +88,7 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 20.w),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -101,41 +97,36 @@ class _AdminUserInfoState extends State<AdminUserInfo> {
                   Navigator.pop(context);
                 },
                 child: Container(
-                  margin: EdgeInsets.only(bottom: 40.h),
-                  height: 60.h,
-                  width: 60.h,
+                  margin: const EdgeInsets.only(bottom: 40),
+                  height: 60,
+                  width: 60,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    gradient: const LinearGradient(
-                      colors: [
-                        AppColors.lightRedColor,
-                        AppColors.orangeColor,
-                      ],
-                    ),
+                    gradient: AppStyle.pinkGradient,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.arrow_back,
                     color: Colors.white,
-                    size: 30.r,
+                    size: 30,
                   ),
                 ),
               ),
-              Text(
+              const Text(
                 'Käyttäjätiedot',
                 style: TextStyle(
-                  fontSize: 20.sp,
+                  fontSize: 20,
                 ),
               ),
-              createPurpleBox('Etunimi', widget.user.userName, context, false),
+              createPurpleBox('Etunimi', widget.user.name, context, false),
               createPurpleBox(
-                  'Sähköposti', widget.user.userEmail, context, true),
+                  'Sähköposti', widget.user.email, context, true),
               createPurpleBox(
-                  'Puhelinnumero', widget.user.userPhoneNumber, context, true),
+                  'Puhelinnumero', widget.user.phoneNumber ?? '', context, true),
               getRichText('Ollut viimeksi aktiivisena:   ', userLastOpenDate),
-              SizedBox(height: 5.h),
-              getRichText(
-                  'Profiili luotu:  ', widget.user.userRegistrationDate),
-              SizedBox(height: 5.h),
+              const SizedBox(height: 5),
+              getRichText('Profiili luotu:  ',
+                  widget.user.registrationDate.toString()),
+              const SizedBox(height: 5),
               getRichText('Käytössä oleva sovellusversio:  ', '1.2.8'),
             ],
           ),

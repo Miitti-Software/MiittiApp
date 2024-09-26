@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/widgets/my_elevated_button.dart';
+import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
+import 'package:miitti_app/widgets/safe_scaffold.dart';
 
 class QuestionAnswer extends StatefulWidget {
   final Map<String, String>? recievedData;
@@ -61,19 +62,17 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: 20.w,
-          ),
-          child: Column(
-            children: [
-              _buildHeader(),
-              SizedBox(height: 10.h),
-              _buildQuestionList(),
-            ],
-          ),
+    return SafeScaffold(
+      Container(
+        margin: const EdgeInsets.symmetric(
+          horizontal: 20,
+        ),
+        child: Column(
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 10),
+            _buildQuestionList(),
+          ],
         ),
       ),
     );
@@ -84,7 +83,7 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
     return Row(
       children: [
         _buildBackButton(),
-        SizedBox(width: 10.h),
+        const SizedBox(width: 10),
         _buildHeaderText(numLeftToAnswer),
       ],
     );
@@ -94,20 +93,18 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
-        gradient: const LinearGradient(
-          colors: [AppColors.lightRedColor, AppColors.orangeColor],
-        ),
+        gradient: AppStyle.pinkGradient,
       ),
       child: TextButton(
         onPressed: () => Navigator.pop(context, answers),
         style: TextButton.styleFrom(
           backgroundColor: Colors.transparent,
-          minimumSize: Size(60.h, 60.h),
+          minimumSize: const Size(60, 60),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50),
           ),
         ),
-        child: Icon(Icons.arrow_back, color: Colors.white, size: 30.r),
+        child: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
       ),
     );
   }
@@ -118,16 +115,16 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
       children: [
         Text(
           currentAnswers > 0 ? 'Hyvältä näyttää!' : 'Kerro enemmän',
-          style: Styles.sectionTitleStyle,
+          style: AppStyle.title,
           overflow: TextOverflow.ellipsis,
         ),
         Text(
           currentAnswers > 0
               ? 'Voit vastata vielä $numLeftToAnswer Q&A -korttin'
               : 'Valitse Q&A -korttia, joihin haluat vastata',
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Rubik',
-            fontSize: 13.sp,
+            fontSize: 13,
             color: Colors.white,
           ),
           overflow: TextOverflow.ellipsis,
@@ -197,12 +194,12 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
 
   Widget _buildQuestionRow(String question, int index) {
     return Container(
-      margin: EdgeInsets.all(8.w),
+      margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: AppColors.lightPurpleColor,
+        color: AppStyle.lightPurple,
         borderRadius: BorderRadius.circular(50.0),
       ),
-      padding: EdgeInsets.all(15.w),
+      padding: const EdgeInsets.all(15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -211,8 +208,8 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
               child: Text(
                 question,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 19.sp,
+                style: const TextStyle(
+                  fontSize: 19,
                   color: Colors.white,
                   fontFamily: 'Rubik',
                 ),
@@ -228,11 +225,11 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
 
   Widget _buildAnswerForm(int index, bool answered, String question) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10.w),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
           TextFormField(
-            style: Styles.bodyTextStyle,
+            style: AppStyle.body,
             focusNode: _questionFields[index].focusNode, // Update this
 
             maxLines: 5,
@@ -247,24 +244,24 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(
-                  color: AppColors.purpleColor,
+                  color: AppStyle.violet,
                   width: 2.0,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
                 borderSide: const BorderSide(
-                  color: AppColors.purpleColor,
+                  color: AppStyle.violet,
                   width: 2.0,
                 ),
               ),
               border: const OutlineInputBorder(),
               counterStyle: const TextStyle(
-                color: AppColors.whiteColor,
+                color: AppStyle.white,
               ),
             ),
           ),
-          SizedBox(height: 10.h),
+          const SizedBox(height: 10),
           _buildSaveButton(index, answered, question)
         ],
       ),
@@ -275,8 +272,8 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
     return Container(
       alignment: Alignment.centerRight,
       child: MyElevatedButton(
-        height: 50.h,
-        width: 150.w,
+        height: 50,
+        width: 150,
         onPressed: () {
           if (_questionFields[index].controller.text.isNotEmpty) {
             answers[question] = _questionFields[index].controller.text;
@@ -290,10 +287,10 @@ class _QuestionAnswerState extends State<QuestionAnswer> {
             });
           }
         },
-        child: Text(
+        child: const Text(
           'Tallenna',
           style: TextStyle(
-            fontSize: 19.sp,
+            fontSize: 19,
             color: Colors.white,
             fontFamily: 'Rubik',
           ),

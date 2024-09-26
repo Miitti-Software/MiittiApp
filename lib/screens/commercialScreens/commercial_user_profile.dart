@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/data/commercial_user.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/models/commercial_user.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CommercialProfileScreen extends StatefulWidget {
@@ -28,21 +27,21 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70.h),
+        preferredSize: const Size.fromHeight(70),
         child: AppBar(
-          backgroundColor: AppColors.wineColor,
+          backgroundColor: AppStyle.black,
           automaticallyImplyLeading: false,
           title: Align(
             alignment: Alignment.bottomLeft,
             child: Padding(
-              padding: EdgeInsets.only(top: 20.h),
+              padding: const EdgeInsets.only(top: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     widget.user.name,
-                    style: TextStyle(
-                      fontSize: 24.sp,
+                    style: const TextStyle(
+                      fontSize: 24,
                       fontFamily: 'Sora',
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -61,9 +60,9 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            margin: EdgeInsets.symmetric(
-              vertical: 12.h,
-              horizontal: 12.w,
+            margin: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 12,
             ),
             child: Stack(
               children: [
@@ -71,35 +70,30 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
                   borderRadius: const BorderRadius.all(Radius.circular(15)),
                   child: Image.network(
                     widget.user.profilePicture,
-                    height: 400.h,
-                    width: 400.w,
+                    height: 400,
+                    width: 400,
                     fit: BoxFit.cover,
                     filterQuality: FilterQuality.medium,
                   ),
                 ),
                 Positioned(
-                  top: 10.h,
-                  left: 10.w,
+                  top: 10,
+                  left: 10,
                   child: GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
                     },
                     child: Container(
-                      padding: EdgeInsets.all(15.w),
+                      padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: miittiColor,
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppColors.lightRedColor,
-                            AppColors.orangeColor,
-                          ],
-                        ),
+                        gradient: AppStyle.pinkGradient,
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back,
                         color: Colors.white,
-                        size: 30.r,
+                        size: 30,
                       ),
                     ),
                   ),
@@ -107,11 +101,11 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
               ],
             ),
           ),
-          SizedBox(
-            height: 10.h,
+          const SizedBox(
+            height: 10,
           ),
           Padding(
-            padding: EdgeInsets.all(8.0.w),
+            padding: const EdgeInsets.all(8.0),
             child: InkWell(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -119,18 +113,18 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
                     Text(
                       widget.user.linkTitle,
                       textAlign: TextAlign.end,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Rubik',
-                        fontSize: 17.0.sp,
-                        color: AppColors.lightPurpleColor,
+                        fontSize: 17.0,
+                        color: AppStyle.lightPurple,
                       ),
                     ),
-                    SizedBox(
-                      width: 4.0.w,
+                    const SizedBox(
+                      width: 4.0,
                     ),
-                    Icon(
+                    const Icon(
                       Icons.arrow_forward_ios_rounded,
-                      size: 12.0.sp,
+                      size: 12.0,
                       color: Colors.white,
                     )
                   ],
@@ -139,23 +133,23 @@ class _CommercialProfileScreenState extends State<CommercialProfileScreen> {
                   await launchUrl(Uri.parse(widget.user.hyperlink));
                 }),
           ),
-          SizedBox(
-            height: 10.h,
+          const SizedBox(
+            height: 10,
           ),
           Padding(
-            padding: EdgeInsets.all(8.0.w),
+            padding: const EdgeInsets.all(8.0),
             child: Text(
               widget.user.description,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Rubik',
-                fontSize: 17.0.sp,
-                color: AppColors.whiteColor,
+                fontSize: 17.0,
+                color: AppStyle.white,
               ),
             ),
           ),
-          SizedBox(
-            height: 10.h,
+          const SizedBox(
+            height: 10,
           ),
         ],
       ),

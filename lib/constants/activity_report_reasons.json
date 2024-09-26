@@ -1,0 +1,8 @@
+{
+    "spam": "Spam",
+    "illegal": "Illegal activity",
+    "disruptive": "Disruptive activity",
+    "inappropriate": "Inappropriate activity",
+    "against-community-norms": "Activity goes against community norms",
+    "other": "Other, please specify"
+}

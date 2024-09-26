@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:miitti_app/screens/adminPanel/admin_userinfo.dart';
-import 'package:miitti_app/widgets/admin_searchbar.dart';
-import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
+import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/widgets/fields/admin_searchbar.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
-import 'package:miitti_app/utils/utils.dart';
-import 'package:provider/provider.dart';
+import 'package:miitti_app/functions/utils.dart';
 
-class AdminSearchUser extends StatefulWidget {
+class AdminSearchUser extends ConsumerStatefulWidget {
   const AdminSearchUser({super.key});
 
   @override
-  State<AdminSearchUser> createState() => _AdminSearchUserState();
+  ConsumerState<AdminSearchUser> createState() => _AdminSearchUserState();
 }
 
-class _AdminSearchUserState extends State<AdminSearchUser> {
+class _AdminSearchUserState extends ConsumerState<AdminSearchUser> {
   //All Users
   List<MiittiUser> _miittiUsers = [];
 
@@ -29,7 +28,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
     setState(() {
       searchResults = _miittiUsers
           .where((user) =>
-              user.userName.toLowerCase().contains(query.toLowerCase()))
+              user.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -42,8 +41,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
 
   //Fetching all the users from Google Firebase and assigning the list with them
   Future<void> getAllTheUsers() async {
-    List<MiittiUser> users =
-        await Provider.of<AuthProvider>(context, listen: false).fetchUsers();
+    List<MiittiUser> users = await ref.read(firestoreServiceProvider).fetchUsers();
 
     _miittiUsers = users.reversed.toList();
     searchResults = _miittiUsers;
@@ -58,11 +56,11 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
         children: <TextSpan>[
           TextSpan(
             text: searchResults.length.toString(),
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          TextSpan(
+          const TextSpan(
             text: ' profiilia löydetty',
-            style: TextStyle(fontSize: 15.sp),
+            style: TextStyle(fontSize: 15),
           ),
         ],
       ),
@@ -73,10 +71,10 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(
-          horizontal: 10.w,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
         ),
-        minimumSize: Size(0, 35.h),
+        minimumSize: const Size(0, 35),
         backgroundColor: mainColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
@@ -101,7 +99,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
               onChanged: onQueryChanged,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: getRichText(),
             ),
             Expanded(
@@ -111,10 +109,8 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                   MiittiUser user = searchResults[index];
 
                   // Format the date and time in the desired format or provide an empty string if null
-                  String formattedDate = user.userStatus.isEmpty
-                      ? ''
-                      : DateFormat('MMMM d, HH:mm')
-                          .format(DateTime.tryParse(user.userStatus)!);
+                  String formattedDate = DateFormat('MMMM d, HH:mm')
+                      .format(user.lastActive);
 
                   return Container(
                     decoration: const BoxDecoration(
@@ -125,8 +121,8 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                       ),
                     ),
                     margin:
-                        EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
-                    height: 100.h,
+                        const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                    height: 100,
                     child: Row(
                       children: [
                         ClipRRect(
@@ -137,8 +133,8 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                           child: Image.network(
                             user.profilePicture,
                             fit: BoxFit.cover,
-                            height: 100.h,
-                            width: 100.w,
+                            height: 100,
+                            width: 100,
                           ),
                         ),
                         Padding(
@@ -147,16 +143,16 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${user.userName}, ${calculateAge(user.userBirthday)}",
-                                style: TextStyle(
+                                "${user.name}, ${calculateAge(user.birthday)}",
+                                style: const TextStyle(
                                   fontFamily: 'Rubik',
-                                  fontSize: 18.sp,
+                                  fontSize: 18,
                                 ),
                               ),
                               Text(
                                 'Aktiivisena viimeksi $formattedDate',
-                                style: TextStyle(
-                                  fontSize: 11.sp,
+                                style: const TextStyle(
+                                  fontSize: 11,
                                   fontFamily: 'Sora',
                                 ),
                               ),
@@ -166,7 +162,7 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     getListTileButton(
-                                      AppColors.lightPurpleColor,
+                                      AppStyle.lightPurple,
                                       'Katso profiili',
                                       () => Navigator.push(
                                         context,
@@ -179,11 +175,11 @@ class _AdminSearchUserState extends State<AdminSearchUser> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 10.w,
+                                    const SizedBox(
+                                      width: 10,
                                     ),
                                     getListTileButton(
-                                      AppColors.purpleColor,
+                                      AppStyle.violet,
                                       'Käyttäjätiedot',
                                       () => Navigator.push(
                                         context,

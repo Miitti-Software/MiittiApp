@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:bubble/bubble.dart';
 
 class MessageTile extends StatelessWidget {
@@ -22,40 +21,40 @@ class MessageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Bubble(
-      margin: BubbleEdges.only(top: 10.h),
+      margin: const BubbleEdges.only(top: 10),
       alignment: sentByMe ? Alignment.topRight : Alignment.topLeft,
       nipWidth: 8,
       nipHeight: 24,
       nip: sentByMe ? BubbleNip.rightBottom : BubbleNip.leftBottom,
-      color: sentByMe ? AppColors.lightPurpleColor : AppColors.purpleColor,
+      color: sentByMe ? AppStyle.lightPurple : AppStyle.pink,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             senderName,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
-              fontSize: 16.sp,
+              fontSize: 16,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 4.h),
+          const SizedBox(height: 4),
           Text(
             message,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontFamily: 'Sora',
-              fontSize: 18.sp,
+              fontSize: 18,
             ),
           ),
-          SizedBox(height: 4.h),
+          const SizedBox(height: 4),
           Text(
             time,
             style: TextStyle(
               color: Colors.white.withOpacity(0.6),
               fontFamily: 'Sora',
-              fontSize: 14.sp,
+              fontSize: 14,
             ),
           ),
         ],

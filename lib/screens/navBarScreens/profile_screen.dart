@@ -1,58 +1,67 @@
 //TODO: New UI
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:miitti_app/constants/app_style.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/screens/adminPanel/admin_homepage.dart';
 import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/screens/navBarScreens/settings_screen.dart';
+import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/anonymous_dialog.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/models/activity.dart';
 import 'package:miitti_app/screens/my_profile_edit_form.dart';
-import 'package:miitti_app/utils/utils.dart';
-import 'package:provider/provider.dart';
+import 'package:miitti_app/functions/utils.dart';
 
-import '../../utils/auth_provider.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late List<String> filteredActivities = [];
 
   @override
   void initState() {
     super.initState();
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    Future.delayed(const Duration(milliseconds: 500)).then((value) {
-      if (ap.isAnonymous) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showDialog(
-            context: context,
-            builder: (context) => const AnonymousDialog(),
-          );
-        });
+    Future.delayed(const Duration(milliseconds: 10)).then((value) {
+      if (ref.read(userStateProvider).isAnonymous) {
+        // WidgetsBinding.instance.addPostFrameCallback((_) {
+        //   showDialog(
+        //     context: context,
+        //     builder: (context) => const AnonymousDialog(),
+        //   );
+        // });
+        context.go('/profile/settings');
       } else {
-        filteredActivities = ap.miittiUser.userFavoriteActivities.toList();
+        filteredActivities = ref
+            .read(userStateProvider)
+            .data
+            .favoriteActivities
+            .toList();
       }
     });
   }
 
-  Widget getAdminButton(AuthProvider ap) {
-    if (adminId.contains(ap.miittiUser.uid)) {
+  Widget getAdminButton() {
+    if (adminId.contains(ref.read(userStateProvider).data.uid)) {
       return GestureDetector(
         onTap: () {
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const AdminHomePage()));
+          // Navigator.of(context).push(
+          //     MaterialPageRoute(builder: (context) => const AdminHomePage()));
         },
         child: Container(
-          margin: EdgeInsets.only(left: 20.w),
-          child: Icon(
+          margin: const EdgeInsets.only(left: 20),
+          child: const Icon(
             Icons.admin_panel_settings_rounded,
-            size: 30.r,
+            size: 30,
             color: Colors.white,
           ),
         ),
@@ -63,77 +72,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: true);
-    bool isLoading = ap.isLoading;
-    bool isAnonymous = ap.isAnonymous;
+    bool isLoading = ref.watch(providerLoading);
+    bool anonymous = ref.read(userStateProvider).isAnonymous;
 
-    if (isAnonymous) {
+    if (anonymous) {
       return const AnonymousUserScreen();
     } else {
-      List<String> answeredQuestions = questionOrder
-          .where((question) => ap.miittiUser.userChoices.containsKey(question))
+      List<String> answeredQuestions = ref
+              .watch(userStateProvider)
+              .data
+              .qaAnswers.keys
           .toList();
       return Scaffold(
-        appBar: buildAppBar(ap),
-        body: buildBody(isLoading, ap, answeredQuestions),
+        appBar: buildAppBar(),
+        body: buildBody(isLoading, answeredQuestions),
       );
     }
   }
 
-  AppBar buildAppBar(AuthProvider ap) {
-    return AppBar(
-      backgroundColor: AppColors.wineColor,
-      automaticallyImplyLeading: false,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            ap.miittiUser.userName,
-            style: TextStyle(
-              fontSize: 30.sp,
-              fontFamily: 'Sora',
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+  AppBar buildAppBar() {
+  return AppBar(
+    backgroundColor: AppStyle.black,
+    automaticallyImplyLeading: false,
+    title: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text(
+              ref.read(userStateProvider).data.name!,
+              style: const TextStyle(
+                fontSize: 30,
+                fontFamily: 'Sora',
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
-          const Expanded(child: SizedBox()),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => MyProfileEditForm(
-                        user: ap.miittiUser,
-                      )));
-            },
-            child: Icon(
-              Icons.settings,
-              size: 30.r,
-              color: Colors.white,
-            ),
+        ),
+        const Expanded(child: SizedBox()),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => MyProfileEditForm(
+                      user: ref.read(userStateProvider).data.toMiittiUser(),
+                    )));
+          },
+          child: const Icon(
+            Icons.edit_document,
+            size: 30,
+            color: Colors.white,
           ),
-          getAdminButton(ap),
-        ],
-      ),
-    );
-  }
+        ),
+        const SizedBox(width: 20),
+        GestureDetector(
+          onTap: () {
+            context.go('/profile/settings');
+          },
+          child: const Icon(
+            Icons.settings,
+            size: 30,
+            color: Colors.white,
+          ),
+        ),
+        getAdminButton(),
+      ],
+    ),
+  );
+}
 
-  Widget buildBody(
-      bool isLoading, AuthProvider ap, List<String> answeredQuestions) {
+  Widget buildBody(bool isLoading, List<String> answeredQuestions) {
     List<Widget> widgets = [];
 
     // Always add the profile image card at the beginning
-    widgets.add(buildProfileImageCard(ap));
+    widgets.add(buildProfileImageCard());
 
     // Add the first question card and user details card
     String firstQuestion = answeredQuestions[0];
-    String firstAnswer = ap.miittiUser.userChoices[firstQuestion]!;
+    String firstAnswer =
+        ref.read(userStateProvider).data.qaAnswers[firstQuestion]!;
     widgets.add(buildQuestionCard(firstQuestion, firstAnswer));
-    widgets.add(buildUserDetailsCard(ap));
+    widgets.add(buildUserDetailsCard());
 
     // If there are more than one answered questions, add activities grid and subsequent question cards
     if (answeredQuestions.length > 1) {
       for (var i = 1; i < answeredQuestions.length; i++) {
         String question = answeredQuestions[i];
-        String answer = ap.miittiUser.userChoices[question]!;
+        String answer =
+            ref.read(userStateProvider).data.qaAnswers[question]!;
         widgets.add(buildQuestionCard(question, answer));
 
         // Add activities grid after the first additional question card
@@ -149,23 +176,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ListView(children: widgets);
   }
 
-  Widget buildProfileImageCard(AuthProvider ap) {
+  Widget buildProfileImageCard() {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
-        child: Image.network(
-          ap.miittiUser.profilePicture,
-          height: 400.h,
-          width: 400.w,
+        child: CachedNetworkImage(
+          imageUrl: ref.read(userStateProvider).data.profilePicture!, 
+          height: 400,
+          width: 400,
           fit: BoxFit.cover,
+          fadeInDuration: const Duration(milliseconds: 50),
         ),
       ),
     );
@@ -173,8 +201,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget buildQuestionCard(String question, String answer) {
     return Container(
-      padding: EdgeInsets.all(15.w),
-      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
@@ -185,20 +213,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             question,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.purpleColor,
-              fontSize: 18.sp,
+            style: const TextStyle(
+              color: AppStyle.violet,
+              fontSize: 18,
               fontFamily: 'Rubik',
             ),
           ),
-          SizedBox(height: 5.h),
+          const SizedBox(height: 5),
           Text(
             answer,
             maxLines: 4,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.black,
               overflow: TextOverflow.clip,
-              fontSize: 20.sp,
+              fontSize: 20,
               fontFamily: 'Poppins',
             ),
           ),
@@ -207,36 +235,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget buildUserDetailsCard(AuthProvider ap) {
+  Widget buildUserDetailsCard() {
+    MiittiUser miittiUser = ref.read(userStateProvider).data.toMiittiUser();
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
       child: Container(
-        height: ap.miittiUser.userSchool.isNotEmpty ? 330.w : 240.w,
-        margin: EdgeInsets.only(
-          left: 5.w,
-          top: 10.h,
+        height: miittiUser.organizations != null ? 330 : 240,
+        margin: const EdgeInsets.only(
+          left: 5,
+          top: 10,
         ),
         child: Column(
           children: [
-            buildUserDetailTile(Icons.location_on, ap.miittiUser.userArea),
+            buildUserDetailTile(Icons.location_on, miittiUser.areas.toString()),  // TODO: Get rid of toString()
             buildDivider(),
-            buildUserDetailTile(Icons.person, ap.miittiUser.userGender),
-            buildDivider(),
-            buildUserDetailTile(Icons.cake,
-                calculateAge(ap.miittiUser.userBirthday).toString()),
+            buildUserDetailTile(Icons.person, miittiUser.gender.name),
             buildDivider(),
             buildUserDetailTile(
-                Icons.g_translate, ap.miittiUser.userLanguages.join(', ')),
-            ap.miittiUser.userSchool.isNotEmpty ? buildDivider() : Container(),
-            ap.miittiUser.userSchool.isNotEmpty
-                ? buildUserDetailTile(Icons.next_week, ap.miittiUser.userSchool)
+                Icons.cake, calculateAge(miittiUser.birthday).toString()),
+            buildDivider(),
+            buildUserDetailTile(
+                Icons.g_translate, miittiUser.languages.map((e) => e.name).join(', ')),
+            miittiUser.organizations.isNotEmpty ? buildDivider() : Container(),
+            miittiUser.organizations.isNotEmpty
+                ? buildUserDetailTile(Icons.next_week, miittiUser.organizations[0])
                 : Container(),
           ],
         ),
@@ -248,13 +277,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ListTile(
       leading: Icon(
         icon,
-        color: AppColors.lightPurpleColor,
-        size: 30.sp,
+        color: AppStyle.lightPurple,
+        size: 30,
       ),
       title: Text(
         text,
-        style: TextStyle(
-          fontSize: 24.sp,
+        style: const TextStyle(
+          fontSize: 24,
           color: Colors.black,
           fontFamily: 'Rubik',
         ),
@@ -274,17 +303,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   double returnActivitiesGridSize(int listLenght) {
     if (listLenght > 6) {
-      return 375.w;
+      return 375;
     } else if (listLenght > 3) {
-      return 250.w;
+      return 250;
     } else {
-      return 125.w;
+      return 125;
     }
   }
 
   Widget buildActivitiesGrid() {
     return Padding(
-      padding: EdgeInsets.all(15.0.w),
+      padding: const EdgeInsets.all(15.0),
       child: SizedBox(
         height: returnActivitiesGridSize(filteredActivities.length),
         child: GridView.builder(
@@ -306,8 +335,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget buildActivityItem(Activity activity) {
     return Container(
-      height: 100.h,
-      width: 50.w,
+      height: 100,
+      width: 50,
       decoration: const BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -316,14 +345,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             activity.emojiData,
-            style: TextStyle(fontSize: 50.0.sp),
+            style: const TextStyle(fontSize: 50.0),
           ),
           Text(
             activity.name,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'Rubik',
-              fontSize: 15.0.sp,
+              fontSize: 15.0,
               color: Colors.white,
             ),
           ),

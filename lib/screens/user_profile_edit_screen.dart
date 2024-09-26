@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
-import 'package:miitti_app/data/person_activity.dart';
-import 'package:miitti_app/data/miitti_user.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/constants/languages.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/activity.dart';
+import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/confirmdialog.dart';
-import 'package:miitti_app/utils/auth_provider.dart';
-import 'package:miitti_app/utils/push_notifications.dart';
 
-import 'package:miitti_app/utils/utils.dart';
-import 'package:miitti_app/widgets/my_elevated_button.dart';
-import 'package:provider/provider.dart';
+import 'package:miitti_app/functions/utils.dart';
+import 'package:miitti_app/widgets/buttons/my_elevated_button.dart';
 
-class UserProfileEditScreen extends StatefulWidget {
+class UserProfileEditScreen extends ConsumerStatefulWidget {
   final MiittiUser user;
   final bool? comingFromAdmin;
 
@@ -23,25 +24,29 @@ class UserProfileEditScreen extends StatefulWidget {
   });
 
   @override
-  State<UserProfileEditScreen> createState() => _UserProfileEditScreenState();
+  ConsumerState<UserProfileEditScreen> createState() =>
+      _UserProfileEditScreenState();
 }
 
-class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
+class _UserProfileEditScreenState extends ConsumerState<UserProfileEditScreen> {
   Color miittiColor = const Color.fromRGBO(255, 136, 27, 1);
 
   List<String> filteredActivities = [];
-  List<PersonActivity> userRequests = [];
+  List<UserCreatedActivity> userRequests = [];
 
   @override
   void initState() {
     super.initState();
     //Initialize the list from given data
-    initRequests(Provider.of<AuthProvider>(context, listen: false));
-    filteredActivities = widget.user.userFavoriteActivities.toList();
+    initRequests();
+    filteredActivities = widget.user.favoriteActivities.toList();
   }
 
-  void initRequests(AuthProvider ap) async {
-    ap.fetchActivitiesRequestsFrom(widget.user.uid).then((value) {
+  void initRequests() async {
+    ref
+        .read(firestoreServiceProvider)
+        .fetchActivitiesRequestsFrom(widget.user.uid)
+        .then((value) {
       setState(() {
         userRequests = value;
       });
@@ -51,30 +56,27 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider ap = Provider.of<AuthProvider>(context, listen: true);
     //final isLoading = ap.isLoading;
 
-    List<String> answeredQuestions = questionOrder
-        .where((question) => widget.user.userChoices.containsKey(question))
-        .toList();
+    List<String> answeredQuestions = widget.user.qaAnswers.keys.toList();
 
     return Scaffold(
       appBar: buildAppBar(),
-      body: buildBody(ap.isLoading, ap, answeredQuestions),
+      body: buildBody(ref.watch(providerLoading), answeredQuestions),
     );
   }
 
   AppBar buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.wineColor,
+      backgroundColor: AppStyle.black,
       automaticallyImplyLeading: false,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            widget.user.userName,
-            style: TextStyle(
-              fontSize: 30.sp,
+            widget.user.name,
+            style: const TextStyle(
+              fontSize: 30,
               fontFamily: 'Sora',
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -86,8 +88,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     );
   }
 
-  Widget buildBody(
-      bool isLoading, AuthProvider ap, List<String> answeredQuestions) {
+  Widget buildBody(bool isLoading, List<String> answeredQuestions) {
     List<Widget> widgets = [];
 
     if (isLoading) {
@@ -99,7 +100,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
     // Add the first question card and user details card
     String firstQuestion = answeredQuestions[0];
-    String firstAnswer = widget.user.userChoices[firstQuestion]!;
+    String firstAnswer = widget.user.qaAnswers[firstQuestion]!;
     widgets.add(buildQuestionCard(firstQuestion, firstAnswer));
     widgets.add(buildUserDetailsCard());
 
@@ -107,7 +108,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     if (answeredQuestions.length > 1) {
       for (var i = 1; i < answeredQuestions.length; i++) {
         String question = answeredQuestions[i];
-        String answer = widget.user.userChoices[question]!;
+        String answer = widget.user.qaAnswers[question]!;
         widgets.add(buildQuestionCard(question, answer));
 
         // Add activities grid after the first additional question card
@@ -122,11 +123,11 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
     // Add invite button and report user button
     if (userRequests.isNotEmpty) {
-      widgets.add(requestList(ap));
+      widgets.add(requestList());
     }
 
-    widgets.add(buildInviteButton(isLoading, ap));
-    widgets.add(buildReportUserButton(ap));
+    widgets.add(buildInviteButton(isLoading));
+    widgets.add(buildReportUserButton());
 
     return ListView(children: widgets);
   }
@@ -137,9 +138,9 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
       child: Stack(
         children: [
@@ -147,33 +148,28 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
             borderRadius: const BorderRadius.all(Radius.circular(15)),
             child: Image.network(
               widget.user.profilePicture,
-              height: 400.h,
-              width: 400.w,
+              height: 400,
+              width: 400,
               fit: BoxFit.cover,
             ),
           ),
           Positioned(
-            top: 10.h,
-            left: 10.w,
+            top: 10,
+            left: 10,
             child: GestureDetector(
               onTap: () {
                 Navigator.pop(context);
               },
               child: Container(
-                padding: EdgeInsets.all(15.w),
+                padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      AppColors.lightRedColor,
-                      AppColors.orangeColor,
-                    ],
-                  ),
+                  gradient: AppStyle.pinkGradient,
                   borderRadius: BorderRadius.circular(50),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.arrow_back,
                   color: Colors.white,
-                  size: 30.r,
+                  size: 30,
                 ),
               ),
             ),
@@ -185,12 +181,12 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   Widget buildAnsweredQuestionsCard(List<String> answeredQuestions) {
     return SizedBox(
-      height: 210.h,
+      height: 210,
       child: PageView.builder(
-        itemCount: widget.user.userChoices.length,
+        itemCount: widget.user.qaAnswers.length,
         itemBuilder: (context, index) {
           String question = answeredQuestions[index];
-          String answer = widget.user.userChoices[question]!;
+          String answer = widget.user.qaAnswers[question]!;
           return buildQuestionCard(question, answer);
         },
       ),
@@ -199,8 +195,8 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   Widget buildQuestionCard(String question, String answer) {
     return Container(
-      padding: EdgeInsets.all(15.w),
-      margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+      padding: const EdgeInsets.all(15),
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
@@ -211,20 +207,20 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
           Text(
             question,
             textAlign: TextAlign.start,
-            style: TextStyle(
-              color: AppColors.purpleColor,
-              fontSize: 18.sp,
+            style: const TextStyle(
+              color: AppStyle.violet,
+              fontSize: 18,
               fontFamily: 'Rubik',
             ),
           ),
-          SizedBox(height: 5.h),
+          const SizedBox(height: 5),
           Text(
             answer,
             maxLines: 4,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.black,
               overflow: TextOverflow.clip,
-              fontSize: 20.sp,
+              fontSize: 20,
               fontFamily: 'Poppins',
             ),
           ),
@@ -239,29 +235,29 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
       child: Container(
-        height: 320.w,
-        margin: EdgeInsets.only(
-          left: 5.w,
-          top: 10.h,
+        height: 320,
+        margin: const EdgeInsets.only(
+          left: 5,
+          top: 10,
         ),
         child: Column(
           children: [
-            buildUserDetailTile(Icons.location_on, widget.user.userArea),
+            buildUserDetailTile(Icons.location_on, widget.user.areas.toString()),   // TODO: Get rid of toString
             buildDivider(),
-            buildUserDetailTile(Icons.person, widget.user.userGender),
-            buildDivider(),
-            buildUserDetailTile(
-                Icons.cake, calculateAge(widget.user.userBirthday).toString()),
+            buildUserDetailTile(Icons.person, widget.user.gender.name),
             buildDivider(),
             buildUserDetailTile(
-                Icons.g_translate, widget.user.userLanguages.join(', ')),
+                Icons.cake, calculateAge(widget.user.birthday).toString()),
             buildDivider(),
-            buildUserDetailTile(Icons.next_week, 'Opiskelija'),
+            buildUserDetailTile(
+                Icons.g_translate, widget.user.languages.map((e) => e.code).join(', ')),
+            buildDivider(),
+            buildUserDetailTile(Icons.next_week, widget.user.occupationalStatuses[0]),
           ],
         ),
       ),
@@ -272,13 +268,13 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     return ListTile(
       leading: Icon(
         icon,
-        color: AppColors.lightPurpleColor,
-        size: 30.sp,
+        color: AppStyle.lightPurple,
+        size: 30,
       ),
       title: Text(
         text,
-        style: TextStyle(
-          fontSize: 24.sp,
+        style: const TextStyle(
+          fontSize: 24,
           color: Colors.black,
           fontFamily: 'Rubik',
         ),
@@ -298,17 +294,17 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   double returnActivitiesGridSize(int listLenght) {
     if (listLenght > 6) {
-      return 375.w;
+      return 375;
     } else if (listLenght > 3) {
-      return 250.w;
+      return 250;
     } else {
-      return 125.w;
+      return 125;
     }
   }
 
   Widget buildActivitiesGrid() {
     return Padding(
-      padding: EdgeInsets.all(15.0.w),
+      padding: const EdgeInsets.all(15.0),
       child: SizedBox(
         height: returnActivitiesGridSize(filteredActivities.length),
         child: GridView.builder(
@@ -330,8 +326,8 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   Widget buildActivityItem(Activity activity) {
     return Container(
-      height: 100.h,
-      width: 50.w,
+      height: 100,
+      width: 50,
       decoration: const BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -340,14 +336,14 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
         children: [
           Text(
             activity.emojiData,
-            style: TextStyle(fontSize: 50.0.sp),
+            style: const TextStyle(fontSize: 50.0),
           ),
           Text(
             activity.name,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'Rubik',
-              fontSize: 15.0.sp,
+              fontSize: 15.0,
               color: Colors.white,
             ),
           ),
@@ -356,13 +352,13 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     );
   }
 
-  Widget buildInviteButton(bool isLoading, AuthProvider ap) {
+  Widget buildInviteButton(bool isLoading) {
     return widget.comingFromAdmin != null
         ? Container()
         : Container(
-            margin: EdgeInsets.symmetric(
-              vertical: 15.h,
-              horizontal: 15.w,
+            margin: const EdgeInsets.symmetric(
+              vertical: 15,
+              horizontal: 15,
             ),
             child: MyElevatedButton(
               onPressed: () => inviteToYourActivity(),
@@ -372,40 +368,44 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
                     )
                   : Text(
                       'Kutsu miittiin',
-                      style: Styles.bodyTextStyle,
+                      style: AppStyle.body,
                     ),
             ),
           );
   }
 
-  Widget buildReportUserButton(AuthProvider ap) {
+  Widget buildReportUserButton() {
     return Center(
       child: GestureDetector(
         onTap: () {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const ConfirmDialog(
+              return ConfirmDialog(
                 title: 'Vahvistus',
-                leftButtonText: 'Ilmianna',
                 mainText: 'Oletko varma, että haluat ilmiantaa käyttäjän?',
+                confirmButtonText: 'Ilmianna',
+                cancelButtonText: ref.watch(remoteConfigServiceProvider).get<String>('cancel-button'),
               );
             },
           ).then((confirmed) {
             if (confirmed) {
-              ap.reportUser('User blocked', widget.user.uid, ap.uid);
-
-              Navigator.of(context).pop();
-              showSnackBar(
-                  context, "Käyttäjä ilmiannettu", Colors.green.shade800);
+              ref
+                  .read(firestoreServiceProvider)
+                  .reportUser(widget.user.uid, ['Filler reasons'], 'Filler comments');
+              afterFrame(() {
+                Navigator.of(context).pop();
+                showSnackBar(
+                    context, "Käyttäjä ilmiannettu", Colors.green.shade800);
+              });
             }
           });
         },
-        child: Text(
+        child: const Text(
           "Ilmianna käyttäjä",
           style: TextStyle(
             fontFamily: 'Rubik',
-            fontSize: 19.sp,
+            fontSize: 19,
             color: Colors.red,
           ),
         ),
@@ -414,21 +414,24 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
   }
 
   Future<void> inviteToYourActivity() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    List<PersonActivity> myActivities = await ap.fetchAdminActivities();
+    List<UserCreatedActivity> myActivities =
+        await ref.read(firestoreServiceProvider).fetchAdminActivities();
 
     if (myActivities.isNotEmpty) {
       if (myActivities.length == 1 &&
-          myActivities.first.participants.length <
-              myActivities.first.personLimit &&
-          !myActivities.first.participants.contains(widget.user.uid) &&
+          myActivities.first.participantsInfo.length <
+              myActivities.first.maxParticipants &&
+          !myActivities.first.participantsInfo.keys.contains(widget.user.uid) &&
           !myActivities.first.requests.contains(widget.user.uid)) {
-        ap
+        ref
+            .read(firestoreServiceProvider)
             .inviteUserToYourActivity(
-                widget.user.uid, myActivities.first.activityUid)
+                widget.user.uid, myActivities.first.id)
             .then((value) {
-          PushNotifications.sendInviteNotification(
-              ap.miittiUser, widget.user, myActivities.first);
+          ref.read(notificationServiceProvider).sendInviteNotification(
+              ref.read(userStateProvider).data.toMiittiUser(),
+              widget.user,
+              myActivities.first);
           showDialog(
             context: context,
             barrierColor: Colors.white.withOpacity(0.9),
@@ -491,7 +494,7 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
       status.isNotEmpty ? '● $status' : "",
       style: TextStyle(
         color: color,
-        fontSize: 15.0.sp,
+        fontSize: 15.0,
         fontFamily: 'Sora',
         fontWeight: FontWeight.bold,
       ),
@@ -499,97 +502,96 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
   }
 
   String getUserStatus() {
-    if (widget.user.userStatus.isEmpty || widget.user.userStatus == 'Online') {
-      return '';
-    } else {
-      String lastActiveString = widget.user.userStatus;
-      DateTime lastActiveDate = DateTime.parse(lastActiveString).toLocal();
-      Duration difference = DateTime.now().difference(lastActiveDate);
+    Duration difference =
+        DateTime.now().difference(widget.user.lastActive);
 
-      if (difference < const Duration(minutes: 5)) {
-        return 'Paikalla';
-      } else if (difference < const Duration(hours: 1)) {
-        return 'Paikalla äskettäin';
-      } else if (difference < const Duration(hours: 24)) {
-        return 'Paikalla tänään';
-      } else if (difference < const Duration(days: 7)) {
-        return 'Paikalla tällä viikolla';
-      } else if (difference > const Duration(days: 7)) {
-        return 'Epäaktiivinen';
-      } else {
-        return 'Paikalla';
-      }
+    if (difference < const Duration(minutes: 5)) {
+      return 'Paikalla';
+    } else if (difference < const Duration(hours: 1)) {
+      return 'Paikalla äskettäin';
+    } else if (difference < const Duration(hours: 24)) {
+      return 'Paikalla tänään';
+    } else if (difference < const Duration(days: 7)) {
+      return 'Paikalla tällä viikolla';
+    } else if (difference > const Duration(days: 7)) {
+      return 'Epäaktiivinen';
+    } else {
+      return '';
     }
   }
 
-  Widget createSelectBetweenActivitesDialog(List<PersonActivity> myActivities) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-
+  Widget createSelectBetweenActivitesDialog(List<UserCreatedActivity> myActivities) {
     return AlertDialog(
-      backgroundColor: AppColors.wineColor,
+      backgroundColor: AppStyle.black,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
       content: SizedBox(
-        height: 330.w,
-        width: 330.w,
+        height: 330,
+        width: 330,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
               'images/thinkingFace.png',
-              height: 125.w,
-              width: 125.w,
+              height: 125,
+              width: 125,
             ),
             Text(
               'Valitse kutsuttava aktiviteetti',
               textAlign: TextAlign.center,
-              style: Styles.sectionTitleStyle,
+              style: AppStyle.body,
             ),
             Expanded(
               child: ListView.builder(
                 itemCount: myActivities.length,
                 itemBuilder: (context, index) {
-                  PersonActivity activity = myActivities[index];
+                  UserCreatedActivity activity = myActivities[index];
                   return ListTile(
                     leading: Image.asset(
-                      'images/${activity.activityCategory.toLowerCase()}.png',
+                      'images/${activity.category.toLowerCase()}.png',
                     ),
                     subtitle: Text(
-                      activity.activityDescription,
+                      activity.description,
                       style: const TextStyle(
                         fontFamily: 'Rubik',
                         overflow: TextOverflow.ellipsis,
-                        color: AppColors.whiteColor,
+                        color: AppStyle.white,
                       ),
                     ),
                     title: Text(
-                      activity.activityTitle,
-                      style: TextStyle(
+                      activity.title,
+                      style: const TextStyle(
                         fontFamily: 'Rubik',
-                        fontSize: 19.sp,
+                        fontSize: 19,
                         overflow: TextOverflow.ellipsis,
-                        color: AppColors.whiteColor,
+                        color: AppStyle.white,
                       ),
                     ),
                     onTap: () {
-                      if (activity.participants.length < activity.personLimit &&
-                          !activity.participants.contains(widget.user.uid) &&
+                      if (activity.participantsInfo.length < activity.maxParticipants &&
+                          !activity.participantsInfo.keys.contains(widget.user.uid) &&
                           !activity.requests.contains(widget.user.uid)) {
-                        ap
+                        ref
+                            .read(firestoreServiceProvider)
                             .inviteUserToYourActivity(
-                                widget.user.uid, activity.activityUid)
+                                widget.user.uid, activity.id)
                             .then((value) {
-                          PushNotifications.sendInviteNotification(
-                              ap.miittiUser, widget.user, activity);
-                          Navigator.of(context).pop(); // Close the SimpleDialog
-                          showDialog(
-                            context: context,
-                            barrierColor: Colors.white.withOpacity(0.9),
-                            builder: (BuildContext context) {
-                              return createInviteActivityDialog();
-                            },
-                          );
+                          ref.read(notificationServiceProvider).sendInviteNotification(
+                              ref.read(userStateProvider).data.toMiittiUser(),
+                              widget.user,
+                              activity);
+                          afterFrame(() {
+                            Navigator.of(context)
+                                .pop(); // Close the SimpleDialog
+                            showDialog(
+                              context: context,
+                              barrierColor: Colors.white.withOpacity(0.9),
+                              builder: (BuildContext context) {
+                                return createInviteActivityDialog();
+                              },
+                            );
+                          });
                         });
                       } else {
                         Navigator.of(context).pop();
@@ -608,40 +610,40 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
 
   Widget createInviteActivityDialog() {
     return AlertDialog(
-      backgroundColor: AppColors.wineColor,
+      backgroundColor: AppStyle.black,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
       content: SizedBox(
-        height: 300.w,
-        width: 300.w,
+        height: 300,
+        width: 300,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
               'images/postbox.png',
-              height: 125.w,
-              width: 125.w,
+              height: 125,
+              width: 125,
             ),
             Text(
               'Kutsu miittisi on lähetetty',
               textAlign: TextAlign.center,
-              style: Styles.sectionTitleStyle,
+              style: AppStyle.body,
             ),
             Text(
-              'Kun ${widget.user.userName} on hyväksynyt kutsun liittyvä miittisi, saat siitä push ilmoituksen',
+              'Kun ${widget.user.name} on hyväksynyt kutsun liittyvä miittisi, saat siitä push ilmoituksen',
               textAlign: TextAlign.center,
-              style: Styles.sectionSubtitleStyle,
+              style: AppStyle.body,
             ),
             MyElevatedButton(
-              height: 45.h,
+              height: 45,
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pop(context, 2);
               },
               child: Text(
                 'Kutsu muita',
-                style: Styles.activityNameTextStyle,
+                style: AppStyle.title,
               ),
             ),
           ],
@@ -650,17 +652,17 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
     );
   }
 
-  Widget requestList(AuthProvider ap) {
+  Widget requestList() {
     return Container(
-      margin: EdgeInsets.symmetric(
-        vertical: 15.h,
-        horizontal: 15.w,
+      margin: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 15,
       ),
-      padding: EdgeInsets.all(15.0.w),
+      padding: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
-        color: AppColors.wineColor,
+        color: AppStyle.black,
         border: Border.all(
-          color: AppColors.darkPurpleColor,
+          color: AppStyle.darkPurple,
           width: 2.0,
         ),
         borderRadius: BorderRadius.circular(20),
@@ -668,89 +670,92 @@ class _UserProfileEditScreenState extends State<UserProfileEditScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("${widget.user.userName} on pyytäny päästä miittiisi:",
+          Text("${widget.user.name} on pyytäny päästä miittiisi:",
               textAlign: TextAlign.start,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
-                fontSize: 15.sp,
+                fontSize: 15,
                 fontFamily: 'Rubik',
               )),
           Column(
               children: userRequests
-                  .map<Widget>((activity) => requestItem(activity, ap))
+                  .map<Widget>((activity) => requestItem(activity))
                   .toList()),
         ],
       ),
     );
   }
 
-  Widget requestItem(PersonActivity activity, AuthProvider ap) {
+  Widget requestItem(UserCreatedActivity activity) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 20.0.h),
+        const SizedBox(height: 20.0),
         Text(
-            "${activities[activity.activityCategory]?.emojiData} ${activity.activityTitle}",
+            "${activities[activity.category]?.emojiData} ${activity.title}",
             textAlign: TextAlign.start,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
-              fontSize: 17.sp,
+              fontSize: 17,
               fontFamily: 'Rubik',
             )),
-        SizedBox(
-          height: 6.0.h,
+        const SizedBox(
+          height: 6.0,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             MyElevatedButton(
-              height: 40.h,
-              width: 140.w,
+              height: 40,
+              width: 140,
               onPressed: () async {
-                ap
+                ref
+                    .read(firestoreServiceProvider)
                     .updateUserJoiningActivity(
-                        activity.activityUid, widget.user.uid, false)
+                        activity.id, widget.user.uid, false)
                     .then((value) {
                   setState(() {
-                    initRequests(ap);
+                    initRequests();
                   });
                 });
               },
-              child: Text(
+              child: const Text(
                 "Hylkää",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontFamily: 'Rubik',
                 ),
               ),
             ),
-            SizedBox(
-              width: 12.w,
+            const SizedBox(
+              width: 12,
             ),
             MyElevatedButton(
-              height: 40.h,
-              width: 140.w,
+              height: 40,
+              width: 140,
               onPressed: () async {
-                ap
+                ref
+                    .read(firestoreServiceProvider)
                     .updateUserJoiningActivity(
-                        activity.activityUid, widget.user.uid, true)
+                        activity.id, widget.user.uid, true)
                     .then((value) {
                   setState(() {
-                    initRequests(ap);
+                    initRequests();
                   });
                   if (value) {
-                    PushNotifications.sendAcceptedNotification(
-                        widget.user, activity);
+                    ref
+                        .read(notificationServiceProvider)
+                        .sendAcceptedNotification(widget.user, activity);
                   }
                 });
               },
-              child: Text(
+              child: const Text(
                 "Hyväksy",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontFamily: 'Rubik',
                 ),
               ),

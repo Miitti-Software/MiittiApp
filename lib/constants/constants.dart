@@ -1,98 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:miitti_app/data/activity.dart';
+import 'package:miitti_app/models/activity.dart';
 
-class AppColors {
-  static const Color backgroundColor = Color(0xFF090215);
-  static const Color whiteColor = Color(0xFFFFFBF7);
-  static const Color mixGradientColor = Color(0xFFEC5800);
-  static const Color lavenderColor = Color(0xFFE6E6FA);
-  static const Color darkPurpleColor = Color(0xFF220060);
-  static const Color purpleColor = Color(0xFF5615CE);
-  static const Color lightPurpleColor = Color(0xFFC3A3FF);
-  static const Color yellowColor = Color(0xFFFED91E);
-  static const Color orangeColor = Color(0xFFF17517);
-  static const Color lightOrangeColor = Color(0xFFF59B57);
-  static const Color darkOrangeColor = Color(0xFFF27052);
-  static const Color lightRedColor = Color(0xFFF36269);
-  static const Color pinkColor = Color(0xFFF45087);
-  static const Color wineColor = Color(0xFF180B31);
-  static const Color transparentPurple = Color.fromARGB(100, 86, 21, 206);
-}
-
-class Styles {
-  static ButtonStyle buttonStyle = ElevatedButton.styleFrom(
-    backgroundColor: Colors.transparent,
-    shadowColor: Colors.transparent,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(30.0),
-    ),
-  );
-
-  static TextStyle titleTextStyle = TextStyle(
-    fontSize: 26.sp,
-    fontFamily: 'Sora',
-    color: AppColors.whiteColor,
-    fontWeight: FontWeight.bold,
-  );
-
-  static TextStyle activityNameTextStyle = TextStyle(
-    fontFamily: 'Rubik',
-    fontSize: 19.sp,
-    color: AppColors.whiteColor,
-  );
-  static TextStyle bodyTextStyle = TextStyle(
-    fontSize: 21.sp,
-    color: AppColors.whiteColor,
-    fontFamily: 'Rubik',
-  );
-
-  static TextStyle sectionTitleStyle = TextStyle(
-    fontFamily: 'Sora',
-    fontSize: 22.sp,
-    fontWeight: FontWeight.bold,
-    color: AppColors.whiteColor,
-  );
-
-  static TextStyle sectionSubtitleStyle = TextStyle(
-    fontFamily: 'Rubik',
-    fontSize: 14.sp,
-    color: AppColors.whiteColor,
-  );
-}
-
+// TODO: Load as a list from Firestore to enable translations
+// Eventually make it load in order in order of recency and popularity
+// Also wildcard emoji for custom events?
 const Map<String, Activity> activities = {
-  'racket': Activity(name: 'Mailapeleille', emojiData: '🏸'),
-  'party': Activity(name: 'Bilettämään', emojiData: '🎉'),
-  'fest': Activity(name: 'Festareille', emojiData: '💃'),
-  'golf': Activity(name: 'Golfaamaan', emojiData: '⛳️'),
-  'hangout': Activity(name: 'Hengailemaan', emojiData: '💬'),
-  'ball': Activity(name: 'Pallopeleille', emojiData: '⚽️'),
-  'coffee': Activity(name: 'Kahville', emojiData: '☕️'),
-  'consert': Activity(name: 'Konserttiin', emojiData: '🎫'),
-  'drink': Activity(name: 'Lasilliselle', emojiData: '🥂'),
-  'boardgames': Activity(name: 'Lautapelit', emojiData: '🎲'),
-  'movie': Activity(name: 'Leffaan', emojiData: '🎥'),
   'sport': Activity(name: 'Liikkumaan', emojiData: '👟'),
-  'travel': Activity(name: 'Matkaseuraa', emojiData: '✈️'),
-  'study': Activity(name: 'Opiskelemaan', emojiData: '📚'),
-  'gaming': Activity(name: 'Pelaamaan', emojiData: '🕹️'),
-  'cycle': Activity(name: 'Pyöräilemään', emojiData: '🚲'),
+  'outdoor': Activity(name: 'Ulkoilemaan', emojiData: '🌳'),
   'adventure': Activity(name: 'Seikkailemaan', emojiData: '🚀'),
-  'skateboard': Activity(name: 'Skeittaamaan', emojiData: '🛹'),
+  'ball': Activity(name: 'Pallopeleille', emojiData: '⚽️'),
+  'racket': Activity(name: 'Mailapeleille', emojiData: '🏸'),
+  'gym': Activity(name: 'Salille', emojiData: '🏋️'),
   'eat': Activity(name: 'Syömään', emojiData: '🍔'),
+  'coffee': Activity(name: 'Kahville', emojiData: '☕️'),
+  'hangout': Activity(name: 'Hengailemaan', emojiData: '💬'),
+  'consert': Activity(name: 'Konserttiin', emojiData: '🎫'),
   'exhibition': Activity(name: 'Näyttelyyn', emojiData: '🏛️'),
   'teather': Activity(name: 'Teatteriin', emojiData: '🎭'),
-  'swim': Activity(name: 'Uimaan', emojiData: '🏊‍♂️'),
-  'outdoor': Activity(name: 'Ulkoilemaan', emojiData: '🌳'),
+  'movie': Activity(name: 'Leffaan', emojiData: '🎥'),
+  'drink': Activity(name: 'Lasilliselle', emojiData: '🥂'),
+  'boardgames': Activity(name: 'Lautapelit', emojiData: '🎲'),
+  'study': Activity(name: 'Opiskelemaan', emojiData: '📚'),
+  'travel': Activity(name: 'Matkustamaan', emojiData: '✈️'),
   'photography': Activity(name: 'Valokuvaamaan', emojiData: '📸'),
+  'party': Activity(name: 'Bilettämään', emojiData: '🎉'),
+  'barcrawl': Activity(name: 'Approilemaan', emojiData: '🍻'),
+  'fest': Activity(name: 'Festareille', emojiData: '💃'),
+  'sauna': Activity(name: 'Saunomaan', emojiData: '🧖‍♂️'),
   'ski': Activity(name: 'Laskettelemaan', emojiData: '🏂'),
-  'hike': Activity(name: 'Retkeilemään', emojiData: '🏕️'),
-  'gym': Activity(name: 'Salille', emojiData: '🏋️'),
   'iceskate': Activity(name: 'Luistelemaan', emojiData: '⛸️'),
   'roadtrip': Activity(name: 'Roadtripille', emojiData: '🚘'),
+  'cycle': Activity(name: 'Pyöräilemään', emojiData: '🚲'),
+  'gaming': Activity(name: 'Pelaamaan', emojiData: '🕹️'),
+  'skateboard': Activity(name: 'Skeittaamaan', emojiData: '🛹'),
+  'hike': Activity(name: 'Retkeilemään', emojiData: '🏕️'),
+  'playdate': Activity(name: 'Leikkitreffeille', emojiData: '🛝'),
+  'bookclub': Activity(name: 'Kirjakerhoon', emojiData: '📖'),
+  'swim': Activity(name: 'Uimaan', emojiData: '🏊‍♂️'),
   'climb': Activity(name: 'Kiipeilemään', emojiData: '🧗‍♂️'),
-  'bowling': Activity(name: 'Keilaamaan', emojiData: '🎳')
+  'bowling': Activity(name: 'Keilaamaan', emojiData: '🎳'),
+  'golf': Activity(name: 'Golfaamaan', emojiData: '⛳️'),
+  'sightseeing': Activity(name: 'Sightseeing', emojiData: '🌆'),
+  'crafts': Activity(name: 'Askartelemaan', emojiData: '✂️'),
+  'jam': Activity(name: 'Jameille', emojiData: '🎸'),
+  'shopping': Activity(name: 'Shoppailemaan', emojiData: '🛍️'),
+  'streetperformance': Activity(name: 'Katuesitys', emojiData: '👀'),
+  'standup': Activity(name: 'Standup', emojiData: '🎤'),
+  'parkour': Activity(name: 'Parkour', emojiData: '🤸'),
 };
 
 const List<Activity> commercialActivities = [
@@ -208,6 +162,9 @@ const List<String> adminId = [
   'cyn5uJdDskdwGaZDvmNtztfxsRm2',
   'TI4jAfRnjnUWM46zwsL4pYUrF3Z2',
   'sGCB8PQbluYD8iD5xMx0bdwTrVE2',
+  'p6K0iS7nozZwkYmEoPKfz0sEUY42',
+  'hIbI9DC8lgRW9HZoiTnmp4qdJRs2',
+  'g16HaIuSYhSlqXWgVPsGpNWDp4j2'
 ];
 
 const String mapboxAccess =
