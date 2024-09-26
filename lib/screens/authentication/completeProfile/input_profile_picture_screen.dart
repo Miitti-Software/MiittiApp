@@ -186,9 +186,6 @@ class _InputProfilePictureScreenState
         setState(() {
           image = File(pickedImage.path);
           imageUrl = null; // Clear the imageUrl when a new image is selected
-          ref.watch(userStateProvider.notifier).update((state) => state.copyWith(
-            data: ref.watch(userStateProvider).data.setProfilePicture(image!.path)
-          ));
         });
       }
     } catch (e) {

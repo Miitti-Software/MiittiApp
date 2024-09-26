@@ -23,16 +23,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   int _currentPage = 0;
 
   @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final currentUser = ref.watch(userStateProvider);
-    final currentUserUid = currentUser.uid;
-    final config = ref.watch(remoteConfigServiceProvider);
+    final currentUserUid = ref.watch(userStateProvider).uid;
 
     return Scaffold(
       body: widget.userData == null
@@ -46,19 +38,20 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                     _buildProfilePicture(context, currentUserUid!),
                     _buildFramedList(context, currentUserUid),
                     _buildQACarousel(context),
-                    Center(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                          textStyle: Theme.of(context).textTheme.bodyMedium,
+                    if (widget.userData!.uid == currentUserUid)
+                      Center(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                            textStyle: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          onPressed: () {
+                            context.push('/login/complete-profile/qa-cards');
+                          },
+                          child: Text(ref.watch(remoteConfigServiceProvider).get<String>('edit-qa-cards-button')),
                         ),
-                        onPressed: () {
-                          context.push('/login/complete-profile/qa-cards');
-                        },
-                        child: Text(config.get<String>('edit-qa-cards-button')),
                       ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0, top: 32.0, bottom: 0),
                       child: Text(
@@ -68,6 +61,20 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                       ),
                     ),
                     _buildFavoriteActivitiesGrid(context),
+                    if (widget.userData!.uid == currentUserUid)
+                      Center(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                            textStyle: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          onPressed: () {
+                            context.push('/login/complete-profile/activities');
+                          },
+                          child: Text(ref.watch(remoteConfigServiceProvider).get<String>('edit-activities-button')),
+                        ),
+                      ),
                     if (widget.userData!.uid != currentUserUid)
                       Center(
                         child: TextButton(
@@ -79,7 +86,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                             );
                           },
                           child: Text(
-                            config.get<String>('report-profile-button'),
+                            ref.watch(remoteConfigServiceProvider).get<String>('report-profile-button'),
                             style: TextStyle(color: Theme.of(context).colorScheme.error),
                           ),
                         ),
@@ -325,6 +332,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   }
 
   Widget _buildFavoriteActivitiesGrid(BuildContext context) {
+    final currentUser = ref.watch(userStateProvider);
+    final userData = (currentUser.uid == widget.userData!.uid) ? currentUser.data.toMiittiUser() : widget.userData!;
+
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: GridView.builder(
@@ -335,9 +345,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
           crossAxisSpacing: 20.0,
           mainAxisSpacing: 10.0,
         ),
-        itemCount: widget.userData!.favoriteActivities.length,
+        itemCount: userData.favoriteActivities.length,
         itemBuilder: (context, index) {
-          final activity = widget.userData!.favoriteActivities[index];
+          final activity = userData.favoriteActivities[index];
           return Container(
             padding: const EdgeInsets.symmetric(
               vertical: 10,
@@ -361,7 +371,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                         ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item1,
                         overflow: TextOverflow.visible,
                         style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ],
@@ -375,8 +385,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     );
   }
 
-  int _calculateAge(DateTime? birthday) {
-    if (birthday == null) return 0;
+  int _calculateAge(DateTime birthday) {
     final now = DateTime.now();
     int age = now.year - birthday.year;
     if (now.month < birthday.month || (now.month == birthday.month && now.day < birthday.day)) {
