@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,19 +24,25 @@ class InputProfilePictureScreen extends ConsumerStatefulWidget {
 class _InputProfilePictureScreenState
     extends ConsumerState<InputProfilePictureScreen> {
   File? image;
+  String? imageUrl;
 
   @override
   void initState() {
     super.initState();
     final userData = ref.read(userStateProvider).data;
     if (userData.profilePicture != null) {
-      image = File(userData.profilePicture!);
+      if (ref.read(userStateProvider).isAnonymous) {
+        image = File(userData.profilePicture!);
+      } else {
+        imageUrl = userData.profilePicture;
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
+    final isAnonymous = ref.watch(userStateProvider).isAnonymous;
     ref.read(analyticsServiceProvider).logScreenView('input_profile_picture_screen');
 
     return ConfigScreen(
@@ -51,89 +58,109 @@ class _InputProfilePictureScreenState
           const SizedBox(height: AppSizes.verticalSeparationPadding),
 
           Column(
-              children: [
-                image != null
-                    ? SizedBox(
-                        height: 350,
-                        width: 350,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.file(
-                            image!,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    : Container(
-                        height: 350,
-                        width: 350,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
-                          borderRadius: const BorderRadius.all(Radius.circular(10)),
-                        ),
-                        child: Center(
-                          child: Text(
-                            config.get<String>('input-profile-picture-placeholder'),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                      ),
-                const SizedBox(
-                  height: AppSizes.minVerticalPadding,
+            children: [
+              if (image != null)
+                SizedBox(
+                  height: 350,
+                  width: 350,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      image!,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              else if (imageUrl != null)
+                SizedBox(
+                  height: 350,
+                  width: 350,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl!,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                  ),
+                )
+              else
+                Container(
+                  height: 350,
+                  width: 350,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onSurface.withAlpha(25),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: Center(
+                    child: Text(
+                      config.get<String>('input-profile-picture-placeholder'),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        selectImage(context, isCamera: false);
-                      },
-                      icon: Icon(Icons.image_search_rounded, color: Theme.of(context).colorScheme.onSurface),
-                      label: Text(
-                        config.get<String>('input-profile-picture-gallery-button'),
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1), 
-                        backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.05), 
-                        padding: const EdgeInsets.all(10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1), width: 1),
-                        ),
+              const SizedBox(
+                height: AppSizes.minVerticalPadding,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      selectImage(context, isCamera: false);
+                    },
+                    icon: Icon(Icons.image_search_rounded, color: Theme.of(context).colorScheme.onSurface),
+                    label: Text(
+                      config.get<String>('input-profile-picture-gallery-button'),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(25), 
+                      backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(13), 
+                      padding: const EdgeInsets.all(10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                        side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withAlpha(25), width: 1),
                       ),
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        selectImage(context, isCamera: true);
-                      },
-                      icon: Icon(Icons.photo_camera_rounded, color: Theme.of(context).colorScheme.onSurface),
-                      label: Text(
-                        config.get<String>('input-profile-picture-camera-button'),
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.1), 
-                        backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.05), 
-                        padding: const EdgeInsets.all(10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1), width: 1),
-                        ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      selectImage(context, isCamera: true);
+                    },
+                    icon: Icon(Icons.photo_camera_rounded, color: Theme.of(context).colorScheme.onSurface),
+                    label: Text(
+                      config.get<String>('input-profile-picture-camera-button'),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(25), 
+                      backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(13), 
+                      padding: const EdgeInsets.all(10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                        side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withAlpha(25), width: 1),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
+          ),
 
           const Spacer(),
           
           ForwardButton(
-            buttonText: config.get<String>('forward-button'),
-            onPressed: () {
-              if (image != null) {
-                context.push('/login/complete-profile/activities');
+            buttonText: isAnonymous ? config.get<String>('next-button') : config.get<String>('save-button'),
+            onPressed: () async {
+              if (image != null || imageUrl != null) {
+                if (isAnonymous) {
+                  context.push('/login/complete-profile/activities');
+                } else {
+                  await ref.read(userStateProvider.notifier).updateUserProfilePicture(image!.path);
+                  context.pop();
+                }
               } else {
                 ErrorSnackbar.show(
                     context, config.get<String>('invalid-profile-picture-missing'));
@@ -158,6 +185,7 @@ class _InputProfilePictureScreenState
       if (pickedImage != null) {
         setState(() {
           image = File(pickedImage.path);
+          imageUrl = null; // Clear the imageUrl when a new image is selected
           ref.watch(userStateProvider.notifier).update((state) => state.copyWith(
             data: ref.watch(userStateProvider).data.setProfilePicture(image!.path)
           ));
@@ -171,5 +199,4 @@ class _InputProfilePictureScreenState
     }
     return image;
   }
-
 }

@@ -126,7 +126,7 @@ class UserState extends StateNotifier<UserStateData> {
   }
 
   Future<void> sessionUpdateUserData({bool begin = false}) async {
-    if (state.isSignedIn && !state.isAnonymous) {
+    if (state.isSignedIn && !state.isAnonymous && state.data.profilePicture != null && state.data.profilePicture!.startsWith('http')) {
       final firestoreService = ref.read(firestoreServiceProvider);
       MiittiUser miittiUser = state.data.copyWith(
         lastActive: DateTime.now(),

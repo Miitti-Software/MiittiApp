@@ -30,7 +30,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUserUid = ref.watch(userStateProvider.select((state) => state.uid));
+    final currentUser = ref.watch(userStateProvider);
+    final currentUserUid = currentUser.uid;
     final config = ref.watch(remoteConfigServiceProvider);
 
     return Scaffold(
@@ -42,8 +43,8 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildProfilePicture(context),
-                    _buildFramedList(context),
+                    _buildProfilePicture(context, currentUserUid!),
+                    _buildFramedList(context, currentUserUid),
                     _buildQACarousel(context),
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0, top: 32.0, bottom: 0),
@@ -77,7 +78,10 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     );
   }
 
-  Widget _buildProfilePicture(BuildContext context) {
+  Widget _buildProfilePicture(BuildContext context, String currentUserUid) {
+    final currentUser = ref.watch(userStateProvider);
+    final profilePicture = (currentUserUid == widget.userData!.uid) ? currentUser.data.profilePicture : widget.userData!.profilePicture;
+
     return Stack(
       children: [
         ShaderMask(
@@ -94,7 +98,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
           },
           blendMode: BlendMode.dstIn,
           child: CachedNetworkImage(
-            imageUrl: widget.userData!.profilePicture,
+            imageUrl: profilePicture!,
             width: double.infinity,
             height: 420,
             fit: BoxFit.cover,
@@ -118,20 +122,35 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
             },
           ),
         ),
-        if (widget.userData!.uid == ref.read(userStateProvider).uid) ...[
+        if (widget.userData!.uid == currentUserUid) ...[
           Positioned(
             top: 40,
             right: 16,
-            child: IconButton(
-              icon: const Icon(
-                Icons.settings, 
-                size: 30,
-                color: Colors.white,
-                shadows: <Shadow>[Shadow(color: Colors.black45, blurRadius: 20.0, offset: Offset(0, 2.0))],
-              ),
-              onPressed: () {
-                context.go('/profile/settings');
-              },
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.edit, 
+                    size: 30,
+                    color: Colors.white,
+                    shadows: <Shadow>[Shadow(color: Colors.black45, blurRadius: 20.0, offset: Offset(0, 2.0))],
+                  ),
+                  onPressed: () {
+                    context.push('/login/complete-profile/profile-picture');
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.settings, 
+                    size: 30,
+                    color: Colors.white,
+                    shadows: <Shadow>[Shadow(color: Colors.black45, blurRadius: 20.0, offset: Offset(0, 2.0))],
+                  ),
+                  onPressed: () {
+                    context.go('/profile/settings');
+                  },
+                ),
+              ],
             ),
           ),
         ],
@@ -154,7 +173,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     );
   }
 
-  Widget _buildFramedList(BuildContext context) {
+  Widget _buildFramedList(BuildContext context, String currentUserUid) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
@@ -166,166 +185,179 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildListItem(context, Icons.location_on_outlined, widget.userData!.areas[0]),
+          _buildListItem(context, Icons.location_on_outlined, widget.userData!.areas[0], currentUserUid, 'complete-profile/areas'),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.cake_outlined, '${_calculateAge(widget.userData!.birthday)}'),
+          _buildListItem(context, Icons.cake_outlined, '${_calculateAge(widget.userData!.birthday)}', currentUserUid, null),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.language_outlined, widget.userData!.languages.map((lang) => ref.watch(remoteConfigServiceProvider).get<String>(lang.code)).join(', ')),
+          _buildListItem(context, Icons.language_outlined, widget.userData!.languages.map((lang) => ref.watch(remoteConfigServiceProvider).get<String>(lang.code)).join(', '), currentUserUid, 'complete-profile/languages'),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.work_outline, widget.userData!.occupationalStatuses.map((e) => ref.watch(remoteConfigServiceProvider).get<String>(e)).join(', ')),
+          _buildListItem(context, Icons.work_outline, widget.userData!.occupationalStatuses.map((e) => ref.watch(remoteConfigServiceProvider).get<String>(e)).join(', '), currentUserUid, 'complete-profile/occupational-statuses'),
           if (widget.userData!.organizations.isNotEmpty) ...[
             Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-            _buildListItem(context, Icons.business, widget.userData!.organizations.join(', ')),
+            _buildListItem(context, Icons.business, widget.userData!.organizations.join(', '), currentUserUid, 'complete-profile/organizations'),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildListItem(BuildContext context, IconData icon, String value) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(
-          icon, 
-          color: Theme.of(context).colorScheme.primary,
-          size: 30,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Wrap(
-            children: [
-              Text(
-                value,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
+  Widget _buildListItem(BuildContext context, IconData icon, String value, String currentUserUid, String? editRoute) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon, 
+            color: Theme.of(context).colorScheme.primary,
+            size: 30,
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(width: 10),
+          Expanded(
+            child: Wrap(
+              children: [
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          if (widget.userData!.uid == currentUserUid && editRoute != null) ...[
+            IconButton(
+              icon: const Icon(
+                Icons.edit,
+                size: 20,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                context.go(editRoute);
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 
   Widget _buildQACarousel(BuildContext context) {
-  return Column(
-    children: [
-      SizedBox(
-        height: 180,
-        child: PageView.builder(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _currentPage = index;
-            });
-          },
-          itemCount: widget.userData!.qaAnswers.length,
-          itemBuilder: (context, index) {
-            final entry = widget.userData!.qaAnswers.entries.elementAt(index);
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withAlpha(15),
-                border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(125)),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      entry.key,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Text(
-                          entry.value,
-                          style: const TextStyle(fontSize: 14.0),
+    return Column(
+      children: [
+        SizedBox(
+          height: 180,
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemCount: widget.userData!.qaAnswers.length,
+            itemBuilder: (context, index) {
+              final entry = widget.userData!.qaAnswers.entries.elementAt(index);
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withAlpha(15),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(125)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        entry.key,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Text(
+                            entry.value,
+                            style: const TextStyle(fontSize: 14.0),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+              );
+            },
+          ),
+        ),
+        Wrap(
+          alignment: WrapAlignment.center,
+          children: List.generate(widget.userData!.qaAnswers.length, (index) {
+            return Container(
+              width: 8.0,
+              height: 8.0,
+              margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Theme.of(context).colorScheme.primary.withAlpha(index == _currentPage ? 255 : 125),
               ),
             );
-          },
+          }),
         ),
-      ),
-      Wrap(
-        alignment: WrapAlignment.center,
-        children: List.generate(widget.userData!.qaAnswers.length, (index) {
-          return Container(
-            width: 8.0,
-            height: 8.0,
-            margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Theme.of(context).colorScheme.primary.withAlpha(index == _currentPage ? 255 : 125),
-            ),
-          );
-        }),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   Widget _buildFavoriteActivitiesGrid(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: GridView.builder(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 20.0,
-            mainAxisSpacing: 10.0,
-          ),
-          itemCount: widget.userData!.favoriteActivities.length,
-          itemBuilder: (context, index) {
-            final activity = widget.userData!.favoriteActivities[index];
-            return Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 5,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item2,
-                      style: const TextStyle(fontSize: 32),
-                    ),
-                    Wrap(
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item1,
-                          overflow: TextOverflow.visible,
-                          style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 20.0,
+          mainAxisSpacing: 10.0,
         ),
+        itemCount: widget.userData!.favoriteActivities.length,
+        itemBuilder: (context, index) {
+          final activity = widget.userData!.favoriteActivities[index];
+          return Container(
+            padding: const EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: 5,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item2,
+                    style: const TextStyle(fontSize: 32),
+                  ),
+                  Wrap(
+                    children: [
+                      Text(
+                        textAlign: TextAlign.center,
+                        ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item1,
+                        overflow: TextOverflow.visible,
+                        style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
-  int _calculateAge(DateTime birthday) {
+  int _calculateAge(DateTime? birthday) {
+    if (birthday == null) return 0;
     final now = DateTime.now();
     int age = now.year - birthday.year;
     if (now.month < birthday.month || (now.month == birthday.month && now.day < birthday.day)) {
