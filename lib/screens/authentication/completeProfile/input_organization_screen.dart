@@ -103,7 +103,7 @@ class _InputOrganizationScreenState extends ConsumerState<InputOrganizationScree
                   final isSelected = selectedOrganizations.contains(organization.item1);
                   return Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.primary.withAlpha(25),
                       border: isSelected
                           ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1)
                           : Border.all(color: Colors.transparent, width: 1),

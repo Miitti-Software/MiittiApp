@@ -318,7 +318,12 @@ class AppRouter {
           GoRoute(
             name: 'profile',
             path: '/profile',
-            pageBuilder: _buildNoTransitionPage(UserProfilePage(userData: !ref.read(userStateProvider).isAnonymous ? ref.read(userStateProvider).data.toMiittiUser() : null)),
+            pageBuilder: (BuildContext context, GoRouterState state) {
+              bool isAnonymous = ref.read(userStateProvider).isAnonymous;
+              if (isAnonymous) { router.refresh(); }
+              MiittiUser? userData = !isAnonymous ? ref.read(userStateProvider).data.toMiittiUser() : null;
+              return NoTransitionPage<void>(child: UserProfilePage(userData: userData,));
+            },
             routes: [
               GoRoute(
                 name: 'settings',

@@ -78,7 +78,7 @@ class MiittiUser {
         birthday: resolveTimestamp(data['birthday'] ?? data['userBirthday']).toDate(),
         languages: data['languages'] != null ? List.from(data['languages']).map((elem) => Language.values.firstWhere((e) => e.toString().split('.').last.toLowerCase() == elem.toLowerCase())).toList() : _resolveLanguages(List.from(data['userLanguages'])),
         occupationalStatuses: data['occupationalStatuses'] != null ? List.from(data['occupationalStatuses']) : (['Opiskelija', 'Työelämässä', 'Yrittäjä', 'Etsimässä itseään'].contains(data['userSchool']) ? [{'Opiskelija': 'student', 'Työelämässä': 'working', 'Yrittäjä': 'entrepreneur', 'Etsimässä itseään': 'other-occupational-status'}[data['userSchool']]!] : []),    // TODO: What to do with empty occupational statuses?
-        organizations: data['organization'] != null ? List<String>.from(data['organization']) : [],
+        organizations: data['organizations'] != null ? List<String>.from(data['organizations']) : [],
         representedOrganizations: data['representedOrganizations'] != null ? List<String>.from(data['representedOrganizations']) : [],
         areas: data['areas'] != null ? _toStringList(data['areas']) : (data['userArea'] as String).split(',').map((e) => e.trim()).toList(),
         favoriteActivities: data['favoriteActivities'] != null ? List.from(data['favoriteActivities']) : _resolveActivities(_toStringList(data['userFavoriteActivities'])),

@@ -34,7 +34,7 @@ class NavigationShellScaffold extends ConsumerWidget {
           bottomNavigationBar: CustomNavigationBar(
             currentIndex: navigationShell.currentIndex,
             onTap: (index) {
-              if (ref.read(userStateProvider).isAnonymous && [0, 2, 3].contains(index)) {
+              if (ref.watch(userStateProvider).isAnonymous && [0, 2, 3].contains(index)) {
                 BottomSheetDialog.show(
                   context: context,
                   title: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-title'),
@@ -53,10 +53,10 @@ class NavigationShellScaffold extends ConsumerWidget {
                 } else {
                   return;
                 }
-              } else if (ref.read(userStateProvider).isAnonymous && index == 4) {
+              } else if (ref.watch(userStateProvider).isAnonymous && index == 4) {
                 context.go('/profile/settings');
               } else {
-                if (index == 3 && ref.read(usersStateProvider).users.length < 10) {
+                if (index == 3 && ref.watch(usersStateProvider).users.length < 10) {
                   ref.read(usersStateProvider.notifier).loadMoreUsers();
                 }
                 _goBranch(context, ref, index);

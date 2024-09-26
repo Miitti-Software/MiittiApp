@@ -7,6 +7,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
+import 'package:miitti_app/widgets/overlays/report_bottom_sheet.dart';
 
 class UserProfilePage extends ConsumerStatefulWidget {
   final MiittiUser? userData;
@@ -29,7 +30,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(userStateProvider);
+    final currentUserUid = ref.watch(userStateProvider.select((state) => state.uid));
+    final config = ref.watch(remoteConfigServiceProvider);
+
     return Scaffold(
       body: widget.userData == null
           ? ConfigScreen(child: Center(child: Text('User not found', style: Theme.of(context).textTheme.titleMedium)))
@@ -51,6 +54,22 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                       ),
                     ),
                     _buildFavoriteActivitiesGrid(context),
+                    if (widget.userData!.uid != currentUserUid)
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            ReportBottomSheet.show(
+                              context: context,
+                              isActivity: false,
+                              id: widget.userData!.uid,
+                            );
+                          },
+                          child: Text(
+                            config.get<String>('report-profile-button'),
+                            style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -164,89 +183,96 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   }
 
   Widget _buildListItem(BuildContext context, IconData icon, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(
-            icon, 
-            color: Theme.of(context).colorScheme.primary,
-            size: 30,
-          ),
-          const SizedBox(width: 10),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQACarousel(BuildContext context) {
-    return Column(
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: 180,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemCount: widget.userData!.qaAnswers.length,
-            itemBuilder: (context, index) {
-              final entry = widget.userData!.qaAnswers.entries.elementAt(index);
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withAlpha(15),
-                  border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(125)),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        entry.key,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 10),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Text(
-                            entry.value,
-                            style: const TextStyle(fontSize: 14.0),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+        Icon(
+          icon, 
+          color: Theme.of(context).colorScheme.primary,
+          size: 30,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(widget.userData!.qaAnswers.length, (index) {
-            return Container(
-              width: 8.0,
-              height: 8.0,
-              margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.primary.withAlpha(index == _currentPage ? 255 : 125),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Wrap(
+            children: [
+              Text(
+                value,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-            );
-          }),
+            ],
+          ),
         ),
       ],
-    );
-  }
+    ),
+  );
+}
+
+  Widget _buildQACarousel(BuildContext context) {
+  return Column(
+    children: [
+      SizedBox(
+        height: 180,
+        child: PageView.builder(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _currentPage = index;
+            });
+          },
+          itemCount: widget.userData!.qaAnswers.length,
+          itemBuilder: (context, index) {
+            final entry = widget.userData!.qaAnswers.entries.elementAt(index);
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withAlpha(15),
+                border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(125)),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.key,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          entry.value,
+                          style: const TextStyle(fontSize: 14.0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      Wrap(
+        alignment: WrapAlignment.center,
+        children: List.generate(widget.userData!.qaAnswers.length, (index) {
+          return Container(
+            width: 8.0,
+            height: 8.0,
+            margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).colorScheme.primary.withAlpha(index == _currentPage ? 255 : 125),
+            ),
+          );
+        }),
+      ),
+    ],
+  );
+}
 
   Widget _buildFavoriteActivitiesGrid(BuildContext context) {
     return Padding(

@@ -51,11 +51,11 @@ class _ReportBottomSheetState extends ConsumerState<ReportBottomSheet> {
 
     final title = config.get<String>(widget.isActivity ? 'report-activity-title' : 'report-profile-title');
     final reasonTitle = config.get<String>(widget.isActivity ? 'report-activity-reason-title' : 'report-profile-reason-title');
-    final textfieldTitle = config.get<String>('report-activity-textfield-title');
-    final textfieldPlaceholder = config.get<String>('report-activity-textfield-placeholder');
-    final confirmText = config.get<String>('report-activity-button');
+    final textfieldTitle = config.get<String>(widget.isActivity? 'report-activity-textfield-title' : 'report-profile-textfield-title');
+    final textfieldPlaceholder = config.get<String>(widget.isActivity? 'report-activity-textfield-placeholder' : 'report-profile-textfield-placeholder');
+    final confirmText = config.get<String>(widget.isActivity? 'report-activity-button' : 'report-profile-button');
     final cancelText = config.get<String>('cancel-button');
-    final disclaimer = config.get<String>('report-activity-disclaimer');
+    final disclaimer = config.get<String>(widget.isActivity? 'report-activity-disclaimer' : 'report-profile-disclaimer');
 
     return SingleChildScrollView(
       child: Padding(

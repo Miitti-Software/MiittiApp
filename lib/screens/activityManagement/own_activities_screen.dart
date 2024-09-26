@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/screens/anonymous_user_screen.dart';
 import 'package:miitti_app/state/service_providers.dart';
@@ -46,17 +47,31 @@ class _OwnActivitiesScreenState extends ConsumerState<OwnActivitiesScreen> {
             // ),
             body: Container(
               color: Theme.of(context).colorScheme.surface,
-              child: InfiniteList(
-                dataSource: activities,
-                refreshFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreParticipatingActivities(fullRefresh: true),
-                listTileBuilder: (BuildContext context, int index) {
-                  return ActivityListTile(
-                    activities[index],
-                  );
-                },
-                scrollController: _scrollController,
-                loadMoreFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreParticipatingActivities(),
-              ),
+              child: activities.isEmpty
+                  ? Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                          textStyle: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        onPressed: () {
+                          context.push('/create-activity/category');
+                        },
+                        child: Text(config.get<String>('create-activity-prompt-button')),
+                      ),
+                    )
+                  : InfiniteList(
+                      dataSource: activities,
+                      refreshFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreParticipatingActivities(fullRefresh: true),
+                      listTileBuilder: (BuildContext context, int index) {
+                        return ActivityListTile(
+                          activities[index],
+                        );
+                      },
+                      scrollController: _scrollController,
+                      loadMoreFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreParticipatingActivities(),
+                    ),
             ),
           );
   }

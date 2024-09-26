@@ -240,7 +240,6 @@ class UserState extends StateNotifier<UserStateData> {
     final localStorageService = ref.read(localStorageServiceProvider);
 
     if (!state.isAnonymous) {
-      print('Deleting user data');
       await firebaseStorageService.deleteUserFolder(state.uid!);
       await firestoreService.deleteUser(state.uid!);
     }
