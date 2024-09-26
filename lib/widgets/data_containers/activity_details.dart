@@ -396,6 +396,11 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     ForwardButton(
                       buttonText: config.get<String>('activity-ask-to-join-button'),
                       onPressed: () async {
+                        if (ref.read(userStateProvider).isAnonymous) {
+                          ErrorSnackbar.show(context, config.get<String>('invalid-activity-join-anonymous'));
+                          context.go('/login/welcome');
+                          return;
+                        }
                         // Request to join activity
                         final success = await ref.read(activitiesStateProvider.notifier).requestToJoinActivity(activity);
                         if (!mounted) return;

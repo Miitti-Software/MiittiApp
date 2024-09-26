@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
+import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/routing/modal_page.dart';
 import 'package:miitti_app/screens/activityManagement/activity_management_shell_scaffold.dart';
 import 'package:miitti_app/screens/activityManagement/chat_screen.dart';
@@ -20,6 +21,7 @@ import 'package:miitti_app/screens/createMiitti/fill_activity_details_screen.dar
 import 'package:miitti_app/screens/createMiitti/invite_screen.dart';
 import 'package:miitti_app/screens/filter_users_screen.dart';
 import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
+import 'package:miitti_app/screens/profile_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/map_state.dart';
@@ -299,7 +301,7 @@ class AppRouter {
                 path: 'user/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   final id = state.pathParameters['id'] as String;
-                  return NoTransitionPage<void>(child: UserProfileEditScreen(user: ref.read(usersStateProvider).users.firstWhere((user) => user.uid == id)));
+                  return NoTransitionPage<void>(child: UserProfilePage(userData: ref.read(usersStateProvider).users.firstWhere((user) => user.uid == id)));
                 },
               ),
             ],
@@ -315,7 +317,7 @@ class AppRouter {
           GoRoute(
             name: 'profile',
             path: '/profile',
-            pageBuilder: _buildNoTransitionPage(const ProfileScreen()),
+            pageBuilder: _buildNoTransitionPage(UserProfilePage(userData: !ref.read(userStateProvider).isAnonymous ? ref.read(userStateProvider).data.toMiittiUser() : null)),
             routes: [
               GoRoute(
                 name: 'settings',

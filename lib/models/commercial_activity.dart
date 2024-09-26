@@ -130,7 +130,6 @@ class CommercialActivity extends MiittiActivity {
   @override
   CommercialActivity removeParticipant(MiittiUser user) {
     participants.remove(user.uid);
-    participantsInfo.remove(user.uid);
     return this;
   }
 

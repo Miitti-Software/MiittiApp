@@ -132,7 +132,7 @@ class UserState extends StateNotifier<UserStateData> {
         lastActive: DateTime.now(),
         online: begin,
       ).toMiittiUser();
-      await firestoreService.saveUserData(miittiUser);
+      await firestoreService.updateUserData(miittiUser);
     }
   }
 
@@ -240,12 +240,13 @@ class UserState extends StateNotifier<UserStateData> {
     final localStorageService = ref.read(localStorageServiceProvider);
 
     if (!state.isAnonymous) {
-      await firebaseStorageService.deleteUserFolder(state.data.uid!);
-      await firestoreService.deleteUser(state.data.uid!);
+      print('Deleting user data');
+      await firebaseStorageService.deleteUserFolder(state.uid!);
+      await firestoreService.deleteUser(state.uid!);
     }
     await authService.deleteUser();
-    firestoreService.reset();
     await localStorageService.clear();
+    firestoreService.reset();
     _locationUpdateTimer?.cancel();
     state = UserStateData();
   }

@@ -70,6 +70,16 @@ class FirestoreService {
       return false;
     }
   }
+
+  Future<void> updateUserData(MiittiUser data) async {
+    try {
+      final userState = ref.read(userStateProvider);
+      final userRef = _firestore.collection(_usersCollection).doc(userState.uid!);
+      await userRef.update(data.toMap());
+    } catch (e) {
+      debugPrint('Error updating user data: $e');
+    }
+  }
   
   Future<MiittiUser?> loadUserData(String userId) async {
     DocumentSnapshot snapshot = await _firestore.collection(_usersCollection).doc(userId).get();

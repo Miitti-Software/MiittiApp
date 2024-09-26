@@ -46,9 +46,12 @@ class LoginIntroScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 15,),
                   const Spacer(),
-                  ForwardButton(
-                    buttonText: data['auth-call-to-action'],
-                    onPressed: () => context.go('/login/authenticate'), 
+                  SizedBox(
+                    width: AppSizes.fullContentWidth,
+                    child: ForwardButton(
+                      buttonText: data['auth-call-to-action'],
+                      onPressed: () => context.go('/login/authenticate'), 
+                    ),
                   ),
                   const SizedBox(height: 15,),
                   SizedBox(
