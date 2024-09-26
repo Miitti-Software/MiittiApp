@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
@@ -188,23 +189,26 @@ class CustomRequestListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: NetworkImage(profilePicture),
-      ),
-      title: Text(name),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.check, color: Colors.green),
-            onPressed: onAccept,
-          ),
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.red),
-            onPressed: onDecline,
-          ),
-        ],
+    return GestureDetector(
+      onTap: () => context.push('/people/user/$uid'),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(profilePicture),
+        ),
+        title: Text(name),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.check, color: Colors.green),
+              onPressed: onAccept,
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.red),
+              onPressed: onDecline,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -301,7 +302,7 @@ class AppRouter {
                 path: 'user/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   final id = state.pathParameters['id'] as String;
-                  return NoTransitionPage<void>(child: UserProfilePage(userData: ref.read(usersStateProvider).users.firstWhere((user) => user.uid == id)));
+                  return NoTransitionPage<void>(child: UserProfilePage(userData: ref.read(usersStateProvider).users.firstWhereOrNull((user) => user.uid == id)));
                 },
               ),
             ],

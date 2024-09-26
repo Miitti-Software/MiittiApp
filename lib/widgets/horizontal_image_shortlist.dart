@@ -70,7 +70,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
     return GestureDetector(
       onTap: () async {
         await ref.read(usersStateProvider.notifier).fetchUser(user.uid);
-        context.go('/people/user/${user.uid}');
+        context.push('/people/user/${user.uid}');
       },
       child: Container(
         decoration: BoxDecoration(

@@ -137,7 +137,7 @@ class _ParticipantsListState extends ConsumerState<ParticipantsList> {
                         profilePicture: user['profilePicture'],
                         onTap: () async {
                           await ref.read(usersStateProvider.notifier).fetchUser(userId);
-                          context.go('/people/user/$userId');
+                          context.push('/people/user/$userId');
                         },
                         onRemove: currentUser.uid == activity.creator ? () async {
                           final activity = await ref.read(activitiesStateProvider.notifier).fetchActivity(widget.activityId);

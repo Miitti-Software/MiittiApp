@@ -278,6 +278,8 @@
     "filter-users-select-interests-label": "Select interests",
     "filter-users-save-button": "Save",
     "filter-users-cancel-button": "Cancel",
-    "filter-users-max-interests-error": "You can only select up to 10 interests"
+    "filter-users-max-interests-error": "You can only select up to 10 interests",
+
+    "favorite-activities-title": "Favorite Activities"
 
 }
