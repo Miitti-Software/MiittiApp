@@ -174,6 +174,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   }
 
   Widget _buildFramedList(BuildContext context, String currentUserUid) {
+    final currentUser = ref.watch(userStateProvider);
+    final userData = (currentUserUid == widget.userData!.uid) ? currentUser.data.toMiittiUser() : widget.userData!;
+
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
@@ -185,16 +188,16 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildListItem(context, Icons.location_on_outlined, widget.userData!.areas[0], currentUserUid, 'complete-profile/areas'),
+          _buildListItem(context, Icons.location_on_outlined, userData.areas.join(', '), currentUserUid, '/login/complete-profile/areas'),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.cake_outlined, '${_calculateAge(widget.userData!.birthday)}', currentUserUid, null),
+          _buildListItem(context, Icons.cake_outlined, '${_calculateAge(userData.birthday)}', currentUserUid, null),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.language_outlined, widget.userData!.languages.map((lang) => ref.watch(remoteConfigServiceProvider).get<String>(lang.code)).join(', '), currentUserUid, 'complete-profile/languages'),
+          _buildListItem(context, Icons.language_outlined, userData.languages.map((lang) => ref.watch(remoteConfigServiceProvider).get<String>(lang.code)).join(', '), currentUserUid, '/login/complete-profile/languages'),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.work_outline, widget.userData!.occupationalStatuses.map((e) => ref.watch(remoteConfigServiceProvider).get<String>(e)).join(', '), currentUserUid, 'complete-profile/occupational-statuses'),
-          if (widget.userData!.organizations.isNotEmpty) ...[
+          _buildListItem(context, Icons.work_outline, userData.occupationalStatuses.map((e) => ref.watch(remoteConfigServiceProvider).get<String>(e)).join(', '), currentUserUid, '/login/complete-profile/occupational-statuses'),
+          if (userData.organizations.isNotEmpty) ...[
             Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-            _buildListItem(context, Icons.business, widget.userData!.organizations.join(', '), currentUserUid, 'complete-profile/organizations'),
+            _buildListItem(context, Icons.business, userData.organizations.join(', '), currentUserUid, '/login/complete-profile/organizations'),
           ],
         ],
       ),
@@ -231,7 +234,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 color: Colors.grey,
               ),
               onPressed: () {
-                context.go(editRoute);
+                context.push(editRoute);
               },
             ),
           ],
