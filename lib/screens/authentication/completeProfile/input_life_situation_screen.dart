@@ -22,6 +22,7 @@ class InputLifeSituationScreen extends ConsumerStatefulWidget {
 class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScreen> {
   List<String> selectedOccupationalStatuses = [];
   List<Tuple2<String, String>> statusOptions = [];
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -45,91 +46,117 @@ class _InputLifeSituationScreenState extends ConsumerState<InputLifeSituationScr
     final userData = ref.watch(userStateProvider).data;
     final userState = ref.read(userStateProvider.notifier);
     final config = ref.watch(remoteConfigServiceProvider);
+    final isAnonymous = ref.watch(userStateProvider).isAnonymous;
     ref.read(analyticsServiceProvider).logScreenView('input_life_situation_screen');
 
-    return ConfigScreen(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: AppSizes.minVerticalEdgePadding),
-          Text(config.get<String>('input-occupational-status-title'),
-              style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
-          Text(config.get<String>('input-occupational-status-disclaimer'),
-              style: Theme.of(context).textTheme.labelSmall),
-          const SizedBox(height: AppSizes.verticalSeparationPadding),
+    return Stack(
+      children: [
+        ConfigScreen(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: AppSizes.minVerticalEdgePadding),
+              Text(config.get<String>('input-occupational-status-title'),
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: AppSizes.minVerticalDisclaimerPadding),
+              Text(config.get<String>('input-occupational-status-disclaimer'),
+                  style: Theme.of(context).textTheme.labelSmall),
+              const SizedBox(height: AppSizes.verticalSeparationPadding),
 
-          Expanded(
-            child: PermanentScrollbar(
-              child: ListView.builder(
-                itemCount: statusOptions.length,
-                itemBuilder: (context, index) {
-                  final occupationalStatus = statusOptions[index];
-                  final isSelected = selectedOccupationalStatuses.contains(occupationalStatus.item1);
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                      border: isSelected
-                          ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1)
-                          : Border.all(color: Colors.transparent, width: 1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 0),
-                    margin: const EdgeInsets.only(bottom: 8, right: 10),
-                    child: ListTile(
-                      titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                      minVerticalPadding: 6,
-                      minTileHeight: 1,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                      title: Text(occupationalStatus.item2),
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            selectedOccupationalStatuses.remove(occupationalStatus.item1);
-                            userState.update((state) => state.copyWith(
-                              data: userData.removeOccupationalStatus(occupationalStatus.item1)
-                            ));
-                          } else if (selectedOccupationalStatuses.length < 3) {
-                            selectedOccupationalStatuses.add(occupationalStatus.item1);
-                            userState.update((state) => state.copyWith(
-                              data: userData.addOccupationalStatus(occupationalStatus.item1)
-                            ));
-                          } else {
-                            ErrorSnackbar.show(
-                                context, config.get<String>('invalid-occupational-status-too-many'));
-                          }
-                        });
-                      },
-                    ),
-                  );
+              Expanded(
+                child: PermanentScrollbar(
+                  child: ListView.builder(
+                    itemCount: statusOptions.length,
+                    itemBuilder: (context, index) {
+                      final occupationalStatus = statusOptions[index];
+                      final isSelected = selectedOccupationalStatuses.contains(occupationalStatus.item1);
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          border: isSelected
+                              ? Border.all(color: Theme.of(context).colorScheme.primary, width: 1)
+                              : Border.all(color: Colors.transparent, width: 1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 0),
+                        margin: const EdgeInsets.only(bottom: 8, right: 10),
+                        child: ListTile(
+                          titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                          minVerticalPadding: 6,
+                          minTileHeight: 1,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                          title: Text(occupationalStatus.item2),
+                          onTap: () {
+                            setState(() {
+                              if (isSelected) {
+                                selectedOccupationalStatuses.remove(occupationalStatus.item1);
+                                userState.update((state) => state.copyWith(
+                                  data: userData.removeOccupationalStatus(occupationalStatus.item1)
+                                ));
+                              } else if (selectedOccupationalStatuses.length < 3) {
+                                selectedOccupationalStatuses.add(occupationalStatus.item1);
+                                userState.update((state) => state.copyWith(
+                                  data: userData.addOccupationalStatus(occupationalStatus.item1)
+                                ));
+                              } else {
+                                ErrorSnackbar.show(
+                                    context, config.get<String>('invalid-occupational-status-too-many'));
+                              }
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: AppSizes.minVerticalEdgePadding),
+              ForwardButton(
+                buttonText: selectedOccupationalStatuses.contains("student")
+                    ? config.get<String>('forward-button')
+                    : config.get<String>('save-button'),
+                onPressed: () async {
+                  if (selectedOccupationalStatuses.isNotEmpty) {
+                    if (selectedOccupationalStatuses.contains("student")) {
+                      context.push('/login/complete-profile/organization');
+                    } else if (isAnonymous) {
+                      context.push('/login/complete-profile/qa-cards');
+                    } else {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      userState.update((state) => state.copyWith(
+                        data: userData.copyWith(occupationalStatuses: selectedOccupationalStatuses)
+                      ));
+                      await userState.updateUserData();
+                      setState(() {
+                        isLoading = false;
+                      });
+                      context.pop();
+                    }
+                  } else {
+                    ErrorSnackbar.show(context, config.get<String>('invalid-occupational-status-missing'));
+                  }
                 },
               ),
+              const SizedBox(height: AppSizes.minVerticalPadding),
+              BackwardButton(
+                buttonText: config.get<String>('back-button'),
+                onPressed: () => context.pop(),
+              ),
+              const SizedBox(height: AppSizes.minVerticalEdgePadding),
+            ],
+          ),
+        ),
+        if (isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: CircularProgressIndicator(),
             ),
           ),
-
-          const SizedBox(height: AppSizes.minVerticalEdgePadding),
-          ForwardButton(
-            buttonText: config.get<String>('forward-button'),
-            onPressed: () {
-              if (selectedOccupationalStatuses.isNotEmpty) {
-                if (selectedOccupationalStatuses.contains("student")) {
-                  context.push('/login/complete-profile/organization');
-                } else {
-                  context.push('/login/complete-profile/qa-cards');
-                }
-              } else {
-                ErrorSnackbar.show(context, config.get<String>('invalid-occupational-status-missing'));
-              }
-            },
-          ),
-          const SizedBox(height: AppSizes.minVerticalPadding),
-          BackwardButton(
-            buttonText: config.get<String>('back-button'),
-            onPressed: () => context.pop(),
-          ),
-          const SizedBox(height: AppSizes.minVerticalEdgePadding),
-        ],
-      ),
+      ],
     );
   }
 }

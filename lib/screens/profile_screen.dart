@@ -194,10 +194,10 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
           _buildListItem(context, Icons.language_outlined, userData.languages.map((lang) => ref.watch(remoteConfigServiceProvider).get<String>(lang.code)).join(', '), currentUserUid, '/login/complete-profile/languages'),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.work_outline, userData.occupationalStatuses.map((e) => ref.watch(remoteConfigServiceProvider).get<String>(e)).join(', '), currentUserUid, '/login/complete-profile/occupational-statuses'),
+          _buildListItem(context, Icons.work_outline, userData.occupationalStatuses.map((e) => ref.watch(remoteConfigServiceProvider).get<String>(e)).join(', '), currentUserUid, '/login/complete-profile/life-situation'),
           if (userData.organizations.isNotEmpty) ...[
             Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-            _buildListItem(context, Icons.business, userData.organizations.join(', '), currentUserUid, '/login/complete-profile/organizations'),
+            _buildListItem(context, Icons.business, userData.organizations.join(', '), currentUserUid, '/login/complete-profile/organization'),
           ],
         ],
       ),
