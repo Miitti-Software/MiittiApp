@@ -126,6 +126,7 @@ class UserCreatedActivity extends MiittiActivity {
 
   @override
   UserCreatedActivity addParticipant(MiittiUser user) {
+    requests.remove(user.uid);
     participants.add(user.uid);
     latestActivity = DateTime.now();
     participantsInfo[user.uid] = {

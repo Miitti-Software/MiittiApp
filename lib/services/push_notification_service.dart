@@ -13,7 +13,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:miitti_app/state/user.dart';
 import 'dart:convert';
-
 import 'package:permission_handler/permission_handler.dart';
 
 final pushNotificationServiceProvider = StateNotifierProvider<PushNotificationService, bool>((ref) {
@@ -24,12 +23,19 @@ class PushNotificationService extends StateNotifier<bool> {
   final Ref ref;
   static BuildContext get context => rootNavigatorKey.currentContext!;
   final _firebaseMessaging = FirebaseMessaging.instance;
-  static final FlutterLocalNotificationsPlugin
-      _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  PushNotificationService(this.ref) : super(false);
+  PushNotificationService(this.ref) : super(false) {
+    _initialize();
+  }
 
-  bool get isNotificationsEnabled => state;
+  Future<void> _initialize() async {
+    state = await isNotificationsEnabled();
+  }
+
+  Future<bool> isNotificationsEnabled() async {
+    return await checkPermission();
+  }
 
   Future<void> setNotificationsEnabled(bool enabled) async {
     state = enabled;
@@ -38,11 +44,17 @@ class PushNotificationService extends StateNotifier<bool> {
         alert: true,
         announcement: true,
         provisional: true,
-        sound: true
+        sound: true,
       );
-      listenForeground();
+      if (await checkPermission()) {
+        listenForeground();
+        listenTerminated();
+      } else {
+        await requestPermission(true);
+      }
     } else {
       await _firebaseMessaging.deleteToken();
+      state = false;
     }
   }
 
@@ -52,8 +64,8 @@ class PushNotificationService extends StateNotifier<bool> {
     return permission;
   }
 
-  Future initialize() async {
-    //on background notification tapped
+  Future<void> initialize() async {
+    // Handle background notification tapped
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
         debugPrint("Background notification tapped");
@@ -61,8 +73,13 @@ class PushNotificationService extends StateNotifier<bool> {
       }
     });
 
-    //Request notification permission
-    await _firebaseMessaging.requestPermission(provisional: true);
+    // Request notification permission
+    await _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: true,
+      provisional: true,
+      sound: true,
+    );
 
     if (Platform.isIOS) {
       await _firebaseMessaging.getAPNSToken();
@@ -71,7 +88,7 @@ class PushNotificationService extends StateNotifier<bool> {
 
     //get the device FCM(Firebase Cloud Messaging) token
     final token = await _firebaseMessaging.getToken();
-    debugPrint("###### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFCIATION ######");
+    debugPrint("###### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION ######");
     debugPrint(token);
     debugPrint("############################################################");
 
@@ -93,7 +110,7 @@ class PushNotificationService extends StateNotifier<bool> {
         debugPrint("Error getting token: $err");
       });
 
-      localNotiInit();
+    await localNotiInit();
   }
 
   Future<bool> requestPermission(bool requestEvenDenied) async {

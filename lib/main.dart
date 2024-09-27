@@ -92,6 +92,7 @@ Future<void> main() async {
   });
 
   // Initialize Firebase Messaging via PushNotificationService
+  container.read(notificationServiceProvider).checkPermission();
   FirebaseMessaging.onBackgroundMessage(PushNotificationService.firebaseBackgroundMessage);
   container.read(notificationServiceProvider).listenForeground();
   container.read(notificationServiceProvider).listenTerminated();

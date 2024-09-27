@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/services/analytics_service.dart';
+import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/buttons/choice_button.dart';
@@ -73,13 +74,17 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
                 confirmText: config.get<String>('accept-push-notifications-dialog-confirm'),
                 cancelText: config.get<String>('accept-push-notifications-dialog-cancel'),
                 onConfirmPressed: () async {
-                  bool granted = await ref.read(notificationServiceProvider).requestPermission(true);
+
+                  bool granted = await ref.read(pushNotificationServiceProvider.notifier).requestPermission(true);
+                  ref.read(pushNotificationServiceProvider.notifier).setNotificationsEnabled(granted);
+
                   if (granted && context.mounted) {
                     context.pop();
                     context.push('/login/complete-profile/community-norms');
                   } else {
                     if (context.mounted) {
                       ErrorSnackbar.show(context, config.get<String>('accept-push-notifications-dialog-error'));
+                      context.push('/login/complete-profile/community-norms');
                       context.pop();
                     }
                   }
@@ -100,6 +105,7 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
                     } else {
                       if (context.mounted) {
                         ErrorSnackbar.show(context, config.get<String>('accept-push-notifications-dialog-error'));
+                        context.push('/login/complete-profile/community-norms');
                       }
                     }
                   });

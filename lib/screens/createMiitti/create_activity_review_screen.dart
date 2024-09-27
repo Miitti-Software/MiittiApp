@@ -127,7 +127,8 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
               color: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.all(4.0),
               child: SafeArea(
-                child: Padding(
+                child: SingleChildScrollView(
+                  controller: ScrollController(),
                   padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add horizontal padding
                   child: Column(
                     children: [
@@ -299,7 +300,7 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                       ConstrainedBox(
                         constraints: const BoxConstraints(
                           minHeight: 100,
-                          maxHeight: 200,
+                          maxHeight: 150,
                         ),
                         child: PermanentScrollbar(
                           child: Padding(
@@ -314,7 +315,6 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                           ),
                         ),
                       ),
-                      const Spacer(),
                       const SizedBox(height: AppSizes.minVerticalPadding),
                       LinearProgressIndicator(
                         value: 0.99,
@@ -322,18 +322,17 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(height: AppSizes.minVerticalPadding),
-                      const SizedBox(height: AppSizes.minVerticalPadding),
                       ForwardButton(
                         buttonText: config.get<String>('publish-button'),
                         onPressed: () {
                           ref.read(createActivityStateProvider.notifier).publishUserCreatedActivity();
                           ref.read(mapStateProvider.notifier).setLocation(LatLng(activity.latitude, activity.longitude));
                           SuccessSnackbar.show(context, config.get<String>('create-activity-success'));
-                          GoRouter.of(context).go('/create-activity/category');
+                          context.go('/create-activity/category');
                           Future.delayed(
-                            const Duration(milliseconds: 100),
+                            const Duration(milliseconds: 10),
                             () {
-                              GoRouter.of(context).go('/');
+                              context.go('/');
                             },
                           ).then((_) => ref.read(createActivityStateProvider.notifier).reset());
                         },
