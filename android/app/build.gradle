@@ -115,6 +115,8 @@ android {
         release {
             signingConfig signingConfigs.release // Ensure productionRelease uses the release keystore
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false             // Workaround to avoid "PlatformException(channel-error, Unable to establish connection on channel., null, null)"
+            shrinkResources false           // Workaround to avoid "PlatformException(channel-error, Unable to establish connection on channel., null, null)"
         }
 
         debug {
