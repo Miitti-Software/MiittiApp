@@ -44,9 +44,10 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
     final config = ref.watch(remoteConfigServiceProvider);
     ref.read(analyticsServiceProvider).logScreenView('create_activity_review_screen');
     final mapController = MapController();
+    final activity = ref.read(createActivityStateProvider.notifier).createUserCreatedActivity();
 
     return FutureBuilder<UserCreatedActivity>(
-      future: ref.read(createActivityStateProvider.notifier).createUserCreatedActivity(),
+      future: activity,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -324,8 +325,8 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                       const SizedBox(height: AppSizes.minVerticalPadding),
                       ForwardButton(
                         buttonText: config.get<String>('publish-button'),
-                        onPressed: () {
-                          ref.read(createActivityStateProvider.notifier).publishUserCreatedActivity();
+                        onPressed: () async {
+                          await ref.read(createActivityStateProvider.notifier).publishUserCreatedActivity(snapshot.data!);
                           ref.read(mapStateProvider.notifier).setLocation(LatLng(activity.latitude, activity.longitude));
                           SuccessSnackbar.show(context, config.get<String>('create-activity-success'));
                           context.go('/create-activity/category');

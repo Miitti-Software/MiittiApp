@@ -71,6 +71,8 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
           'name': creator.name,
           'profilePicture': creator.profilePicture,
           'location': null,
+          'joined': DateTime.now(),
+          'lastSeen': DateTime.now(),
         }
       },
       requiresRequest: state.requiresRequest!,
@@ -82,8 +84,7 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
     return activity;
   }
 
-  Future<void> publishUserCreatedActivity() async {
-    final activity = await createUserCreatedActivity();
+  Future<void> publishUserCreatedActivity(activity) async {
     await ref.read(firestoreServiceProvider).createActivity(activity.id, activity.toMap());
     ref.read(analyticsServiceProvider).logUserCreatedActivityCreated(activity, ref.read(userStateProvider).data.toMiittiUser());
     final user = ref.read(userStateProvider).data;
@@ -92,7 +93,6 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
     for (final invitee in invitedUsers) {
       ref.read(notificationServiceProvider).sendInviteNotification(user.toMiittiUser(), invitee, activity);
     }
-    reset();
   }
 
   void reset() {
