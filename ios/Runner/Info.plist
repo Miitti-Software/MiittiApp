@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>Miitti</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.5.5</string>
+	<string>2.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -69,6 +69,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Access to camera is needed for taking a profile picture.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow location to discover activities near you and use other map-based features with a seamless user experience.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Allow location to discover activities near you and use other map-based features.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
