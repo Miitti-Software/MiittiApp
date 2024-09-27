@@ -47,8 +47,8 @@ class _DeleteAccountButtonState extends ConsumerState<DeleteAccountButton> {
     ) == true) {
       _showLoadingOverlay();
       try {
-        context.go('/login');
         await ref.read(userStateProvider.notifier).deleteUser();
+        context.go('/login');
       } catch (error) {
         _showErrorSnackBar('${ref.watch(remoteConfigServiceProvider).get<String>('delete-account-error')} ${ref.watch(remoteConfigServiceProvider).get<String>('generic-error-action-prompt')}');
         if (kDebugMode) debugPrint('Error deleting account: $error');
