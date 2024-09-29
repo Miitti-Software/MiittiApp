@@ -91,7 +91,7 @@ class ActivityManagementShellScaffold extends ConsumerWidget {
             return;
           }
         } else {
-          if (index == 3 && ref.read(usersStateProvider).users.length < 10) {
+          if (index == 3 && ref.read(usersStateProvider).length < 10) {
             ref.read(usersStateProvider.notifier).loadMoreUsers();
           }
           _goBranch(context, ref, index);

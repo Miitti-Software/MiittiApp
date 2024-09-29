@@ -18,7 +18,6 @@ class PeopleScreen extends ConsumerStatefulWidget {
 
 class _PeopleScreenState extends ConsumerState<PeopleScreen> {
   final ScrollController _scrollController = ScrollController();
-  double previousMaxScrollPosition = 0.0;
 
   @override
   void initState() {
@@ -34,7 +33,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
    @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
-    final people = ref.watch(usersProvider);
+    final people = ref.watch(usersStateProvider);
 
     return ref.read(userStateProvider).isAnonymous
         ? const AnonymousUserScreen()
@@ -50,6 +49,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
                   },
                 ),
               ],
+              notificationPredicate: (notification) => false,
             ),
             body: Container(
               color: Theme.of(context).colorScheme.surface,
@@ -66,7 +66,7 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
                   );
                 },
                 scrollController: _scrollController,
-                loadMoreFunction: () => ref.read(usersStateProvider.notifier).loadMoreUsers(),
+                loadMoreFunction: () => ref.read(usersStateProvider.notifier).loadMoreUsers(fullRefresh: false),
               ),
             ),
           );

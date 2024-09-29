@@ -301,6 +301,7 @@ Timer? _fullRefreshDebounce;
         margin: const EdgeInsets.only(top: 60),
         child: RefreshIndicator(
           onRefresh: () async {
+            previousMaxScrollPosition = 0.0;
             final completer = Completer<void>();
             if (_fullRefreshDebounce?.isActive ?? false) {
               completer.complete();

@@ -679,10 +679,12 @@ class FirestoreService {
       List<MiittiUser> users = usersSnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
 
       if (users.isNotEmpty) {
-        _lastUserActivityDocument = usersSnapshot.docs.last;
+        _lastUserDocument = usersSnapshot.docs.last;
       }
 
-      return users.followedBy(await fetchFilteredLegacyUsers()).toList(); // TODO: return only users when all users are migrated to the new user model
+      return users;
+
+      // return users.followedBy(await fetchFilteredLegacyUsers()).toList(); // TODO: return only users when all users are migrated to the new user model
     } catch (e) {
       debugPrint('Error fetching users: $e');
       return [];

@@ -302,7 +302,7 @@ class AppRouter {
                 path: 'user/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   final id = state.pathParameters['id'] as String;
-                  return NoTransitionPage<void>(child: UserProfilePage(userData: ref.read(usersStateProvider).users.firstWhereOrNull((user) => user.uid == id)));
+                  return NoTransitionPage<void>(child: UserProfilePage(userData: ref.read(usersStateProvider).firstWhereOrNull((user) => user.uid == id)));
                 },
               ),
             ],
