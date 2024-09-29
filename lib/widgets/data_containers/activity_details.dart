@@ -171,6 +171,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
         final title = activity.title;
         final description = activity.description;
         final startTime = activity.startTime;
+        final endTime = activity.endTime;
         final address = activity.address;
         final paid = activity.paid;
         final maxParticipants = activity.maxParticipants;
@@ -286,7 +287,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                 Text(
                                   startTime != null
                                       ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(activity.startTime!.toLocal())
-                                      : config.get<String>('activity-missing-start-time'),
+                                      : (endTime != null ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(activity.endTime!.toLocal()) : config.get<String>('activity-missing-start-time')),
                                   style: Theme.of(context).textTheme.labelMedium,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -457,6 +458,16 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     ),
                   ],
                   const SizedBox(height: AppSizes.minVerticalPadding),
+                  if (activity.creator == userUid) ...[
+                    TextButton(
+                      onPressed: () {
+                        ref.read(activitiesStateProvider.notifier).markActivityAsPassed(activity);
+                        SuccessSnackbar.show(context, config.get<String>('activity-mark-as-passed-success'));
+                        context.pop();
+                      },
+                      child: Text(config.get<String>('activity-mark-as-passed')),
+                    ),
+                  ],
                   TextButton(
                     onPressed: () {
                       if (activity.creator == userUid) {

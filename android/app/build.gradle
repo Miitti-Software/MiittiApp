@@ -122,7 +122,7 @@ android {
         debug {
             // Use the production keystore only for the production flavor debug builds
             matchingFallbacks = ['debug', 'release']
-            signingConfig signingConfigs.production // Uncomment this line to use the production keystore for all debug builds
+            // signingConfig signingConfigs.production // Uncomment this line to use the production keystore for all debug builds
             // minifyEnabled true // Disable shrinking for debug builds
             minifyEnabled false
             shrinkResources false
