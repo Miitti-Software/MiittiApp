@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/functions/notification_message.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
@@ -25,6 +26,7 @@ import 'package:miitti_app/screens/navBarScreens/people_screen.dart';
 import 'package:miitti_app/screens/profile_screen.dart';
 import 'package:miitti_app/screens/user_profile_edit_screen.dart';
 import 'package:miitti_app/services/analytics_service.dart';
+import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/users_state.dart';
 import 'package:miitti_app/widgets/data_containers/activity_details.dart';
@@ -302,7 +304,7 @@ class AppRouter {
                 path: 'user/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   final id = state.pathParameters['id'] as String;
-                  return NoTransitionPage<void>(child: UserProfilePage(userData: ref.read(usersStateProvider).users.firstWhereOrNull((user) => user.uid == id)));
+                  return NoTransitionPage<void>(child: UserProfilePage(userData: ref.read(usersStateProvider).firstWhereOrNull((user) => user.uid == id)));
                 },
               ),
             ],

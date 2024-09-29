@@ -182,6 +182,8 @@
     "activity-delete-success": "Activity deleted",
     "activity-join-success": "You joined the activity",
     "activity-join-request-sent": "Join request sent",
+    "activity-mark-as-passed": "Mark as passed",
+    "activity-mark-as-passed-success": "Activity marked as passed and removed from the map",
     "activity-participants-list-title": "Participants",
     "activity-requests-list-title": "Requests",
     "invalid-activity-join-anonymous": "You need to finish your profile before you can join activities. Finish your profile in the profile settings.",

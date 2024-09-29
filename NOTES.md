@@ -144,9 +144,27 @@ To create launch configurations for each environment in VS Code, which can be ch
             "program": "lib/main.dart",
             "args": ["--flavor", "production", "--target", "lib/main.dart" ]
         },
+        {
+            "name": "release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": ["--flavor", "production", "--target", "lib/main.dart", "--release" ]
+        },
     ],
     "compounds": []
   }
+
+
+### Release
+
+Make sure to always test with release build before submitting to Play- or App Store.
+
+Must modify build.gradle signing between production and development
+
+Make sure to always increment at least the build number for Play Store and version number for App Store
+
+
 ```
 
 Due to lack of MacBooks and iPhones in the development team, flavors nor Firebase projects other than production have not been configured yet for iOS. To edit the environments:

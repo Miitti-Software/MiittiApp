@@ -94,8 +94,8 @@ class _InputActivitiesScreenState extends ConsumerState<InputActivitiesScreen> {
                           child: Container(
                             width: 100,
                             padding: const EdgeInsets.symmetric(
-                              vertical: AppSizes.minVerticalPadding,
-                              horizontal: 5,
+                              vertical: 4,
+                              horizontal: 4,
                             ),
                             decoration: BoxDecoration(
                               color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
@@ -113,9 +113,10 @@ class _InputActivitiesScreenState extends ConsumerState<InputActivitiesScreen> {
                                 ),
                                 Text(
                                   activity.item2.item1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppStyle.warning.copyWith(
-                                    color: Theme.of(context).colorScheme.onPrimary,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.visible,
+                                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                                    color: Colors.white,
                                   ),
                                 ),
                               ],

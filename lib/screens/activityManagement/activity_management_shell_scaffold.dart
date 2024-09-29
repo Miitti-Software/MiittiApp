@@ -45,15 +45,19 @@ class ActivityManagementShellScaffold extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: AppSizes.minVerticalPadding),
               color: Theme.of(context).colorScheme.surface,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _buildBranchButton(context, ref, 0, config.get<String>('chats-screen-title')),
-                  const SizedBox(width: 4),
-                  _buildBranchButton(context, ref, 1, config.get<String>('own-activities-screen-title')),
-                  const SizedBox(width: 4),
-                  _buildBranchButton(context, ref, 2, config.get<String>('others-activities-screen-title')),
-                ],
+              child: SingleChildScrollView(
+                controller: ScrollController(),
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _buildBranchButton(context, ref, 0, config.get<String>('chats-screen-title')),
+                    const SizedBox(width: 4),
+                    _buildBranchButton(context, ref, 1, config.get<String>('own-activities-screen-title')),
+                    const SizedBox(width: 4),
+                    _buildBranchButton(context, ref, 2, config.get<String>('others-activities-screen-title')),
+                  ],
+                ),
               ),
             ),
             Expanded(
@@ -91,7 +95,7 @@ class ActivityManagementShellScaffold extends ConsumerWidget {
             return;
           }
         } else {
-          if (index == 3 && ref.read(usersStateProvider).users.length < 10) {
+          if (index == 3 && ref.read(usersStateProvider).length < 10) {
             ref.read(usersStateProvider.notifier).loadMoreUsers();
           }
           _goBranch(context, ref, index);

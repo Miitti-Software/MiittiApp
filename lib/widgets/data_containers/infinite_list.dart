@@ -59,7 +59,9 @@ class _InfiniteListState<T> extends ConsumerState<InfiniteList<T>> {
       if (_debounce?.isActive ?? false) {
         _debounce?.cancel();
       } else {
-        widget.loadMoreFunction!();
+        if (widget.loadMoreFunction != null) {
+          widget.loadMoreFunction!();
+        }
       }
 
       previousMaxScrollPosition = max(scrollPosition, previousMaxScrollPosition);
@@ -70,6 +72,7 @@ class _InfiniteListState<T> extends ConsumerState<InfiniteList<T>> {
   }
 
   Future<void> _handleRefresh() async {
+    previousMaxScrollPosition = 0.0;
     final completer = Completer<void>();
     if (_fullRefreshDebounce?.isActive ?? false) {
       completer.complete();

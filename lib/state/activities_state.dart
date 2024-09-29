@@ -333,6 +333,20 @@ Future<bool> acceptRequest(String activityId, MiittiUser user) async {
     });
   }
 
+  Future<bool> markActivityAsPassed(MiittiActivity activity) async {
+    try {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      final updatedActivity = activity.markAsPassed();
+      await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+      state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
+      updateState();
+      return true;
+    } catch (e) {
+      debugPrint('Error marking activity as passed: $e');
+      return false;
+    }
+  }
+
   void updateState() {
     final userState = ref.read(userStateProvider);
     if (!userState.isAnonymous) {
@@ -355,10 +369,15 @@ Future<bool> acceptRequest(String activityId, MiittiUser user) async {
         }
       }
 
+      final now = DateTime.now();
+      final mapActivities = state.activities.where((activity) => activity.endTime == null || activity.endTime!.isAfter(now)).toList();
+
       state = state.copyWith(
         userActivities: userActivities,
         othersActivities: othersActivities,
         participatingActivities: participatingActivities,
+        requestedActivities: requestedActivities,
+        activities: mapActivities,
       );
     }
   }

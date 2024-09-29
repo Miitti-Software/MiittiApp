@@ -56,7 +56,7 @@ Widget build(BuildContext context) {
                         textStyle: Theme.of(context).textTheme.bodyMedium,
                       ),
                       onPressed: () {
-                        context.push('/create-activity/category');
+                        context.go('/create-activity/category');
                       },
                       child: Text(config.get<String>('create-activity-prompt-button')),
                     ),

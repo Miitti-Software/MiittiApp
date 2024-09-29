@@ -42,4 +42,9 @@ abstract class MiittiActivity {
   MiittiActivity removeParticipant(MiittiUser user);
   MiittiActivity notifyParticipants();
   MiittiActivity markSeen(String userId);
+  MiittiActivity markAsPassed() {
+    latestActivity = DateTime.now();
+    endTime = DateTime.now();
+    return this;
+  }
 }
