@@ -337,6 +337,9 @@ Future<bool> acceptRequest(String activityId, MiittiUser user) async {
     try {
       final firestoreService = ref.read(firestoreServiceProvider);
       final updatedActivity = activity.markAsPassed();
+      for (var participant in activity.participants) {
+        updatedActivity.markSeen(participant);
+      }
       await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
       state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
       updateState();
