@@ -27,7 +27,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     final currentUserUid = ref.watch(userStateProvider).uid;
 
     return Scaffold(
-      body: widget.userData == null
+      body: (widget.userData == null || currentUserUid == null)
           ? ConfigScreen(child: Center(child: Text('User not found', style: Theme.of(context).textTheme.titleMedium)))
           : Container(
               color: Theme.of(context).colorScheme.surface,

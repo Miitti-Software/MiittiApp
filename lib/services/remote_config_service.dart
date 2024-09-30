@@ -111,11 +111,15 @@ class RemoteConfigService {
   // Load default values from local json files under lib/constants
   Future<void> _setDefaults() async {
     for (final file in _jsonFiles) {
-      final jsonString = await rootBundle.loadString('lib/constants/$file.json');
-      final defaults = json.decode(jsonString) as Map<String, dynamic>;
-      await _remoteConfig.setDefaults({file: json.encode(defaults)});
-      _configFiles[file] = defaults;
-      _configValues.addAll(defaults);
+      try {
+        final jsonString = await rootBundle.loadString('lib/constants/$file.json');
+        final defaults = json.decode(jsonString) as Map<String, dynamic>;
+        await _remoteConfig.setDefaults({file: json.encode(defaults)});
+        _configFiles[file] = defaults;
+        _configValues.addAll(defaults);
+      } catch (error) {
+        debugPrint('Error setting remote config defaults: $error with $file');
+      }
     }
   }
 
@@ -130,10 +134,14 @@ class RemoteConfigService {
     final languageSuffix = language.code;
 
     for (final file in _jsonFiles) {
-      final jsonString = _remoteConfig.getString('${file}_$languageSuffix');
-      final values = json.decode(jsonString) as Map<String, dynamic>;
-      _configFiles[file] = values;
-      _configValues.addAll(values);
+      try {
+        final jsonString = _remoteConfig.getString('${file}_$languageSuffix');
+        final values = json.decode(jsonString) as Map<String, dynamic>;
+        _configFiles[file] = values;
+        _configValues.addAll(values);
+      } catch (error) {
+        debugPrint('Error loading remote config values: $error with $file');
+      }
     }
     _configController.add(_configValues);
   }
@@ -141,10 +149,14 @@ class RemoteConfigService {
   /// Load all language variants of notification_templates.json
   Future<void> _loadNotificationTemplates() async {
     for (final language in [Language.en, Language.fi]) {
-      final languageSuffix = language.code;
-      final jsonString = _remoteConfig.getString('notification_templates_$languageSuffix');
-      final values = json.decode(jsonString) as Map<String, dynamic>;
-      _notificationTemplates[languageSuffix] = values;
+      try {
+        final languageSuffix = language.code;
+        final jsonString = _remoteConfig.getString('notification_templates_$languageSuffix');
+        final values = json.decode(jsonString) as Map<String, dynamic>;
+        _notificationTemplates[languageSuffix] = values;
+      } catch (error) {
+        debugPrint('Error loading notification templates: $error');
+      }
     }
   }
 
