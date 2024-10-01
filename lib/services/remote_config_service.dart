@@ -125,7 +125,11 @@ class RemoteConfigService {
 
   /// Fetch and activate the remote config values from Firebase
   Future<void> fetchAndActivate(language) async {
-    await _remoteConfig.fetchAndActivate();
+    bool success = await _remoteConfig.fetchAndActivate();
+    while (!success) {
+      success = await _remoteConfig.fetchAndActivate();
+    }
+    await _remoteConfig.ensureInitialized();
     _loadConfigValues(language);
   }
 
