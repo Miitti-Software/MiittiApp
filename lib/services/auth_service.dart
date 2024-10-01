@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:miitti_app/state/user.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 /// A class for interfacing with the Firebase Authentication service
@@ -36,11 +37,19 @@ class AuthService {
 
       // Extract email from the Apple credential
       final email = appleCredential.email;
+      String name = appleCredential.givenName ?? 'nullllllll';
 
       // Update the user's email in Firebase if it's available
       if (email != null && authResult.user != null) {
         await authResult.user!.verifyBeforeUpdateEmail(email);
       }
+
+      final userData = ref.watch(userStateProvider).data;
+      final userState = ref.read(userStateProvider.notifier);
+
+      userState.update((state) => state.copyWith(
+        data: userData.copyWith(name: name, email: email)
+      ));
 
       return true;
     } catch (error) {

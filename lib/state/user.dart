@@ -31,7 +31,7 @@ class UserState extends StateNotifier<UserStateData> {
         user: user,
         data: miittiUser != null 
           ? UserData.fromMiittiUser(miittiUser, latestLocation: latestLocation) 
-          : UserData(uid: user.uid),
+          : UserData(uid: user.uid, name: state.data.name, email: state.data.email),
       );
     }
     authService.authStateChanges.listen(_handleAuthStateChanges);
@@ -51,7 +51,7 @@ class UserState extends StateNotifier<UserStateData> {
         user: user,
         data: miittiUser != null 
           ? UserData.fromMiittiUser(miittiUser, latestLocation: latestLocation) 
-          : UserData(uid: user.uid),
+          : UserData(uid: user.uid, name: state.data.name, email: state.data.email),
       );
     } else {
       state = UserStateData();
@@ -70,7 +70,7 @@ class UserState extends StateNotifier<UserStateData> {
           user: user,
           data: miittiUser != null 
             ? UserData.fromMiittiUser(miittiUser, latestLocation: latestLocation) 
-            : UserData(uid: user.uid),
+            : UserData(uid: user.uid, name: state.data.name, email: state.data.email),
         );
         if (!state.isAnonymous) {
           ref.read(notificationServiceProvider).initialize();
