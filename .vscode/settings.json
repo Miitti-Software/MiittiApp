@@ -1,5 +1,5 @@
 {
     "cmake.configureOnOpen": true,
     "java.configuration.updateBuildConfiguration": "interactive",
-    "dart.flutterSdkPath": "C:\\flutter\\flutter"
+    "dart.flutterSdkPath": "C:\\dev\\flutter"
 }

@@ -56,59 +56,63 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
         }
 
         final activity = snapshot.data!;
-        final messages = ref.watch(chatStateProvider(activity));
         final isCommercialActivity = activity is CommercialActivity;
 
         return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(80.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AppBar(
-                title: Text(activity.title, style: Theme.of(context).textTheme.titleMedium),
-                notificationPredicate: (notification) => false,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new), 
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        context.go('/activity/${activity.id}');
-                      },
-                      child: isCommercialActivity ? Row(children: [CommercialActivityMarker(activity: activity, size: 24), const SizedBox(width: 8)]) : ActivityMarker(activity: activity, size: 24),
-                    ),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(80.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AppBar(
+                  title: Text(activity.title, style: Theme.of(context).textTheme.titleMedium),
+                  notificationPredicate: (notification) => false,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new), 
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
-                ],
-              ),
-            ],
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 4.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          context.go('/activity/${activity.id}');
+                        },
+                        child: isCommercialActivity ? Row(children: [CommercialActivityMarker(activity: activity, size: 24), const SizedBox(width: 8)]) : ActivityMarker(activity: activity, size: 24),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
           body: Column(
             children: [
               Expanded(
-                child: InfiniteList<Message>(
-                  dataSource: messages,
-                  listTileBuilder: (context, index) {
-                    final message = messages[index];
-                    final isCurrentUser = message.senderId == ref.read(userStateProvider).uid;
-                    final participantInfo = activity.participantsInfo[message.senderId];
-                    final messageReadByEveryone = isReadByEveryone(message, activity.participantsInfo);
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final messages = ref.watch(chatStateProvider(activity));
+                    return InfiniteList<Message>(
+                      dataSource: messages,
+                      listTileBuilder: (context, index) {
+                        final message = messages[index];
+                        final isCurrentUser = message.senderId == ref.read(userStateProvider).uid;
+                        final participantInfo = activity.participantsInfo[message.senderId];
+                        final messageReadByEveryone = isReadByEveryone(message, activity.participantsInfo);
 
-                    return CustomMessageTile(
-                      message: message,
-                      isCurrentUser: isCurrentUser,
-                      participantInfo: participantInfo!,
-                      isReadByEveryone: messageReadByEveryone,
+                        return CustomMessageTile(
+                          message: message,
+                          isCurrentUser: isCurrentUser,
+                          participantInfo: participantInfo!,
+                          isReadByEveryone: messageReadByEveryone,
+                        );
+                      },
+                      startFromBottom: true,
                     );
                   },
-                  startFromBottom: true,
                 ),
               ),
               Padding(

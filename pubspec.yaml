@@ -81,7 +81,7 @@ dependencies:
   flutter_local_notifications: ^17.2.2
   rxdart: ^0.28.0
   visibility_detector: ^0.4.0+2
-  collection: ^1.19.0
+  collection: ^1.18.0
   overlay_support: ^2.1.0
   firebase_analytics: ^11.3.2
 

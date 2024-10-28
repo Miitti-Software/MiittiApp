@@ -15,7 +15,7 @@ class FilledTextArea extends StatelessWidget {
     required this.controller,
     this.onChange,
     this.onSubmit,
-    this.keyboardType = TextInputType.text,
+    this.keyboardType = TextInputType.multiline,
     this.autofocus = true,
   });
 
@@ -29,6 +29,7 @@ class FilledTextArea extends StatelessWidget {
             color: Theme.of(context).colorScheme.onPrimary,
           ),
       keyboardType: keyboardType,
+      textInputAction: TextInputAction.newline,
       onTapOutside: (PointerDownEvent event) {
         FocusScope.of(context).unfocus();
       },
