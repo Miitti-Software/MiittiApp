@@ -135,8 +135,10 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
                     if (userData.qaAnswers.isNotEmpty) {
                       context.push('/login/complete-profile/profile-picture');
                     } else {
-                      ErrorSnackbar.show(
-                          context, config.get<String>('invalid-qa-cards-missing'));
+                      // Temporarily allow registrants to pass adding a QA card to potentially increase conversions
+                      context.push('/login/complete-profile/profile-picture');
+                      // ErrorSnackbar.show(
+                      //     context, config.get<String>('invalid-qa-cards-missing'));
                     }
                   },
                 )
@@ -154,8 +156,9 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
                       });
                       context.pop();
                     } else {
-                      ErrorSnackbar.show(
-                          context, config.get<String>('invalid-qa-cards-missing'));
+                      context.pop();
+                      // ErrorSnackbar.show(
+                      //     context, config.get<String>('invalid-qa-cards-missing'));
                     }
                   },
                 ),
@@ -171,7 +174,7 @@ class _InputQACardsScreenState extends ConsumerState<InputQACardsScreen> {
         if (isLoading)
           Container(
             color: Colors.black.withOpacity(0.5),
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(),
             ),
           ),

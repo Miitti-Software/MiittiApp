@@ -29,7 +29,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize"
-            android:showWhenLocked="true"
+            android:showWhenLocked="false"
             android:turnScreenOn="true">
             <!-- Enable flutter deeplinks -->
             <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
