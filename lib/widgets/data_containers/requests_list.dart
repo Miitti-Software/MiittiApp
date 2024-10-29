@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
-import 'package:miitti_app/screens/anonymous_user_screen.dart';
+import 'package:miitti_app/screens/peopleManagement/anonymous_user_screen.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/state/activities_state.dart';

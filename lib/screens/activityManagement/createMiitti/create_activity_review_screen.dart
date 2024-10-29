@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/constants/constants.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
-import 'package:miitti_app/screens/navBarScreens/map_screen.dart';
+import 'package:miitti_app/screens/map_screen.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/create_activity_state.dart';
 import 'package:miitti_app/state/map_state.dart';
@@ -308,7 +307,7 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                               controller: descriptionScrollController,
                               child: Text(
                                 description,
-                                style: AppStyle.question,
+                                style: Theme.of(context).textTheme.labelMedium,
                               ),
                             ),
                           ),

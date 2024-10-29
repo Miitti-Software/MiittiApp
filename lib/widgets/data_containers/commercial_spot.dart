@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/ads_state.dart';
-import 'package:miitti_app/widgets/other_widgets.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/models/commercial_spot.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -19,6 +18,7 @@ class CommercialSpotWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final config = ref.watch(remoteConfigServiceProvider);
     return VisibilityDetector(
       key: Key(spot.id),
       onVisibilityChanged: (visibilityInfo) {
@@ -37,9 +37,9 @@ class CommercialSpotWidget extends ConsumerWidget {
       child: Container(
         height: highlight ? 90 : 80,
         decoration: BoxDecoration(
-          color: AppStyle.black,
+          color: Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: AppStyle.pink,
+            color: Theme.of(context).colorScheme.primary,
             width: highlight ? 2.0 : 1.0,
           ),
           borderRadius: const BorderRadius.all(Radius.circular(12)),
@@ -71,20 +71,22 @@ class CommercialSpotWidget extends ConsumerWidget {
                 children: [
                   Text(
                     spot.name,
-                    style: AppStyle.activityName,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  gapH10,
+                  const SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.map_outlined,
-                        color: AppStyle.pink,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      gapW10,
+                      const SizedBox(width: 10),
                       Text(
                         spot.address,
-                        style: AppStyle.activitySubName.copyWith(
+                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           fontWeight: FontWeight.w500,
                           decoration: TextDecoration.underline,
                           decorationColor: Colors.white,
@@ -102,16 +104,16 @@ class CommercialSpotWidget extends ConsumerWidget {
                 height: 24,
                 width: 100,
                 alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: AppStyle.pink,
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12),
                     bottomRight: Radius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  "Sponsoroitu",
-                  style: TextStyle(
+                child: Text(
+                  config.get<String>('commercial-spot-banner-text'),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontFamily: 'Rubik',

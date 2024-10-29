@@ -10,7 +10,6 @@ import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/ads_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:miitti_app/constants/app_style.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 /// Dynamically scaling full-width ad banner with minimum aspect ratio of 16/9 and a hyperlink
@@ -68,9 +67,9 @@ class AdBanner extends ConsumerWidget {
           margin: const EdgeInsets.all(10.0),
           child: Container(
             width: AppSizes.fullContentWidth,
-            decoration: const BoxDecoration(
-              color: AppStyle.black,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
             child: FutureBuilder<Size>(
               future: _getImageSize(imageUrl),

@@ -1,4 +1,3 @@
-import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:tuple/tuple.dart';
 import 'package:flutter/material.dart';
@@ -109,12 +108,12 @@ class _InputActivitiesScreenState extends ConsumerState<InputActivitiesScreen> {
                               children: [
                                 Text(
                                   activity.item2.item2,
-                                  style: AppStyle.title,
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
                                 Text(
                                   activity.item2.item1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: AppStyle.warning.copyWith(
+                                  style: Theme.of(context).textTheme.labelSmall!.copyWith(
                                     color: Theme.of(context).colorScheme.onPrimary,
                                   ),
                                 ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:miitti_app/constants/app_style.dart';
-//TODO: Seperate styles
+
 class ConfirmDialog extends StatelessWidget {
   final String title;
   final String mainText;
@@ -18,7 +17,7 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: AppStyle.darkPurple,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),
@@ -46,8 +45,8 @@ class ConfirmDialog extends StatelessWidget {
             Navigator.of(context).pop(false);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.grey, // Set the button color
-            foregroundColor: Colors.white, // Set the text color
+            backgroundColor: Colors.grey,
+            foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
@@ -67,8 +66,8 @@ class ConfirmDialog extends StatelessWidget {
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppStyle.red, // Set the button color
-            foregroundColor: AppStyle.white, // Set the text color
+            backgroundColor: Theme.of(context).colorScheme.error,
+            foregroundColor: Theme.of(context).colorScheme.onSurface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),

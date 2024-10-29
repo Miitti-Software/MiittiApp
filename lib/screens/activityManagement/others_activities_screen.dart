@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:miitti_app/constants/miitti_theme.dart';
-import 'package:miitti_app/screens/anonymous_user_screen.dart';
-import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/screens/peopleManagement/anonymous_user_screen.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/widgets/data_containers/activity_list_tile.dart';
@@ -33,7 +31,6 @@ class _OthersActivitiesScreenState extends ConsumerState<OthersActivitiesScreen>
 
   @override
   Widget build(BuildContext context) {
-    final config = ref.watch(remoteConfigServiceProvider);
     final activities = ref.watch(activitiesStateProvider).othersActivities;
 
     return ref.read(userStateProvider).isAnonymous

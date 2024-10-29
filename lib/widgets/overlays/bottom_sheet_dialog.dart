@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
-import 'package:miitti_app/constants/app_style.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
 
 class BottomSheetDialog {
@@ -63,7 +62,7 @@ class BottomSheetDialog {
                 if (disclaimer != null)
                   Text(
                     disclaimer,
-                    style: AppStyle.warning,
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                 const SizedBox(height: AppSizes.minVerticalEdgePadding,)
               ],
