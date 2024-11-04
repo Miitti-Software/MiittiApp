@@ -1,0 +1,22 @@
+{
+    "invalid-names": {
+        "invalid-name-1": "null",
+        "invalid-name-2": "undefined",
+        "invalid-name-3": "",
+        "invalid-name-4": " ",
+        "invalid-name-5": "nan",
+        "invalid-name-6": "none",
+        "invalid-name-7": "nil",
+        "invalid-name-8": "null ",
+        "invalid-name-9": " null",
+        "invalid-name-10": " null ",
+        "invalid-name-11": "nulll",
+        "invalid-name-12": "nullll",
+        "invalid-name-13": "test",
+        "invalid-name-14": "testi"
+    },
+    "invalid-regexps": {
+        "invalid-regexp-1": "[0-9]",
+        "invalid-regexp-2": "[!\"#¤%&/()=?\\\\}\\]\\[\\{\\}\\]\\$£@><|+]"
+    }
+}

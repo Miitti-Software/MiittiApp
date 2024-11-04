@@ -14,14 +14,14 @@ class LanguageNotifier extends StateNotifier<Language> {
   final LocalStorageService _localStorageService;
   static const String languageKey = 'language';
 
-  LanguageNotifier(this._localStorageService) : super(Language.en) {
+  LanguageNotifier(this._localStorageService) : super(Language.fi) {
     loadLanguage();
   }
 
   Future<void> loadLanguage() async {
     final languageStr = await _localStorageService.getString(languageKey);
     if (languageStr != null) {
-      state = Language.values.firstWhere((language) => language.code == languageStr, orElse: () => Language.en);
+      state = Language.values.firstWhere((language) => language.code == languageStr, orElse: () => Language.fi);
     }
   }
 

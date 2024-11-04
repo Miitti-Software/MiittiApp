@@ -65,7 +65,7 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
               ForwardButton(
                 buttonText: config.get<String>('forward-button'),
                 onPressed: () {
-                  if (_controller.text.isNotEmpty) {
+                  if (_controller.text.isNotEmpty && isValidName(_controller.text)) {
                     userState.update((state) => state.copyWith(
                       data: userData.setName(_controller.text)
                     ));
@@ -87,4 +87,29 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
       },
     );
   }
+
+  bool isValidName(String name) {
+    final config = ref.read(remoteConfigServiceProvider);
+
+    // Check against invalid names
+    final invalidNames = config.get<Map>('invalid-names').values.toList();
+    for (final invalidName in invalidNames) {
+      if (name == invalidName) {
+        return false;
+      }
+    }
+
+    // Check against invalid regex patterns
+    final invalidRegexps = config.get<Map>('invalid-regexps').values.toList();
+    for (final pattern in invalidRegexps) {
+      final regexp = RegExp(pattern);
+      if (regexp.hasMatch(name)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
+
+
