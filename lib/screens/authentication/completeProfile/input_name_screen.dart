@@ -94,7 +94,7 @@ class _InputNameScreenState extends ConsumerState<InputNameScreen> {
     // Check against invalid names
     final invalidNames = config.get<Map>('invalid-names').values.toList();
     for (final invalidName in invalidNames) {
-      if (name == invalidName) {
+      if (name.toLowerCase() == invalidName.toLowerCase()) {
         return false;
       }
     }
