@@ -20,7 +20,7 @@ class _OthersActivitiesScreenState extends ConsumerState<OthersActivitiesScreen>
   void initState() {
     super.initState();
     // Load initial activities
-    ref.read(activitiesStateProvider.notifier).loadMoreParticipatingActivities();
+    ref.read(activitiesStateProvider.notifier).loadMoreActivities(onlyParticipating: true);
   }
 
   @override
@@ -46,14 +46,14 @@ class _OthersActivitiesScreenState extends ConsumerState<OthersActivitiesScreen>
               // padding: const EdgeInsets.only(top: AppSizes.minVerticalEdgePadding),
               child: InfiniteList(
                 dataSource: activities,
-                refreshFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreParticipatingActivities(fullRefresh: true),
+                refreshFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreActivities(onlyParticipating: true, fullRefresh: true),
                 listTileBuilder: (BuildContext context, int index) {
                   return ActivityListTile(
                     activities[index],
                   );
                 },
                 scrollController: _scrollController,
-                loadMoreFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreParticipatingActivities(),
+                loadMoreFunction: () => ref.read(activitiesStateProvider.notifier).loadMoreActivities(onlyParticipating: true),
               ),
             ),
           );
