@@ -391,6 +391,7 @@ class ActivitiesStateData {
   final List<MiittiActivity> participatingActivities;           // A list of activities where the current user is a participant.
   final List<Tuple2<MiittiActivity, DateTime>> seenActivities;  // A list of activities whose latest updates the current user has seen.
   final SuperclusterMutableController clusterController;        // A SuperclusterMutableController used to cluster activities on the map.
+  // TODO: Add a list for old activities that should no longer be shown on the map or something similar achieving the same effect
 
   ActivitiesStateData({
     this.activities = const [],

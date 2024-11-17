@@ -64,7 +64,7 @@ class UserListTile extends ConsumerWidget {
                     fit: BoxFit.cover,
                     width: 80,
                     height: 80,
-                    cacheManager: ProfilePicturesCacheManager().instance,
+                    cacheManager: ProfilePicturesCacheManager(),
                     placeholder: (context, url) => const CircularProgressIndicator(),
                     errorWidget: (context, url, error) => const Icon(Icons.error),
                   ),

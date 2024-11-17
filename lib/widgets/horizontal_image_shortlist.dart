@@ -80,7 +80,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
         child: CircleAvatar(
           backgroundImage: CachedNetworkImageProvider(
             user.profilePicture,
-            cacheManager: ProfilePicturesCacheManager().instance,
+            cacheManager: ProfilePicturesCacheManager(),
           ),
           radius: 20,
         ),
@@ -119,7 +119,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
           child: CircleAvatar(
             backgroundImage: CachedNetworkImageProvider(
               user.profilePicture,
-              cacheManager: ProfilePicturesCacheManager().instance,
+              cacheManager: ProfilePicturesCacheManager(),
             ),
             radius: 20,
           ),
@@ -147,7 +147,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
                 child: CircleAvatar(
                   backgroundImage: CachedNetworkImageProvider(
                     usersData.values.elementAt(4)['profilePicture']!,
-                    cacheManager: ProfilePicturesCacheManager().instance,
+                    cacheManager: ProfilePicturesCacheManager(),
                   ),
                   radius: 20,
                 ),

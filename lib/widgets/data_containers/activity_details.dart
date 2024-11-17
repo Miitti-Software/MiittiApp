@@ -208,7 +208,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                             child: CircleAvatar(
                               backgroundImage: CachedNetworkImageProvider(
                                 organization!.image,
-                                cacheManager: ProfilePicturesCacheManager().instance,
+                                cacheManager: ProfilePicturesCacheManager(),
                               ),
                               radius: 25,
                               onBackgroundImageError: (exception, stackTrace) => const Text(

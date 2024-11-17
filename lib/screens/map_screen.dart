@@ -268,10 +268,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 'accessToken': mapboxAccess,
               },
               tileProvider: CustomTileProvider(
-                cacheManager: MapTilesCacheManager().instance,
+                cacheManager: MapTilesCacheManager(),
               ),
-              keepBuffer: 20,
-              panBuffer: 2,
+              keepBuffer: 10,
+              panBuffer: 1,
             ),
             Consumer(
               builder: (context, ref, child) {

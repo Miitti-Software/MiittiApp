@@ -170,7 +170,7 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                                   'accessToken': mapboxAccess,
                                 },
                                 tileProvider: CustomTileProvider(
-                                  cacheManager: MapTilesCacheManager().instance,
+                                  cacheManager: MapTilesCacheManager(),
                                 ),
                               ),
                               Center(

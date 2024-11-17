@@ -51,7 +51,7 @@ class CommercialActivityMarker extends ConsumerWidget {
               child: CircleAvatar(
                 backgroundImage: CachedNetworkImageProvider(
                   (activity as CommercialActivity).bannerImage,
-                  cacheManager: ProfilePicturesCacheManager().instance,
+                  cacheManager: ProfilePicturesCacheManager(),
                 ),
                 radius: size - 3,
                 onBackgroundImageError: (exception, stackTrace) => Text(

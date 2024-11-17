@@ -224,7 +224,7 @@ class CustomMessageTile extends StatelessWidget {
       child: CircleAvatar(
         backgroundImage: CachedNetworkImageProvider(
           participantInfo['profilePicture'].replaceAll('profilePicture', 'thumb_profilePicture'),
-          cacheManager: ProfilePicturesCacheManager().instance,
+          cacheManager: ProfilePicturesCacheManager(),
         ),
         radius: 18,
       ),
