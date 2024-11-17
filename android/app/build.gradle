@@ -44,7 +44,7 @@ println("keystoreProductionProperties: " + keystoreProductionProperties)
 android {
     namespace "com.miittisoftwareoy.miitti_app"
     compileSdkVersion flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    ndkVersion "26.1.10909125"
 
     compileOptions {
         coreLibraryDesugaringEnabled = true
