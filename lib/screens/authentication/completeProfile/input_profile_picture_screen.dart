@@ -185,7 +185,7 @@ class _InputProfilePictureScreenState
   Future<File?> selectImage(BuildContext context, {required bool isCamera}) async {
     try {
       final XFile? pickedImage =
-          await ImagePicker().pickImage(source: isCamera ? ImageSource.camera : ImageSource.gallery, maxHeight: 1024, maxWidth: 1024);
+          await ImagePicker().pickImage(source: isCamera ? ImageSource.camera : ImageSource.gallery, maxHeight: 1024, maxWidth: 1024, preferredCameraDevice: CameraDevice.front);
       if (pickedImage != null) {
         setState(() {
           image = File(pickedImage.path);

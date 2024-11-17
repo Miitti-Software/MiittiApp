@@ -73,6 +73,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       final userId = ref.read(userStateProvider).uid!;
       final List<MiittiActivity> userActivities = [];
       final List<MiittiActivity> othersActivities = [];
+      final List<MiittiActivity> visibleActivities = [];
       final List<MiittiActivity> requestedActivities = [];
       final List<MiittiActivity> participatingActivities = [];
 
@@ -87,11 +88,15 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
         } else if (activity.participants.contains(userId) || (activity is UserCreatedActivity && activity.requests.contains(userId))) {
           othersActivities.add(activity);
         }
+        if (activity.endTime == null || activity.endTime!.isAfter(DateTime.now())) {
+          visibleActivities.add(activity);
+        }
       }
 
       state = state.copyWith(
         userActivities: userActivities,
         othersActivities: othersActivities,
+        visibleActivities: visibleActivities,
         participatingActivities: participatingActivities,
       );
     }
@@ -379,7 +384,7 @@ final activitiesStateProvider = StateNotifierProvider<ActivitiesState, Activitie
 });
 
 final activitiesProvider = Provider<List<MiittiActivity>>((ref) {
-  return ref.watch(activitiesStateProvider).activities;
+  return ref.watch(activitiesStateProvider).visibleActivities;
 });
 
 /// A class that represents the data of the ActivitiesState StateNotifier class.
@@ -387,16 +392,17 @@ class ActivitiesStateData {
   final List<MiittiActivity> activities;                        // A list of all activities in the state.
   final List<MiittiActivity> userActivities;                    // A list of activities created by the current user.
   final List<MiittiActivity> othersActivities;                  // A list of activities created by other users.
+  final List<MiittiActivity> visibleActivities;                 // A list of activities that are currently visible on the map and list view.
   final List<MiittiActivity> requestedActivities;               // A list of activities where the current user has requested to join.
   final List<MiittiActivity> participatingActivities;           // A list of activities where the current user is a participant.
   final List<Tuple2<MiittiActivity, DateTime>> seenActivities;  // A list of activities whose latest updates the current user has seen.
   final SuperclusterMutableController clusterController;        // A SuperclusterMutableController used to cluster activities on the map.
-  // TODO: Add a list for old activities that should no longer be shown on the map or something similar achieving the same effect
 
   ActivitiesStateData({
     this.activities = const [],
     this.userActivities = const [],
     this.othersActivities = const [],
+    this.visibleActivities = const [],
     this.requestedActivities = const [],
     this.participatingActivities = const [],
     this.seenActivities = const [],
@@ -407,6 +413,7 @@ class ActivitiesStateData {
     List<MiittiActivity>? activities,
     List<MiittiActivity>? userActivities,
     List<MiittiActivity>? othersActivities,
+    List<MiittiActivity>? visibleActivities,
     List<MiittiActivity>? requestedActivities,
     List<MiittiActivity>? participatingActivities,
     List<Tuple2<MiittiActivity, DateTime>>? seenActivities,
@@ -416,6 +423,7 @@ class ActivitiesStateData {
       activities: activities ?? this.activities,
       userActivities: userActivities ?? this.userActivities,
       othersActivities: othersActivities ?? this.othersActivities,
+      visibleActivities: visibleActivities ?? this.visibleActivities,
       requestedActivities: requestedActivities ?? this.requestedActivities,
       participatingActivities: participatingActivities ?? this.participatingActivities,
       seenActivities: seenActivities ?? this.seenActivities,
