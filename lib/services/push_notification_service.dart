@@ -24,25 +24,34 @@ class PushNotificationService extends StateNotifier<bool> {
   final Ref ref;
   static BuildContext get context => rootNavigatorKey.currentContext!;
   final _firebaseMessaging = FirebaseMessaging.instance;
-  static final FlutterLocalNotificationsPlugin
-      _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  PushNotificationService(this.ref) : super(false);
+  PushNotificationService(this.ref) : super(false) {
+    initialize();
+  }
 
   bool get isNotificationsEnabled => state;
 
   Future<void> setNotificationsEnabled(bool enabled) async {
-    state = enabled;
-    if (enabled) {
-      await _firebaseMessaging.requestPermission(
-        alert: true,
-        announcement: true,
-        provisional: true,
-        sound: true
-      );
-      listenForeground();
-    } else {
-      await _firebaseMessaging.deleteToken();
+    try {
+      if (enabled) {
+        final permissionGranted = await requestPermission(true);
+        if (permissionGranted) {
+          await _requestAndSetupNotifications();
+          await _saveNotificationState(true);
+        } else {
+          state = false; // Update state if permission denied
+          await _saveNotificationState(false);
+        }
+      } else {
+        state = false;
+        await _firebaseMessaging.deleteToken();
+        await _saveNotificationState(false);
+      }
+    } catch (e) {
+      debugPrint('Error toggling notifications: $e');
+      state = await Permission.notification.isGranted; // Revert to actual state
+      await _saveNotificationState(state);
     }
   }
 
@@ -52,8 +61,12 @@ class PushNotificationService extends StateNotifier<bool> {
     return permission;
   }
 
-  Future initialize() async {
-    //on background notification tapped
+  Future<void> initialize() async {
+    // Load saved notification state
+    final savedState = await ref.read(localStorageServiceProvider).getBool('notifications_enabled') ?? false;
+    state = savedState;
+
+    // Handle background notification taps
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
         debugPrint("Background notification tapped");
@@ -61,39 +74,48 @@ class PushNotificationService extends StateNotifier<bool> {
       }
     });
 
-    //Request notification permission
-    await _firebaseMessaging.requestPermission(provisional: true);
+    if (state) {
+      await _requestAndSetupNotifications();
+    }
+  }
 
+  Future<void> _requestAndSetupNotifications() async {
+    final result = await _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: true,
+      provisional: true,
+      sound: true
+    );
+
+    state = result.authorizationStatus == AuthorizationStatus.authorized ||
+            result.authorizationStatus == AuthorizationStatus.provisional;
+
+    if (state) {
+      await _setupNotifications();
+    }
+  }
+
+  Future<void> _setupNotifications() async {
     if (Platform.isIOS) {
       await _firebaseMessaging.getAPNSToken();
       await Future.delayed(const Duration(seconds: 1));
     }
 
-    //get the device FCM(Firebase Cloud Messaging) token
     final token = await _firebaseMessaging.getToken();
-    debugPrint("###### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFCIATION ######");
-    debugPrint(token);
-    debugPrint("############################################################");
-
-    //Save token to user data(needed to access other users tokens in code)
-    if (ref.read(userStateProvider).data.fcmToken != token && token != null) {
-      ref.read(userStateProvider).data.setFcmToken(token);
-      ref.read(userStateProvider.notifier).updateUserData();
+    if (token != null) {
+      debugPrint("FCM Token: $token");
+      
+      // Update user's FCM token if changed
+      final userState = ref.read(userStateProvider);
+      if (userState.data.fcmToken != token) {
+        ref.read(userStateProvider.notifier).update(
+          (state) => state.copyWith(data: state.data.setFcmToken(token))
+        );
+        await ref.read(userStateProvider.notifier).updateUserData();
+      }
     }
 
-    _firebaseMessaging.onTokenRefresh
-      .listen((fcmToken) {
-        ref.read(userStateProvider).data.setFcmToken(fcmToken);
-        ref.read(userStateProvider.notifier).updateUserData();
-        // Note: This callback is fired at each app startup and whenever a new
-        // token is generated.
-      })
-      .onError((err) {
-        // Error getting token.
-        debugPrint("Error getting token: $err");
-      });
-
-      localNotiInit();
+    listenForeground();
   }
 
   Future<bool> requestPermission(bool requestEvenDenied) async {
@@ -113,9 +135,8 @@ class PushNotificationService extends StateNotifier<bool> {
     }
   }
 
-  // initalize local notifications
+  // Initialize local notifications
   Future localNotiInit() async {
-    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@drawable/ic_stat_name');
     final DarwinInitializationSettings initializationSettingsDarwin =
@@ -130,7 +151,7 @@ class PushNotificationService extends StateNotifier<bool> {
   }
 
   void listenForeground() {
-    // to handle foreground notifications
+    // Handle foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       String payloadData = jsonEncode(message.data);
       debugPrint("Got a message in foreground");
@@ -144,10 +165,8 @@ class PushNotificationService extends StateNotifier<bool> {
     });
   }
 
-  // Send in the user's first language if it is available, otherwise send in English
-
   void listenTerminated() async {
-    // for handling in terminated state
+    // Handle notifications in terminated state
     final RemoteMessage? message =
         await FirebaseMessaging.instance.getInitialMessage();
 
@@ -159,7 +178,6 @@ class PushNotificationService extends StateNotifier<bool> {
     }
   }
 
-  // on tap local notification in foreground
   static void onNotificationTap(NotificationResponse notificationResponse) async {
     if (notificationResponse.payload != null) {
       final Map<String, dynamic> payloadData = jsonDecode(notificationResponse.payload!);
@@ -168,7 +186,6 @@ class PushNotificationService extends StateNotifier<bool> {
     }
   }
 
-  // show a simple notification
   Future showSimpleNotification({
     required String title,
     required String body,
@@ -187,6 +204,10 @@ class PushNotificationService extends StateNotifier<bool> {
         NotificationDetails(android: androidNotificationDetails);
     await _flutterLocalNotificationsPlugin
         .show(0, title, body, notificationDetails, payload: payload);
+  }
+
+  Future<void> _saveNotificationState(bool enabled) async {
+    await ref.read(localStorageServiceProvider).saveBool('notifications_enabled', enabled);
   }
 
   void sendInviteNotification(MiittiUser current, MiittiUser receiver, UserCreatedActivity activity) async {
@@ -321,15 +342,4 @@ class PushNotificationService extends StateNotifier<bool> {
       debugPrint("Unexpected error: $e");
     }
   }
-
-  // void sendMessageNotification(String receiverToken, String senderName,
-  //     MiittiActivity activity, String message) async {
-  //   sendNotification(
-  //     receiverToken,
-  //     "Uusi viesti miitissä ${activity.title}",
-  //     "$senderName: $message",
-  //     "message",
-  //     activity.id,
-  //   );
-  // }
 }
