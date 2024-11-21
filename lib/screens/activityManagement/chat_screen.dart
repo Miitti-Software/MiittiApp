@@ -11,6 +11,7 @@ import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/chat_state.dart';
+import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
@@ -18,9 +19,8 @@ import 'package:miitti_app/widgets/data_containers/infinite_list.dart';
 import 'dart:ui' as ui;
 
 class ChatScreen extends ConsumerStatefulWidget {
-  final String activityId;
 
-  const ChatScreen(this.activityId, {super.key});
+  const ChatScreen({super.key});
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatPageState();
@@ -41,7 +41,7 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<MiittiActivity?>(
-      stream: fetchActivityDetails(widget.activityId),
+      stream: fetchActivityDetails(GoRouterState.of(context).pathParameters['id']!),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -121,29 +121,33 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
                   children: [
                     Expanded(
                       child: TextField(
+                        minLines: 1,
+                        maxLines: 5,
                         controller: _messageController,
                         decoration: InputDecoration(
-                          hintText: 'Enter your message',
+                          hintText: ref.watch(remoteConfigServiceProvider).get<String>('input-chat-message-placeholder'),
+                          hintStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface.withAlpha(125)),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
+                            borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary, // Set border color to primary color
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
+                            borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary, // Set border color to primary color
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
+                            borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary, // Set border color to primary color
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           filled: true,
                           fillColor: Theme.of(context).colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.send),
                             color: Theme.of(context).colorScheme.onPrimary,

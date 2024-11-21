@@ -224,10 +224,9 @@ class AppRouter {
                   GoRoute(
                     parentNavigatorKey: rootNavigatorKey,
                     name: 'chat',
-                    path: 'chat/:activityId',
+                    path: 'chat',
                     pageBuilder: (BuildContext context, GoRouterState state) {
-                      final id = state.pathParameters['activityId'] as String;
-                      return NoTransitionPage<void>(child: ChatScreen(id));
+                      return NoTransitionPage<void>(child: ChatScreen());
                     },
                   ),
                 ],

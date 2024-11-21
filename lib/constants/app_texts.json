@@ -297,5 +297,7 @@
     "settings-terms-of-service-button": "Terms & conditions",
     "settings-current-version-text": "Current version",
     "settings-push-notifications-title": "Push notifications",
-    "settings-sign-out-button": "Sign out"
+    "settings-sign-out-button": "Sign out",
+
+    "input-chat-message-placeholder": "Message"
 }

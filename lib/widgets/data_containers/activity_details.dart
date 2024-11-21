@@ -379,8 +379,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                   ForwardButton(
                     buttonText: config.get<String>('activity-joined-button'),
                     onPressed: () {
-                      // TODO: Open activity chat
-                      context.go('/activity/${activity.id}/chat/${activity.id}');
+                      context.go('/activity/${activity.id}/chat');
                     },
                   ),
                   ] else if (activity is UserCreatedActivity && activity.requests.contains(userUid)) ...[
