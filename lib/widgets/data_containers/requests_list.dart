@@ -12,9 +12,7 @@ import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/state/users_state.dart';
 
 class RequestsList extends ConsumerStatefulWidget {
-  final String activityId;
-
-  const RequestsList({super.key, required this.activityId});
+  const RequestsList({super.key});
 
   @override
   _RequestsListState createState() => _RequestsListState();
@@ -28,7 +26,13 @@ class _RequestsListState extends ConsumerState<RequestsList> {
   @override
   void initState() {
     super.initState();
-    activityFuture = fetchActivityDetails(widget.activityId);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final activityId = GoRouterState.of(context).pathParameters['id']!;
+    activityFuture = fetchActivityDetails(activityId);
   }
 
   Future<MiittiActivity?> fetchActivityDetails(String activityId) async {
@@ -47,7 +51,7 @@ class _RequestsListState extends ConsumerState<RequestsList> {
 
     return ref.read(userStateProvider).isAnonymous
         ? const AnonymousUserScreen()
-        : FutureBuilder<MiittiActivity?>( 
+        : FutureBuilder<MiittiActivity?>(
             future: activityFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -148,13 +152,13 @@ class _RequestsListState extends ConsumerState<RequestsList> {
                             name: user.name,
                             profilePicture: user.profilePicture,
                             onAccept: () async {
-                              await ref.read(activitiesStateProvider.notifier).acceptRequest(widget.activityId, user);
+                              await ref.read(activitiesStateProvider.notifier).acceptRequest(GoRouterState.of(context).pathParameters['id']!, user);
                               setState(() {
                                 activity.requests.remove(userId);
                               });
                             },
                             onDecline: () async {
-                              await ref.read(activitiesStateProvider.notifier).declineRequest(widget.activityId, userId);
+                              await ref.read(activitiesStateProvider.notifier).declineRequest(GoRouterState.of(context).pathParameters['id']!, userId);
                               setState(() {
                                 activity.requests.remove(userId);
                               });

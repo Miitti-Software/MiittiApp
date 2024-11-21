@@ -206,19 +206,17 @@ class AppRouter {
                   GoRoute(
                     parentNavigatorKey: rootNavigatorKey,
                     name: 'participants',
-                    path: 'participants/:activityId',
+                    path: 'participants',
                     pageBuilder: (BuildContext context, GoRouterState state) {
-                      final id = state.pathParameters['activityId'] as String;
-                      return NoTransitionPage<void>(child: ParticipantsList(activityId: id));
+                      return NoTransitionPage<void>(child: ParticipantsList());
                     },
                   ),
                   GoRoute(
                     parentNavigatorKey: rootNavigatorKey,
                     name: 'requests',
-                    path: 'requests/:activityId',
+                    path: 'requests',
                     pageBuilder: (BuildContext context, GoRouterState state) {
-                      final id = state.pathParameters['activityId'] as String;
-                      return NoTransitionPage<void>(child: RequestsList(activityId: id));
+                      return NoTransitionPage<void>(child: RequestsList());
                     },
                   ),
                   GoRoute(

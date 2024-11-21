@@ -330,7 +330,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                               const SizedBox(height: 10),
                               GestureDetector(
                                 onTap: () {
-                                  context.go('/activity/${activity.id}/participants/${activity.id}');
+                                  context.go('/activity/${activity.id}/participants');
                                 },
                                 child: Row(
                                   children: [
@@ -451,7 +451,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                       buttonText: config.get<String>('activity-requests-button'),
                       onPressed: () {
                         // TODO: Show requests
-                        context.go('/activity/${activity.id}/requests/${activity.id}');
+                        context.go('/activity/${activity.id}/requests');
                       },
                     ),
                   ],

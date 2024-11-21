@@ -11,9 +11,7 @@ import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 
 class ParticipantsList extends ConsumerStatefulWidget {
-  final String activityId;
-
-  const ParticipantsList({super.key, required this.activityId});
+  const ParticipantsList({super.key});
 
   @override
   _ParticipantsListState createState() => _ParticipantsListState();
@@ -27,7 +25,13 @@ class _ParticipantsListState extends ConsumerState<ParticipantsList> {
   @override
   void initState() {
     super.initState();
-    activityFuture = fetchActivityDetails(widget.activityId);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final activityId = GoRouterState.of(context).pathParameters['id']!;
+    activityFuture = fetchActivityDetails(activityId);
   }
 
   Future<MiittiActivity?> fetchActivityDetails(String activityId) async {
@@ -140,7 +144,7 @@ class _ParticipantsListState extends ConsumerState<ParticipantsList> {
                           context.push('/people/user/$userId');
                         },
                         onRemove: currentUser.uid == activity.creator ? () async {
-                          final activity = await ref.read(activitiesStateProvider.notifier).fetchActivity(widget.activityId);
+                          final activity = await ref.read(activitiesStateProvider.notifier).fetchActivity(GoRouterState.of(context).pathParameters['id']!);
                           final user = await ref.read(usersStateProvider.notifier).fetchUser(userId);
                           await ref.read(activitiesStateProvider.notifier).removeParticipant(activity as UserCreatedActivity, user!);
                           setState(() {

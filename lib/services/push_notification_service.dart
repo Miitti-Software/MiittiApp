@@ -248,7 +248,7 @@ class PushNotificationService extends StateNotifier<bool> {
         config.getNotificationTemplateString('join-request-notification-title', language),
         "${user.data.name} ${config.getNotificationTemplateString('join-request-notification-body', language)} ${activity.title}",
         config.getNotificationTemplateString('join-request-notification-type', language),
-        '/activity/${activity.id}/requests/${activity.id}',
+        '/activity/${activity.id}/requests',
       );
     } else {
       debugPrint("Couldn't find creator to send request notification to.");

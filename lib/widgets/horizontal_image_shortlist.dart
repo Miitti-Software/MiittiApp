@@ -41,7 +41,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        context.go('/activity/activityId/participants/$activityId');
+        context.go('/activity/activityId/participants');
       },
       child: SizedBox(
         height: 42,
@@ -109,7 +109,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
       left: leftPosition,
       child: GestureDetector(
         onTap: () {
-          context.go('/activity/activityId/participants/$activityId');
+          context.go('/activity/activityId/participants');
         },
         child: Container(
           decoration: BoxDecoration(
@@ -133,7 +133,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
       left: leftPosition,
       child: GestureDetector(
         onTap: () {
-          context.go('/activity/activityId/participants/$activityId');
+          context.go('/activity/activityId/participants');
         },
         child: ClipOval(
           child: Stack(
