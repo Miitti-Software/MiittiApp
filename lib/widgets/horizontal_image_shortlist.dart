@@ -7,8 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/users_state.dart';
 
-// TODO: Add navigation to individual items from images and to a list from stack
-
 class MinUserData {
   final String uid;
   final String name;

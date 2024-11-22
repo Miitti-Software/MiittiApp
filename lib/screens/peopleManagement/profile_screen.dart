@@ -6,101 +6,134 @@ import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/models/miitti_user.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
+import 'package:miitti_app/state/users_state.dart';
 import 'package:miitti_app/widgets/config_screen.dart';
 import 'package:miitti_app/widgets/overlays/report_bottom_sheet.dart';
 
 class UserProfilePage extends ConsumerStatefulWidget {
-  final MiittiUser? userData;
+  final String? userId;
 
-  const UserProfilePage({Key? key, required this.userData}) : super(key: key);
+  const UserProfilePage({Key? key, this.userId}) : super(key: key);
 
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
 }
 
 class _UserProfilePageState extends ConsumerState<UserProfilePage> {
+  late Future<MiittiUser?> userFuture;
   final PageController _pageController = PageController();
   int _currentPage = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final userId = widget.userId ?? ref.read(userStateProvider).uid;
+    userFuture = fetchUserDetails(userId!);
+  }
+
+  Future<MiittiUser?> fetchUserDetails(String userId) async {
+    return await ref.read(usersStateProvider.notifier).fetchUser(userId);
+  }
 
   @override
   Widget build(BuildContext context) {
     final currentUserUid = ref.watch(userStateProvider).uid;
 
-    return Scaffold(
-      body: widget.userData == null
-          ? ConfigScreen(child: Center(child: Text('User not found', style: Theme.of(context).textTheme.titleMedium)))
-          : Container(
-              color: Theme.of(context).colorScheme.surface,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildProfilePicture(context, currentUserUid!),
-                    _buildFramedList(context, currentUserUid),
-                    _buildQACarousel(context),
-                    if (widget.userData!.uid == currentUserUid)
-                      Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary,
-                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                            textStyle: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          onPressed: () {
-                            context.push('/login/complete-profile/qa-cards');
-                          },
-                          child: Text(ref.watch(remoteConfigServiceProvider).get<String>('edit-qa-cards-button')),
+    return FutureBuilder<MiittiUser?>(
+      future: userFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return ConfigScreen(
+            child: Center(
+              child: Text('Error loading user profile', style: Theme.of(context).textTheme.titleMedium),
+            ),
+          );
+        } else if (!snapshot.hasData || snapshot.data == null) {
+          return ConfigScreen(
+            child: Center(
+              child: Text('User not found', style: Theme.of(context).textTheme.titleMedium),
+            ),
+          );
+        }
+
+        final userData = snapshot.data!;
+        return Scaffold(
+          body: Container(
+            color: Theme.of(context).colorScheme.surface,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildProfilePicture(context, currentUserUid!, userData),
+                  _buildFramedList(context, currentUserUid, userData),
+                  _buildQACarousel(context, userData),
+                  if (userData.uid == currentUserUid)
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                          textStyle: Theme.of(context).textTheme.bodyMedium,
                         ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0, top: 32.0, bottom: 0),
-                      child: Text(
-                        ref.watch(remoteConfigServiceProvider).get('favorite-activities-title'),
-                        style: Theme.of(context).textTheme.titleMedium,
-                        textAlign: TextAlign.left,
+                        onPressed: () {
+                          context.push('/login/complete-profile/qa-cards');
+                        },
+                        child: Text(ref.watch(remoteConfigServiceProvider).get<String>('edit-qa-cards-button')),
                       ),
                     ),
-                    _buildFavoriteActivitiesGrid(context),
-                    if (widget.userData!.uid == currentUserUid)
-                      Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary,
-                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                            textStyle: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          onPressed: () {
-                            context.push('/login/complete-profile/activities');
-                          },
-                          child: Text(ref.watch(remoteConfigServiceProvider).get<String>('edit-activities-button')),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0, top: 32.0, bottom: 0),
+                    child: Text(
+                      ref.watch(remoteConfigServiceProvider).get('favorite-activities-title'),
+                      style: Theme.of(context).textTheme.titleMedium,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  _buildFavoriteActivitiesGrid(context, userData),
+                  if (userData.uid == currentUserUid)
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                          textStyle: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        onPressed: () {
+                          context.push('/login/complete-profile/activities');
+                        },
+                        child: Text(ref.watch(remoteConfigServiceProvider).get<String>('edit-activities-button')),
+                      ),
+                    ),
+                  if (userData.uid != currentUserUid)
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          ReportBottomSheet.show(
+                            context: context,
+                            isActivity: false,
+                            id: userData.uid,
+                          );
+                        },
+                        child: Text(
+                          ref.watch(remoteConfigServiceProvider).get<String>('report-profile-button'),
+                          style: TextStyle(color: Theme.of(context).colorScheme.error),
                         ),
                       ),
-                    if (widget.userData!.uid != currentUserUid)
-                      Center(
-                        child: TextButton(
-                          onPressed: () {
-                            ReportBottomSheet.show(
-                              context: context,
-                              isActivity: false,
-                              id: widget.userData!.uid,
-                            );
-                          },
-                          child: Text(
-                            ref.watch(remoteConfigServiceProvider).get<String>('report-profile-button'),
-                            style: TextStyle(color: Theme.of(context).colorScheme.error),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildProfilePicture(BuildContext context, String currentUserUid) {
+  Widget _buildProfilePicture(BuildContext context, String currentUserUid, MiittiUser userData) {
     final currentUser = ref.watch(userStateProvider);
-    final profilePicture = (currentUserUid == widget.userData!.uid) ? currentUser.data.profilePicture : widget.userData!.profilePicture;
+    final profilePicture = (currentUserUid == userData.uid) ? currentUser.data.profilePicture : userData.profilePicture;
 
     return Stack(
       children: [
@@ -142,7 +175,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
             },
           ),
         ),
-        if (widget.userData!.uid == currentUserUid) ...[
+        if (userData.uid == currentUserUid) ...[
           Positioned(
             top: 40,
             right: 16,
@@ -182,7 +215,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '${widget.userData!.name}, ${_calculateAge(widget.userData!.birthday)}',
+                '${userData.name}, ${_calculateAge(userData.birthday)}',
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
@@ -193,10 +226,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     );
   }
 
-  Widget _buildFramedList(BuildContext context, String currentUserUid) {
-    final currentUser = ref.watch(userStateProvider);
-    final userData = (currentUserUid == widget.userData!.uid) ? currentUser.data.toMiittiUser() : widget.userData!;
-
+  Widget _buildFramedList(BuildContext context, String currentUserUid, MiittiUser userData) {
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
@@ -208,23 +238,23 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildListItem(context, Icons.location_on_outlined, userData.areas.join(', '), currentUserUid, '/login/complete-profile/areas'),
+          _buildListItem(context, Icons.location_on_outlined, userData.areas.join(', '), currentUserUid, '/login/complete-profile/areas', userData),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.cake_outlined, '${_calculateAge(userData.birthday)}', currentUserUid, null),
+          _buildListItem(context, Icons.cake_outlined, '${_calculateAge(userData.birthday)}', currentUserUid, null, userData),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.language_outlined, userData.languages.map((lang) => ref.watch(remoteConfigServiceProvider).get<String>(lang.code)).join(', '), currentUserUid, '/login/complete-profile/languages'),
+          _buildListItem(context, Icons.language_outlined, userData.languages.map((lang) => ref.watch(remoteConfigServiceProvider).get<String>(lang.code)).join(', '), currentUserUid, '/login/complete-profile/languages', userData),
           Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-          _buildListItem(context, Icons.work_outline, userData.occupationalStatuses.map((e) => ref.watch(remoteConfigServiceProvider).get<String>(e)).join(', '), currentUserUid, '/login/complete-profile/life-situation'),
+          _buildListItem(context, Icons.work_outline, userData.occupationalStatuses.map((e) => ref.watch(remoteConfigServiceProvider).get<String>(e)).join(', '), currentUserUid, '/login/complete-profile/life-situation', userData),
           if (userData.organizations.isNotEmpty) ...[
             Divider(color: Theme.of(context).colorScheme.primary.withAlpha(100)),
-            _buildListItem(context, Icons.business, userData.organizations.join(', '), currentUserUid, '/login/complete-profile/organization'),
+            _buildListItem(context, Icons.business, userData.organizations.join(', '), currentUserUid, '/login/complete-profile/organization', userData),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildListItem(BuildContext context, IconData icon, String value, String currentUserUid, String? editRoute) {
+  Widget _buildListItem(BuildContext context, IconData icon, String value, String currentUserUid, String? editRoute, MiittiUser userData) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -246,7 +276,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
               ],
             ),
           ),
-          if (widget.userData!.uid == currentUserUid && editRoute != null) ...[
+          if (userData.uid == currentUserUid && editRoute != null) ...[
             IconButton(
               icon: const Icon(
                 Icons.edit,
@@ -263,10 +293,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     );
   }
 
-  Widget _buildQACarousel(BuildContext context) {
-    final currentUser = ref.watch(userStateProvider);
-    final userData = (currentUser.uid == widget.userData!.uid) ? currentUser.data.toMiittiUser() : widget.userData!;
-
+  Widget _buildQACarousel(BuildContext context, MiittiUser userData) {
     return Column(
       children: [
         SizedBox(
@@ -331,10 +358,7 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
     );
   }
 
-  Widget _buildFavoriteActivitiesGrid(BuildContext context) {
-    final currentUser = ref.watch(userStateProvider);
-    final userData = (currentUser.uid == widget.userData!.uid) ? currentUser.data.toMiittiUser() : widget.userData!;
-
+  Widget _buildFavoriteActivitiesGrid(BuildContext context, MiittiUser userData) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: GridView.builder(

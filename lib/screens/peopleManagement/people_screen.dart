@@ -31,10 +31,14 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
     super.dispose();
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     final config = ref.watch(remoteConfigServiceProvider);
     final people = ref.watch(usersProvider);
+    final currentUserUid = ref.watch(userStateProvider).uid;
+
+    // Exclude the current user from the people list
+    final filteredPeople = people.where((user) => user.uid != currentUserUid).toList();
 
     return ref.read(userStateProvider).isAnonymous
         ? const AnonymousUserScreen()
@@ -55,13 +59,13 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
               color: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.only(top: AppSizes.minVerticalEdgePadding),
               child: InfiniteList(
-                dataSource: people,
+                dataSource: filteredPeople,
                 refreshFunction: () => ref.read(usersStateProvider.notifier).loadMoreUsers(fullRefresh: true),
                 listTileBuilder: (BuildContext context, int index) {
                   return UserListTile(
-                    user: people[index],
+                    user: filteredPeople[index],
                     onTap: () {
-                      context.go('/people/user/${people[index].uid}');
+                      context.go('/people/user/${filteredPeople[index].uid}');
                     },
                   );
                 },

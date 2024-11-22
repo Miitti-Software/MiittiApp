@@ -19,7 +19,6 @@ import 'package:miitti_app/widgets/data_containers/infinite_list.dart';
 import 'dart:ui' as ui;
 
 class ChatScreen extends ConsumerStatefulWidget {
-
   const ChatScreen({super.key});
 
   @override
@@ -28,20 +27,28 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatPageState extends ConsumerState<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
+  late Future<MiittiActivity?> activityFuture;
 
-  Stream<MiittiActivity?> fetchActivityDetails(String activityId) async* {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final activityId = GoRouterState.of(context).pathParameters['id']!;
+    activityFuture = fetchActivityDetails(activityId);
+  }
+
+  Future<MiittiActivity?> fetchActivityDetails(String activityId) async {
     final activitiesState = ref.read(activitiesStateProvider);
 
     // Check if the activity is already in the state
     MiittiActivity? activity = activitiesState.activities.firstWhereOrNull((a) => a.id == activityId);
     activity ??= await ref.read(activitiesStateProvider.notifier).fetchActivity(activityId);
-    yield activity;
+    return activity;
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<MiittiActivity?>(
-      stream: fetchActivityDetails(GoRouterState.of(context).pathParameters['id']!),
+    return FutureBuilder<MiittiActivity?>(
+      future: activityFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -105,6 +112,7 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
 
                         return CustomMessageTile(
                           message: message,
+                          senderId: message.senderId,
                           isCurrentUser: isCurrentUser,
                           participantInfo: participantInfo!,
                           isReadByEveryone: messageReadByEveryone,
@@ -191,6 +199,7 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
 
 class CustomMessageTile extends StatelessWidget {
   final Message message;
+  final String senderId;
   final bool isCurrentUser;
   final Map<String, dynamic> participantInfo;
   final bool isReadByEveryone;
@@ -198,6 +207,7 @@ class CustomMessageTile extends StatelessWidget {
   const CustomMessageTile({
     super.key,
     required this.message,
+    required this.senderId,
     required this.isCurrentUser,
     required this.participantInfo,
     required this.isReadByEveryone,
@@ -213,24 +223,27 @@ class CustomMessageTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            if (!isCurrentUser) _buildProfilePicture(),
+            if (!isCurrentUser) _buildProfilePicture(context),
             Flexible(child: _buildMessageBubble(context)),
-            if (isCurrentUser) _buildProfilePicture(),
+            if (isCurrentUser) _buildProfilePicture(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfilePicture() {
+  Widget _buildProfilePicture(BuildContext context) {
     return Align(
       alignment: Alignment.bottomLeft,
-      child: CircleAvatar(
-        backgroundImage: CachedNetworkImageProvider(
-          participantInfo['profilePicture'].replaceAll('profilePicture', 'thumb_profilePicture'),
-          cacheManager: ProfilePicturesCacheManager(),
+      child: GestureDetector(
+        child: CircleAvatar(
+          backgroundImage: CachedNetworkImageProvider(
+            participantInfo['profilePicture'].replaceAll('profilePicture', 'thumb_profilePicture'),
+            cacheManager: ProfilePicturesCacheManager(),
+          ),
+          radius: 18,
         ),
-        radius: 18,
+        onTap: () => context.push('/people/user/$senderId'),
       ),
     );
   }

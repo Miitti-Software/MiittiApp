@@ -71,25 +71,38 @@ class PushNotificationService extends StateNotifier<bool> {
     // Handle background notification taps
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification != null) {
-        try {
-          final String? route = message.data['route'];
-          if (route != null) {
-            debugPrint("Notification tapped: $route");
-            Future.delayed(const Duration(milliseconds: 2), () {
-              context.go('/');
-            }).then((value) => context.go(route));
-            // context.go(route);
-          } else {
-            debugPrint("No route found in notification data");
-          }
-        } catch (e) {
-          debugPrint("Error handling notification tap: $e");
-        }
+        debugPrint("Background notification tapped");
+        _handleNotificationTap(message);
       }
     });
 
     if (state) {
       await _requestAndSetupNotifications();
+    }
+  }
+
+  void _handleNotificationTap(RemoteMessage message) {
+    try {
+      final String? route = message.data['route'];
+      if (route != null) {
+        debugPrint("Notification tapped: $route");
+        if (route.contains("/activity/")) {
+          final activityId = route.split("/")[2];
+          Future.delayed(const Duration(milliseconds: 2), () {
+            context.go('/activity/$activityId');
+            Future.delayed(const Duration(milliseconds: 200), () {
+              context.go(route);
+            });
+          });
+        } else {
+          context.go(route);
+        }
+      } else {
+        debugPrint("No route found in notification data");
+        context.go('/');
+      }
+    } catch (e) {
+      debugPrint("Error handling notification tap: $e");
     }
   }
 
@@ -187,7 +200,7 @@ class PushNotificationService extends StateNotifier<bool> {
     if (message != null) {
       debugPrint("Launched from terminated state");
       Future.delayed(const Duration(seconds: 2), () {
-        context.go(message.data['route']);
+        _handleNotificationTap(message);
       });
     }
   }

@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,6 @@ import 'package:miitti_app/screens/peopleManagement/people_screen.dart';
 import 'package:miitti_app/screens/peopleManagement/profile_screen.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/map_state.dart';
-import 'package:miitti_app/state/users_state.dart';
 import 'package:miitti_app/widgets/data_containers/activity_details.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_norms_screen.dart';
 import 'package:miitti_app/screens/authentication/completeProfile/accept_push_notifications.dart';
@@ -293,7 +291,7 @@ class AppRouter {
                 path: 'user/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   final id = state.pathParameters['id'] as String;
-                  return NoTransitionPage<void>(child: UserProfilePage(userData: ref.read(usersStateProvider).users.firstWhereOrNull((user) => user.uid == id)));
+                  return NoTransitionPage<void>(child: UserProfilePage(userId: id));
                 },
               ),
             ],
@@ -313,7 +311,7 @@ class AppRouter {
               bool isAnonymous = ref.read(userStateProvider).isAnonymous;
               if (isAnonymous) { router.refresh(); }
               MiittiUser? userData = !isAnonymous ? ref.read(userStateProvider).data.toMiittiUser() : null;
-              return NoTransitionPage<void>(child: UserProfilePage(userData: userData,));
+              return NoTransitionPage<void>(child: UserProfilePage(userId: userData?.uid));
             },
             routes: [
               GoRoute(
