@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/miitti_user.dart';
+import 'package:miitti_app/models/user_created_activity.dart';
+import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/create_activity_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
@@ -12,14 +14,14 @@ import 'package:miitti_app/widgets/buttons/backward_button.dart';
 import 'package:miitti_app/widgets/data_containers/infinite_list.dart';
 import 'package:miitti_app/widgets/data_containers/user_list_tile.dart';
 
-class CreateInviteScreen extends ConsumerStatefulWidget {
-  const CreateInviteScreen({super.key});
+class InviteScreen extends ConsumerStatefulWidget {
+  const InviteScreen({super.key});
 
   @override
   _InviteScreenState createState() => _InviteScreenState();
 }
 
-class _InviteScreenState extends ConsumerState<CreateInviteScreen> {
+class _InviteScreenState extends ConsumerState<InviteScreen> {
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -96,24 +98,23 @@ class _InviteScreenState extends ConsumerState<CreateInviteScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: AppSizes.minVerticalPadding),
-                      LinearProgressIndicator(
-                        value: 0.95,
-                        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(height: AppSizes.minVerticalPadding),
                       const SizedBox(height: AppSizes.minVerticalPadding),
                       ForwardButton(
-                        buttonText: invitedUsers.isEmpty ? config.get<String>('skip-button') : config.get<String>('forward-button'),
-                        onPressed: () {
-                          ref.read(createActivityStateProvider.notifier).invitedUsers = invitedUsers;
-                          context.go('/create-activity/review');
+                        buttonText: config.get<String>('invite-screen-send-button'),
+                        onPressed: () async {
+                          for (final invitee in invitedUsers) {
+                            ref.read(notificationServiceProvider).sendInviteNotification(
+                              ref.read(userStateProvider).data.toMiittiUser(),
+                              invitee,
+                              await ref.read(activitiesStateProvider.notifier).fetchActivity(GoRouterState.of(context).pathParameters['id']!) as UserCreatedActivity);
+                          }
+                          context.pop();
                         },
                       ),
                       const SizedBox(height: AppSizes.minVerticalPadding),
                       BackwardButton(
                         buttonText: config.get<String>('back-button'),
-                        onPressed: () => context.go('/create-activity/details'),
+                        onPressed: () => context.pop(),
                       ),
                       const SizedBox(height: AppSizes.minVerticalPadding + 6),
                     ],

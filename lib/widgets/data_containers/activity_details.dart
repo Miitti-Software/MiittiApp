@@ -353,7 +353,23 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     ),
                   ),
                   const SizedBox(height: AppSizes.minVerticalPadding),
-                  HorizontalImageShortlist(usersData: filteredParticipantsInfo, activityId: activity.id,),
+                  Row(
+                    children: [
+                      HorizontalImageShortlist(usersData: filteredParticipantsInfo, activityId: activity.id,),
+                      const SizedBox(width: 4),
+                      if (userUid == activity.creator && activity is UserCreatedActivity)
+                      GestureDetector(
+                        onTap: () {
+                          context.push('/activity/${activity.id}/invite');
+                        },
+                        child: Icon(
+                          Icons.add,
+                          size: 28,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      )
+                    ],
+                  ),
                   const SizedBox(height: AppSizes.minVerticalPadding * 1.4),
                   ConstrainedBox(
                     constraints: const BoxConstraints(
@@ -450,7 +466,6 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     BackwardButton(
                       buttonText: config.get<String>('activity-requests-button'),
                       onPressed: () {
-                        // TODO: Show requests
                         context.go('/activity/${activity.id}/requests');
                       },
                     ),
@@ -542,3 +557,5 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
     );
   }
 }
+
+// TODO: Add a "mark as passed" button for the creator of the activity

@@ -331,7 +331,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     try {
       final firestoreService = ref.read(firestoreServiceProvider);
       final activity = state.activities.firstWhere((a) => a.id == activityId) as UserCreatedActivity;
-      final updatedActivity = activity.addParticipant(user);
+      final updatedActivity = activity.removeRequest(user.uid).addParticipant(user);
       final success = await firestoreService.updateActivity(updatedActivity.notifyParticipants().markSeen(ref.read(userStateProvider).uid!).toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
       if (!success) return false;
       ref.read(notificationServiceProvider).sendRequestAcceptedNotification(updatedActivity);

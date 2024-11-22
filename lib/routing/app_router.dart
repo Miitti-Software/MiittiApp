@@ -9,6 +9,7 @@ import 'package:miitti_app/routing/modal_page.dart';
 import 'package:miitti_app/screens/activityManagement/activity_management_shell_scaffold.dart';
 import 'package:miitti_app/screens/activityManagement/chat_screen.dart';
 import 'package:miitti_app/screens/activityManagement/chats_screen.dart';
+import 'package:miitti_app/screens/activityManagement/invite_screen.dart';
 import 'package:miitti_app/screens/activityManagement/others_activities_screen.dart';
 import 'package:miitti_app/screens/activityManagement/own_activities_screen.dart';
 import 'package:miitti_app/screens/activityManagement/createMiitti/choose_activity_category_screen.dart';
@@ -81,12 +82,6 @@ class AppRouter {
 
   List<RouteBase> _buildRoutes() {
     return [
-      // GoRoute(
-      //   name: 'notificationmessage',
-      //   path: '/notificationmessage',
-      //   parentNavigatorKey: rootNavigatorKey,
-      //   pageBuilder: _buildNoTransitionPage(const NotificationMessage()),
-      // ),
       GoRoute(
         name: 'login',
         path: '/login',
@@ -203,6 +198,14 @@ class AppRouter {
                 routes: [
                   GoRoute(
                     parentNavigatorKey: rootNavigatorKey,
+                    name: 'invite',
+                    path: 'invite',
+                    pageBuilder: (BuildContext context, GoRouterState state) {
+                      return NoTransitionPage<void>(child: InviteScreen());
+                    },
+                  ),
+                  GoRoute(
+                    parentNavigatorKey: rootNavigatorKey,
                     name: 'participants',
                     path: 'participants',
                     pageBuilder: (BuildContext context, GoRouterState state) {
@@ -237,11 +240,6 @@ class AppRouter {
     return StatefulShellBranch(
       navigatorKey: _createActivityNavigatorKey,
         routes: [
-          // GoRoute(
-          //   name: 'create-activity',
-          //   path: '/create-activity',
-          //   pageBuilder: _buildNoTransitionPage(const CreateMiittiOnboarding()),
-          // ),
           GoRoute(
             name: 'create-activity/category',
             path: '/create-activity/category',
@@ -260,7 +258,7 @@ class AppRouter {
           GoRoute(
             name: 'create-activity/invite',
             path: '/create-activity/invite',
-            pageBuilder: _buildNoTransitionPage(const InviteScreen()),
+            pageBuilder: _buildNoTransitionPage(const CreateInviteScreen()),
           ),
           GoRoute(
             name: 'create-activity/review',

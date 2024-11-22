@@ -265,7 +265,8 @@
 
     "create-activity-prompt-button": "Create activity",
 
-    "invite-screen-title": "Want to invite someone already or let them find you on their own?",
+    "invite-screen-title": "Invite people",
+    "invite-screen-send-button": "Send invites",
 
     "create-activity-review-title": "Review your activity",
     "create-activity-success": "Activity created",
