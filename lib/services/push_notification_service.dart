@@ -16,8 +16,6 @@ import 'dart:convert';
 
 import 'package:permission_handler/permission_handler.dart';
 
-// TODO: Make a json config file for message templates
-
 final pushNotificationServiceProvider = StateNotifierProvider<PushNotificationService, bool>((ref) {
   return PushNotificationService(ref);
 });

@@ -20,7 +20,7 @@ class ErrorSnackbar {
           ),
         );
       },
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 4),
       position: NotificationPosition.bottom,
     );
   }

@@ -5,6 +5,7 @@ import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/main.dart';
 import 'package:miitti_app/services/push_notification_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/buttons/delete_account_button.dart';
 import 'package:miitti_app/widgets/buttons/forward_button.dart';
@@ -21,6 +22,7 @@ class SettingsScreen extends ConsumerWidget {
     final userState = ref.watch(userStateProvider.notifier);
     ref.watch(remoteConfigStreamProvider);
     final isNotificationsEnabled = ref.watch(pushNotificationServiceProvider);
+    final isLocationEnabled = ref.watch(locationPermissionProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -98,6 +100,23 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(config.get<String>('settings-push-notifications-title')),
+                ],
+              ),
+              const SizedBox(height: AppSizes.minVerticalPadding),
+              Row(
+                children: [
+                  Switch(
+                    value: isLocationEnabled,
+                    onChanged: (bool value) async {
+                      try {
+                        await ref.read(locationPermissionProvider.notifier).setLocationPermission(value);
+                      } catch (e) {
+                        ErrorSnackbar.show(context, 'Failed to ${value ? 'enable' : 'disable'} location permissions');
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  Text(config.get<String>('settings-location-permissions-title')),
                 ],
               ),
               const SizedBox(height: AppSizes.verticalSeparationPadding),
@@ -178,3 +197,6 @@ class StyledButton extends ConsumerWidget {
     );
   }
 }
+
+// TODO: Add a toggle for location permissions
+// TODO: Ask for notification permissions upon creating a miitti or joining one (if not already granted)

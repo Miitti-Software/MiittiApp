@@ -161,7 +161,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         permissionGranted = await locationPermission.requestLocationPermission();
         if (!permissionGranted) {
           if (mounted) {
-            ErrorSnackbar.show(context, config.get<String>('location-permission-denied'));
+            ErrorSnackbar.show(context, config.get<String>('location-service-denied'));
           }
           return;
         }

@@ -24,6 +24,7 @@ class ActivityManagementShellScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(notificationServiceProvider).setNotificationsEnabled(true);
     final config = ref.watch(remoteConfigServiceProvider);
     // final titles = [
     //   config.get<String>('chats-screen-title'),

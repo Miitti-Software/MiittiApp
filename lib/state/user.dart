@@ -73,7 +73,9 @@ class UserState extends StateNotifier<UserStateData> {
             : UserData(uid: user.uid),
         );
         if (!state.isAnonymous) {
-          ref.read(notificationServiceProvider).initialize();
+          final notificationService = ref.read(notificationServiceProvider);
+          notificationService.setNotificationsEnabled(true);
+          notificationService.initialize();
         }
       }
     }

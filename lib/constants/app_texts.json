@@ -299,6 +299,7 @@
     "settings-terms-of-service-button": "Terms & conditions",
     "settings-current-version-text": "Current version",
     "settings-push-notifications-title": "Push notifications",
+    "settings-location-permissions-title": "Location",
     "settings-sign-out-button": "Sign out",
 
     "input-chat-message-placeholder": "Message"

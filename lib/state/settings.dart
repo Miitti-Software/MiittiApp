@@ -3,6 +3,7 @@ import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/services/local_storage_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart' as perm;
 
 // Provider for the selected language
 final languageProvider = StateNotifierProvider<LanguageNotifier, Language>((ref) {
@@ -34,25 +35,61 @@ class LanguageNotifier extends StateNotifier<Language> {
 }
 
 final locationPermissionProvider = StateNotifierProvider<LocationPermissionNotifier, bool>((ref) {
-  return LocationPermissionNotifier();
+  return LocationPermissionNotifier(ref);
 });
 
 class LocationPermissionNotifier extends StateNotifier<bool> {
+  final Ref ref;
   final Location _liveLocation = Location();
   bool serviceEnabled = false;
   PermissionStatus permissionGranted = PermissionStatus.denied;
 
-  LocationPermissionNotifier() : super(false) {
-    setLocationPermission();
+  LocationPermissionNotifier(this.ref) : super(false) {
+    _loadSavedState();
   }
-  
-  void setLocationPermission() async {
-    serviceEnabled = await _liveLocation.serviceEnabled();
-    permissionGranted = await _liveLocation.hasPermission();
-    if (permissionGranted == PermissionStatus.granted || permissionGranted == PermissionStatus.grantedLimited) {
-      state = true;
+
+  Future<void> _loadSavedState() async {
+    final savedState = await ref.read(localStorageServiceProvider).getBool('location_enabled') ?? false;
+    state = savedState;
+    if (state) {
+      setLocationPermission(true);
+    }
+  }
+
+  Future<void> _saveLocationState(bool enabled) async {
+    await ref.read(localStorageServiceProvider).saveBool('location_enabled', enabled);
+  }
+
+  Future<void> setLocationPermission(bool enable) async {
+    if (enable) {
+      serviceEnabled = await _liveLocation.serviceEnabled();
+      if (!serviceEnabled) {
+        final serviceRequested = await requestLocationService();
+        if (!serviceRequested) {
+          state = false;
+          await _saveLocationState(false);
+          return;
+        }
+      }
+      
+      final permissionGranted = await requestLocationPermission();
+      if (permissionGranted) {
+        state = true;
+        await _saveLocationState(true);
+      } else {
+        await perm.openAppSettings();
+        final permission = await _liveLocation.hasPermission();
+        if (permission == PermissionStatus.granted || permission == PermissionStatus.grantedLimited) {
+          state = true;
+          await _saveLocationState(true);
+        } else {
+          state = false;
+          await _saveLocationState(false);
+        }
+      }
     } else {
       state = false;
+      await _saveLocationState(false);
     }
   }
 
