@@ -80,7 +80,7 @@ class _AuthButtonState extends ConsumerState<AuthButton> {
       if (!mounted) return;
 
       if (success) {
-        final userExists = await ref.read(firestoreServiceProvider).checkExistingUser(ref.read(userStateProvider).uid!);
+        final userExists = await ref.read(firestoreServiceProvider).fetchUser(ref.read(userStateProvider).uid!) != null;
         
         if (!mounted) return;
         

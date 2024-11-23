@@ -35,16 +35,6 @@ class FirestoreService {
   DocumentSnapshot? _lastParticipatingUserActivityDocument;
   DocumentSnapshot? _lastParticipatingCommercialActivityDocument;
   DocumentSnapshot? _lastUserDocument;
-  DocumentSnapshot? _lastLegacyUserDocument; // TODO: Delete when redundant
-
-  // TODO: Delete when redundant
-  MiittiUser? _miittiUser;
-  MiittiUser? get miittiUser => _miittiUser;
-  bool get isAnonymous => _miittiUser == null;
-  String? get uid => _miittiUser?.uid;
-
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
 
   FirestoreService(this.ref) : _firestore = FirebaseFirestore.instance{
     _firestore.settings = const Settings(
@@ -56,7 +46,6 @@ class FirestoreService {
   Future<bool> saveUserData(MiittiUser userModel) async {
     try {
       await _firestore.collection(_usersCollection).doc(userModel.uid).set(userModel.toMap());
-      _miittiUser = userModel; // TODO: Delete when redundant
       return true;
     } catch (e) {
       debugPrint("Error saving user data: $e");
@@ -71,16 +60,6 @@ class FirestoreService {
       await userRef.update(data.toMap());
     } catch (e) {
       debugPrint('Error updating user data: $e');
-    }
-  }
-  
-  Future<MiittiUser?> loadUserData(String userId) async {
-    DocumentSnapshot snapshot = await _firestore.collection(_usersCollection).doc(userId).get();
-    if (snapshot.exists) {
-      _miittiUser = MiittiUser.fromFirestore(snapshot); // TODO: Delete when redundant
-      return MiittiUser.fromFirestore(snapshot);
-    } else {
-      return null;
     }
   }
 
@@ -136,7 +115,6 @@ class FirestoreService {
       }
 
       await _firestore.collection(_usersCollection).doc(uid).delete();
-      _miittiUser = null; // TODO: Delete when redundant
 
     } catch (e) {
       debugPrint('Got an error deleting user $e');
@@ -675,52 +653,6 @@ class FirestoreService {
         _lastUserActivityDocument = usersSnapshot.docs.last;
       }
 
-      return users.followedBy(await fetchFilteredLegacyUsers()).toList(); // TODO: return only users when all users are migrated to the new user model
-    } catch (e) {
-      debugPrint('Error fetching users: $e');
-      return [];
-    }
-  }
-
-  // TODO: Delete when redundant, i.e. when all users are migrated to the new user model
-  Future<List<MiittiUser>> fetchFilteredLegacyUsers({
-    int pageSize = 10,
-    bool fullRefresh = false,
-  }) async {
-    try {
-      debugPrint('Fetching $pageSize legacy users');
-
-      if (fullRefresh) {
-        _lastLegacyUserDocument = null;
-      }
-
-      // Load user state and filter settings
-      await ref.read(usersFilterSettingsProvider.notifier).loadPreferences();
-      final filterSettings = ref.read(usersFilterSettingsProvider);
-
-      // Query for user Users
-      Query usersQuery = _firestore.collection(_usersCollection)
-        .where('userBirthday', isLessThanOrEqualTo: '31/12/${2024 - filterSettings.minAge}')
-        .where('userBirthday', isGreaterThanOrEqualTo: '00/00/${2024 - filterSettings.maxAge}')
-        .where('uid', isNotEqualTo: ref.read(userStateProvider).uid);
-
-      if (filterSettings.interests.isNotEmpty) {
-        usersQuery = usersQuery.where('userFavoriteActivities', arrayContainsAny: filterSettings.interests);
-      }
-
-      usersQuery = usersQuery.orderBy('userStatus', descending: true);
-
-      if (_lastLegacyUserDocument != null) {
-        usersQuery = usersQuery.startAfter([(_lastLegacyUserDocument!.data() as Map<String, dynamic>)['userStatus']]);
-      }
-
-      QuerySnapshot usersSnapshot = await usersQuery.limit(pageSize).get();
-      List<MiittiUser> users = usersSnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
-
-      if (users.isNotEmpty) {
-        _lastUserActivityDocument = usersSnapshot.docs.last;
-      }
-
       return users;
     } catch (e) {
       debugPrint('Error fetching users: $e');
@@ -777,110 +709,5 @@ class FirestoreService {
       debugPrint('Error sending message: $e');
       return false;
     }
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  void reset() {
-    _miittiUser = null;
-  }
-
-  Future<bool> checkExistingUser(String userId) async {
-    return _wait(() => _tryGetUser(userId, exists: (miittiUser) =>
-          _miittiUser = miittiUser
-        ));
-  }
-
-  Future<MiittiUser?> getUser(String userId) async {
-    MiittiUser? user;
-    _wait(
-      () => _tryGetUser(userId, exists: (miittiUser) {
-        user = miittiUser;
-      }),
-    );
-    return user;
-  }
-
-  Future<void> updateUser(Map<String, dynamic> data, {uid = "current"}) async {
-    if (isAnonymous) {
-      debugPrint("Cannot update anonymous user");
-      return;
-    }
-    try {
-      if (uid == "current") {
-        uid = this.uid;
-        _miittiUser!.updateUser(data);
-      }
-      await _firestore.collection(_usersCollection).doc(uid).update(data);
-    } catch (e, s) {
-      debugPrint('Got an error updating user $e');
-      debugPrint('$s');
-    }
-  }
-
-  //PRIVATE UTILS
-
-  Future<bool> _tryGetUser(String userId, {Function(MiittiUser user)? exists, Function? notFound}) async {
-    DocumentSnapshot snapshot = await _firestore.collection(_usersCollection).doc(userId).get();
-    if (snapshot.exists) {
-      if (exists != null) {
-        try {
-          MiittiUser user = MiittiUser.fromFirestore(snapshot);
-          exists(user);
-        } catch (e) {
-          debugPrint('Error running function for existing user: $e');
-        }
-      }
-      return true;
-    } else {
-      if (notFound != null) {
-        await notFound();
-      }
-      return false;
-    }
-  }
-
-  Future<T> _wait<T>(Function action) async {
-    _isLoading = true;
-    T result = await action();
-    _isLoading = false;
-    return result;
   }
 }

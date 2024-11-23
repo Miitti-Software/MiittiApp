@@ -475,11 +475,6 @@ class AppRouter {
       return '/login';  
     }
 
-    // TODO: Remove when redundant
-    if (userState.isSignedIn && state.matchedLocation != '/login/welcome') {
-      ref.watch(firestoreServiceProvider).checkExistingUser(userState.uid!);
-    }
-
     return null;
   }
 

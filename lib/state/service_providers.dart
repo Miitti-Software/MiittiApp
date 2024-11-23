@@ -62,8 +62,3 @@ final remoteConfigStreamProvider = StreamProvider<Map<String, dynamic>>((ref) {
   final remoteConfigServiceInstance = ref.watch(remoteConfigServiceProvider);
   return remoteConfigServiceInstance.configStream;
 });
-
-final providerLoading = Provider<bool>((ref) {
-  final db = ref.watch(firestoreServiceProvider);
-  return db.isLoading;
-});

@@ -253,7 +253,7 @@ class PushNotificationService extends StateNotifier<bool> {
     FirestoreService firestore = ref.read(firestoreServiceProvider);
     final config = ref.read(remoteConfigServiceProvider);
     UserStateData user = ref.read(userStateProvider);
-    MiittiUser? creator = await firestore.getUser(activity.creator);
+    MiittiUser? creator = await firestore.fetchUser(activity.creator);
     if (creator != null) {
       final language = creator.languageSetting;
       sendNotification(
@@ -272,7 +272,7 @@ class PushNotificationService extends StateNotifier<bool> {
     FirestoreService firestore = ref.read(firestoreServiceProvider);
     final config = ref.read(remoteConfigServiceProvider);
     UserStateData user = ref.read(userStateProvider);
-    MiittiUser? requestor = await firestore.getUser(user.data.uid!);
+    MiittiUser? requestor = await firestore.fetchUser(user.data.uid!);
     if (requestor != null) {
       final language = requestor.languageSetting;
       sendNotification(

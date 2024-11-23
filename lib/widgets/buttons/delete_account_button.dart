@@ -18,6 +18,7 @@ class _DeleteAccountButtonState extends ConsumerState<DeleteAccountButton> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(remoteConfigStreamProvider);
     return GestureDetector(
       onTap: _showDeleteConfirmation,
       child: Row(

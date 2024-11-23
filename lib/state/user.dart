@@ -40,7 +40,7 @@ class UserState extends StateNotifier<UserStateData> {
 
   Future<MiittiUser?> _loadMiittiUser(String uid) async {
     final firestoreService = ref.read(firestoreServiceProvider);
-    return await firestoreService.loadUserData(uid);
+    return await firestoreService.fetchUser(uid);
   }
 
   Future<void> _handleAuthStateChanges(User? user) async {
@@ -223,11 +223,9 @@ class UserState extends StateNotifier<UserStateData> {
 
   Future<void> signOut() async {
     final authService = ref.read(authServiceProvider);
-    final firestoreService = ref.read(firestoreServiceProvider);
     final localStorageService = ref.read(localStorageServiceProvider);
 
     await authService.signOut();
-    firestoreService.reset();
     await localStorageService.clear();
     _locationUpdateTimer?.cancel();
     state = UserStateData();
@@ -245,7 +243,6 @@ class UserState extends StateNotifier<UserStateData> {
     }
     await authService.deleteUser();
     await localStorageService.clear();
-    firestoreService.reset();
     _locationUpdateTimer?.cancel();
     state = UserStateData();
   }

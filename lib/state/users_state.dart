@@ -21,7 +21,7 @@ class UsersState extends StateNotifier<UsersStateData> {
       return state.users.firstWhere((element) => element.uid == userId);
     }
     final firestoreService = ref.read(firestoreServiceProvider);
-    MiittiUser? user = await firestoreService.loadUserData(userId);
+    MiittiUser? user = await firestoreService.fetchUser(userId);
     if (user == null) {
       debugPrint('User with ID $userId does not exist.');
       return null;
