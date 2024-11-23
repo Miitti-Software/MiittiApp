@@ -27,28 +27,28 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatPageState extends ConsumerState<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  late Future<MiittiActivity?> activityFuture;
+  late Stream<MiittiActivity?> activityStream;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final activityId = GoRouterState.of(context).pathParameters['id']!;
-    activityFuture = fetchActivityDetails(activityId);
+    activityStream = fetchActivityDetails(activityId);
   }
 
-  Future<MiittiActivity?> fetchActivityDetails(String activityId) async {
+  Stream<MiittiActivity?> fetchActivityDetails(String activityId) async* {
     final activitiesState = ref.read(activitiesStateProvider);
 
     // Check if the activity is already in the state
     MiittiActivity? activity = activitiesState.activities.firstWhereOrNull((a) => a.id == activityId);
     activity ??= await ref.read(activitiesStateProvider.notifier).fetchActivity(activityId);
-    return activity;
+    yield activity;
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<MiittiActivity?>(
-      future: activityFuture,
+    return StreamBuilder<MiittiActivity?>(
+      stream: activityStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

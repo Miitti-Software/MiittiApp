@@ -37,10 +37,13 @@ class ChatState extends StateNotifier<List<Message>> {
 
   Future<void> sendMessage(Message message, isCommercialActivity) async {
     try {
+      // Optimistically update the state with the new message
+      state = [...state, message];
+
       await ref.read(firestoreServiceProvider).sendMessage(_activity.id, message, isCommercialActivity: isCommercialActivity);
       final activity = await ref.read(activitiesStateProvider.notifier).fetchActivity(_activity.id);
       if (activity != null) {
-        ref.read(firestoreServiceProvider).updateActivity(
+        await ref.read(firestoreServiceProvider).updateActivity(
           activity.notifyParticipants().markSeen(ref.read(userStateProvider).data.uid!).toMap(),
           activity.id,
           activity is CommercialActivity,
@@ -51,7 +54,7 @@ class ChatState extends StateNotifier<List<Message>> {
       for (final participant in receivers) {
         final receiver = await ref.read(usersStateProvider.notifier).fetchUser(participant);
         if (receiver != null && !receiver.online) {
-          ref.read(notificationServiceProvider).sendMessageNotification(
+          await ref.read(notificationServiceProvider).sendMessageNotification(
             receiver.fcmToken,
             message.message,
             _activity,
@@ -61,6 +64,9 @@ class ChatState extends StateNotifier<List<Message>> {
       }
     } catch (e) {
       debugPrint('Error sending message: $e');
+      
+      // Revert the state if sending the message fails
+      state = state.where((msg) => msg != message).toList();
     }
   }
 }

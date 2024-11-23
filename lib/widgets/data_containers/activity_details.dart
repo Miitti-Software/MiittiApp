@@ -187,7 +187,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
               ),
             ),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: (MediaQuery.of(context).size.width - AppSizes.fullContentWidth) / 2),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
