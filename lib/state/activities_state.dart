@@ -245,6 +245,21 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     }
   }
 
+  /// Archives an activity in Firestore and removes it from the state of the ActivitiesState StateNotifier.
+  Future<bool> archiveActivity(MiittiActivity activity) async {
+    try {
+      final firestoreService = ref.read(firestoreServiceProvider);
+      final updatedActivity = activity.updateEndTime(DateTime.now());
+      await firestoreService.updateActivity(updatedActivity.toMap(), activity.id, activity is CommercialActivity);
+      state = state.copyWith(activities: state.activities.where((a) => a.id != activity.id).toList());
+      _updateState();
+      return true;
+    } catch (e) {
+      debugPrint('Error archiving activity: $e');
+      return false;
+    }
+  }
+
   /// Remove the current user from the participants list of the given activity.
   Future<bool> leaveActivity(MiittiActivity activity) async {
     try {

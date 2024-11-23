@@ -480,6 +480,19 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                     ),
                   ],
                   const SizedBox(height: AppSizes.minVerticalPadding),
+                  if (activity.creator == userUid) ...[
+                    TextButton(
+                      onPressed:() {
+                        ref.read(activitiesStateProvider.notifier).archiveActivity(activity);
+                        setState(() {
+                        });
+                        context.pop();
+                      },
+                      child: Text(
+                        config.get<String>('archive-activity-button'),
+                      ),
+                    ),
+                  ],
                   TextButton(
                     onPressed: () {
                       if (activity.creator == userUid) {
@@ -646,20 +659,20 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
             pickedTime.minute,
           ),
         );
-        ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is UserCreatedActivity);
+        ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is CommercialActivity);
         setState(() {
         });
       } else {
         // If the user cancels the time picker, reset the date
         activity.updateStartTime(null);
-        ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is UserCreatedActivity);
+        ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is CommercialActivity);
         setState(() {
         });
       }
     } else {
       // If the user cancels the date picker, reset the date
       activity.updateStartTime(null);
-      ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is UserCreatedActivity);
+      ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is CommercialActivity);
       setState(() {
       });
     }

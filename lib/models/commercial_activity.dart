@@ -148,6 +148,16 @@ class CommercialActivity extends MiittiActivity {
   @override
   CommercialActivity updateStartTime(DateTime? startTime) {
     this.startTime = startTime;
+    latestActivity = DateTime.now();
+    return this;
+  }
+
+  @override
+  CommercialActivity updateEndTime(DateTime? endTime) {
+    if (endTime != null && startTime != null && startTime!.isAfter(endTime)) {
+      startTime = endTime;
+    }
+    this.endTime = endTime;
     return this;
   }
 }

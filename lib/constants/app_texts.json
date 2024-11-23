@@ -185,6 +185,7 @@
     "activity-join-request-sent": "Join request sent",
     "activity-participants-list-title": "Participants",
     "activity-requests-list-title": "Requests",
+    "archive-activity-button": "Mark as passed",
     "invalid-activity-join-anonymous": "You need to finish your profile before you can join activities. Finish your profile in the profile settings.",
 
     "activity-requested-button": "Requested to join",
