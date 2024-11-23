@@ -41,7 +41,6 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
     final paid = ref.read(createActivityStateProvider).paid;
     isActivityFree = paid != null ? !paid : true;
     activityParticipantsCount = ref.read(createActivityStateProvider).maxParticipants?.toDouble() ?? 5;
-    print(ref.read(createActivityStateProvider).startTime);
     isActivityTimeUndefined = ref.read(createActivityStateProvider).startTime == null;
     activityTime = ref.read(createActivityStateProvider).startTime ?? DateTime.now();
   }
@@ -54,47 +53,15 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
   }
 
   Future<void> _pickDateTime(BuildContext context) async {
-  final language = ref.watch(languageProvider);
-  
-  // Show the date picker first
-  final DateTime? pickedDate = await showDatePicker(
-    context: context,
-    locale: Locale(language.code),
-    initialDate: activityTime,
-    firstDate: DateTime.now(),
-    lastDate: DateTime(2101),
-    builder: (BuildContext context, Widget? child) {
-      return Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.light(
-            primary: Theme.of(context).colorScheme.primary,
-            onPrimary: Theme.of(context).colorScheme.onPrimary,
-            surface: Theme.of(context).colorScheme.surface,
-            onSurface: Theme.of(context).colorScheme.onSurface,
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          textTheme: const TextTheme().copyWith(
-            titleSmall: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontWeight: FontWeight.w300,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        child: child!,
-      );
-    },
-  );
+    final language = ref.watch(languageProvider);
 
-  if (pickedDate != null) {
-    // Show the time picker after a date has been picked
-    final TimeOfDay? pickedTime = await showTimePicker(
+    // Show the date picker first
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(activityTime ?? DateTime.now()),
+      locale: Locale(language.code),
+      initialDate: activityTime ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -122,24 +89,61 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
       },
     );
 
-    if (pickedTime != null) {
-      // Combine the picked date and time into a single DateTime object
-      setState(() {
-        activityTime = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
-      });
+    if (pickedDate != null) {
+      // Show the time picker after a date has been picked
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(activityTime ?? DateTime.now()),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: Theme.of(context).colorScheme.primary,
+                onPrimary: Theme.of(context).colorScheme.onPrimary,
+                surface: Theme.of(context).colorScheme.surface,
+                onSurface: Theme.of(context).colorScheme.onSurface,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              textTheme: const TextTheme().copyWith(
+                titleSmall: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w300,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            child: child!,
+          );
+        },
+      );
+
+      if (pickedTime != null) {
+        // Combine the picked date and time into a single DateTime object
+        setState(() {
+          activityTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+          isActivityTimeUndefined = false;
+        });
+      } else {
+        setState(() {
+          isActivityTimeUndefined = true;
+        });
+      }
     } else {
       setState(() {
-        activityTime = pickedDate;
+        isActivityTimeUndefined = true;
       });
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +151,7 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
     final config = ref.watch(remoteConfigServiceProvider);
     ref.read(analyticsServiceProvider).logScreenView('create_activity_details_screen');
     final DateFormat formatter = DateFormat('dd.MM.yyyy   HH:mm');
-    final String formattedTime = formatter.format(activityTime?? DateTime.now());
+    final String formattedTime = formatter.format(activityTime ?? DateTime.now());
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -254,11 +258,12 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                           activeColor: Theme.of(context).colorScheme.primary,
                           value: isActivityTimeUndefined,
                           onChanged: (bool value) async {
-                            setState(() {
-                              isActivityTimeUndefined = value;
-                            });
-                            if (!isActivityTimeUndefined) {
+                            if (!value) {
                               await _pickDateTime(context);
+                            } else {
+                              setState(() {
+                                isActivityTimeUndefined = true;
+                              });
                             }
                             createActivityState.update((state) => state.copyWithNullableStartTime(
                               startTime: isActivityTimeUndefined ? null : activityTime,
@@ -290,14 +295,6 @@ class _FillActivityDetailsScreenState extends ConsumerState<FillActivityDetailsS
                               if (titleController.text.isEmpty || subTitleController.text.isEmpty) {
                                 ErrorSnackbar.show(context, config.get<String>('invalid-activity-fields-missing'));
                               } else {
-                                createActivityState.update((state) => state.copyWithNullableStartTime(
-                                  title: titleController.text,
-                                  description: subTitleController.text,
-                                  paid: !isActivityFree,
-                                  requiresRequest: requiresRequest,
-                                  maxParticipants: activityParticipantsCount.round(),
-                                  startTime: isActivityTimeUndefined ? null : activityTime,
-                                ));
                                 context.go('/create-activity/invite');
                               }
                             },

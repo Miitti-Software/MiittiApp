@@ -42,4 +42,5 @@ abstract class MiittiActivity {
   MiittiActivity removeParticipant(MiittiUser user);
   MiittiActivity notifyParticipants();
   MiittiActivity markSeen(String userId);
+  MiittiActivity updateStartTime(DateTime? startTime);
 }

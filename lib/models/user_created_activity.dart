@@ -159,4 +159,10 @@ class UserCreatedActivity extends MiittiActivity {
     }
     return this;
   }
+
+  @override
+  UserCreatedActivity updateStartTime(DateTime? startTime) {
+    this.startTime = startTime;
+    return this;
+  }
 }

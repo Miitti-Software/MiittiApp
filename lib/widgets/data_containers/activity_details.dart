@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:miitti_app/constants/languages.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
@@ -15,6 +16,7 @@ import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/ads_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
+import 'package:miitti_app/state/settings.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/widgets/buttons/backward_button.dart';
@@ -276,21 +278,28 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_today,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  startTime != null
-                                      ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(activity.startTime!.toLocal())
-                                      : config.get<String>('activity-missing-start-time'),
-                                  style: Theme.of(context).textTheme.labelMedium,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                            GestureDetector(
+                              onTap: () {
+                                if (activity.creator == userUid) {
+                                  _pickDateTime(context, activity);
+                                }
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    startTime != null
+                                        ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(activity.startTime!.toLocal())
+                                        : config.get<String>('activity-missing-start-time'),
+                                    style: Theme.of(context).textTheme.labelMedium,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: AppSizes.minVerticalPadding),
                             Row(
@@ -555,6 +564,105 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
         );
       },
     );
+  }
+
+  Future<void> _pickDateTime(BuildContext context, MiittiActivity activity) async {
+    final language = ref.watch(languageProvider);
+
+    // Show the date picker first
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      locale: Locale(language.code),
+      initialDate: activity.startTime ?? DateTime.now(),
+      firstDate: DateTime(2024),
+      lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).colorScheme.primary,
+              onPrimary: Theme.of(context).colorScheme.onPrimary,
+              surface: Theme.of(context).colorScheme.surface,
+              onSurface: Theme.of(context).colorScheme.onSurface,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            textTheme: const TextTheme().copyWith(
+              titleSmall: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w300,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      // Show the time picker after a date has been picked
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(activity.startTime ?? DateTime.now()),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: Theme.of(context).colorScheme.primary,
+                onPrimary: Theme.of(context).colorScheme.onPrimary,
+                surface: Theme.of(context).colorScheme.surface,
+                onSurface: Theme.of(context).colorScheme.onSurface,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              textTheme: const TextTheme().copyWith(
+                titleSmall: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w300,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            child: child!,
+          );
+        },
+      );
+
+      if (pickedTime != null) {
+        // Combine the picked date and time into a single DateTime object
+        activity.updateStartTime(
+          DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          ),
+        );
+        ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is UserCreatedActivity);
+        setState(() {
+        });
+      } else {
+        // If the user cancels the time picker, reset the date
+        activity.updateStartTime(null);
+        ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is UserCreatedActivity);
+        setState(() {
+        });
+      }
+    } else {
+      // If the user cancels the date picker, reset the date
+      activity.updateStartTime(null);
+      ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is UserCreatedActivity);
+      setState(() {
+      });
+    }
   }
 }
 

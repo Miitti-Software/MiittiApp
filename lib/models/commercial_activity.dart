@@ -144,4 +144,10 @@ class CommercialActivity extends MiittiActivity {
     participantsInfo[userId]!['lastSeen'] = DateTime.now();
     return this;
   }
+
+  @override
+  CommercialActivity updateStartTime(DateTime? startTime) {
+    this.startTime = startTime;
+    return this;
+  }
 }
