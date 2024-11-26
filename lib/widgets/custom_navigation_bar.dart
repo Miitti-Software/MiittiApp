@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/user.dart';
+import 'package:miitti_app/widgets/overlays/dot_indicator.dart';
 
 class CustomNavigationBar extends ConsumerWidget {
   final int currentIndex;
@@ -16,7 +17,9 @@ class CustomNavigationBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.read(userStateProvider).data;
-    final hasNewActivityUpdates = ref.watch(activitiesStateProvider.notifier).hasNewActivityUpdates(currentUser.uid!);
+    final hasNotifications = ref.watch(activitiesStateProvider.notifier).hasNotifications(currentUser.uid!);
+    final hasNewJoin = ref.watch(activitiesStateProvider.notifier).hasNewJoin(currentUser.uid!);
+    final hasRequests = ref.watch(activitiesStateProvider.notifier).hasRequests(currentUser.uid!);
 
     return Container(
       padding: const EdgeInsets.only(left: 30, right: 30, top: 10, bottom: 20),
@@ -30,7 +33,7 @@ class CustomNavigationBar extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildIcon(context, Icons.chat_bubble_outline, 0, hasNewActivityUpdates),
+              _buildIcon(context, Icons.chat_bubble_outline, 0, hasNotifications, hasRequests || hasNewJoin),
               _buildIcon(context, Icons.map_outlined, 1),
               GestureDetector(
                 onTap: () => onTap(2),
@@ -61,31 +64,22 @@ class CustomNavigationBar extends ConsumerWidget {
     );
   }
 
-  Widget _buildIcon(BuildContext context, IconData icon, int index, [bool hasNotification = false]) {
+  Widget _buildIcon(BuildContext context, IconData icon, int index, [bool hasNotification = false, bool requestOrJoin = false]) {
     return GestureDetector(
       onTap: () => onTap(index),
       child: Stack(
         children: [
-          Icon(
+          Icon( 
             icon,
             color: currentIndex == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
             size: 38,
           ),
           if (hasNotification)
-            Positioned(
-              right: 0,
-              top: 0,
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
+            DotIndicator(requestOrJoin: requestOrJoin),
         ],
       ),
     );
   }
 }
+
+// TODO: Make it work in real time!!!

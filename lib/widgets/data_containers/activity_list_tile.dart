@@ -12,6 +12,7 @@ import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/data_containers/activity_marker.dart';
 import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.dart';
 import 'package:miitti_app/widgets/overlays/bottom_sheet_dialog.dart';
+import 'package:miitti_app/widgets/overlays/dot_indicator.dart';
 
 class ActivityListTile extends ConsumerWidget {
   final MiittiActivity activity;
@@ -30,7 +31,7 @@ class ActivityListTile extends ConsumerWidget {
     final currentParticipants = activity.participants.length;
 
     // Fetch user data and seen activities
-    final currentUser = ref.read(userStateProvider).data;
+    final currentUser = ref.watch(userStateProvider).data;
     final seenActivities = ref.watch(activitiesStateProvider).seenActivities;
 
     // Check if the user is a participant
@@ -41,28 +42,28 @@ class ActivityListTile extends ConsumerWidget {
     // Check if the latest activity is more recent than the last seen datetime
     final lastSeen = activity.participantsInfo[currentUser.uid]?['lastSeen'];
     final hasNewActivity = isParticipant && (lastSeen == null && !condition || lastSeen != null && (activity.latestActivity.isAfter(lastSeen)) && !condition);
+    final requestOrJoin = activity is UserCreatedActivity && (activity as UserCreatedActivity).requests.isNotEmpty || (activity.latestJoin != null && activity.latestJoin!.isAfter(lastSeen ?? DateTime(0)));
         
-
     return InkWell(
       onTap: () {
         if (ref.watch(userStateProvider).isAnonymous) {
           BottomSheetDialog.show(
             context: context,
-            title: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-title'),
-            body: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-text'),
-            confirmText: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-action-prompt'),
+            title: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-title'),
+            body: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-text'),
+            confirmText: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-action-prompt'),
             onConfirmPressed: () {
               context.pop();
               context.push('/login/complete-profile/name');
             },
-            cancelText: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-cancel'),
+            cancelText: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-cancel'),
             onCancelPressed: () => context.pop(),
-            disclaimer: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-disclaimer'),
+            disclaimer: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-disclaimer'),
           );
           return;
         }
         context.go('/activity/${activity.id}');
-        ref.read(mapStateProvider.notifier).setToggleIndex(0);
+        ref.watch(mapStateProvider.notifier).setToggleIndex(0);
       },
       child: Card(
         color: Theme.of(context).colorScheme.surface.withAlpha(200),
@@ -85,18 +86,7 @@ class ActivityListTile extends ConsumerWidget {
                   children: [
                     activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
                     if (hasNewActivity)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
+                       DotIndicator(requestOrJoin: requestOrJoin),
                   ],
                 ),
               ),

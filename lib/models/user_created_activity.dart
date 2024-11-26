@@ -9,6 +9,7 @@ import 'package:miitti_app/models/miitti_user.dart';
 class UserCreatedActivity extends MiittiActivity {
   bool requiresRequest;
   List<String> requests;
+  DateTime? latestRequest;
   List<Language> creatorLanguages;
   Gender creatorGender;
   int creatorAge;
@@ -26,12 +27,15 @@ class UserCreatedActivity extends MiittiActivity {
     required super.startTime,
     required super.endTime,
     required super.latestActivity,
+    required super.latestMessage,
+    required super.latestJoin,
     required super.paid,
     required super.maxParticipants,
     required super.participants,
     required super.participantsInfo,
     required this.requiresRequest,
     required this.requests,
+    required this.latestRequest,
     required this.creatorLanguages,
     required this.creatorGender,
     required this.creatorAge,
@@ -51,6 +55,9 @@ class UserCreatedActivity extends MiittiActivity {
       startTime: data['startTime']?.toDate(),
       endTime: data['endTime']?.toDate(),
       latestActivity: data['latestActivity'].toDate(),
+      latestMessage: data['latestMessage']?.toDate(),
+      latestRequest: data['latestRequest']?.toDate(),
+      latestJoin: data['latestJoin']?.toDate(),
       paid: data['paid'],
       maxParticipants: data['maxParticipants'],
       participants: List<String>.from(data['participants']),
@@ -60,6 +67,7 @@ class UserCreatedActivity extends MiittiActivity {
         'location': value['location'] != null ? LatLng(value['location']['latitude'], value['location']['longitude']) : null,
         'joined': value['joined']?.toDate(),
         'lastSeen': value['lastSeen']?.toDate(),    // In the context of the activity either in chat or ongoing miitti overlay, not overall
+        'lastOpenedChat': value['lastOpenedChat']?.toDate(),
         'lastReadMessage': value['lastReadMessage'] ?? '',
       })),
       requiresRequest: data['requiresRequest'],
@@ -91,6 +99,9 @@ class UserCreatedActivity extends MiittiActivity {
       'startTime': startTime,
       'endTime': endTime,
       'latestActivity': latestActivity,
+      'latestMessage': latestMessage,
+      'latestRequest': latestRequest,
+      'latestJoin': latestJoin,
       'paid': paid,
       'maxParticipants': maxParticipants,
       'participants': participants,
@@ -103,6 +114,7 @@ class UserCreatedActivity extends MiittiActivity {
         } : null,
         'joined': value['joined'],
         'lastSeen': value['lastSeen'],
+        'lastOpenedChat': value['lastOpenedChat'],
         'lastReadMessage': value['lastReadMessage'],
       })),
       'requiresRequest': requiresRequest,
@@ -115,6 +127,7 @@ class UserCreatedActivity extends MiittiActivity {
 
   UserCreatedActivity addRequest(String userId) {
     latestActivity = DateTime.now();
+    latestRequest = DateTime.now();
     requests.add(userId);
     return this;
   }
@@ -128,12 +141,14 @@ class UserCreatedActivity extends MiittiActivity {
   UserCreatedActivity addParticipant(MiittiUser user) {
     participants.add(user.uid);
     latestActivity = DateTime.now();
+    latestJoin = DateTime.now();
     participantsInfo[user.uid] = {
       'name': user.name,
       'profilePicture': user.profilePicture,
       'location': null,
       'joined': DateTime.now(),
       'lastSeen': DateTime.now(),
+      'lastOpenedChat': null,
       'lastReadMessage': '',
     };
     return this;
@@ -147,8 +162,9 @@ class UserCreatedActivity extends MiittiActivity {
   }
 
   @override
-  UserCreatedActivity notifyParticipants() {
+  UserCreatedActivity addMessageNotification() {
     latestActivity = DateTime.now();
+    latestMessage = DateTime.now();
     return this;
   }
 
@@ -156,6 +172,16 @@ class UserCreatedActivity extends MiittiActivity {
   UserCreatedActivity markSeen(String userId) {
     if (participants.contains(userId)) {
       participantsInfo[userId]!['lastSeen'] = DateTime.now();
+    }
+    return this;
+  }
+
+  @override
+  UserCreatedActivity markMessageRead(String userId, String messageId) {
+    if (participants.contains(userId)) {
+      participantsInfo[userId]!['lastSeen'] = DateTime.now();
+      participantsInfo[userId]!['lastOpenedChat'] = DateTime.now();
+      participantsInfo[userId]!['lastReadMessage'] = messageId;
     }
     return this;
   }

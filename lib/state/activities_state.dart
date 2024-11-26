@@ -217,7 +217,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
 
       // Update each seen activity in Firebase
       for (var activity in seenActivities) {
-        await firestoreService.updateActivity(activity.markSeen(userId).toMap(), activity.id, activity is CommercialActivity);
+        await firestoreService.updateActivityTransaction(activity.markSeen(userId).toMap(), activity.id, activity is CommercialActivity);
       }
 
       // Clear the seen activities list
@@ -250,7 +250,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     try {
       final firestoreService = ref.read(firestoreServiceProvider);
       final updatedActivity = activity.updateEndTime(DateTime.now());
-      await firestoreService.updateActivity(updatedActivity.toMap(), activity.id, activity is CommercialActivity);
+      await firestoreService.updateActivityTransaction(updatedActivity.toMap(), activity.id, activity is CommercialActivity);
       state = state.copyWith(activities: state.activities.where((a) => a.id != activity.id).toList());
       _updateState();
       return true;
@@ -265,7 +265,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     try {
       final firestoreService = ref.read(firestoreServiceProvider);
       activity.removeParticipant(ref.read(userStateProvider).data.toMiittiUser());
-      await firestoreService.updateActivity(activity.toMap(), activity.id, activity is CommercialActivity);
+      await firestoreService.updateActivityTransaction(activity.toMap(), activity.id, activity is CommercialActivity);
       ref.read(userStateProvider.notifier).decrementActivitiesJoined();
       state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
       _updateState();
@@ -282,7 +282,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       if (user.uid == activity.creator) return false;
       final firestoreService = ref.read(firestoreServiceProvider);
       final updatedActivity = activity.removeParticipant(user);
-      await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+      await firestoreService.updateActivityTransaction(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
       state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
       _updateState();
       return true;
@@ -301,7 +301,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       }
       final firestoreService = ref.read(firestoreServiceProvider);
       MiittiActivity updatedActivity = activity.addParticipant(ref.read(userStateProvider).data.toMiittiUser());
-      final success = await firestoreService.updateActivity(updatedActivity.notifyParticipants().markSeen(userState.uid!).toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+      final success = await firestoreService.updateActivityTransaction(updatedActivity.markSeen(userState.uid!).toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
       if (!success) return false;
       if (updatedActivity is UserCreatedActivity) {
         ref.read(notificationServiceProvider).sendJoinNotification(updatedActivity);
@@ -328,7 +328,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       }
       final firestoreService = ref.read(firestoreServiceProvider);
       UserCreatedActivity updatedActivity = activity.addRequest(ref.read(userStateProvider).uid!);
-      final success = await firestoreService.updateActivity(updatedActivity.notifyParticipants().markSeen(userState.uid!).toMap(), updatedActivity.id, activity is CommercialActivity);
+      final success = await firestoreService.updateActivityTransaction(updatedActivity.markSeen(userState.uid!).toMap(), updatedActivity.id, activity is CommercialActivity);
       if (!success) return false;
       ref.read(userStateProvider.notifier).incrementActivitiesJoined();
       ref.read(analyticsServiceProvider).logActivityJoined(updatedActivity, ref.read(userStateProvider).data.toMiittiUser());
@@ -347,7 +347,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       final firestoreService = ref.read(firestoreServiceProvider);
       final activity = state.activities.firstWhere((a) => a.id == activityId) as UserCreatedActivity;
       final updatedActivity = activity.removeRequest(user.uid).addParticipant(user);
-      final success = await firestoreService.updateActivity(updatedActivity.notifyParticipants().markSeen(ref.read(userStateProvider).uid!).toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+      final success = await firestoreService.updateActivityTransaction(updatedActivity.markSeen(ref.read(userStateProvider).uid!).toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
       if (!success) return false;
       ref.read(notificationServiceProvider).sendRequestAcceptedNotification(updatedActivity);
       state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
@@ -365,7 +365,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       final firestoreService = ref.read(firestoreServiceProvider);
       final activity = state.activities.firstWhere((a) => a.id == activityId) as UserCreatedActivity;
       final updatedActivity = activity.removeRequest(userId);
-      final success = await firestoreService.updateActivity(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+      final success = await firestoreService.updateActivityTransaction(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
       if (!success) return false;
       state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
       _updateState();
@@ -376,14 +376,39 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     }
   }
 
-  /// Returns whether any of the activities the current user is partakin in have newer updates than since they were last seen.
-  bool hasNewActivityUpdates(String userId) {
+  bool hasNewMessages(String userId) {
+    return state.activities.any((activity) {
+      final isParticipant = activity.participants.contains(userId);
+      final lastSeen = activity.participantsInfo[userId]?['lastOpenedChat'];
+      final hasMessage = activity.latestMessage != null && activity.latestMessage!.isAfter(lastSeen ?? DateTime(0));
+      final condition = state.seenActivities.any((tuple) => tuple.item1.id == activity.id && tuple.item2.isAfter(activity.latestActivity));
+      return isParticipant && (lastSeen == null && !condition || lastSeen != null && (activity.latestActivity.isAfter(lastSeen)) && !condition) && hasMessage;
+    });
+  }
+
+  // TODO: Get rid of condition and seenActivities so that they don't go missing until the appropriate part is checked
+
+  bool hasNewJoin(String userId) {
     return state.activities.any((activity) {
       final isParticipant = activity.participants.contains(userId);
       final lastSeen = activity.participantsInfo[userId]?['lastSeen'];
+      final hasJoin = activity.latestJoin != null && activity.latestJoin!.isAfter(lastSeen ?? DateTime(0));
       final condition = state.seenActivities.any((tuple) => tuple.item1.id == activity.id && tuple.item2.isAfter(activity.latestActivity));
-      return isParticipant && (lastSeen == null && !condition || lastSeen != null && (activity.latestActivity.isAfter(lastSeen)) && !condition);
+      return isParticipant && (lastSeen == null && !condition || lastSeen != null && (activity.latestActivity.isAfter(lastSeen)) && !condition) && hasJoin;
     });
+  }
+
+  bool hasRequests(String userId) {
+    return state.activities.any((activity) {
+      final isParticipant = activity.participants.contains(userId);
+      final isCreator = activity.creator == userId;
+      final hasRequest = activity is UserCreatedActivity && activity.requests.isNotEmpty;
+      return isParticipant && isCreator && hasRequest;
+    });
+  }
+
+  bool hasNotifications(String userId) {
+    return hasNewMessages(userId) || hasNewJoin(userId) || hasRequests(userId);
   }
 
   @override
@@ -446,3 +471,5 @@ class ActivitiesStateData {
     );
   }
 }
+
+// TODO: Make sure that all activities with activity (notifications) are always loaded into the state

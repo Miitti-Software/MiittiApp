@@ -27,6 +27,8 @@ class CommercialActivity extends MiittiActivity {
     required super.startTime,
     required super.endTime,
     required super.latestActivity,
+    required super.latestMessage,
+    required super.latestJoin,
     required super.paid,
     required super.maxParticipants,
     required super.participants,
@@ -56,6 +58,8 @@ class CommercialActivity extends MiittiActivity {
       startTime: data['startTime']?.toDate(),
       endTime: data['endTime']?.toDate(),
       latestActivity: data['latestActivity']?.toDate(),
+      latestMessage: data['latestMessage']?.toDate(),
+      latestJoin: data['latestJoin']?.toDate(),
       paid: data['paid'],
       maxParticipants: data['maxParticipants'] ?? 1000000,
       participants: List<String>.from(data['participants']),
@@ -64,6 +68,7 @@ class CommercialActivity extends MiittiActivity {
         'profilePicture': value['profilePicture'],
         'joined': value['joined']?.toDate(),
         'lastSeen': value['lastSeen']?.toDate(),    // In the context of the activity either in chat or ongoing miitti overlay, not overall
+        'lastOpenedChat': value['lastOpenedChat']?.toDate(),
         'lastReadMessage': value['lastReadMessage'] ?? '',
       })),
       linkTitle: data['linkTitle'],
@@ -92,6 +97,8 @@ class CommercialActivity extends MiittiActivity {
       'startTime': startTime,
       'endTime': endTime,
       'latestActivity': latestActivity,
+      'latestMessage': latestMessage,
+      'latestJoin': latestJoin,
       'paid': paid,
       'maxParticipants': maxParticipants,
       'participants': participants,
@@ -100,6 +107,7 @@ class CommercialActivity extends MiittiActivity {
         'profilePicture': value['profilePicture'],
         'joined': value['joined'],
         'lastSeen': value['lastSeen'],
+        'lastOpenedChat': value['lastOpenedChat'],
         'lastReadMessage': value['lastReadMessage'],
       })),
       'linkTitle': linkTitle,
@@ -117,11 +125,13 @@ class CommercialActivity extends MiittiActivity {
   CommercialActivity addParticipant(MiittiUser user) {
     participants.add(user.uid);
     latestActivity = DateTime.now();
+    latestJoin = DateTime.now();
     participantsInfo[user.uid] = {
       'name': user.name,
       'profilePicture': user.profilePicture,
       'joined': DateTime.now(),
       'lastSeen': DateTime.now(),
+      'lastOpenedChat': null,
       'lastReadMessage': '',
     };
     return this;
@@ -134,14 +144,25 @@ class CommercialActivity extends MiittiActivity {
   }
 
   @override
-  CommercialActivity notifyParticipants() {
+  CommercialActivity addMessageNotification() {
     latestActivity = DateTime.now();
+    latestMessage = DateTime.now();
     return this;
   }
 
   @override
   CommercialActivity markSeen(String userId) {
     participantsInfo[userId]!['lastSeen'] = DateTime.now();
+    return this;
+  }
+
+  @override
+  CommercialActivity markMessageRead(String userId, String messageId) {
+    if (participants.contains(userId)) {
+      participantsInfo[userId]!['lastSeen'] = DateTime.now();
+      participantsInfo[userId]!['lastOpenedChat'] = DateTime.now();
+      participantsInfo[userId]!['lastReadMessage'] = messageId;
+    }
     return this;
   }
 

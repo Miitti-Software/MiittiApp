@@ -1,18 +1,21 @@
 class Message {
+  final String? id;
   final String message;
   final String senderId;
   final String senderName;
   final DateTime timestamp;
 
   Message({
+    this.id,
     required this.message,
     required this.senderId,
     required this.senderName,
     required this.timestamp,
   });
 
-  factory Message.fromFirestore(Map<String, dynamic> data) {
+  factory Message.fromFirestore(String id, Map<String, dynamic> data) {
     return Message(
+      id: id,
       message: data['message'],
       senderId: data['senderId'],
       senderName: data['senderName'],

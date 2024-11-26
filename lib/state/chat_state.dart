@@ -22,9 +22,9 @@ class ChatState extends StateNotifier<List<Message>> {
     _fetchMessages(_activity is CommercialActivity);
   }
 
-  void _fetchMessages(isCommercialActivity) {
-    _subscription = ref.read(firestoreServiceProvider).getMessages(_activity.id, isCommercialActivity: isCommercialActivity).listen((snapshot) {
-      final messages = snapshot.docs.map((doc) => Message.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+  void _fetchMessages(isCommercialActivity) async {
+    _subscription = ref.read(firestoreServiceProvider).getMessages(_activity.id, isCommercialActivity: isCommercialActivity).listen((snapshot) async {
+      final messages = snapshot.docs.map((doc) => Message.fromFirestore(doc.id, doc.data() as Map<String, dynamic>)).toList();
       state = messages;
     });
   }
@@ -40,11 +40,11 @@ class ChatState extends StateNotifier<List<Message>> {
       // Optimistically update the state with the new message
       state = [...state, message];
 
-      await ref.read(firestoreServiceProvider).sendMessage(_activity.id, message, isCommercialActivity: isCommercialActivity);
       final activity = await ref.read(activitiesStateProvider.notifier).fetchActivity(_activity.id);
+      final messageId = await ref.read(firestoreServiceProvider).sendMessage(_activity.id, message, isCommercialActivity: isCommercialActivity);
       if (activity != null) {
-        await ref.read(firestoreServiceProvider).updateActivity(
-          activity.notifyParticipants().markSeen(ref.read(userStateProvider).data.uid!).toMap(),
+        await ref.read(firestoreServiceProvider).updateActivityTransaction(
+          activity.addMessageNotification().markMessageRead(ref.read(userStateProvider).data.uid!, messageId!).toMap(),
           activity.id,
           activity is CommercialActivity,
         );

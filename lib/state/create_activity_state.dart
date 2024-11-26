@@ -29,6 +29,9 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
     startTime: state.startTime,
     endTime: state.endTime,
     latestActivity: state.latestActivity!,
+    latestMessage: state.latestActivity!,
+    latestRequest: state.latestActivity!,
+    latestJoin: state.latestActivity!,
     paid: state.paid!,
     maxParticipants: state.maxParticipants!,
     participants: state.participants!,
@@ -63,6 +66,9 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
       startTime: state.startTime,
       endTime: state.endTime,
       latestActivity: DateTime.now(),
+      latestMessage: null,
+      latestRequest: null,
+      latestJoin: null,
       paid: state.paid!,
       maxParticipants: state.maxParticipants!,
       participants: [creator.uid!],
@@ -138,6 +144,9 @@ class CreateActivityStateData {
   final DateTime? startTime;
   final DateTime? endTime;
   final DateTime? latestActivity;
+  final DateTime? latestMessage;
+  final DateTime? latestRequest;
+  final DateTime? latestJoin;
   final bool? paid;
   final int? maxParticipants;
   final List<String>? participants;
@@ -161,6 +170,9 @@ class CreateActivityStateData {
     this.startTime,
     this.endTime,
     this.latestActivity,
+    this.latestMessage,
+    this.latestRequest,
+    this.latestJoin,
     this.paid = false,
     this.maxParticipants = 5,
     this.participants = const [],
@@ -187,6 +199,9 @@ class CreateActivityStateData {
     DateTime? startTime,
     DateTime? endTime,
     DateTime? latestActivity,
+    DateTime? latestMessage,
+    DateTime? latestRequest,
+    DateTime? latestJoin,
     bool? paid,
     int? maxParticipants,
     List<String>? participants,
@@ -210,6 +225,9 @@ class CreateActivityStateData {
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       latestActivity: DateTime.now(),
+      latestMessage: latestMessage ?? this.latestMessage,
+      latestRequest: latestRequest ?? this.latestRequest,
+      latestJoin: latestJoin ?? this.latestJoin,
       paid: paid ?? this.paid,
       maxParticipants: maxParticipants ?? this.maxParticipants,
       participants: participants ?? this.participants,
@@ -235,6 +253,9 @@ class CreateActivityStateData {
     DateTime? startTime,
     DateTime? endTime,
     DateTime? latestActivity,
+    DateTime? latestMessage,
+    DateTime? latestRequest,
+    DateTime? latestJoin,
     bool? paid,
     int? maxParticipants,
     List<String>? participants,
@@ -258,6 +279,9 @@ class CreateActivityStateData {
       startTime: startTime,
       endTime: endTime ?? this.endTime,
       latestActivity: DateTime.now(),
+      latestMessage: latestMessage ?? this.latestMessage,
+      latestRequest: latestRequest ?? this.latestRequest,
+      latestJoin: latestJoin ?? this.latestJoin,
       paid: paid ?? this.paid,
       maxParticipants: maxParticipants ?? this.maxParticipants,
       participants: participants ?? this.participants,

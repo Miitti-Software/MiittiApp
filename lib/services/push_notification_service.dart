@@ -74,6 +74,8 @@ class PushNotificationService extends StateNotifier<bool> {
       }
     });
 
+    // localNotiInit();
+
     if (state) {
       await _requestAndSetupNotifications();
     }
@@ -140,7 +142,7 @@ class PushNotificationService extends StateNotifier<bool> {
       }
     }
 
-    listenForeground();
+    // listenForeground();
   }
 
   Future<bool> requestPermission(bool requestEvenDenied) async {
@@ -175,20 +177,20 @@ class PushNotificationService extends StateNotifier<bool> {
         onDidReceiveBackgroundNotificationResponse: onNotificationTap);
   }
 
-  void listenForeground() {
-    // Handle foreground notifications
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      String payloadData = jsonEncode(message.data);
-      debugPrint("Got a message in foreground");
-      if (message.notification != null) {
-        showSimpleNotification(
-          title: message.notification!.title!,
-          body: message.notification!.body!,
-          payload: payloadData 
-        );
-      }
-    });
-  }
+  // void listenForeground() {
+  //   // Handle foreground notifications
+  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //     String payloadData = jsonEncode(message.data);
+  //     debugPrint("Got a message in foreground");
+  //     if (message.notification != null) {
+  //       showSimpleNotification(
+  //         title: message.notification!.title!,
+  //         body: message.notification!.body!,
+  //         payload: payloadData 
+  //       );
+  //     }
+  //   });
+  // }
 
   void listenTerminated() async {
     // Handle notifications in terminated state
@@ -211,25 +213,25 @@ class PushNotificationService extends StateNotifier<bool> {
     }
   }
 
-  Future showSimpleNotification({
-    required String title,
-    required String body,
-    required String payload,
-  }) async {
-    final config = ref.read(remoteConfigServiceProvider);
-    AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-          config.get<String>('generic-channel-id'), 
-          config.get<String>('generic-channel-name'),
-          channelDescription: config.get<String>('generic-channel-description'),
-          importance: Importance.max,
-          priority: Priority.high,
-          ticker: config.get<String>('generic-channel-description'));
-    NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
-    await _flutterLocalNotificationsPlugin
-        .show(0, title, body, notificationDetails, payload: payload);
-  }
+  // Future showSimpleNotification({
+  //   required String title,
+  //   required String body,
+  //   required String payload,
+  // }) async {
+  //   final config = ref.read(remoteConfigServiceProvider);
+  //   AndroidNotificationDetails androidNotificationDetails =
+  //       AndroidNotificationDetails(
+  //         config.get<String>('generic-channel-id'), 
+  //         config.get<String>('generic-channel-name'),
+  //         channelDescription: config.get<String>('generic-channel-description'),
+  //         importance: Importance.max,
+  //         priority: Priority.high,
+  //         ticker: config.get<String>('generic-channel-description'));
+  //   NotificationDetails notificationDetails =
+  //       NotificationDetails(android: androidNotificationDetails);
+  //   await _flutterLocalNotificationsPlugin
+  //       .show(0, title, body, notificationDetails, payload: payload);
+  // }
 
   Future<void> _saveNotificationState(bool enabled) async {
     await ref.read(localStorageServiceProvider).saveBool('notifications_enabled', enabled);
@@ -275,9 +277,9 @@ class PushNotificationService extends StateNotifier<bool> {
       final language = requestor.languageSetting;
       sendNotification(
         requestor.fcmToken,
-        config.getNotificationTemplateString('join-request-accepted-notification-title', language),
-        "${activity.title} ${config.getNotificationTemplateString('join-request-accepted-notification-body', language)}",
-        config.getNotificationTemplateString('join-request-accepted-notification-type', language),
+        config.getNotificationTemplateString('request-accepted-notification-title', language),
+        "${activity.title} ${config.getNotificationTemplateString('request-accepted-notification-body', language)}",
+        config.getNotificationTemplateString('request-accepted-notification-type', language),
         '/activity/${activity.id}',
       );
     } else {

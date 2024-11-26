@@ -659,24 +659,25 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
             pickedTime.minute,
           ),
         );
-        ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is CommercialActivity);
+        ref.read(firestoreServiceProvider).updateActivityTransaction(activity.toMap(), activity.id, activity is CommercialActivity);
         setState(() {
         });
       } else {
         // If the user cancels the time picker, reset the date
         activity.updateStartTime(null);
-        ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is CommercialActivity);
+        ref.read(firestoreServiceProvider).updateActivityTransaction(activity.toMap(), activity.id, activity is CommercialActivity);
         setState(() {
         });
       }
     } else {
       // If the user cancels the date picker, reset the date
       activity.updateStartTime(null);
-      ref.read(firestoreServiceProvider).updateActivity(activity.toMap(), activity.id, activity is CommercialActivity);
+      ref.read(firestoreServiceProvider).updateActivityTransaction(activity.toMap(), activity.id, activity is CommercialActivity);
       setState(() {
       });
     }
   }
 }
 
-// TODO: Add a "mark as passed" button for the creator of the activity
+// TODO: Make sure to get rid of stuttering from full refreshes
+// TODO: Add DotIndicators to relevant parts of the details which only go away when the user has seen the new content

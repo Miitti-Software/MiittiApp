@@ -106,8 +106,22 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
                       dataSource: messages,
                       listTileBuilder: (context, index) {
                         final message = messages[index];
-                        final isCurrentUser = message.senderId == ref.read(userStateProvider).uid;
+                        final currentUserUid = ref.read(userStateProvider).uid;
+                        final isCurrentUser = message.senderId == currentUserUid;
                         final participantInfo = activity.participantsInfo[message.senderId];
+
+                        // Mark the latest message as read only if it has not been read yet
+                        // TODO: Move to a method in ChatState
+                        if (messages.first.senderId != currentUserUid && activity.participantsInfo[currentUserUid]!['lastReadMessage'] != messages.first.id) {
+                          Map<String, dynamic> updatedFields = activity.markMessageRead(currentUserUid!, messages.first.id!).toMap();
+                          Map<String, dynamic> fieldsToUpdate = {
+                            'participantsInfo.$currentUserUid.lastReadMessage': updatedFields['participantsInfo'][currentUserUid]['lastReadMessage'],
+                            'participantsInfo.$currentUserUid.lastOpenedChat': DateTime.now(),
+                            'participantsInfo.$currentUserUid.lastSeen': DateTime.now(),
+                          };
+                          ref.read(firestoreServiceProvider).updateActivityFields(fieldsToUpdate, activity.id, activity is CommercialActivity);
+                        }
+
                         final messageReadByEveryone = isReadByEveryone(message, activity.participantsInfo);
 
                         return CustomMessageTile(
@@ -188,11 +202,11 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
     );
   }
 
+  // TODO: Fix this method to work in all cases
   bool isReadByEveryone(Message message, Map<String, dynamic> participantsInfo) {
     return participantsInfo.values.every((info) {
-      // final lastReadMessage = info['lastReadMessage'];
-      // return lastReadMessage != null && lastReadMessage.isNotEmpty && DateTime.parse(lastReadMessage).isAfter(message.timestamp);
-      return false;
+      final lastOpenedChat = info['lastOpenedChat'];
+      return lastOpenedChat != null && lastOpenedChat.isAfter(message.timestamp);
     });
   }
 }
@@ -306,7 +320,7 @@ class CustomMessageTile extends StatelessWidget {
                     const SizedBox(width: 4.0),
                     Icon(
                       isReadByEveryone ? Icons.done_all : Icons.check,
-                      size: 12,
+                      size: 14,
                       color: isCurrentUser ? Theme.of(context).colorScheme.onPrimary.withAlpha(150) : Theme.of(context).colorScheme.onSurface.withAlpha(150),
                     ),
                   ],

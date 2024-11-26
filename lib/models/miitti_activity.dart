@@ -13,6 +13,9 @@ abstract class MiittiActivity {
   DateTime? startTime;
   DateTime? endTime;
   DateTime latestActivity;
+  DateTime? latestMessage;
+  DateTime? latestRequest;
+  DateTime? latestJoin;
   bool paid;
   int maxParticipants;
   List<String> participants;
@@ -31,6 +34,8 @@ abstract class MiittiActivity {
     required this.startTime,
     required this.endTime,
     required this.latestActivity,
+    required this.latestMessage,
+    required this.latestJoin,
     required this.paid,
     required this.maxParticipants,
     required this.participants,
@@ -40,8 +45,9 @@ abstract class MiittiActivity {
   Map<String, dynamic> toMap();
   MiittiActivity addParticipant(MiittiUser user);
   MiittiActivity removeParticipant(MiittiUser user);
-  MiittiActivity notifyParticipants();
+  MiittiActivity addMessageNotification();
   MiittiActivity markSeen(String userId);
+  MiittiActivity markMessageRead(String userId, String messageId);
   MiittiActivity updateStartTime(DateTime? startTime);
   MiittiActivity updateEndTime(DateTime? endTime);
 }

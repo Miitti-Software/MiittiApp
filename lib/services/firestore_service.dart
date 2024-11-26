@@ -495,25 +495,46 @@ class FirestoreService {
     }
   }
 
-  Future<bool> updateActivity(Map<String, dynamic> data, String activityId, isCommercialActivity) async {
+  Future<bool> updateActivityFields(Map<String, dynamic> data, String activityId, bool isCommercialActivity) async {
   try {
-    final activityRef = isCommercialActivity ? _firestore.collection(_commercialActivitiesCollection).doc(activityId) : _firestore.collection(_activitiesCollection).doc(activityId);
-    await _firestore.runTransaction((transaction) async {
-      final activitySnapshot = await transaction.get(activityRef);
-      if (!activitySnapshot.exists) {
-        debugPrint('Activity does not exist.');
-        return false;
-      }
+    final activityRef = isCommercialActivity
+        ? _firestore.collection(_commercialActivitiesCollection).doc(activityId)
+        : _firestore.collection(_activitiesCollection).doc(activityId);
 
-      // Update the activity with the new data
-      transaction.update(activityRef, data);
-    });
+    final activitySnapshot = await activityRef.get();
+    if (!activitySnapshot.exists) {
+      debugPrint('Activity does not exist.');
+      return false;
+    }
+
+    // Update the activity with the new data
+    await activityRef.update(data);
     return true;
   } catch (e) {
     debugPrint('Error updating activity: $e');
     return false;
   }
 }
+
+  Future<bool> updateActivityTransaction(Map<String, dynamic> data, String activityId, isCommercialActivity) async {
+    try {
+      final activityRef = isCommercialActivity ? _firestore.collection(_commercialActivitiesCollection).doc(activityId) : _firestore.collection(_activitiesCollection).doc(activityId);
+      await _firestore.runTransaction((transaction) async {
+        final activitySnapshot = await transaction.get(activityRef);
+        if (!activitySnapshot.exists) {
+          debugPrint('Activity does not exist.');
+          return false;
+        }
+
+        // Update the activity with the new data
+        transaction.update(activityRef, data);
+      });
+      return true;
+    } catch (e) {
+      debugPrint('Error updating activity: $e');
+      return false;
+    }
+  }
 
   Future<bool> reportActivity(String activityId, List<String> reasons, String comments) async {
 
@@ -696,18 +717,17 @@ class FirestoreService {
         .snapshots();
   }
 
-  Future<bool> sendMessage(String activityId, Message message, {bool isCommercialActivity = false}) async {
+  Future<String?> sendMessage(String activityId, Message message, {bool isCommercialActivity = false}) async {
     try {
       DocumentReference docRef = isCommercialActivity
           ? _firestore.collection(_commercialActivitiesCollection).doc(activityId)
           : _firestore.collection(_activitiesCollection).doc(activityId);
-      await docRef
-          .collection(_messagesCollection)
-          .add(message.toMap());
-      return true;
+
+      DocumentReference messageRef = await docRef.collection(_messagesCollection).add(message.toMap());
+      return messageRef.id;
     } catch (e) {
       debugPrint('Error sending message: $e');
-      return false;
+      return null;
     }
   }
 }
