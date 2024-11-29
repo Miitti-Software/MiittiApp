@@ -485,6 +485,25 @@ class FirestoreService {
     }
   }
 
+  Stream<MiittiActivity?> streamActivity(String activityId) {
+    return _firestore
+        .collection(_activitiesCollection)
+        .doc(activityId)
+        .snapshots()
+        .asyncMap((doc) async {
+          if (!doc.exists) {
+            final commercialDoc = await _firestore
+                .collection(_commercialActivitiesCollection)
+                .doc(activityId)
+                .get();
+            return commercialDoc.exists 
+                ? CommercialActivity.fromFirestore(commercialDoc) 
+                : null;
+          }
+          return UserCreatedActivity.fromFirestore(doc);
+        });
+  }
+
   Future<bool> deleteActivity(String activityId) async {
     try {
       await _firestore.collection(_activitiesCollection).doc(activityId).delete();

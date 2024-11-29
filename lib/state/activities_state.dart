@@ -12,7 +12,6 @@ import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tuple/tuple.dart';
 
 /// A class that represents the condition used to geographically query activities based on the visible area on the map.
 class GeoQueryCondition {
@@ -165,6 +164,18 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     return activity;
   }
 
+  /// Returns a stream corresponding to the activity with the given ID.
+  Stream<MiittiActivity?> streamActivity(String activityId) {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    
+    return firestoreService
+      .streamActivity(activityId)
+      .map((activity) async {
+        return activity;
+      })
+      .asyncMap((futureActivity) async => await futureActivity);
+  }
+
   /// Loads more activities from Firestore based on the current GeoQueryCondition.
   /// If fullRefresh is true, the state is emptied and activities are fully refetched.
   /// If onlyParticipating is true, only activities where the current user is a participant are fetched.
@@ -193,42 +204,17 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     _updateState();
   }
 
-  /// Marks an activity as seen at a given moment by the current user.
-  void markSeenLocally(MiittiActivity activity) {
-    final seenActivity = Tuple2(activity, DateTime.now());
-    if (!state.seenActivities.any((tuple) => tuple.item1.id == activity.id)) {
-      state = state.copyWith(seenActivities: [...state.seenActivities, seenActivity]);
-    }
-  }
-
-  /// Updates the activities as seen by the current user in Firestore.
-  Future<bool> sessionUpdateActivitiesData() async {
-    try {
-      final userState = ref.read(userStateProvider);
-      final userId = userState.uid;
-      if (userId == null) return false;
-
-      final firestoreService = ref.read(firestoreServiceProvider);
-
-      // Filter activities that are marked as seen and the user is a participant
-      final seenActivities = state.activities.where((activity) {
-        return state.seenActivities.any((tuple) => tuple.item1.id == activity.id) && activity.participants.contains(userId);
-      }).toList();
-
-      // Update each seen activity in Firebase
-      for (var activity in seenActivities) {
-        await firestoreService.updateActivityTransaction(activity.markSeen(userId).toMap(), activity.id, activity is CommercialActivity);
-      }
-
-      // Clear the seen activities list
-      state = state.copyWith(seenActivities: []);
-
-      _updateState();
-      return true;
-    } catch (e) {
-      debugPrint('Error updating activities data: $e');
-      return false;
-    }
+  /// Updates the last seen time of the current user in the given activity.
+  Future<void> markActivityAsSeen(MiittiActivity activity) async {
+    final userState = ref.read(userStateProvider);
+    final somethingToSee = activity.latestActivity.isAfter(activity.participantsInfo[userState.uid]?['lastSeen'] ?? DateTime(2020));
+    if (userState.isAnonymous || !activity.participants.contains(userState.uid) || !somethingToSee) return;
+    final userId = userState.uid!;
+    final firestoreService = ref.read(firestoreServiceProvider);
+    final updatedActivity = activity.markSeen(userId);
+    await firestoreService.updateActivityFields(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+    state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
+    _updateState();
   }
 
   /// Deletes an activity from Firestore and removes it from the state of the ActivitiesState StateNotifier.
@@ -328,7 +314,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       }
       final firestoreService = ref.read(firestoreServiceProvider);
       UserCreatedActivity updatedActivity = activity.addRequest(ref.read(userStateProvider).uid!);
-      final success = await firestoreService.updateActivityTransaction(updatedActivity.markSeen(userState.uid!).toMap(), updatedActivity.id, activity is CommercialActivity);
+      final success = await firestoreService.updateActivityTransaction(updatedActivity.toMap(), updatedActivity.id, activity is CommercialActivity);
       if (!success) return false;
       ref.read(userStateProvider.notifier).incrementActivitiesJoined();
       ref.read(analyticsServiceProvider).logActivityJoined(updatedActivity, ref.read(userStateProvider).data.toMiittiUser());
@@ -380,21 +366,19 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     return state.activities.any((activity) {
       final isParticipant = activity.participants.contains(userId);
       final lastSeen = activity.participantsInfo[userId]?['lastOpenedChat'];
-      final hasMessage = activity.latestMessage != null && activity.latestMessage!.isAfter(lastSeen ?? DateTime(0));
-      final condition = state.seenActivities.any((tuple) => tuple.item1.id == activity.id && tuple.item2.isAfter(activity.latestActivity));
-      return isParticipant && (lastSeen == null && !condition || lastSeen != null && (activity.latestActivity.isAfter(lastSeen)) && !condition) && hasMessage;
+      final hasMessage = activity.latestMessage != null && activity.latestMessage!.isAfter(lastSeen ?? DateTime(2020));
+      final isNew = lastSeen == null || (lastSeen != null && (activity.latestActivity.isAfter(lastSeen)));
+      return isParticipant && hasMessage && isNew;
     });
   }
-
-  // TODO: Get rid of condition and seenActivities so that they don't go missing until the appropriate part is checked
 
   bool hasNewJoin(String userId) {
     return state.activities.any((activity) {
       final isParticipant = activity.participants.contains(userId);
       final lastSeen = activity.participantsInfo[userId]?['lastSeen'];
-      final hasJoin = activity.latestJoin != null && activity.latestJoin!.isAfter(lastSeen ?? DateTime(0));
-      final condition = state.seenActivities.any((tuple) => tuple.item1.id == activity.id && tuple.item2.isAfter(activity.latestActivity));
-      return isParticipant && (lastSeen == null && !condition || lastSeen != null && (activity.latestActivity.isAfter(lastSeen)) && !condition) && hasJoin;
+      final hasJoin = activity.latestJoin != null && activity.latestJoin!.isAfter(lastSeen ?? DateTime(2020));
+      final isNew = lastSeen == null || (lastSeen != null && (activity.latestActivity.isAfter(lastSeen)));
+      return isParticipant && hasJoin && isNew;
     });
   }
 
@@ -435,7 +419,6 @@ class ActivitiesStateData {
   final List<MiittiActivity> visibleActivities;                 // A list of activities that are currently visible on the map and list view.
   final List<MiittiActivity> requestedActivities;               // A list of activities where the current user has requested to join.
   final List<MiittiActivity> participatingActivities;           // A list of activities where the current user is a participant.
-  final List<Tuple2<MiittiActivity, DateTime>> seenActivities;  // A list of activities whose latest updates the current user has seen.
   final SuperclusterMutableController clusterController;        // A SuperclusterMutableController used to cluster activities on the map.
 
   ActivitiesStateData({
@@ -445,7 +428,6 @@ class ActivitiesStateData {
     this.visibleActivities = const [],
     this.requestedActivities = const [],
     this.participatingActivities = const [],
-    this.seenActivities = const [],
     SuperclusterMutableController? clusterController,
   }) : clusterController = clusterController ?? SuperclusterMutableController();
 
@@ -456,7 +438,6 @@ class ActivitiesStateData {
     List<MiittiActivity>? visibleActivities,
     List<MiittiActivity>? requestedActivities,
     List<MiittiActivity>? participatingActivities,
-    List<Tuple2<MiittiActivity, DateTime>>? seenActivities,
     SuperclusterMutableController? clusterController,
   }) {
     return ActivitiesStateData(
@@ -466,7 +447,6 @@ class ActivitiesStateData {
       visibleActivities: visibleActivities ?? this.visibleActivities,
       requestedActivities: requestedActivities ?? this.requestedActivities,
       participatingActivities: participatingActivities ?? this.participatingActivities,
-      seenActivities: seenActivities ?? this.seenActivities,
       clusterController: clusterController ?? this.clusterController,
     );
   }

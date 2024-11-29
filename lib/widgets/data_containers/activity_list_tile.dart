@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
-import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/map_state.dart';
 import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
@@ -32,17 +31,16 @@ class ActivityListTile extends ConsumerWidget {
 
     // Fetch user data and seen activities
     final currentUser = ref.watch(userStateProvider).data;
-    final seenActivities = ref.watch(activitiesStateProvider).seenActivities;
 
     // Check if the user is a participant
     final isParticipant = activity.participants.contains(currentUser.uid);
 
-    final condition = seenActivities.any((tuple) => tuple.item1.id == activity.id && tuple.item2.isAfter(activity.latestActivity));
-
     // Check if the latest activity is more recent than the last seen datetime
     final lastSeen = activity.participantsInfo[currentUser.uid]?['lastSeen'];
-    final hasNewActivity = isParticipant && (lastSeen == null && !condition || lastSeen != null && (activity.latestActivity.isAfter(lastSeen)) && !condition);
-    final requestOrJoin = activity is UserCreatedActivity && (activity as UserCreatedActivity).requests.isNotEmpty || (activity.latestJoin != null && activity.latestJoin!.isAfter(lastSeen ?? DateTime(0)));
+    final hasNewActivity = (lastSeen == null || (lastSeen != null && (activity.latestActivity.isAfter(lastSeen))));
+    final hasNewMessages = activity.latestMessage != null && (activity.latestMessage!.isAfter(activity.participantsInfo[currentUser.uid]?['lastOpenedChat'] ?? DateTime(2020)));
+    final requestOrJoin = activity is UserCreatedActivity && (activity as UserCreatedActivity).requests.isNotEmpty || (activity.latestJoin != null && activity.latestJoin!.isAfter(lastSeen ?? DateTime(2020)));
+    final hasNewNotification = isParticipant && (hasNewActivity || hasNewMessages || requestOrJoin);
         
     return InkWell(
       onTap: () {
@@ -85,7 +83,7 @@ class ActivityListTile extends ConsumerWidget {
                 child: Stack(
                   children: [
                     activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
-                    if (hasNewActivity)
+                    if (hasNewNotification)
                        DotIndicator(requestOrJoin: requestOrJoin),
                   ],
                 ),

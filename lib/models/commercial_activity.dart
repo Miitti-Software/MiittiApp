@@ -130,7 +130,7 @@ class CommercialActivity extends MiittiActivity {
       'name': user.name,
       'profilePicture': user.profilePicture,
       'joined': DateTime.now(),
-      'lastSeen': DateTime.now(),
+      'lastSeen': null,
       'lastOpenedChat': null,
       'lastReadMessage': '',
     };

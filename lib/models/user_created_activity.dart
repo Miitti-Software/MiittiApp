@@ -147,7 +147,7 @@ class UserCreatedActivity extends MiittiActivity {
       'profilePicture': user.profilePicture,
       'location': null,
       'joined': DateTime.now(),
-      'lastSeen': DateTime.now(),
+      'lastSeen': null,
       'lastOpenedChat': null,
       'lastReadMessage': '',
     };

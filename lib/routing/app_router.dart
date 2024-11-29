@@ -188,12 +188,15 @@ class AppRouter {
                 path: 'activity/:id',
                 pageBuilder: (BuildContext context, GoRouterState state) {
                   final id = state.pathParameters['id'] as String;
-                  return ModalPage<void>(child: ActivityDetails(activityId: id));
-                },
-                onExit: (context, state) {
-                  ref.read(mapStateProvider.notifier).restoreZoom();
-                  ref.read(mapStateProvider.notifier).reverseOffSetLocationVertically();
-                  return true;
+                  return ModalPage<void>(
+                    child: ActivityDetails(activityId: id),
+                    onDismiss: () {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        ref.read(mapStateProvider.notifier).restoreZoom();
+                        ref.read(mapStateProvider.notifier).reverseOffSetLocationVertically();
+                      });
+                    },
+                  );
                 },
                 routes: [
                   GoRoute(
