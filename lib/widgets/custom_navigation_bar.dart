@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:miitti_app/state/activities_state.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/widgets/overlays/dot_indicator.dart';
 
-class CustomNavigationBar extends ConsumerWidget {
+class CustomNavigationBar extends ConsumerStatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
 
@@ -15,8 +16,29 @@ class CustomNavigationBar extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.read(userStateProvider).data;
+  _CustomNavigationBarState createState() => _CustomNavigationBarState();
+}
+
+class _CustomNavigationBarState extends ConsumerState<CustomNavigationBar> {
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+      setState(() {}); // Trigger a rebuild every two seconds to check for new notifications
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentUser = ref.watch(userStateProvider).data;
     final hasNotifications = ref.watch(activitiesStateProvider.notifier).hasNotifications(currentUser.uid!);
     final hasNewJoin = ref.watch(activitiesStateProvider.notifier).hasNewJoin(currentUser.uid!);
     final hasRequests = ref.watch(activitiesStateProvider.notifier).hasRequests(currentUser.uid!);
@@ -36,7 +58,7 @@ class CustomNavigationBar extends ConsumerWidget {
               _buildIcon(context, Icons.chat_bubble_outline, 0, hasNotifications, hasRequests || hasNewJoin),
               _buildIcon(context, Icons.map_outlined, 1),
               GestureDetector(
-                onTap: () => onTap(2),
+                onTap: () => widget.onTap(2),
                 child: Container(
                   width: 60,
                   height: 60,
@@ -66,12 +88,12 @@ class CustomNavigationBar extends ConsumerWidget {
 
   Widget _buildIcon(BuildContext context, IconData icon, int index, [bool hasNotification = false, bool requestOrJoin = false]) {
     return GestureDetector(
-      onTap: () => onTap(index),
+      onTap: () => widget.onTap(index),
       child: Stack(
         children: [
-          Icon( 
+          Icon(
             icon,
-            color: currentIndex == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+            color: widget.currentIndex == index ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
             size: 38,
           ),
           if (hasNotification)

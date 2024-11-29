@@ -276,7 +276,7 @@ class CustomMessageTile extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.7, // Set maximum width to 70% of screen width
-          minWidth: timestampWidth + iconWidth + 28, // Ensure minimum width to accommodate timestamp and icon
+          minWidth: timestampWidth + iconWidth + 36, // Ensure minimum width to accommodate timestamp and icon
         ),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8.0),

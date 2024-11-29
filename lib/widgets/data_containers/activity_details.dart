@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -46,38 +48,48 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
   final ScrollController descriptionScrollController = ScrollController();
   bool isCommercialActivity = false;
   late Organization? organization;
+  StreamSubscription<MiittiActivity?>? _activitySubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _subscribeToActivityStream();
+  }
 
   @override
   void dispose() {
+    _activitySubscription?.cancel();
     titleScrollController.dispose();
     descriptionScrollController.dispose();
     super.dispose();
   }
 
-  Stream<MiittiActivity?> fetchActivityDetails(String activityId) async* {
-    try {
-      final activityStream = ref.read(activitiesStateProvider.notifier).streamActivity(widget.activityId);
-      final mapState = ref.read(mapStateProvider.notifier);
+  void _subscribeToActivityStream() {
+    final mapState = ref.read(mapStateProvider.notifier);
+    final activityStream = ref.read(activitiesStateProvider.notifier).streamActivity(widget.activityId);
 
-      await for (final activity in activityStream) {
-        mapState.offSetLocationVertically(inputLocation: LatLng(activity!.latitude, activity.longitude));
-        mapState.setZoom(15.0);
+    _activitySubscription = activityStream.listen(
+      (activity) async {
+        if (activity != null) {
+          mapState.offSetLocationVertically(inputLocation: LatLng(activity.latitude, activity.longitude));
+          mapState.setZoom(15.0);
 
-        if (activity is CommercialActivity) {
-          organization = await ref.read(firestoreServiceProvider).fetchOrganization(activity.organization);
-          isCommercialActivity = true;
+          if (activity is CommercialActivity) {
+            organization = await ref.read(firestoreServiceProvider).fetchOrganization(activity.organization);
+            setState(() {
+              isCommercialActivity = true;
+            });
+          }
         }
-        yield activity;
-      }
-    } catch (e) {
-      debugPrint('Error fetching activity details: $e');
-      yield null;
-    }
+      },
+      onError: (e) {
+        debugPrint('Error fetching activity details: $e');
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // ref.watch(activitiesProvider);
     final config = ref.watch(remoteConfigServiceProvider);
     final userUid = ref.watch(userStateProvider.select((state) => state.uid));
     ref.read(analyticsServiceProvider).logScreenView('activity_details_screen');
@@ -86,7 +98,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
       children: [
         Container(color: Colors.blue,),
         StreamBuilder<MiittiActivity?>(
-          stream: fetchActivityDetails(widget.activityId),
+          stream: ref.read(activitiesStateProvider.notifier).streamActivity(widget.activityId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -151,7 +163,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                 ),
               );
             }
-        
+
             final activity = snapshot.data!;
             final participants = activity.participants;
             final participantsInfo = activity.participantsInfo;
@@ -167,9 +179,9 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
             final paid = activity.paid;
             final maxParticipants = activity.maxParticipants;
             final currentParticipants = activity.participants.length;
-            
+
             Future.delayed(Duration(milliseconds: 10), () => ref.read(activitiesStateProvider.notifier).markActivityAsSeen(activity));
-        
+
             return SafeArea(
               child: Container(
                 decoration: const BoxDecoration(
@@ -210,7 +222,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                 ),
                               ),
                               onTap: () async {
-                                ref.read(adsStateProvider.notifier).incrementCommercialActivityClickCount(activity.id);
+                                ref.read(adsStateProvider.notifier).incrementCommercialActivityHyperlinkClickCount(activity.id);
                                 final url = Uri.parse(organization!.website);
                                 await launchUrl(url, mode: LaunchMode.externalApplication);
                               },
@@ -454,7 +466,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                         BackwardButton(
                           buttonText: config.get<String>('commercial-activity-hyperlink-button'),
                           onPressed: () async {
-                            ref.read(adsStateProvider.notifier).incrementCommercialActivityClickCount(activity.id);
+                            ref.read(adsStateProvider.notifier).incrementCommercialActivityHyperlinkClickCount(activity.id);
                             final url = Uri.parse((activity as CommercialActivity).hyperlink);
                             await launchUrl(url, mode: LaunchMode.externalApplication);
                           },

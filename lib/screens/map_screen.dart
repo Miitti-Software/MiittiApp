@@ -12,6 +12,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:miitti_app/constants/miitti_theme.dart';
 //import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:miitti_app/constants/constants.dart';
+import 'package:miitti_app/models/commercial_activity.dart';
 import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/models/user_created_activity.dart';
 import 'package:miitti_app/services/analytics_service.dart';
@@ -140,6 +141,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               disclaimer: ref.read(remoteConfigServiceProvider).get<String>('anonymous-dialog-disclaimer'),
             );
             return;
+          }
+          if (activity is CommercialActivity) {
+            ref.read(adsStateProvider.notifier).incrementCommercialActivityClickCount(activity.id);
           }
           context.go('/activity/${activity.id}');
         },

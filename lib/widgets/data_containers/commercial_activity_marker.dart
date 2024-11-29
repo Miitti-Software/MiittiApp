@@ -6,7 +6,6 @@ import 'package:miitti_app/models/miitti_activity.dart';
 import 'package:miitti_app/services/analytics_service.dart';
 import 'package:miitti_app/services/cache_manager_service.dart';
 import 'package:miitti_app/state/ads_state.dart';
-import 'package:miitti_app/state/service_providers.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class CommercialActivityMarker extends ConsumerWidget {
@@ -17,7 +16,6 @@ class CommercialActivityMarker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final config = ref.watch(remoteConfigServiceProvider);
     const activityEmoji = '💎';
 
     return VisibilityDetector(
