@@ -115,9 +115,9 @@ class CommercialActivity extends MiittiActivity {
       'bannerImage': bannerImage,
       'customEmoji': customEmoji,
       'organization': organization,
-      'views': views,
-      'clicks': clicks,
-      'hyperlinkClicks': hyperlinkClicks,
+      // 'views': views,
+      // 'clicks': clicks,
+      // 'hyperlinkClicks': hyperlinkClicks,
     };
   }
 

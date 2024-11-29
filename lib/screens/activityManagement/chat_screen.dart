@@ -122,7 +122,7 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
                           ref.read(firestoreServiceProvider).updateActivityFields(fieldsToUpdate, activity.id, activity is CommercialActivity);
                         }
 
-                        final messageReadByEveryone = isReadByEveryone(message, activity.participantsInfo);
+                        final messageReadByEveryone = isReadByEveryone(message, activity.participantsInfo, activity.participants);
 
                         return CustomMessageTile(
                           message: message,
@@ -203,11 +203,13 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
   }
 
   // TODO: Fix this method to work in all cases
-  bool isReadByEveryone(Message message, Map<String, dynamic> participantsInfo) {
-    return participantsInfo.values.every((info) {
-      final lastOpenedChat = info['lastOpenedChat'];
-      return lastOpenedChat != null && lastOpenedChat.isAfter(message.timestamp);
-    });
+  bool isReadByEveryone(Message message, Map<String, dynamic> participantsInfo, List<String> participants) {
+    return participantsInfo.entries
+        .where((entry) => participants.contains(entry.key))
+        .every((entry) {
+          final lastOpenedChat = entry.value['lastOpenedChat'];
+          return lastOpenedChat != null && lastOpenedChat.isAfter(message.timestamp);
+        });
   }
 }
 

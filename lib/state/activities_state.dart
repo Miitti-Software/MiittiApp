@@ -48,6 +48,9 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     firestoreService.streamUserCreatedActivities().listen((updatedActivities) {
       _updateRequestsAndParticipants(updatedActivities);
     });
+    firestoreService.streamCommercialActivities().listen((updatedActivities) {
+      _updateCommercialActivities(updatedActivities);
+    });
   }
 
   // Calculates the largest radius of the visible area on the map based on the zoom level taking into account the curvature of the Earth.
@@ -125,6 +128,24 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     final currentActivityIds = state.activities.map((activity) => activity.id).toSet();
     final updatedStateActivities = state.activities.map((activity) {
       if (activity is UserCreatedActivity) {
+        final updatedActivity = updatedActivities.firstWhere((a) => a.id == activity.id, orElse: () => activity);
+        return updatedActivity;
+      }
+      return activity;
+    }).toList();
+
+    final newActivitiesToAdd = updatedActivities.where((activity) => !currentActivityIds.contains(activity.id)).toList();
+
+    if (newActivitiesToAdd.isNotEmpty || updatedStateActivities.isNotEmpty) {
+      state = state.copyWith(activities: updatedStateActivities.followedBy(newActivitiesToAdd).toList());
+      _updateState();
+    }
+  }
+
+  void _updateCommercialActivities(List<CommercialActivity> updatedActivities) {
+    final currentActivityIds = state.activities.map((activity) => activity.id).toSet();
+    final updatedStateActivities = state.activities.map((activity) {
+      if (activity is CommercialActivity) {
         final updatedActivity = updatedActivities.firstWhere((a) => a.id == activity.id, orElse: () => activity);
         return updatedActivity;
       }
@@ -378,7 +399,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       final lastSeen = activity.participantsInfo[userId]?['lastSeen'];
       final hasJoin = activity.latestJoin != null && activity.latestJoin!.isAfter(lastSeen ?? DateTime(2020));
       final isNew = lastSeen == null || (lastSeen != null && (activity.latestActivity.isAfter(lastSeen)));
-      return isParticipant && hasJoin && isNew;
+      return isParticipant && hasJoin && isNew && activity is UserCreatedActivity;
     });
   }
 

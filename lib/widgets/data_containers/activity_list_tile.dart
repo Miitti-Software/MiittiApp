@@ -39,7 +39,7 @@ class ActivityListTile extends ConsumerWidget {
     final lastSeen = activity.participantsInfo[currentUser.uid]?['lastSeen'];
     final hasNewActivity = (lastSeen == null || (lastSeen != null && (activity.latestActivity.isAfter(lastSeen))));
     final hasNewMessages = activity.latestMessage != null && (activity.latestMessage!.isAfter(activity.participantsInfo[currentUser.uid]?['lastOpenedChat'] ?? DateTime(2020)));
-    final requestOrJoin = activity is UserCreatedActivity && (activity as UserCreatedActivity).requests.isNotEmpty || (activity.latestJoin != null && activity.latestJoin!.isAfter(lastSeen ?? DateTime(2020)));
+    final requestOrJoin = activity is UserCreatedActivity && (activity as UserCreatedActivity).requests.isNotEmpty;
     final hasNewNotification = isParticipant && (hasNewActivity || hasNewMessages || requestOrJoin);
         
     return InkWell(

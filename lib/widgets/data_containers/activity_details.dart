@@ -76,9 +76,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
 
           if (activity is CommercialActivity) {
             organization = await ref.read(firestoreServiceProvider).fetchOrganization(activity.organization);
-            setState(() {
-              isCommercialActivity = true;
-            });
+            isCommercialActivity = true;
           }
         }
       },

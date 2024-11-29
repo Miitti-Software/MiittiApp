@@ -397,6 +397,22 @@ class FirestoreService {
       });
   }
 
+  Stream<List<CommercialActivity>> streamCommercialActivities() {
+    final userId = ref.read(userStateProvider).uid!;
+    final now = DateTime.now();
+
+    return _firestore.collection(_commercialActivitiesCollection)
+      .where('participants', arrayContains: userId)
+      .where(Filter.or(
+        Filter('endTime', isNull: true),
+        Filter('endTime', isGreaterThanOrEqualTo: now)
+      ))
+      .snapshots()
+      .map((querySnapshot) {
+        return querySnapshot.docs.map((doc) => CommercialActivity.fromFirestore(doc)).toList();
+      });
+  }
+
   Future<void> incrementCommercialActivityViewCounter(String activityId) async {
     final docRef = _firestore.collection(_commercialActivitiesCollection).doc(activityId);
     await _incrementField(docRef, 'views');
@@ -492,16 +508,21 @@ class FirestoreService {
         .snapshots()
         .asyncMap((doc) async {
           if (!doc.exists) {
-            final commercialDoc = await _firestore
+            return _firestore
                 .collection(_commercialActivitiesCollection)
                 .doc(activityId)
-                .get();
-            return commercialDoc.exists 
-                ? CommercialActivity.fromFirestore(commercialDoc) 
-                : null;
+                .snapshots()
+                .asyncMap((commercialDoc) => 
+                  commercialDoc.exists 
+                    ? CommercialActivity.fromFirestore(commercialDoc) 
+                    : null);
           }
           return UserCreatedActivity.fromFirestore(doc);
-        });
+        })
+        .switchMap((activity) => 
+          activity is Stream<MiittiActivity?> 
+            ? activity 
+            : Stream.value(activity as MiittiActivity?));
   }
 
   Future<bool> deleteActivity(String activityId) async {
