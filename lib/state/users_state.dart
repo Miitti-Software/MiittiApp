@@ -13,11 +13,10 @@ class UsersState extends StateNotifier<UsersStateData> {
   }
 
   final Ref ref;
-  Timer? _debounce;
   bool _isLoadingMore = false;
 
   Future<MiittiUser?> fetchUser(String userId) async {
-    if (state.users.any((element) => element.uid == userId)) {  // The user can currently discover their own public facing profile and add it to the list by tapping their profile picture in activities
+    if (state.users.any((element) => element.uid == userId)) { 
       return state.users.firstWhere((element) => element.uid == userId);
     }
     final firestoreService = ref.read(firestoreServiceProvider);
@@ -74,12 +73,6 @@ class UsersState extends StateNotifier<UsersStateData> {
     }
 
     _isLoadingMore = false;
-  }
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    super.dispose();
   }
 }
 

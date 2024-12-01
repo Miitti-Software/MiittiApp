@@ -711,7 +711,7 @@ class FirestoreService {
       List<MiittiUser> users = usersSnapshot.docs.map((doc) => MiittiUser.fromFirestore(doc)).toList();
 
       if (users.isNotEmpty) {
-        _lastUserActivityDocument = usersSnapshot.docs.last;
+        _lastUserDocument = usersSnapshot.docs.last;
       }
 
       return users;

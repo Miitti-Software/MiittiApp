@@ -79,6 +79,7 @@ class _InfiniteListState<T> extends ConsumerState<InfiniteList<T>> {
     if (widget.refreshFunction != null) {
       await widget.refreshFunction!();
     }
+    previousMaxScrollPosition = 0.0;
     completer.complete();
     return completer.future;
   }

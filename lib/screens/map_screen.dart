@@ -64,6 +64,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -200,7 +202,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             alignment: Alignment.topCenter,
             child: Container(
               height: 36,
-              width: 250,
+              width: 280,
               margin: const EdgeInsets.symmetric(horizontal: AppSizes.minVerticalPadding, vertical: AppSizes.minVerticalPadding),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface.withAlpha(215),
@@ -294,11 +296,26 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-Timer? _fullRefreshDebounce;
+  Timer? _fullRefreshDebounce;
 
   Widget showOnList() {
-    final activities = ref.watch(activitiesProvider);
+    final activities = ref.read(activitiesProvider);
     final ads = ref.watch(adsStateProvider);
+
+    // Configuration for ad placement
+    int firstAdIndex = 3; // First ad after 3 activities
+    int adInterval = 3;   // Ads every 7 activities
+
+    // Calculate the total number of ads to display
+    int totalAds = 0;
+    if (activities.length > firstAdIndex) {
+      totalAds = 1 + ((activities.length - firstAdIndex - 1) ~/ adInterval);
+      totalAds = totalAds.clamp(0, ads.length);
+    }
+
+    // Total items in the list
+    int totalItemCount = activities.length + totalAds;
+
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
       child: Container(
@@ -311,7 +328,11 @@ Timer? _fullRefreshDebounce;
               return completer.future;
             }
             _fullRefreshDebounce = Timer(const Duration(seconds: 3), () {});
-            await ref.read(activitiesStateProvider.notifier).loadMoreActivities(fullRefresh: true);
+            await ref
+                .read(activitiesStateProvider.notifier)
+                .loadMoreActivities(fullRefresh: true);
+           previousMaxScrollPosition = 0.0;
+            // Shuffle ads only during refresh to prevent list changes during scrolling
             ref.read(adsStateProvider.notifier).shuffleAds();
             completer.complete();
             return completer.future;
@@ -319,27 +340,44 @@ Timer? _fullRefreshDebounce;
           triggerMode: RefreshIndicatorTriggerMode.anywhere,
           child: ListView.builder(
             controller: _scrollController,
-            itemCount: activities.length + ads.length,
+            itemCount: totalItemCount,
             cacheExtent: 100,
             itemBuilder: (BuildContext context, int index) {
-              
-              // Determine if the current index should show an ad
-              bool shouldShowAd = (index == 3) || ((index > 3) && ((index - 3) % 7 == 0));
-              int adIndex = (index - 3) ~/ 7;
+              bool shouldShowAd = false;
+              int adIndex = 0;
+
+              if (index == firstAdIndex) {
+                shouldShowAd = true;
+                adIndex = 0;
+              } else if (index > firstAdIndex &&
+                  ((index - firstAdIndex) % (adInterval + 1) == 0)) {
+                shouldShowAd = true;
+                adIndex = 1 + ((index - firstAdIndex - 1) ~/ (adInterval + 1));
+              }
 
               if (shouldShowAd && adIndex < ads.length) {
-                return AdBanner(adBannerData: ads[adIndex]);
+                return AdBanner(
+                  key: ValueKey('ad_$adIndex'),
+                  adBannerData: ads[adIndex],
+                );
               } else {
-                int activityIndex = index - (index > 3 ? (adIndex + 1) : 0);
-                if (activityIndex >= activities.length) {
-                  // Show remaining ads if there are no more activities
-                  int remainingAdIndex = index - activities.length;
-                  if (remainingAdIndex < ads.length) {
-                    return AdBanner(adBannerData: ads[remainingAdIndex]);
-                  }
-                  return const SizedBox.shrink(); // Prevent out of bounds error
+                int numberOfAdsShownBefore = 0;
+                if (index > firstAdIndex) {
+                  numberOfAdsShownBefore =
+                      1 + ((index - firstAdIndex - 1) ~/ (adInterval + 1));
+                } else if (index == firstAdIndex) {
+                  numberOfAdsShownBefore = 1;
                 }
-                return ActivityListTile(activities[activityIndex]);
+                int activityIndex = index - numberOfAdsShownBefore;
+                if (activityIndex < activities.length) {
+                  final activity = activities[activityIndex];
+                  return ActivityListTile(
+                    key: ValueKey('activity_${activity.id}'),
+                    activity,
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
               }
             },
           ),
