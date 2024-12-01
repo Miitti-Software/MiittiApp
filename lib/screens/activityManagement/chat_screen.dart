@@ -18,6 +18,13 @@ import 'package:miitti_app/widgets/data_containers/commercial_activity_marker.da
 import 'package:miitti_app/widgets/data_containers/infinite_list.dart';
 import 'dart:ui' as ui;
 
+
+
+final activityStreamProvider = StreamProvider.family<MiittiActivity, String>((ref, activityId) {
+  return ref.watch(activitiesStateProvider.notifier).streamActivity(activityId).cast<MiittiActivity>();
+});
+
+
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
 
@@ -37,11 +44,11 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
   }
 
   Stream<MiittiActivity?> fetchActivityDetails(String activityId) async* {
-    final activitiesState = ref.read(activitiesStateProvider);
+    final activitiesState = ref.watch(activitiesStateProvider);
 
     // Check if the activity is already in the state
     MiittiActivity? activity = activitiesState.activities.firstWhereOrNull((a) => a.id == activityId);
-    activity ??= await ref.read(activitiesStateProvider.notifier).fetchActivity(activityId);
+    activity ??= await ref.watch(activitiesStateProvider.notifier).fetchActivity(activityId);
     yield activity;
   }
 
@@ -110,26 +117,21 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
                         final isCurrentUser = message.senderId == currentUserUid;
                         final participantInfo = activity.participantsInfo[message.senderId];
 
-                        // Mark the latest message as read only if it has not been read yet
-                        // TODO: Move to a method in ChatState
                         if (messages.first.senderId != currentUserUid && activity.participantsInfo[currentUserUid]!['lastReadMessage'] != messages.first.id) {
-                          Map<String, dynamic> updatedFields = activity.markMessageRead(currentUserUid!, messages.first.id!).toMap();
-                          Map<String, dynamic> fieldsToUpdate = {
-                            'participantsInfo.$currentUserUid.lastReadMessage': updatedFields['participantsInfo'][currentUserUid]['lastReadMessage'],
-                            'participantsInfo.$currentUserUid.lastOpenedChat': DateTime.now(),
-                            'participantsInfo.$currentUserUid.lastSeen': DateTime.now(),
-                          };
-                          ref.read(firestoreServiceProvider).updateActivityFields(fieldsToUpdate, activity.id, activity is CommercialActivity);
+                          ref.watch(activityStreamProvider(activity.id)).whenData((bactivity) {
+                            if (bactivity.latestMessage != null && bactivity.latestMessage!.isAfter(bactivity.participantsInfo[currentUserUid]!['lastOpenedChat'])) {
+                              ref.read(activitiesStateProvider.notifier).markChatAsRead(bactivity, messages.first.id!);
+                              debugPrint('Marked chat as read');
+                            }
+                          });
                         }
-
-                        final messageReadByEveryone = isReadByEveryone(message, activity.participantsInfo, activity.participants);
 
                         return CustomMessageTile(
                           message: message,
                           senderId: message.senderId,
                           isCurrentUser: isCurrentUser,
                           participantInfo: participantInfo!,
-                          isReadByEveryone: messageReadByEveryone,
+                          activity: activity,
                         );
                       },
                       startFromBottom: true,
@@ -202,7 +204,6 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
     );
   }
 
-  // TODO: Fix this method to work in all cases
   bool isReadByEveryone(Message message, Map<String, dynamic> participantsInfo, List<String> participants) {
     return participantsInfo.entries
         .where((entry) => participants.contains(entry.key))
@@ -213,37 +214,86 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
   }
 }
 
-class CustomMessageTile extends StatelessWidget {
+class CustomMessageTile extends ConsumerWidget {
   final Message message;
-  final String senderId;
+  final String senderId; 
   final bool isCurrentUser;
   final Map<String, dynamic> participantInfo;
-  final bool isReadByEveryone;
-
+  final MiittiActivity activity;
+  
   const CustomMessageTile({
     super.key,
     required this.message,
     required this.senderId,
     required this.isCurrentUser,
     required this.participantInfo,
-    required this.isReadByEveryone,
+    required this.activity,
   });
 
   @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final activity = ref.watch(activityStreamProvider(this.activity.id));
+    
+    return activity.when(
+      data: (activity) {
+        final isReadByEveryone = _isReadByEveryone(activity); 
+        
+        return Align(
+          alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+          child: MessageBubble(
+            message: message,
+            isCurrentUser: isCurrentUser,
+            isReadByEveryone: isReadByEveryone,
+            participantInfo: participantInfo,
+            senderId: senderId,
+          ),
+        );
+      },
+      loading: () => const SizedBox(),
+      error: (_, __) => const SizedBox(), 
+    );
+  }
+
+  bool _isReadByEveryone(MiittiActivity activity) {
+    return activity.participantsInfo.entries
+      .where((entry) => activity.participants.contains(entry.key))
+      .every((entry) {
+        final lastOpenedChat = entry.value['lastOpenedChat']; 
+        return lastOpenedChat != null && lastOpenedChat.isAfter(message.timestamp);
+      });
+  }
+}
+
+// Split MessageBubble into separate widget
+class MessageBubble extends StatelessWidget {
+  final Message message;
+  final bool isCurrentUser;
+  final bool isReadByEveryone;
+  final Map<String, dynamic> participantInfo;
+  final String senderId;
+
+  const MessageBubble({
+    super.key, 
+    required this.message,
+    required this.isCurrentUser,
+    required this.isReadByEveryone,
+    required this.participantInfo,
+    required this.senderId,
+  });
+
+  @override 
   Widget build(BuildContext context) {
-    return Align(
-      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-          children: [
-            if (!isCurrentUser) _buildProfilePicture(context),
-            Flexible(child: _buildMessageBubble(context)),
-            if (isCurrentUser) _buildProfilePicture(context),
-          ],
-        ),
+    // Rest of the existing message bubble UI code
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          if (!isCurrentUser) _buildProfilePicture(context),
+          Flexible(child: _buildMessageBubble(context)), 
+          if (isCurrentUser) _buildProfilePicture(context),
+        ],
       ),
     );
   }

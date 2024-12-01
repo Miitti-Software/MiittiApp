@@ -238,6 +238,24 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     _updateState();
   }
 
+  /// Updates the last opened chat time of the current user in the given activity.
+  Future<void> markChatAsRead(MiittiActivity activity, String messageId) async {
+    final userState = ref.read(userStateProvider);
+    final somethingToSee = activity.latestMessage?.isAfter(activity.participantsInfo[userState.uid]?['lastOpenedChat'] ?? DateTime(2020));
+    if (userState.isAnonymous || !activity.participants.contains(userState.uid) || !somethingToSee!) return;
+    final userId = userState.uid!;
+    final firestoreService = ref.read(firestoreServiceProvider);
+    final updatedActivity = activity.markMessageRead(userId, messageId);
+    Map<String, dynamic> fieldsToUpdate = {
+      'participantsInfo.$userId.lastReadMessage': updatedActivity.toMap()['participantsInfo'][userId]['lastReadMessage'],
+      'participantsInfo.$userId.lastOpenedChat': DateTime.now(),
+      'participantsInfo.$userId.lastSeen': DateTime.now(),
+    };
+    await firestoreService.updateActivityFields(fieldsToUpdate, updatedActivity.id, updatedActivity is CommercialActivity);
+    state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
+    _updateState();
+  }
+
   /// Deletes an activity from Firestore and removes it from the state of the ActivitiesState StateNotifier.
   Future<bool> deleteActivity(MiittiActivity activity) async {
     try {

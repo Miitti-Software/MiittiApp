@@ -70,7 +70,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
 
     _activitySubscription = activityStream.listen(
       (activity) async {
-        if (activity != null) {
+        if (activity != null && mounted) {
           mapState.offSetLocationVertically(inputLocation: LatLng(activity.latitude, activity.longitude));
           mapState.setZoom(15.0);
 
@@ -94,7 +94,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
 
     return Stack(
       children: [
-        Container(color: Colors.blue,),
+        Container(color: Theme.of(context).colorScheme.surface,),
         StreamBuilder<MiittiActivity?>(
           stream: ref.read(activitiesStateProvider.notifier).streamActivity(widget.activityId),
           builder: (context, snapshot) {
@@ -178,7 +178,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
             final maxParticipants = activity.maxParticipants;
             final currentParticipants = activity.participants.length;
 
-            Future.delayed(Duration(milliseconds: 10), () => ref.read(activitiesStateProvider.notifier).markActivityAsSeen(activity));
+            Future.delayed(Duration(milliseconds: 25), () => ref.read(activitiesStateProvider.notifier).markActivityAsSeen(activity));
 
             return SafeArea(
               child: Container(
