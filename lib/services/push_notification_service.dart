@@ -89,9 +89,12 @@ class PushNotificationService extends StateNotifier<bool> {
         if (route.contains("/activity/")) {
           final activityId = route.split("/")[2];
           Future.delayed(const Duration(milliseconds: 2), () {
-            context.go('/activity/$activityId');
-            Future.delayed(const Duration(milliseconds: 200), () {
-              context.go(route);
+            context.go('/');
+            Future.delayed(const Duration(milliseconds: 20), () {
+              context.go('/activity/$activityId');
+              Future.delayed(const Duration(milliseconds: 200), () {
+                context.go(route);
+              });
             });
           });
         } else {

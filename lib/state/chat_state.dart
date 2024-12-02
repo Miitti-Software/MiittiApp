@@ -9,7 +9,7 @@ import 'package:miitti_app/state/service_providers.dart';
 import 'package:miitti_app/state/user.dart';
 import 'package:miitti_app/state/users_state.dart';
 
-final chatStateProvider = StateNotifierProvider.family<ChatState, List<Message>, MiittiActivity>((ref, activity) {
+final chatStateProvider = StateNotifierProvider.family<ChatState, List<Message>, MiittiActivity>((ref, MiittiActivity activity) {
   return ChatState(ref, activity);
 });
 
@@ -53,7 +53,7 @@ class ChatState extends StateNotifier<List<Message>> {
       final receivers = _activity.participants.where((participant) => participant != ref.read(userStateProvider).data.uid).toList();
       for (final participant in receivers) {
         final receiver = await ref.read(usersStateProvider.notifier).fetchUser(participant);
-        if (receiver != null && !receiver.online) {
+        if (receiver != null) {
           await ref.read(notificationServiceProvider).sendMessageNotification(
             receiver.fcmToken,
             message.message,

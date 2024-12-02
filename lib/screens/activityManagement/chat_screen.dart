@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -109,22 +111,31 @@ class _ChatPageState extends ConsumerState<ChatScreen> {
                 child: Consumer(
                   builder: (context, ref, child) {
                     final messages = ref.watch(chatStateProvider(activity));
+                    final currentUserUid = ref.read(userStateProvider).uid;
+
+                    // Mark the chat as read
+                    if (messages.isNotEmpty && 
+                        messages.first.senderId != currentUserUid && 
+                        messages.first.id != null) {
+                      ref.watch(activityStreamProvider(activity.id)).whenData((bactivity) {
+                        // Only update if:
+                        // 1. There is a latest message
+                        // 2. Last read message is different from current first message
+                        // 3. Latest message is after last opened chat time
+                        if (bactivity.latestMessage != null && 
+                            activity.participantsInfo[currentUserUid]?['lastReadMessage'] != messages.first.id &&
+                            bactivity.latestMessage!.isAfter(bactivity.participantsInfo[currentUserUid]?['lastOpenedChat'] ?? DateTime(2020))) {
+                          ref.read(activitiesStateProvider.notifier).markChatAsRead(bactivity, messages.first.id!);
+                        }
+                      });
+                    }
+
                     return InfiniteList<Message>(
                       dataSource: messages,
                       listTileBuilder: (context, index) {
                         final message = messages[index];
-                        final currentUserUid = ref.read(userStateProvider).uid;
                         final isCurrentUser = message.senderId == currentUserUid;
                         final participantInfo = activity.participantsInfo[message.senderId];
-
-                        if (messages.first.senderId != currentUserUid && activity.participantsInfo[currentUserUid]!['lastReadMessage'] != messages.first.id) {
-                          ref.watch(activityStreamProvider(activity.id)).whenData((bactivity) {
-                            if (bactivity.latestMessage != null && bactivity.latestMessage!.isAfter(bactivity.participantsInfo[currentUserUid]!['lastOpenedChat'])) {
-                              ref.read(activitiesStateProvider.notifier).markChatAsRead(bactivity, messages.first.id!);
-                              debugPrint('Marked chat as read');
-                            }
-                          });
-                        }
 
                         return CustomMessageTile(
                           message: message,

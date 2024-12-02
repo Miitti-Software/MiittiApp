@@ -233,7 +233,10 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     final userId = userState.uid!;
     final firestoreService = ref.read(firestoreServiceProvider);
     final updatedActivity = activity.markSeen(userId);
-    await firestoreService.updateActivityFields(updatedActivity.toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
+    Map<String, dynamic> fieldsToUpdate = {
+      'participantsInfo.$userId.lastSeen': activity.latestMessage,
+    };
+    await firestoreService.updateActivityFields(fieldsToUpdate, updatedActivity.id, updatedActivity is CommercialActivity);
     state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
     _updateState();
   }
@@ -248,8 +251,8 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     final updatedActivity = activity.markMessageRead(userId, messageId);
     Map<String, dynamic> fieldsToUpdate = {
       'participantsInfo.$userId.lastReadMessage': updatedActivity.toMap()['participantsInfo'][userId]['lastReadMessage'],
-      'participantsInfo.$userId.lastOpenedChat': DateTime.now(),
-      'participantsInfo.$userId.lastSeen': DateTime.now(),
+      'participantsInfo.$userId.lastOpenedChat': activity.latestMessage,
+      'participantsInfo.$userId.lastSeen': activity.latestMessage,
     };
     await firestoreService.updateActivityFields(fieldsToUpdate, updatedActivity.id, updatedActivity is CommercialActivity);
     state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
@@ -348,7 +351,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
   Future<bool> requestToJoinActivity(UserCreatedActivity activity) async {
     try {
       final userState = ref.read(userStateProvider);
-      if (userState.isAnonymous || activity.requests.contains(userState.uid) || activity.participants.contains(userState.uid)) {
+      if (userState.isAnonymous || activity.participants.contains(userState.uid)) {
         return false;
       }
       final firestoreService = ref.read(firestoreServiceProvider);
@@ -359,6 +362,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       ref.read(analyticsServiceProvider).logActivityJoined(updatedActivity, ref.read(userStateProvider).data.toMiittiUser());
       state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
       _updateState();
+      ref.read(notificationServiceProvider).sendRequestNotification(updatedActivity);
       return true;
     } catch (e) {
       debugPrint('Error requesting to join activity: $e');
