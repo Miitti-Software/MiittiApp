@@ -228,13 +228,13 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
   /// Updates the last seen time of the current user in the given activity.
   Future<void> markActivityAsSeen(MiittiActivity activity) async {
     final userState = ref.read(userStateProvider);
-    final somethingToSee = activity.latestActivity.isAfter(activity.participantsInfo[userState.uid]?['lastSeen'] ?? DateTime(2020));
+    final somethingToSee = activity.latestActivity.isAfter(activity.participantsInfo[userState.uid]?['lastSeen'] ?? DateTime(2020)) || activity.participantsInfo[userState.uid]?['lastSeen'] != null;
     if (userState.isAnonymous || !activity.participants.contains(userState.uid) || !somethingToSee) return;
     final userId = userState.uid!;
     final firestoreService = ref.read(firestoreServiceProvider);
     final updatedActivity = activity.markSeen(userId);
     Map<String, dynamic> fieldsToUpdate = {
-      'participantsInfo.$userId.lastSeen': activity.latestMessage,
+      'participantsInfo.$userId.lastSeen': updatedActivity.latestActivity,
     };
     await firestoreService.updateActivityFields(fieldsToUpdate, updatedActivity.id, updatedActivity is CommercialActivity);
     state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
@@ -251,8 +251,8 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
     final updatedActivity = activity.markMessageRead(userId, messageId);
     Map<String, dynamic> fieldsToUpdate = {
       'participantsInfo.$userId.lastReadMessage': updatedActivity.toMap()['participantsInfo'][userId]['lastReadMessage'],
-      'participantsInfo.$userId.lastOpenedChat': activity.latestMessage,
-      'participantsInfo.$userId.lastSeen': activity.latestMessage,
+      'participantsInfo.$userId.lastOpenedChat': updatedActivity.latestMessage,
+      'participantsInfo.$userId.lastSeen': updatedActivity.latestMessage,
     };
     await firestoreService.updateActivityFields(fieldsToUpdate, updatedActivity.id, updatedActivity is CommercialActivity);
     state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
@@ -297,6 +297,9 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       ref.read(userStateProvider.notifier).decrementActivitiesJoined();
       state = state.copyWith(activities: state.activities.map((a) => a.id == activity.id ? activity : a).toList());
       _updateState();
+      if (activity is UserCreatedActivity) {
+        ref.read(notificationServiceProvider).sendCancelNotification(activity);
+      }
       return true;
     } catch (e) {
       debugPrint('Error leaving activity: $e');
@@ -378,7 +381,7 @@ class ActivitiesState extends StateNotifier<ActivitiesStateData> {
       final updatedActivity = activity.removeRequest(user.uid).addParticipant(user);
       final success = await firestoreService.updateActivityTransaction(updatedActivity.markSeen(ref.read(userStateProvider).uid!).toMap(), updatedActivity.id, updatedActivity is CommercialActivity);
       if (!success) return false;
-      ref.read(notificationServiceProvider).sendRequestAcceptedNotification(updatedActivity);
+      ref.read(notificationServiceProvider).sendRequestAcceptedNotification(updatedActivity, user);
       state = state.copyWith(activities: state.activities.map((a) => a.id == updatedActivity.id ? updatedActivity : a).toList());
       _updateState();
       return true;

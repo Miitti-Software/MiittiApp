@@ -271,22 +271,20 @@ class PushNotificationService extends StateNotifier<bool> {
     }
   }
 
-  Future sendRequestAcceptedNotification(UserCreatedActivity activity) async {
-    FirestoreService firestore = ref.read(firestoreServiceProvider);
+  Future sendRequestAcceptedNotification(UserCreatedActivity activity, MiittiUser requestor) async {
     final config = ref.read(remoteConfigServiceProvider);
     UserStateData user = ref.read(userStateProvider);
-    MiittiUser? requestor = await firestore.fetchUser(user.data.uid!);
-    if (requestor != null) {
+    try {
       final language = requestor.languageSetting;
       sendNotification(
         requestor.fcmToken,
         config.getNotificationTemplateString('request-accepted-notification-title', language),
-        "${activity.title} ${config.getNotificationTemplateString('request-accepted-notification-body', language)}",
+        "${user.data.name} ${config.getNotificationTemplateString('request-accepted-notification-body', language)} ${activity.title}",
         config.getNotificationTemplateString('request-accepted-notification-type', language),
         '/activity/${activity.id}',
       );
-    } else {
-      debugPrint("Couldn't find requestor to send request notification to.");
+    } catch (e) {
+      debugPrint("Couldn't find requestor to send request notification to. $e");
     }
   }
 
@@ -337,17 +335,6 @@ class PushNotificationService extends StateNotifier<bool> {
       "$senderName: $message",
       config.getNotificationTemplateString('message-notification-type', language),
       '/activity/${activity.id}/chat',
-    );
-  }
-
-  void sendAcceptedNotification(
-      MiittiUser receiver, MiittiActivity activity) async {
-    sendNotification(
-      receiver.fcmToken,
-      "Tervetuloa miittiin!",
-      "Sut hyväksyttiin miittiin: ${activity.title}",
-      "accept",
-      '/activity/${activity.id}',
     );
   }
 

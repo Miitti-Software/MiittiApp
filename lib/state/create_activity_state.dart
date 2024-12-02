@@ -78,6 +78,7 @@ class CreateActivityState extends StateNotifier<CreateActivityStateData> {
           'profilePicture': creator.profilePicture,
           'location': null,
           'lastSeen': DateTime.now(),
+          'joined': DateTime.now(),
         }
       },
       requiresRequest: state.requiresRequest!,

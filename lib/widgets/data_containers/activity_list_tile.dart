@@ -84,7 +84,7 @@ class ActivityListTile extends ConsumerWidget {
                   children: [
                     activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
                     if (hasNewNotification)
-                       DotIndicator(requestOrJoin: requestOrJoin),
+                       DotIndicator(requestOrJoin: !hasNewMessages),
                   ],
                 ),
               ),
