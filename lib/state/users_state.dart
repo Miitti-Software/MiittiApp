@@ -16,6 +16,10 @@ class UsersState extends StateNotifier<UsersStateData> {
   bool _isLoadingMore = false;
 
   Future<MiittiUser?> fetchUser(String userId) async {
+    if (userId == ref.read(userStateProvider).uid) {
+      print('Fetching current user from user state.');
+      return ref.read(userStateProvider).data.toMiittiUser();
+    }
     if (state.users.any((element) => element.uid == userId)) { 
       return state.users.firstWhere((element) => element.uid == userId);
     }

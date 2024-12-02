@@ -326,4 +326,26 @@ https://stackoverflow.com/questions/71359062/iproxy-cannot-be-opened-because-the
 
 https://ahmedyusuf.medium.com/setup-flavors-in-ios-flutter-with-different-firebase-config-43c4c4823e6b
 
+In root directory:
+- `cd ios`
+- `rm -rf Pods`
+- `rm -rf Podfile.lock`
+- `cd ..`
+- `flutter clean`
+- `flutter upgrade`
+- `flutter pub get`
+- `cd ios`
+- `pod repo update`
+- `pod install`
+- run
+
 Run with `flutter run --flavor Prod`
+
+Product > clean build folder
+
+Make sure to have the correct `GoogleService-Info.plist` (must be changed for different flavors) and make sure to drop it directly into Xcode (all interaction must be done through Xcode directly)
+
+
+
+
+flutter build ipa

@@ -77,8 +77,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                           foregroundColor: Theme.of(context).colorScheme.onPrimary,
                           textStyle: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        onPressed: () {
-                          context.push('/login/complete-profile/qa-cards');
+                        onPressed: () async {
+                          await context.push('/login/complete-profile/qa-cards');
+                          setState(() {userFuture = fetchUserDetails(userData.uid);});
                         },
                         child: Text(ref.watch(remoteConfigServiceProvider).get<String>('edit-qa-cards-button')),
                       ),
@@ -100,8 +101,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                           foregroundColor: Theme.of(context).colorScheme.onPrimary,
                           textStyle: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        onPressed: () {
-                          context.push('/login/complete-profile/activities');
+                        onPressed: () async {
+                          await context.push('/login/complete-profile/activities');
+                          setState(() {userFuture = fetchUserDetails(userData.uid);});
                         },
                         child: Text(ref.watch(remoteConfigServiceProvider).get<String>('edit-activities-button')),
                       ),
@@ -188,8 +190,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                     color: Colors.white,
                     shadows: <Shadow>[Shadow(color: Colors.black45, blurRadius: 20.0, offset: Offset(0, 2.0))],
                   ),
-                  onPressed: () {
-                    context.push('/login/complete-profile/profile-picture');
+                  onPressed: () async {
+                    await context.push('/login/complete-profile/profile-picture');
+                    setState(() {userFuture = fetchUserDetails(userData.uid);});
                   },
                 ),
                 IconButton(
@@ -283,8 +286,9 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
                 size: 20,
                 color: Colors.grey,
               ),
-              onPressed: () {
-                context.push(editRoute);
+              onPressed: () async {
+                await context.push(editRoute);
+                setState(() {userFuture = fetchUserDetails(userData.uid);});
               },
             ),
           ],

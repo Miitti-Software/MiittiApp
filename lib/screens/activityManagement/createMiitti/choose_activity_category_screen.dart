@@ -86,7 +86,7 @@ class _ChooseActivityCategoryScreenState
                         child: Container(
                           width: 100,
                           padding: const EdgeInsets.symmetric(
-                            vertical: 10,
+                            vertical: 5,
                             horizontal: 5,
                           ),
                           decoration: BoxDecoration(
