@@ -304,7 +304,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
     // Configuration for ad placement
     int firstAdIndex = 3; // First ad after 3 activities
-    int adInterval = 3;   // Ads every 7 activities
+    int adInterval = 6;
 
     // Calculate the total number of ads to display
     int totalAds = 0;
