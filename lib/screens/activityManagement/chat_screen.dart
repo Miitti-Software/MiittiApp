@@ -334,62 +334,64 @@ class MessageBubble extends StatelessWidget {
     final double timestampWidth = getTextWidth(_formatTimestamp(message.timestamp), timestampStyle) + 16; // Add some padding
     const double iconWidth = 16; // Icon size + padding
 
-    return Align(
-      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.7, // Set maximum width to 70% of screen width
-          minWidth: timestampWidth + iconWidth + 36, // Ensure minimum width to accommodate timestamp and icon
-        ),
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-          padding: const EdgeInsets.all(12.0),
-          decoration: BoxDecoration(
-            color: isCurrentUser ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withAlpha(25),
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(12.0),
-              topRight: const Radius.circular(12.0),
-              bottomLeft: isCurrentUser ? const Radius.circular(12.0) : const Radius.circular(2),
-              bottomRight: isCurrentUser ? const Radius.circular(2) : const Radius.circular(12.0),
-            ),
+    return SelectionArea(
+      child: Align(
+        alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7, // Set maximum width to 70% of screen width
+            minWidth: timestampWidth + iconWidth + 36, // Ensure minimum width to accommodate timestamp and icon
           ),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20.0), // Add padding to avoid overlap with message details
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      message.message,
-                      style: TextStyle(color: isCurrentUser ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface),
-                      softWrap: true,
-                    ),
-                  ],
-                ),
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: isCurrentUser ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withAlpha(25),
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(12.0),
+                topRight: const Radius.circular(12.0),
+                bottomLeft: isCurrentUser ? const Radius.circular(12.0) : const Radius.circular(2),
+                bottomRight: isCurrentUser ? const Radius.circular(2) : const Radius.circular(12.0),
               ),
-              Positioned(
-                bottom: 0,
-                right: isCurrentUser ? 0 : null,
-                left: isCurrentUser ? null : 0,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _formatTimestamp(message.timestamp),
-                      style: timestampStyle,
-                    ),
-                    const SizedBox(width: 4.0),
-                    Icon(
-                      isReadByEveryone ? Icons.done_all : Icons.check,
-                      size: 14,
-                      color: isCurrentUser ? Theme.of(context).colorScheme.onPrimary.withAlpha(150) : Theme.of(context).colorScheme.onSurface.withAlpha(150),
-                    ),
-                  ],
+            ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0), // Add padding to avoid overlap with message details
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.message,
+                        style: TextStyle(color: isCurrentUser ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface),
+                        softWrap: true,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                Positioned(
+                  bottom: 0,
+                  right: isCurrentUser ? 0 : null,
+                  left: isCurrentUser ? null : 0,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _formatTimestamp(message.timestamp),
+                        style: timestampStyle,
+                      ),
+                      const SizedBox(width: 4.0),
+                      Icon(
+                        isReadByEveryone ? Icons.done_all : Icons.check,
+                        size: 14,
+                        color: isCurrentUser ? Theme.of(context).colorScheme.onPrimary.withAlpha(150) : Theme.of(context).colorScheme.onSurface.withAlpha(150),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
