@@ -39,18 +39,21 @@ class HorizontalImageShortlist extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        context.go('/activity/activityId/participants');
+        context.go('/activity/$activityId/participants');
       },
       child: SizedBox(
         height: 42,
         child: users.length < 5
             ? Row(children: _buildSeparatedCircles(context, users, ref))
-            : Stack(children: _buildOverlappingCircles(context, users)),
+            : ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 200),
+                child: Stack(children: _buildOverlappingCircles(context, users)),
+              ),
       ),
     );
   }
 
-  List<Widget> _buildSeparatedCircles(BuildContext context, List<MinUserData> users, ref) {
+  List<Widget> _buildSeparatedCircles(BuildContext context, List<MinUserData> users, WidgetRef ref) {
     List<Widget> circles = [];
     int userCount = users.length;
 
@@ -64,7 +67,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
     return circles;
   }
 
-  Widget _buildCircle(BuildContext context, MinUserData user, ref) {
+  Widget _buildCircle(BuildContext context, MinUserData user, WidgetRef ref) {
     return GestureDetector(
       onTap: () async {
         await ref.read(usersStateProvider.notifier).fetchUser(user.uid);
@@ -107,7 +110,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
       left: leftPosition,
       child: GestureDetector(
         onTap: () {
-          context.go('/activity/activityId/participants');
+          context.go('/activity/$activityId/participants');
         },
         child: Container(
           decoration: BoxDecoration(
@@ -131,7 +134,7 @@ class HorizontalImageShortlist extends ConsumerWidget {
       left: leftPosition,
       child: GestureDetector(
         onTap: () {
-          context.go('/activity/activityId/participants');
+          context.go('/activity/$activityId/participants');
         },
         child: ClipOval(
           child: Stack(
