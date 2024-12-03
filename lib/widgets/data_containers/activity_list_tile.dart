@@ -21,42 +21,35 @@ class ActivityListTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(remoteConfigServiceProvider);
-
     final title = activity.title;
     final startTime = activity.startTime;
     final address = activity.address;
     final paid = activity.paid;
     final maxParticipants = activity.maxParticipants;
     final currentParticipants = activity.participants.length;
-
-    // Fetch user data and seen activities
     final currentUser = ref.watch(userStateProvider).data;
-
-    // Check if the user is a participant
     final isParticipant = activity.participants.contains(currentUser.uid);
-
-    // Check if the latest activity is more recent than the last seen datetime
     final lastSeen = activity.participantsInfo[currentUser.uid]?['lastSeen'];
     final hasNewActivity = (lastSeen == null || (lastSeen != null && (activity.latestActivity.isAfter(lastSeen))));
     final hasNewMessages = activity.latestMessage != null && (activity.latestMessage!.isAfter(activity.participantsInfo[currentUser.uid]?['lastOpenedChat'] ?? DateTime(2020)));
     final requestOrJoin = activity is UserCreatedActivity && (activity as UserCreatedActivity).requests.isNotEmpty;
     final hasNewNotification = isParticipant && (hasNewActivity || hasNewMessages || requestOrJoin);
-        
+
     return InkWell(
       onTap: () {
         if (ref.watch(userStateProvider).isAnonymous) {
           BottomSheetDialog.show(
             context: context,
-            title: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-title'),
-            body: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-text'),
-            confirmText: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-action-prompt'),
+            title: config.get<String>('anonymous-dialog-title'),
+            body: config.get<String>('anonymous-dialog-text'),
+            confirmText: config.get<String>('anonymous-dialog-action-prompt'),
             onConfirmPressed: () {
               context.pop();
               context.push('/login/complete-profile/name');
             },
-            cancelText: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-cancel'),
+            cancelText: config.get<String>('anonymous-dialog-cancel'),
             onCancelPressed: () => context.pop(),
-            disclaimer: ref.watch(remoteConfigServiceProvider).get<String>('anonymous-dialog-disclaimer'),
+            disclaimer: config.get<String>('anonymous-dialog-disclaimer'),
           );
           return;
         }
@@ -65,12 +58,12 @@ class ActivityListTile extends ConsumerWidget {
       },
       child: Card(
         color: Theme.of(context).colorScheme.surface.withAlpha(200),
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
         child: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(2),
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
@@ -84,7 +77,7 @@ class ActivityListTile extends ConsumerWidget {
                   children: [
                     activity is UserCreatedActivity ? ActivityMarker(activity: activity) : CommercialActivityMarker(activity: activity),
                     if (hasNewNotification)
-                       DotIndicator(requestOrJoin: !hasNewMessages),
+                      DotIndicator(requestOrJoin: !hasNewMessages),
                   ],
                 ),
               ),
@@ -93,24 +86,23 @@ class ActivityListTile extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                         fontSize: 18,
-                         fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.normal,
-                        ),
-                        softWrap: true,
-                        textAlign: TextAlign.start,
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        fontStyle: FontStyle.normal,
                       ),
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                     const SizedBox(height: 8),
-                    SelectionArea(
-                      child: Row(
-                        children: [
-                          Column(
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
@@ -121,16 +113,17 @@ class ActivityListTile extends ConsumerWidget {
                                     color: Theme.of(context).colorScheme.primary,
                                   ),
                                   const SizedBox(width: 4),
-                                  Text(
-                                    startTime != null
-                                        ? DateFormat(
-                                                'dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm')
-                                            .format(activity.startTime!.toLocal())
-                                        : config.get<String>('activity-missing-start-time'),
-                                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurface,
+                                  Expanded(
+                                    child: Text(
+                                      startTime != null
+                                          ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm')
+                                              .format(activity.startTime!.toLocal())
+                                          : config.get<String>('activity-missing-start-time'),
+                                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -143,61 +136,66 @@ class ActivityListTile extends ConsumerWidget {
                                     color: Theme.of(context).colorScheme.primary,
                                   ),
                                   const SizedBox(width: 4),
-                                  Text(
-                                    paid ? config.get<String>('activity-paid') : config.get<String>('activity-free'),
-                                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurface,
-                                    ),
+                                  Expanded(
+                                    child: Text(
+                                      paid ? config.get<String>('activity-paid') : config.get<String>('activity-free'),
+                                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
                                       overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                          const SizedBox(width: 20),
-                          SelectionArea(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      size: 18,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 18,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
                                       address,
                                       style: Theme.of(context).textTheme.labelSmall!.copyWith(
                                         color: Theme.of(context).colorScheme.onSurface,
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.group_outlined,
-                                      size: 18,
-                                      color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.group_outlined,
+                                    size: 18,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '$currentParticipants / $maxParticipants',
+                                    style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurface,
                                     ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '$currentParticipants / $maxParticipants',
-                                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 16),
+                      ],
                     ),
                   ],
                 ),

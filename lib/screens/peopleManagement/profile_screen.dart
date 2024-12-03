@@ -365,50 +365,48 @@ class _UserProfilePageState extends ConsumerState<UserProfilePage> {
   Widget _buildFavoriteActivitiesGrid(BuildContext context, MiittiUser userData) {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-      child: GridView.builder(
+      child: GridView.extent(
+        maxCrossAxisExtent: 120,
+        mainAxisSpacing: 10.0,
+        crossAxisSpacing: 20.0,
+        childAspectRatio: 0.8,
         shrinkWrap: true,
         physics: const BouncingScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 20.0,
-          mainAxisSpacing: 10.0,
-        ),
-        itemCount: userData.favoriteActivities.length,
-        itemBuilder: (context, index) {
-          final activity = userData.favoriteActivities[index];
-          return Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 5,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            child: Center(
+        children: userData.favoriteActivities.map((activity) {
+          return GestureDetector(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              padding: const EdgeInsets.all(8),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item2,
-                    style: const TextStyle(fontSize: 32),
+                  Flexible(
+                    child: Text(
+                      ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item2,
+                      style: const TextStyle(fontSize: 32),
+                    ),
                   ),
-                  Wrap(
-                    children: [
-                      Text(
-                        textAlign: TextAlign.center,
-                        ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item1,
-                        overflow: TextOverflow.visible,
-                        style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                  const SizedBox(height: 4),
+                  Flexible(
+                    child: Text(
+                      ref.watch(remoteConfigServiceProvider).getActivityTuple(activity).item1,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
-                    ],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }

@@ -227,6 +227,8 @@ class UserState extends StateNotifier<UserStateData> {
     final authService = ref.read(authServiceProvider);
     final localStorageService = ref.read(localStorageServiceProvider);
 
+    await sessionUpdateUserData(begin: false);
+
     await authService.signOut();
     await localStorageService.clear();
     _locationUpdateTimer?.cancel();
@@ -238,6 +240,8 @@ class UserState extends StateNotifier<UserStateData> {
     final firestoreService = ref.read(firestoreServiceProvider);
     final firebaseStorageService = ref.read(firebaseStorageServiceProvider);
     final localStorageService = ref.read(localStorageServiceProvider);
+
+    await sessionUpdateUserData(begin: false);
 
     if (!state.isAnonymous) {
       await firebaseStorageService.deleteUserFolder(state.uid!);

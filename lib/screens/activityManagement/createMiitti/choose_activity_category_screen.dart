@@ -59,64 +59,58 @@ class _ChooseActivityCategoryScreenState
                   ),
                 const SizedBox(height: AppSizes.minVerticalPadding),
                 Expanded(
-                  child: GridView.builder(
-                    itemCount: allActivities.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 20.0,
-                      mainAxisSpacing: 10.0,
-                    ),
-                    itemBuilder: (context, index) {
-                      final activity = allActivities[index];
+                  child: GridView.extent(
+                    maxCrossAxisExtent: 120,
+                    mainAxisSpacing: 10.0,
+                    crossAxisSpacing: 20.0,
+                    childAspectRatio: 0.8,
+                    children: allActivities.map((activity) {
                       final isSelected = selectedActivity == activity.item1;
                       return GestureDetector(
                         onTap: () {
                           setState(() {
                             if (selectedActivity == activity.item1) {
                               selectedActivity = null;
-                              createActivityState.update(
-                                  (state) => state.copyWith(category: null));
+                              createActivityState.update((state) => state.copyWith(category: null));
                             } else {
                               selectedActivity = activity.item1;
-                              createActivityState.update((state) =>
-                                  state.copyWith(category: activity.item1));
+                              createActivityState.update((state) => state.copyWith(category: activity.item1));
                             }
                           });
                         },
                         child: Container(
-                          width: 100,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 5,
-                            horizontal: 5,
-                          ),
                           decoration: BoxDecoration(
                             color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
                             borderRadius: BorderRadius.circular(16.0),
                           ),
+                          padding: const EdgeInsets.all(8),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                activity.item2.item2,
-                                style: const TextStyle(fontSize: 32),
+                              Flexible(
+                                child: Text(
+                                  activity.item2.item2,
+                                  style: const TextStyle(fontSize: 32),
+                                ),
                               ),
-                              Wrap(
-                                children: [
-                                  Text(
-                                    textAlign: TextAlign.center,
-                                    activity.item2.item1,
-                                    overflow: TextOverflow.visible,
-                                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                                      color: Colors.white,
-                                    ),
+                              const SizedBox(height: 4),
+                              Flexible(
+                                child: Text(
+                                  activity.item2.item1,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                                    color: Colors.white,
                                   ),
-                                ],
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
                         ),
                       );
-                    },
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: AppSizes.minVerticalPadding),

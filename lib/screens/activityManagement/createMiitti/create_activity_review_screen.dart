@@ -227,12 +227,14 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                                           color: Theme.of(context).colorScheme.primary,
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
-                                          startTime != null
-                                              ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(startTime.toLocal())
-                                              : config.get<String>('activity-missing-start-time'),
-                                          style: Theme.of(context).textTheme.labelMedium,
-                                          overflow: TextOverflow.ellipsis,
+                                        Expanded(
+                                          child: Text(
+                                            startTime != null
+                                                ? DateFormat('dd.MM.yyyy \'${config.get<String>('activity-text-between-date-and-time')}\' HH.mm').format(startTime.toLocal())
+                                                : config.get<String>('activity-missing-start-time'),
+                                            style: Theme.of(context).textTheme.labelMedium,
+                                            softWrap: true,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -265,7 +267,7 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          'max. $maxParticipants osallistujaa',
+                                          '${config.get<String>('create-activity-max-participants-before-number')} $maxParticipants ${config.get<String>('create-activity-max-participants-after-number')}',
                                           style: Theme.of(context).textTheme.labelMedium,
                                         ),
                                       ],
@@ -297,7 +299,7 @@ class _CreateActivityReviewScreenState extends ConsumerState<CreateActivityRevie
                       const SizedBox(height: AppSizes.verticalSeparationPadding),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          minHeight: 100,
+                          minHeight: 80,
                           maxHeight: 200,
                         ),
                         child: PermanentScrollbar(

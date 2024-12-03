@@ -61,7 +61,7 @@ class CommercialActivity extends MiittiActivity {
       latestMessage: data['latestMessage']?.toDate(),
       latestJoin: data['latestJoin']?.toDate(),
       paid: data['paid'],
-      maxParticipants: data['maxParticipants'] ?? 1000000,
+      maxParticipants: data['maxParticipants'] ?? 10000,
       participants: List<String>.from(data['participants']),
       participantsInfo: (data['participantsInfo'] as Map<String, dynamic>).map((key, value) => MapEntry(key, {
         'name': value['name'],
@@ -74,7 +74,7 @@ class CommercialActivity extends MiittiActivity {
       linkTitle: data['linkTitle'],
       hyperlink: data['hyperlink'],
       bannerImage: data['bannerImage'],
-      customEmoji: data['customEmoji'],
+      customEmoji: data['customEmoji'] ?? '💎',
       organization: data['organization'],
       views: data['views'] ?? 0,
       clicks: data['clicks'] ?? 0,

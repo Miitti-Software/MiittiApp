@@ -273,11 +273,13 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                       ),
                       const SizedBox(height: 20),
                       SelectionArea(
+                      child: SizedBox(  // Add this
+                        width: double.infinity,  // Add this
                         child: Row(
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                                children: [
                                 GestureDetector(
                                   onTap: () {
                                     if (activity.creator == userUid) {
@@ -318,7 +320,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                               ],
                             ),
                             const SizedBox(width: 20),
-                            SelectionArea(
+                            Expanded(  // Add this
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -329,10 +331,12 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                                         color: Theme.of(context).colorScheme.primary,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
-                                        address,
-                                        style: Theme.of(context).textTheme.labelMedium,
-                                        overflow: TextOverflow.ellipsis,
+                                      Expanded(
+                                        child: Text(
+                                          address,
+                                          style: Theme.of(context).textTheme.labelMedium,
+                                          softWrap: true,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -361,6 +365,7 @@ class _ActivityDetailsState extends ConsumerState<ActivityDetails> {
                           ],
                         ),
                       ),
+                    ),
                       const SizedBox(height: AppSizes.minVerticalPadding),
                       Row(
                         children: [

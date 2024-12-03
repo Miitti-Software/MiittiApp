@@ -35,7 +35,7 @@ class CommercialSpotWidget extends ConsumerWidget {
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: Container(
-        height: highlight ? 90 : 80,
+        height: 100,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           border: Border.all(
@@ -84,12 +84,17 @@ class CommercialSpotWidget extends ConsumerWidget {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(width: 10),
-                      Text(
-                        spot.address,
-                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white,
+                      Expanded(
+                        child: Text(
+                          spot.address,
+                          style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white,
+                          ),
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
                         ),
                       ),
                     ],
@@ -108,7 +113,7 @@ class CommercialSpotWidget extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12),
-                    bottomRight: Radius.circular(12),
+                    bottomRight: Radius.circular(8),
                   ),
                 ),
                 child: Text(
