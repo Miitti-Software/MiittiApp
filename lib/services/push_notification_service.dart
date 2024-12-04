@@ -35,14 +35,8 @@ class PushNotificationService extends StateNotifier<bool> {
   Future<void> setNotificationsEnabled(bool enabled) async {
     try {
       if (enabled) {
-        final permissionGranted = await requestPermission(true);
-        if (permissionGranted) {
-          await _requestAndSetupNotifications();
-          await _saveNotificationState(true);
-        } else {
-          state = false; // Update state if permission denied
-          await _saveNotificationState(false);
-        }
+        await _requestAndSetupNotifications();
+        await _saveNotificationState(true);
       } else {
         state = false;
         await _firebaseMessaging.deleteToken();
@@ -113,7 +107,7 @@ class PushNotificationService extends StateNotifier<bool> {
     final result = await _firebaseMessaging.requestPermission(
       alert: true,
       announcement: true,
-      provisional: true,
+      provisional: false,
       sound: true
     );
 
@@ -148,16 +142,21 @@ class PushNotificationService extends StateNotifier<bool> {
     // listenForeground();
   }
 
-  Future<bool> requestPermission(bool requestEvenDenied) async {
+  Future<bool> requestPermission() async {
+    if (Platform.isIOS) {
+      return true;
+    }
     bool permanentlyDenied = await Permission.notification.isPermanentlyDenied;
-    if (permanentlyDenied && requestEvenDenied) {
+    if (permanentlyDenied) {
       await openAppSettings();
       return await Permission.notification.isGranted;
     } else {
-      return await Permission.notification.request().isGranted;
+      final granted = await Permission.notification.request().isGranted;
+      return granted;
     }
   }
 
+  @pragma('vm:entry-point')
   static Future firebaseBackgroundMessage(RemoteMessage message) async {
     if (message.notification != null) {
       String? title = message.notification?.title;

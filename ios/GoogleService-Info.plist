@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>261026197907-i64t5euqb0bglan58fonrbgtu6qh53ik.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.261026197907-i64t5euqb0bglan58fonrbgtu6qh53ik</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>261026197907-7fus2crid7jv6fi04qp8tsle71fc4pbp.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCEA0TwBaMDTHGMyYCeibh1NafS3U7clSY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>261026197907</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.miittisoftwareoy.miittiApp</string>
+	<key>PROJECT_ID</key>
+	<string>miitti-app</string>
+	<key>STORAGE_BUCKET</key>
+	<string>miitti-app.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:261026197907:ios:6ebb8041e71b845a65f866</string>
+</dict>
+</plist>

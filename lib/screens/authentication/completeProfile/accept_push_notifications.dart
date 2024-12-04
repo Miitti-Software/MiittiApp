@@ -40,7 +40,7 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
             text: config.get<String>('accept-push-notifications-button'),
             onSelected: (bool selected) {
               if (!selected) {
-                ref.read(notificationServiceProvider).requestPermission(true);
+                ref.read(notificationServiceProvider).requestPermission();
                 setState(() {
                     notificationsEnabled = true;
                   },
@@ -73,7 +73,7 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
                 confirmText: config.get<String>('accept-push-notifications-dialog-confirm'),
                 cancelText: config.get<String>('accept-push-notifications-dialog-cancel'),
                 onConfirmPressed: () async {
-                  bool granted = await ref.read(notificationServiceProvider).requestPermission(true);
+                  bool granted = await ref.read(notificationServiceProvider).requestPermission();
                   if (granted && context.mounted) {
                     context.pop();
                     context.push('/login/complete-profile/community-norms');
@@ -94,7 +94,7 @@ class _AcceptPushNotificationsScreenState extends ConsumerState<AcceptPushNotifi
                 if (granted && context.mounted) {
                   context.push('/login/complete-profile/community-norms');
                 } else {
-                  ref.read(notificationServiceProvider).requestPermission(true).then((grantFixed) {
+                  ref.read(notificationServiceProvider).requestPermission().then((grantFixed) {
                     if (grantFixed && context.mounted) {
                       context.push('/login/complete-profile/community-norms');
                     } else {
