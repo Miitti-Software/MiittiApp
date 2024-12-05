@@ -35,6 +35,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Admin IDs of non-contributors
 - `AuthProvider` class will become redundant once `AuthService` has been fully implemented
 
+## [2.0.2] - 2024-12-04
+
+### Added
+
+- "Read by all" indicators to chats
+- Color-coded internal notifications (orange for requests and joins, and pink for messages)
+- Map tile caching to improve performance and save bandwidth
+- An invite button to activity details, which now enables sending invitations after the creation of an activity
+- A "mark as passed" button, which can be used to archive past activities and hide them from the map without deleting them
+- A switch for toggling location permissions on and off on the settings page
+- The ability to change the start time of an activity by clicking on the calendar icon in activity details
+
+### Fixed
+
+- Push notifications switch now reliably toggles permissions with requests if permission has not previously been given
+- A bug that would crash the app upon opening certain types of push notifications
+- A bug that allowed users to access the open app without unlocking their device
+- A bug displaying old activities on the map when clicking on the chats
+- Ensured that illegitimate names such as "null" cannot be used
+- Various other bugs having to do with notifications and GUI behavior
+
+### Changed
+
+- Made QA-cards optional when creating an account
+- Changed Finnish to be the selected default language
+- Made profile pictures clickable in activities
+- Refactored the profile screen to load the given user in a better way
+
+### Removed
+
+- Massive amounts of old, unused code
+
+## [2.0.1] - 2024-09-30
+
+Patches to refactored app
+
+## [2.0.0] - 2024-09-30
+
+Finished full refactoring of the app
+
 
 ## [1.5.7] - 2024-07-25
 
